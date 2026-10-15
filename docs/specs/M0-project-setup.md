@@ -20,8 +20,10 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
 ### Tooling and repo
 1. **Given** a fresh clone with the pinned Node version, **when** `npm ci` runs, **then** it exits 0
    (`package-lock.json` is committed).
-2. **Given** the repo, **then** `.nvmrc` contains `24` (Node 24 LTS) and `package.json` has
-   `"engines": { "node": ">=24 <25" }`.
+2. **Given** the repo, **then** `.nvmrc` contains `24` (Node 24 LTS, used by CI) and `package.json` has
+   `"engines": { "node": "^22.13.0 || ^24.3.0" }`. *(Dev note: Expo SDK 58 supports Node
+   `^22.13.0 || ^24.3.0 || …`; engines also allows Node 22 so local/cloud machines that still run
+   Node 22 can install without warnings. CI pins 24 via `.nvmrc`.)*
 3. **Given** `package.json`, **then** it defines scripts `start` (`expo start`), `web`
    (`expo start --web`), `lint` (`eslint . --max-warnings 0`), `typecheck` (`tsc --noEmit`),
    `test` (`jest`), `format` (`prettier --write .`), `format:check` (`prettier --check .`).
@@ -60,7 +62,8 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
     exported from `src/i18n/index.ts` and unit-tested for ACs 10–12.
 
 ### Home screen (`/`)
-15. **Given** language `zh-CN`, **when** Home renders (RNTL test `app/__tests__/index.test.tsx`),
+15. **Given** language `zh-CN`, **when** Home renders (RNTL test `__tests__/app/index.test.tsx` —
+    not under `app/`, because expo-router turns every file in `app/` into a route),
     **then** it shows `Let's GO`, the subtitle `home.subtitle`, the section title `学习路线`, and a
     card with `第 1 单元 · 棋盘与棋子` and `即将开放`.
 16. **Given** language `en`, **then** the same test shows `Let's GO` and `Unit 1 · Board & stones`;

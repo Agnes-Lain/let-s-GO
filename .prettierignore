@@ -1,0 +1,11 @@
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+assets/
+package-lock.json
+docs/specs/M0-mockup.html
+# Hand-written docs and agent prompts keep their own formatting.
+*.md
+.claude/
