@@ -184,19 +184,19 @@ Copy keys (zh-CN / en / fr). French uses a non-breaking space before `!`, `?`, `
 None (no lessons in M0). Unit 1 title matches `docs/CURRICULUM.md` (棋盘与棋子 Board & stones).
 
 ## 6. Visual foundation (`src/theme/tokens.ts`)
-**Mood: 山水 · 茶 · 竹 — mountains, misty sky, tea and bamboo.** Go is a game of calm
+**Mood: 水墨山水 · 茶 · 竹 — an ink-wash painting: misty peaks, celadon sky, tea and bamboo.** Go is a game of calm
 and reflection; the app should feel like a quiet tea moment in front of an ink-wash (水墨) landscape.
 Soft, low-saturation colors, lots of empty space (留白), no bright or alarming tones — even errors
 are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountain" theme deferred to M6).
 
 | Token | Value | Name | Use |
 |---|---|---|---|
-| color.background | `#F4F1EA` | 宣纸 rice paper | app background |
-| color.sky | `#DCE6EA` | 晨雾 morning mist | top-of-screen mist gradient (→ background) |
-| color.surface | `#FFFDF8` | 素绢 silk | cards, rows |
+| color.background | `#EEF2EE` | 雾 mist | app background (cool, misty celadon-white) |
+| color.sky | `#D6E2DE` | 青天 celadon sky | top-of-screen gradient (→ background) |
+| color.surface | `#FBFCF9` | 素绢 silk | cards, rows (92% opacity over the painting on Home) |
 | color.border | `#E3DDD0` | 淡墨 pale ink | card/row dividers |
 | color.textPrimary | `#26292B` | 墨 ink | main text (13:1 on background) |
-| color.textSecondary | `#5E6A6E` | 远山 distant mountain | subtitles, captions (4.9:1) |
+| color.textSecondary | `#56646A` | 远山 distant mountain | subtitles, captions (5.4:1) |
 | color.accent | `#3E6461` | 青山 green mountain | primary buttons, check marks, links (6.6:1 with white) |
 | color.onAccent | `#FFFFFF` | | text on accent |
 | color.success | `#56764A` | 茶 tea green | correct answer (M3+) (5.1:1) |
@@ -204,10 +204,13 @@ are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountai
 | color.hint | `#9A5F22` | 琥珀茶 amber tea | hint highlight (M3+) (5.1:1) |
 | color.badge | `#E4ECD8` | 嫩芽 tea sprout | "coming soon" badge background |
 | color.onBadge | `#3F5A35` | | badge text (6.3:1) |
-| color.bambooLeaf | `#7E9F73` | 竹叶 bamboo leaf | decorative leaves, celebration accents — never for text |
-| color.bambooLeafDark | `#5F7F57` | 深竹 deep bamboo | leaf veins / second leaf tone — decorative only |
-| color.mountainFar | `#C9D5D6` | 远山 far ridge | decorative landscape layer |
-| color.mountainNear | `#9DB2AE` | 近山 near ridge | decorative landscape layer |
+| ink.bambooFront | `#2F4A45` | 浓墨 dense ink | front bamboo stalk + leaves — decorative only |
+| ink.bambooMid | `#6F8C86` | 中墨 mid ink | middle bamboo — decorative only |
+| ink.bambooBack | `#A9BDB7` | 淡墨 pale ink | back bamboo, fading into mist — decorative only |
+| ink.mountainFar | `#B7C8C3` | 远山 far range | decorative, gradient to transparent |
+| ink.mountainMid | `#8FA7A1` | 中山 mid range | decorative |
+| ink.mountainNear | `#5F7D77` | 近山 near peak | decorative, top of the tall peak |
+| ink.hill | `#3F5B55` | 墨林 ink hill | small dark hill at the peak's foot (55% opacity) |
 | board.bamboo | `#E8D3A0` | 竹板 bamboo | board base color (M2) |
 | board.bambooStripLight | `#EEDCAE` | | alternating light strip |
 | board.bambooStripDark | `#DEC68C` | | alternating darker strip |
@@ -219,15 +222,29 @@ are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountai
 
 All text colors meet WCAG AA (≥ 4.5:1) on background and surface.
 
-**Decorative landscape** (`src/theme/Landscape.tsx`, react-native-svg): Home shows a soft mist
-gradient at the top and two layered mountain ridges at the bottom (mountainFar, mountainNear,
-~140px tall, full width), with a small sprig of 3–5 bamboo leaves near the logo. Decorative only:
-`accessible={false}`, behind content, never covers tap targets, static in M0 (a slow mist drift may
-come later, respecting "reduce motion"). Other screens use the plain background with a thin mist
-gradient only.
+**Decorative landscape — 水墨山水 ink-wash painting** (`src/theme/Landscape.tsx`,
+react-native-svg, full-screen behind Home content). Style reference: a traditional ink-wash
+landscape provided by the product owner (it is a watermarked stock image, so it is **not** shipped;
+we recreate the style as vector art). Composition on a 360×740 screen:
+- **Sky:** vertical gradient `sky` → `background`.
+- **Mountains (top band, y≈30–215):** a tall peak on the left (`mountainNear`) with a shoulder
+  (`mountainMid`) and a far range on the right (`mountainFar`), each filled with a vertical
+  gradient fading to transparent at its base, like ink bleeding into mist. A small dark ink hill
+  (`hill`) sits at the peak's foot. Soft mist clouds (radial gradients, no hard edges) float across
+  the bases, and the band fades fully into `background` by y≈215.
+- **Logo, title and subtitle start below the band** (logo top ≈ y 190), so text never sits on a
+  mountain; the gear button sits on a 70%-opaque `surface` square for contrast.
+- **Bamboo (bottom-right corner):** three segmented stalks rising from the bottom edge (front
+  `bambooFront` ~8.5px wide, middle `bambooMid`, back `bambooBack`), with clusters of 5–8 long,
+  slender, drooping leaves at the nodes. The front stalk is darkest; the back one fades into the mist.
+  Leaves stay below the content (top ≈ y 480) and to the right of x≈220, so they never cover text.
+- **Water:** 3–4 faint horizontal ink lines bottom-left.
+- Decorative only: `accessible={false}`, `pointerEvents="none"`. Static in M0 (later: very slow mist
+  drift and a gentle bamboo sway, disabled when "reduce motion" is on).
+- Only gradients, paths and opacity — no blur filters or image files — so it renders identically
+  on iOS, Android and web.
+Other screens use only the `sky` → `background` gradient at the top (≈72px), keeping them calm.
 
-Typography (system font; zh falls back to PingFang SC / Noto Sans SC): `display 28/34 700`,
-`title 22/28 600`, `body 16/24 400`, `label 16/20 600`, `caption 13/18 400`. Body text never < 16.
 **Bamboo board** (built in M2, tokens defined now): the board looks like a laminated bamboo
 board (竹制棋盘): vertical strips ~1/12 of the board width alternating `bambooStripLight` /
 `bambooStripDark`, with a few thin `bambooNode` marks at irregular heights. Drawn with
@@ -265,4 +282,6 @@ The Unit 1 title and terminology match `docs/CURRICULUM.md`.
 - D5 Visual design (mockup `docs/specs/M0-mockup.html`) must be approved before development.
 - D6 French (`fr`) is a full app language alongside zh-CN and en; `fr*` locales → `fr`.
 - D7 Visual mood 山水 · 茶 · 竹 (mountains, mist, tea, bamboo); palette in §6.
-- D8 Board uses a laminated bamboo texture (竹制棋盘); bamboo leaves replace blossom petals.
+- D8 Board uses a laminated bamboo texture (竹制棋盘).
+- D9 Home background is an ink-wash 水墨 landscape (misty peaks top-left, bamboo bottom-right) in the
+  style of the product owner's reference image; recreated as vector art, the reference itself is not shipped.
