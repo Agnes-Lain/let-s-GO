@@ -16,7 +16,7 @@ For each roadmap item, write a spec at `docs/specs/<milestone>-<short-name>.md` 
 4. **Screen flow & UI** — screens, states (empty, loading, success, failure, hint), copy keys,
    layout for a 360×740 phone, tap targets ≥ 44px. ASCII wireframes are fine.
 5. **Content** (for lesson items) — explanation steps and exercises as lesson JSON that follows
-   `docs/CURRICULUM.md`, with text in zh-CN and en, Chinese term + pinyin on first use.
+   `docs/CURRICULUM.md`, with text in zh-CN, en and fr, Chinese term + pinyin on first use.
 6. **Game design notes** — difficulty curve, number of exercises, star thresholds, hint policy,
    feedback/reward moments (sound, animation), what happens after 3 failures.
 7. **Out of scope** — what this item deliberately does not do.

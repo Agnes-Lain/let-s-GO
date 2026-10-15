@@ -4,14 +4,14 @@ Covers both M0 roadmap items in one PR: Expo + TS scaffold (expo-router, ESLint/
 folder layout) and GitHub Actions CI.
 
 ## 1. Goal
-A learner can open the app (web or phone) in their own language (中文 or English), see a calm home
+A learner can open the app (web or phone) in their own language (中文, English or Français), see a calm home
 screen with a "Unit 1" entry, open a placeholder lesson, and switch language in Settings. The team
 gets a green lint/typecheck/test pipeline to build every later milestone on.
 
 ## 2. User stories
 - As a beginner, I want the app to open in my phone's language so I can read it immediately.
 - As a beginner, I want one obvious thing to tap on the home screen so I know where to start.
-- As a bilingual learner, I want to switch between 中文 and English in Settings.
+- As a multilingual learner, I want to switch between 中文, English and Français in Settings.
 - As a developer, I want `npm install && npm test` to work on a fresh clone so I can start on M1.
 - As a reviewer, I want CI to run lint, typecheck and tests on every PR so broken code can't merge.
 
@@ -37,7 +37,7 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
    `export {};` plus a one-line comment naming the milestone that fills it):
    - `src/engine/index.ts` (M1), `src/board/index.ts` (M2), `src/lessons/index.ts` (M3),
      `src/exercises/index.ts` (M3), `src/store/index.ts` (M3), `src/bot/index.ts` (M4)
-   - `src/i18n/index.ts`, `src/i18n/zh-CN.json`, `src/i18n/en.json` (real, see §4)
+   - `src/i18n/index.ts`, `src/i18n/zh-CN.json`, `src/i18n/en.json`, `src/i18n/fr.json` (real, see §4)
    - `src/theme/tokens.ts` (real, see §6) — the only addition to the CLAUDE.md layout
    - `app/_layout.tsx`, `app/index.tsx`, `app/settings.tsx`, `app/lesson/[id].tsx`,
      `app/practice/[id].tsx`, `app/+not-found.tsx`
@@ -46,23 +46,25 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
    from `t('<key>')`. (QA: grep for CJK characters or quoted English sentences in `app/` → none.)
 
 ### i18n
-9. **Given** `zh-CN.json` and `en.json`, **then** they have identical key sets and every value is a
+9. **Given** `zh-CN.json`, `en.json` and `fr.json`, **then** they have identical key sets and every value is a
    non-empty string (Jest test `src/i18n/i18n.test.ts`).
 10. **Given** the device locale (expo-localization `getLocales()[0].languageCode`) is `zh`
     (e.g. `zh-Hans-CN`, `zh-Hant-TW`), **when** the app initialises i18n, **then** language is `zh-CN`.
 11. **Given** device locale `en-US` or `en-GB`, **then** language is `en`.
-12. **Given** device locale `fr-FR` (or `getLocales()` returns `[]`), **then** language is `en`
-    (fallback for any non-Chinese locale — decided by the product owner).
+12. **Given** device locale `fr-FR`, `fr-CA` or `fr-BE`, **then** language is `fr`.
+    **Given** device locale `de-DE` (or `getLocales()` returns `[]`), **then** language is `en`
+    (fallback for any other locale — decided by the product owner).
 13. **Given** language is `en`, **when** `t('app.name')` is called, **then** it returns `Let's GO`;
-    for `zh-CN` it also returns `Let's GO` (same brand name in both languages).
-14. Locale detection is a pure function `resolveLanguage(languageCode: string | null): 'zh-CN' | 'en'`
+    for `zh-CN` and `fr` it also returns `Let's GO` (same brand name in all languages).
+14. Locale detection is a pure function `resolveLanguage(languageCode: string | null): 'zh-CN' | 'en' | 'fr'`
     exported from `src/i18n/index.ts` and unit-tested for ACs 10–12.
 
 ### Home screen (`/`)
 15. **Given** language `zh-CN`, **when** Home renders (RNTL test `app/__tests__/index.test.tsx`),
     **then** it shows `Let's GO`, the subtitle `home.subtitle`, the section title `学习路线`, and a
     card with `第 1 单元 · 棋盘与棋子` and `即将开放`.
-16. **Given** language `en`, **then** the same test shows `Let's GO` and `Unit 1 · Board & stones`.
+16. **Given** language `en`, **then** the same test shows `Let's GO` and `Unit 1 · Board & stones`;
+    **given** `fr`, it shows `Let's GO` and `Unité 1 · Le goban et les pierres`.
 17. **When** the user taps the Unit 1 card, **then** the router navigates to `/lesson/u01-board`.
 18. **When** the user taps the settings button (accessibility label `settings.open`), **then** the
     router navigates to `/settings`.
@@ -79,11 +81,11 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
     `notFound.home` button that navigates to `/`.
 
 ### Settings (`/settings`)
-23. **Given** Settings, **then** it shows a language list with three options:
-    `跟随系统 / Use device language`, `中文（简体）`, `English`; the current choice shows a check mark
+23. **Given** Settings, **then** it shows a language list with four options:
+    `跟随系统 / Use device language / Langue de l'appareil`, `中文（简体）`, `English`, `Français`; the current choice shows a check mark
     and has `accessibilityState={{ selected: true }}`. Default selection is "Use device language".
 24. **Given** UI language `zh-CN`, **when** the user taps `English`, **then** all visible text on
-    Settings switches to English immediately (no restart), and navigating back shows Home in English.
+    Settings switches to English immediately (no restart), and navigating back shows Home in English. Same for `Français` → French.
 25. **When** the user taps "Use device language", **then** the language becomes `resolveLanguage`
     of the device locale.
 26. Settings shows `settings.version` followed by the version from `app.json` (e.g. `0.1.0`).
@@ -144,37 +146,39 @@ Settings:
 │ │ 跟随系统                    ✓  │ │  rows: min-height 52, full-width tap
 │ │ 中文（简体）                    │ │
 │ │ English                        │ │
+│ │ Français                       │ │
 │ └────────────────────────────────┘ │
 │  版本 0.1.0                         │  caption
 └────────────────────────────────────┘
 ```
 Placeholder (lesson / practice / not-found): top bar with back, centered title, id in caption,
-body text, nothing else. Language names `中文（简体）` and `English` are always shown in their own
+body text, nothing else. Language names `中文（简体）`, `English` and `Français` are always shown in their own
 language regardless of UI language.
 
-Copy keys (zh-CN / en):
+Copy keys (zh-CN / en / fr). French uses a non-breaking space before `!`, `?`, `:` and `;`.
 
-| Key | zh-CN | en |
-|---|---|---|
-| app.name | Let's GO | Let's GO |
-| home.subtitle | 从零开始，一步一步学会下围棋 | Learn Go (围棋 wéiqí) from zero, one rule at a time |
-| home.path.title | 学习路线 | Learning path |
-| home.unit1.title | 第 1 单元 · 棋盘与棋子 | Unit 1 · Board & stones |
-| home.unit.comingSoon | 即将开放 | Coming soon |
-| home.moreSoon | 更多单元即将上线 | More units coming soon |
-| settings.open | 打开设置 | Open settings |
-| settings.title | 设置 | Settings |
-| settings.language | 语言 | Language |
-| settings.language.system | 跟随系统 | Use device language |
-| settings.language.zh | 中文（简体） | 中文（简体） |
-| settings.language.en | English | English |
-| settings.version | 版本 | Version |
-| common.back | 返回 | Back |
-| placeholder.lesson.title | 课程 | Lesson |
-| placeholder.practice.title | 练习 | Practice |
-| placeholder.comingSoon | 这里很快就会有内容，敬请期待！ | This part is coming soon. Stay tuned! |
-| notFound.title | 找不到这个页面 | Page not found |
-| notFound.home | 回到首页 | Back to home |
+| Key | zh-CN | en | fr |
+|---|---|---|---|
+| app.name | Let's GO | Let's GO | Let's GO |
+| home.subtitle | 从零开始，一步一步学会下围棋 | Learn Go (围棋 wéiqí) from zero, one rule at a time | Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois |
+| home.path.title | 学习路线 | Learning path | Parcours d'apprentissage |
+| home.unit1.title | 第 1 单元 · 棋盘与棋子 | Unit 1 · Board & stones | Unité 1 · Le goban et les pierres |
+| home.unit.comingSoon | 即将开放 | Coming soon | Bientôt disponible |
+| home.moreSoon | 更多单元即将上线 | More units coming soon | D'autres unités arrivent bientôt |
+| settings.open | 打开设置 | Open settings | Ouvrir les réglages |
+| settings.title | 设置 | Settings | Réglages |
+| settings.language | 语言 | Language | Langue |
+| settings.language.system | 跟随系统 | Use device language | Langue de l'appareil |
+| settings.language.zh | 中文（简体） | 中文（简体） | 中文（简体） |
+| settings.language.en | English | English | English |
+| settings.language.fr | Français | Français | Français |
+| settings.version | 版本 | Version | Version |
+| common.back | 返回 | Back | Retour |
+| placeholder.lesson.title | 课程 | Lesson | Leçon |
+| placeholder.practice.title | 练习 | Practice | Exercices |
+| placeholder.comingSoon | 这里很快就会有内容，敬请期待！ | This part is coming soon. Stay tuned! | Cette partie arrive bientôt. Restez à l'écoute ! |
+| notFound.title | 找不到这个页面 | Page not found | Page introuvable |
+| notFound.home | 回到首页 | Back to home | Retour à l'accueil |
 
 ## 5. Content
 None (no lessons in M0). Unit 1 title matches `docs/CURRICULUM.md` (棋盘与棋子 Board & stones).
@@ -231,3 +235,4 @@ The Unit 1 title and terminology match `docs/CURRICULUM.md`.
 - D3 `src/theme/` is added to the CLAUDE.md folder layout.
 - D4 Node 24 LTS pinned (Node 22 if the Expo SDK at scaffold time doesn't support 24 yet).
 - D5 Visual design (mockup `docs/specs/M0-mockup.html`) must be approved before development.
+- D6 French (`fr`) is a full app language alongside zh-CN and en; `fr*` locales → `fr`.

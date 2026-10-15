@@ -23,7 +23,7 @@ item's spec in `docs/specs/`.
    would be marked wrong.
 4. **Run everything** — `npm run lint`, `npm run typecheck`, `npm test`. For UI items run
    `npx expo start --web` and check with Playwright at 360×740: board fits, tap targets ≥ 44px,
-   text not cut off in zh-CN and en, success/failure/hint states visible.
+   text not cut off in zh-CN, en and fr (French strings are often the longest), success/failure/hint states visible.
 5. **Report** a table: criterion → test → pass/fail. Then bugs, each with steps to reproduce
    (board in ASCII, move sequence), expected vs actual, severity (blocker / major / minor).
    End with a verdict: READY or NOT READY.

@@ -11,7 +11,7 @@
 | Game records | SGF parsing via `@sabaki/sgf` | Import tsumego/problem sets in the standard format. |
 | State | Zustand | Minimal boilerplate; fine for progress + current exercise. |
 | Local persistence | react-native-mmkv (or expo-sqlite if progress gets relational) | Offline-first; progress, stars, unlocked lessons. |
-| i18n | i18next + expo-localization | 中文 first, English second. |
+| i18n | i18next + expo-localization | 中文 first, then English and Français. |
 | Animations | react-native-reanimated | Capture animations, stone drop, success feedback. |
 | Sound | expo-audio | Stone click sounds matter for feel. |
 | Beginner bot | Own TS bot: heuristics (capture > save atari > extend liberties > random-legal), later Monte-Carlo playouts for 9×9 | Runs on-device, no server. KataGo is far too strong/heavy for beginners. |
