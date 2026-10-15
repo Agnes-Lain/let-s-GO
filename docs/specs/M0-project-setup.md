@@ -184,31 +184,48 @@ Copy keys (zh-CN / en / fr). French uses a non-breaking space before `!`, `?`, `
 None (no lessons in M0). Unit 1 title matches `docs/CURRICULUM.md` (棋盘与棋子 Board & stones).
 
 ## 6. Visual foundation (`src/theme/tokens.ts`)
-Light mode only in M0 (dark mode deferred to M6 accessibility pass). Look: calm, paper-and-wood,
-one jade accent; friendly for teens and adults, no cartoon mascots.
+**Mood: 山水 · 茶 · 春花 — mountains, misty sky, tea and spring blossoms.** Go is a game of calm
+and reflection; the app should feel like a quiet tea moment in front of an ink-wash (水墨) landscape.
+Soft, low-saturation colors, lots of empty space (留白), no bright or alarming tones — even errors
+are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountain" theme deferred to M6).
 
-| Token | Value | Use |
-|---|---|---|
-| color.background | `#F7F3EA` | rice-paper app background |
-| color.surface | `#FFFFFF` | cards, rows |
-| color.border | `#E4DED1` | card/row dividers |
-| color.textPrimary | `#1F2328` | main text (contrast 14:1 on background) |
-| color.textSecondary | `#5C6370` | subtitles, captions (≥ 5:1) |
-| color.accent | `#2F6F5E` | jade: primary buttons, check marks, links |
-| color.onAccent | `#FFFFFF` | text on accent |
-| color.success | `#2E7D32` | correct answer (M3+) |
-| color.error | `#C62828` | wrong answer (M3+) |
-| color.hint | `#B26A00` | hint highlight (M3+) |
-| color.badge | `#EFE6CF` | "coming soon" badge background |
-| board.wood | `#DCB35C` | board fill (M2) |
-| board.line | `#3B2F20` | grid lines, star points (M2) |
-| stone.black | `#1A1A1A` | black stone |
-| stone.white | `#F8F8F4` | white stone fill |
-| stone.whiteEdge | `#8A8A80` | 1px outline so white stones read on wood |
+| Token | Value | Name | Use |
+|---|---|---|---|
+| color.background | `#F4F1EA` | 宣纸 rice paper | app background |
+| color.sky | `#DCE6EA` | 晨雾 morning mist | top-of-screen mist gradient (→ background) |
+| color.surface | `#FFFDF8` | 素绢 silk | cards, rows |
+| color.border | `#E3DDD0` | 淡墨 pale ink | card/row dividers |
+| color.textPrimary | `#26292B` | 墨 ink | main text (13:1 on background) |
+| color.textSecondary | `#5E6A6E` | 远山 distant mountain | subtitles, captions (4.9:1) |
+| color.accent | `#3E6461` | 青山 green mountain | primary buttons, check marks, links (6.6:1 with white) |
+| color.onAccent | `#FFFFFF` | | text on accent |
+| color.success | `#56764A` | 茶 tea green | correct answer (M3+) (5.1:1) |
+| color.error | `#A8443F` | 胭脂 rouge | wrong answer (M3+), gentle not alarming (5.8:1) |
+| color.hint | `#9A5F22` | 琥珀茶 amber tea | hint highlight (M3+) (5.1:1) |
+| color.badge | `#E4ECD8` | 嫩芽 tea sprout | "coming soon" badge background |
+| color.onBadge | `#3F5A35` | | badge text (6.3:1) |
+| color.blossom | `#E9B9BE` | 桃花 peach blossom | decorative petals, celebration accents — never for text |
+| color.mountainFar | `#C9D5D6` | 远山 far ridge | decorative landscape layer |
+| color.mountainNear | `#9DB2AE` | 近山 near ridge | decorative landscape layer |
+| board.wood | `#E2BE7E` | 榧木 kaya wood | board fill (M2), lighter and calmer than classic orange wood |
+| board.line | `#4A3B2A` | | grid lines, star points (M2) |
+| stone.black | `#22252A` | 墨玉 ink jade | black stone (slightly blue-black, like ink) |
+| stone.white | `#F7F5EE` | 贝 shell | white stone fill |
+| stone.whiteEdge | `#8F8C80` | | 1px outline so white stones read on wood |
+
+All text colors meet WCAG AA (≥ 4.5:1) on background and surface.
+
+**Decorative landscape** (`src/theme/Landscape.tsx`, react-native-svg): Home shows a soft mist
+gradient at the top and two layered mountain ridges at the bottom (mountainFar, mountainNear,
+~140px tall, full width), with 3–5 small peach-blossom petals near the logo. Decorative only:
+`accessible={false}`, behind content, never covers tap targets, static in M0 (a slow mist drift may
+come later, respecting "reduce motion"). Other screens use the plain background with a thin mist
+gradient only.
 
 Typography (system font; zh falls back to PingFang SC / Noto Sans SC): `display 28/34 700`,
 `title 22/28 600`, `body 16/24 400`, `label 16/20 600`, `caption 13/18 400`. Body text never < 16.
-Spacing scale: `4, 8, 12, 16, 24, 32`. Radius: `sm 8`, `md 12`, `pill 999`.
+Generous line height and spacing for a calm feel.
+Spacing scale: `4, 8, 12, 16, 24, 32`. Radius: `sm 8`, `md 12`, `pill 999` (soft, pebble-like corners).
 `tapTarget.min = 44` (all pressables use `minWidth/minHeight` or `hitSlop` to reach it).
 The logo (two overlapping stones) is drawn with plain Views/circles using stone tokens — not the board.
 
@@ -236,3 +253,4 @@ The Unit 1 title and terminology match `docs/CURRICULUM.md`.
 - D4 Node 24 LTS pinned (Node 22 if the Expo SDK at scaffold time doesn't support 24 yet).
 - D5 Visual design (mockup `docs/specs/M0-mockup.html`) must be approved before development.
 - D6 French (`fr`) is a full app language alongside zh-CN and en; `fr*` locales → `fr`.
+- D7 Visual mood 山水 · 茶 · 春花 (mountains, mist, tea, spring blossoms); palette in §6.

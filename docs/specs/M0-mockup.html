@@ -6,14 +6,15 @@
 <title>Let's GO M0 Mockup</title>
 <style>
   :root {
-    --background: #F7F3EA; --surface: #FFFFFF; --border: #E4DED1;
-    --text: #1F2328; --text2: #5C6370; --accent: #2F6F5E; --onAccent: #FFFFFF;
-    --success: #2E7D32; --error: #C62828; --hint: #B26A00; --badge: #EFE6CF;
-    --wood: #DCB35C; --line: #3B2F20; --black: #1A1A1A; --white: #F8F8F4; --whiteEdge: #8A8A80;
+    --background: #F4F1EA; --sky: #DCE6EA; --surface: #FFFDF8; --border: #E3DDD0;
+    --text: #26292B; --text2: #5E6A6E; --accent: #3E6461; --onAccent: #FFFFFF;
+    --success: #56764A; --error: #A8443F; --hint: #9A5F22; --badge: #E4ECD8; --onBadge: #3F5A35;
+    --blossom: #E9B9BE; --mFar: #C9D5D6; --mNear: #9DB2AE;
+    --wood: #E2BE7E; --line: #4A3B2A; --black: #22252A; --white: #F7F5EE; --whiteEdge: #8F8C80;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: #E9E6DF; color: var(--text); padding: 24px 16px 48px;
+    background: #E6E8E4; color: var(--text); padding: 24px 16px 48px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
   }
   header.page { max-width: 1200px; margin: 0 auto 24px; }
@@ -26,7 +27,13 @@
     width: 360px; height: 740px; max-width: calc(100vw - 32px); background: var(--background);
     border-radius: 28px; border: 8px solid #222; overflow: hidden; position: relative;
     display: flex; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px);
   }
+  .phone.thin { background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px); }
+  .status, .content { position: relative; z-index: 1; }
+  .landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 150px; z-index: 0; }
+  .petal { position: absolute; width: 9px; height: 6px; border-radius: 60% 40% 60% 40%; background: var(--blossom); opacity: .9; }
+  .board-demo { display: block; margin-top: 8px; }
   .status { height: 28px; font-size: 12px; display: flex; justify-content: space-between; padding: 6px 16px; color: var(--text); }
   .content { padding: 0 16px; flex: 1; }
   .topbar { height: 52px; display: flex; align-items: center; justify-content: space-between; }
@@ -47,7 +54,7 @@
   .card .dot { width: 32px; height: 32px; border-radius: 50%; background: var(--black); flex: none; }
   .card .body { flex: 1; }
   .card .t { font-size: 16px; line-height: 20px; font-weight: 600; }
-  .badge { display: inline-block; margin-top: 6px; background: var(--badge); color: #6B5A2E; font-size: 13px; line-height: 18px; padding: 2px 10px; border-radius: 999px; }
+  .badge { display: inline-block; margin-top: 6px; background: var(--badge); color: var(--onBadge); font-size: 13px; line-height: 18px; padding: 2px 10px; border-radius: 999px; }
   .chev { color: var(--text2); font-size: 22px; }
   .caption { font-size: 13px; line-height: 18px; color: var(--text2); margin-top: 10px; }
   .list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -70,14 +77,22 @@
 <body>
 <header class="page">
   <h1>Let's GO — M0 design mockup</h1>
-  <p>Home, Settings and a placeholder screen at 360×740, in Chinese, English and French. Colors and sizes come from the spec's design tokens. Approve this before development starts.</p>
+  <p>Home, Settings and a placeholder screen at 360×740, in Chinese, English and French. Mood: 山水 · 茶 · 春花 — misty sky, ink-wash mountains, tea and spring blossoms. Colors come from the spec's design tokens. Approve this before development starts.</p>
 </header>
 
 <div class="grid">
   <figure>
     <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
+        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
+        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
+        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
+        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -92,8 +107,16 @@
 
   <figure>
     <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
+        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
+        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
+        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
+        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -108,8 +131,16 @@
 
   <figure>
     <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
+        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
+        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
+        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
+        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -123,7 +154,7 @@
   </figure>
 
   <figure>
-    <div class="phone">
+    <div class="phone thin">
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content" style="position:relative">
         <div class="topbar"><span class="back">‹ 返回</span><span class="title">设置</span><span></span></div>
@@ -141,7 +172,7 @@
   </figure>
 
   <figure>
-    <div class="phone">
+    <div class="phone thin">
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content" style="position:relative">
         <div class="topbar"><span class="back">‹ Retour</span><span class="title">Réglages</span><span></span></div>
@@ -159,7 +190,7 @@
   </figure>
 
   <figure>
-    <div class="phone">
+    <div class="phone thin">
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content" style="position:relative">
         <div class="topbar"><span class="back">‹ Back</span><span class="title">Lesson</span><span></span></div>
@@ -177,19 +208,25 @@
 <section class="tokens">
   <h2>Color tokens</h2>
   <div class="swatches">
-    <div class="sw"><i style="background:#F7F3EA"></i>background<br><code>#F7F3EA</code></div>
-    <div class="sw"><i style="background:#FFFFFF"></i>surface<br><code>#FFFFFF</code></div>
-    <div class="sw"><i style="background:#1F2328"></i>text<br><code>#1F2328</code></div>
-    <div class="sw"><i style="background:#5C6370"></i>text secondary<br><code>#5C6370</code></div>
-    <div class="sw"><i style="background:#2F6F5E"></i>accent (jade)<br><code>#2F6F5E</code></div>
-    <div class="sw"><i style="background:#2E7D32"></i>success<br><code>#2E7D32</code></div>
-    <div class="sw"><i style="background:#C62828"></i>error<br><code>#C62828</code></div>
-    <div class="sw"><i style="background:#B26A00"></i>hint<br><code>#B26A00</code></div>
-    <div class="sw"><i style="background:#DCB35C"></i>board wood<br><code>#DCB35C</code></div>
-    <div class="sw"><i style="background:#3B2F20"></i>board line<br><code>#3B2F20</code></div>
-    <div class="sw"><i style="background:#1A1A1A"></i>black stone<br><code>#1A1A1A</code></div>
-    <div class="sw"><i style="background:#F8F8F4;border-color:#8A8A80"></i>white stone<br><code>#F8F8F4</code></div>
+    <div class="sw"><i style="background:#F4F1EA"></i>宣纸 rice paper<br><code>#F4F1EA</code></div>
+    <div class="sw"><i style="background:#DCE6EA"></i>晨雾 morning mist<br><code>#DCE6EA</code></div>
+    <div class="sw"><i style="background:#FFFDF8"></i>素绢 silk<br><code>#FFFDF8</code></div>
+    <div class="sw"><i style="background:#26292B"></i>墨 ink<br><code>#26292B</code></div>
+    <div class="sw"><i style="background:#5E6A6E"></i>远山 distant mountain<br><code>#5E6A6E</code></div>
+    <div class="sw"><i style="background:#3E6461"></i>青山 green mountain (accent)<br><code>#3E6461</code></div>
+    <div class="sw"><i style="background:#56764A"></i>茶 tea green (success)<br><code>#56764A</code></div>
+    <div class="sw"><i style="background:#A8443F"></i>胭脂 rouge (error)<br><code>#A8443F</code></div>
+    <div class="sw"><i style="background:#9A5F22"></i>琥珀茶 amber tea (hint)<br><code>#9A5F22</code></div>
+    <div class="sw"><i style="background:#E4ECD8"></i>嫩芽 tea sprout (badge)<br><code>#E4ECD8</code></div>
+    <div class="sw"><i style="background:#E9B9BE"></i>桃花 peach blossom<br><code>#E9B9BE</code></div>
+    <div class="sw"><i style="background:#C9D5D6"></i>远山 far ridge<br><code>#C9D5D6</code></div>
+    <div class="sw"><i style="background:#9DB2AE"></i>近山 near ridge<br><code>#9DB2AE</code></div>
+    <div class="sw"><i style="background:#E2BE7E"></i>榧木 kaya wood (board)<br><code>#E2BE7E</code></div>
+    <div class="sw"><i style="background:#22252A"></i>墨玉 black stone<br><code>#22252A</code></div>
+    <div class="sw"><i style="background:#F7F5EE"></i>贝 white stone<br><code>#F7F5EE</code></div>
   </div>
+  <h2 style="margin-top:28px">Board &amp; stones preview (M2)</h2>
+  <svg class="board-demo" width="188" height="188" viewBox="0 0 188 188" role="img" aria-label="5 by 5 board preview"><rect width="188" height="188" rx="8" fill="#E2BE7E"/><line x1="22" y1="22" x2="166" y2="22" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="22" x2="22" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="58" x2="166" y2="58" stroke="#4A3B2A" stroke-width="1"/><line x1="58" y1="22" x2="58" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="94" x2="166" y2="94" stroke="#4A3B2A" stroke-width="1"/><line x1="94" y1="22" x2="94" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="130" x2="166" y2="130" stroke="#4A3B2A" stroke-width="1"/><line x1="130" y1="22" x2="130" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="166" x2="166" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="166" y1="22" x2="166" y2="166" stroke="#4A3B2A" stroke-width="1"/><circle cx="94" cy="94" r="3" fill="#4A3B2A"/><circle cx="94" cy="94" r="16" fill="#22252A"/><circle cx="58" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="94" cy="58" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="130" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="58" cy="58" r="16" fill="#22252A"/></svg>
 </section>
 </body>
 </html>
