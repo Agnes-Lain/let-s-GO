@@ -28,7 +28,7 @@ For each roadmap item, write a spec at `docs/specs/<milestone>-<short-name>.md` 
 - Learners should succeed ~80% of the time; failure explains *why* using engine facts, never
   just "wrong".
 - Sessions of 3–5 minutes; every screen has one obvious next action.
-- Visual mood: 山水 · 茶 · 春花 — calm ink-wash mountains, misty sky, tea, spring blossoms. Use only
+- Visual mood: 山水 · 茶 · 竹 — calm ink-wash mountains, misty sky, tea, bamboo; bamboo-textured board. Use only
   the tokens in `src/theme/tokens.ts`; soft, low-saturation, lots of empty space, gentle feedback.
 - Chinese rules (area scoring). Be correct about Go: double-check every diagram's liberties,
   captures and legality yourself, and say so in the spec.

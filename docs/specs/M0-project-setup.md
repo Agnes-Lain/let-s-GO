@@ -184,7 +184,7 @@ Copy keys (zh-CN / en / fr). French uses a non-breaking space before `!`, `?`, `
 None (no lessons in M0). Unit 1 title matches `docs/CURRICULUM.md` (棋盘与棋子 Board & stones).
 
 ## 6. Visual foundation (`src/theme/tokens.ts`)
-**Mood: 山水 · 茶 · 春花 — mountains, misty sky, tea and spring blossoms.** Go is a game of calm
+**Mood: 山水 · 茶 · 竹 — mountains, misty sky, tea and bamboo.** Go is a game of calm
 and reflection; the app should feel like a quiet tea moment in front of an ink-wash (水墨) landscape.
 Soft, low-saturation colors, lots of empty space (留白), no bright or alarming tones — even errors
 are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountain" theme deferred to M6).
@@ -204,11 +204,15 @@ are a gentle rouge, never a loud red. Light mode only in M0 (dark "night mountai
 | color.hint | `#9A5F22` | 琥珀茶 amber tea | hint highlight (M3+) (5.1:1) |
 | color.badge | `#E4ECD8` | 嫩芽 tea sprout | "coming soon" badge background |
 | color.onBadge | `#3F5A35` | | badge text (6.3:1) |
-| color.blossom | `#E9B9BE` | 桃花 peach blossom | decorative petals, celebration accents — never for text |
+| color.bambooLeaf | `#7E9F73` | 竹叶 bamboo leaf | decorative leaves, celebration accents — never for text |
+| color.bambooLeafDark | `#5F7F57` | 深竹 deep bamboo | leaf veins / second leaf tone — decorative only |
 | color.mountainFar | `#C9D5D6` | 远山 far ridge | decorative landscape layer |
 | color.mountainNear | `#9DB2AE` | 近山 near ridge | decorative landscape layer |
-| board.wood | `#E2BE7E` | 榧木 kaya wood | board fill (M2), lighter and calmer than classic orange wood |
-| board.line | `#4A3B2A` | | grid lines, star points (M2) |
+| board.bamboo | `#E8D3A0` | 竹板 bamboo | board base color (M2) |
+| board.bambooStripLight | `#EEDCAE` | | alternating light strip |
+| board.bambooStripDark | `#DEC68C` | | alternating darker strip |
+| board.bambooNode | `#CDB277` | 竹节 node | thin horizontal node marks on strips |
+| board.line | `#33281B` | | grid lines, star points (M2) |
 | stone.black | `#22252A` | 墨玉 ink jade | black stone (slightly blue-black, like ink) |
 | stone.white | `#F7F5EE` | 贝 shell | white stone fill |
 | stone.whiteEdge | `#8F8C80` | | 1px outline so white stones read on wood |
@@ -217,13 +221,20 @@ All text colors meet WCAG AA (≥ 4.5:1) on background and surface.
 
 **Decorative landscape** (`src/theme/Landscape.tsx`, react-native-svg): Home shows a soft mist
 gradient at the top and two layered mountain ridges at the bottom (mountainFar, mountainNear,
-~140px tall, full width), with 3–5 small peach-blossom petals near the logo. Decorative only:
+~140px tall, full width), with a small sprig of 3–5 bamboo leaves near the logo. Decorative only:
 `accessible={false}`, behind content, never covers tap targets, static in M0 (a slow mist drift may
 come later, respecting "reduce motion"). Other screens use the plain background with a thin mist
 gradient only.
 
 Typography (system font; zh falls back to PingFang SC / Noto Sans SC): `display 28/34 700`,
 `title 22/28 600`, `body 16/24 400`, `label 16/20 600`, `caption 13/18 400`. Body text never < 16.
+**Bamboo board** (built in M2, tokens defined now): the board looks like a laminated bamboo
+board (竹制棋盘): vertical strips ~1/12 of the board width alternating `bambooStripLight` /
+`bambooStripDark`, with a few thin `bambooNode` marks at irregular heights. Drawn with
+react-native-svg (pattern or rects) — no image files. The texture must stay subtle: grid lines
+(`board.line`) and stones must remain perfectly readable; contrast of `board.line` on every strip
+and node color ≥ 7:1 (checked: 7.0–10.6:1).
+
 Generous line height and spacing for a calm feel.
 Spacing scale: `4, 8, 12, 16, 24, 32`. Radius: `sm 8`, `md 12`, `pill 999` (soft, pebble-like corners).
 `tapTarget.min = 44` (all pressables use `minWidth/minHeight` or `hitSlop` to reach it).
@@ -253,4 +264,5 @@ The Unit 1 title and terminology match `docs/CURRICULUM.md`.
 - D4 Node 24 LTS pinned (Node 22 if the Expo SDK at scaffold time doesn't support 24 yet).
 - D5 Visual design (mockup `docs/specs/M0-mockup.html`) must be approved before development.
 - D6 French (`fr`) is a full app language alongside zh-CN and en; `fr*` locales → `fr`.
-- D7 Visual mood 山水 · 茶 · 春花 (mountains, mist, tea, spring blossoms); palette in §6.
+- D7 Visual mood 山水 · 茶 · 竹 (mountains, mist, tea, bamboo); palette in §6.
+- D8 Board uses a laminated bamboo texture (竹制棋盘); bamboo leaves replace blossom petals.

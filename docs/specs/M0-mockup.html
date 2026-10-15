@@ -9,8 +9,8 @@
     --background: #F4F1EA; --sky: #DCE6EA; --surface: #FFFDF8; --border: #E3DDD0;
     --text: #26292B; --text2: #5E6A6E; --accent: #3E6461; --onAccent: #FFFFFF;
     --success: #56764A; --error: #A8443F; --hint: #9A5F22; --badge: #E4ECD8; --onBadge: #3F5A35;
-    --blossom: #E9B9BE; --mFar: #C9D5D6; --mNear: #9DB2AE;
-    --wood: #E2BE7E; --line: #4A3B2A; --black: #22252A; --white: #F7F5EE; --whiteEdge: #8F8C80;
+    --leaf: #7E9F73; --leafDark: #5F7F57; --mFar: #C9D5D6; --mNear: #9DB2AE;
+    --bamboo: #E8D3A0; --line: #33281B; --black: #22252A; --white: #F7F5EE; --whiteEdge: #8F8C80;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -32,7 +32,7 @@
   .phone.thin { background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px); }
   .status, .content { position: relative; z-index: 1; }
   .landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 150px; z-index: 0; }
-  .petal { position: absolute; width: 9px; height: 6px; border-radius: 60% 40% 60% 40%; background: var(--blossom); opacity: .9; }
+  .sprig { position: absolute; left: 178px; top: 34px; width: 110px; height: 80px; }
   .board-demo { display: block; margin-top: 8px; }
   .status { height: 28px; font-size: 12px; display: flex; justify-content: space-between; padding: 6px 16px; color: var(--text); }
   .content { padding: 0 16px; flex: 1; }
@@ -77,7 +77,7 @@
 <body>
 <header class="page">
   <h1>Let's GO — M0 design mockup</h1>
-  <p>Home, Settings and a placeholder screen at 360×740, in Chinese, English and French. Mood: 山水 · 茶 · 春花 — misty sky, ink-wash mountains, tea and spring blossoms. Colors come from the spec's design tokens. Approve this before development starts.</p>
+  <p>Home, Settings and a placeholder screen at 360×740, in Chinese, English and French. Mood: 山水 · 茶 · 竹 — misty sky, ink-wash mountains, tea and bamboo. Colors come from the spec's design tokens. Approve this before development starts.</p>
 </header>
 
 <div class="grid">
@@ -89,10 +89,13 @@
       </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
-        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
-        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
-        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
-        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
+        <svg class="sprig" viewBox="0 0 110 80" aria-hidden="true">
+          <path d="M8 6 C30 18 52 34 92 70" stroke="var(--leafDark)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M30 19 C38 4 56 0 70 2 C58 10 44 18 30 19 Z" fill="var(--leaf)"/>
+          <path d="M44 30 C62 24 80 26 96 34 C80 40 62 40 44 30 Z" fill="var(--leafDark)" opacity=".9"/>
+          <path d="M58 44 C60 58 54 70 44 78 C44 64 48 52 58 44 Z" fill="var(--leaf)"/>
+          <path d="M72 55 C86 52 98 56 108 64 C94 68 82 64 72 55 Z" fill="var(--leaf)" opacity=".8"/>
+        </svg>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -113,10 +116,13 @@
       </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
-        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
-        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
-        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
-        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
+        <svg class="sprig" viewBox="0 0 110 80" aria-hidden="true">
+          <path d="M8 6 C30 18 52 34 92 70" stroke="var(--leafDark)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M30 19 C38 4 56 0 70 2 C58 10 44 18 30 19 Z" fill="var(--leaf)"/>
+          <path d="M44 30 C62 24 80 26 96 34 C80 40 62 40 44 30 Z" fill="var(--leafDark)" opacity=".9"/>
+          <path d="M58 44 C60 58 54 70 44 78 C44 64 48 52 58 44 Z" fill="var(--leaf)"/>
+          <path d="M72 55 C86 52 98 56 108 64 C94 68 82 64 72 55 Z" fill="var(--leaf)" opacity=".8"/>
+        </svg>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -137,10 +143,13 @@
       </svg>
       <div class="status"><span>9:41</span><span>▮▮▮</span></div>
       <div class="content">
-        <span class="petal" style="left:200px;top:58px;transform:rotate(20deg)"></span>
-        <span class="petal" style="left:228px;top:80px;transform:rotate(-30deg)"></span>
-        <span class="petal" style="left:118px;top:92px;transform:rotate(60deg)"></span>
-        <span class="petal" style="left:250px;top:44px;transform:rotate(10deg);opacity:.6"></span>
+        <svg class="sprig" viewBox="0 0 110 80" aria-hidden="true">
+          <path d="M8 6 C30 18 52 34 92 70" stroke="var(--leafDark)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M30 19 C38 4 56 0 70 2 C58 10 44 18 30 19 Z" fill="var(--leaf)"/>
+          <path d="M44 30 C62 24 80 26 96 34 C80 40 62 40 44 30 Z" fill="var(--leafDark)" opacity=".9"/>
+          <path d="M58 44 C60 58 54 70 44 78 C44 64 48 52 58 44 Z" fill="var(--leaf)"/>
+          <path d="M72 55 C86 52 98 56 108 64 C94 68 82 64 72 55 Z" fill="var(--leaf)" opacity=".8"/>
+        </svg>
         <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
         <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
         <div class="display">Let's GO</div>
@@ -218,15 +227,16 @@
     <div class="sw"><i style="background:#A8443F"></i>胭脂 rouge (error)<br><code>#A8443F</code></div>
     <div class="sw"><i style="background:#9A5F22"></i>琥珀茶 amber tea (hint)<br><code>#9A5F22</code></div>
     <div class="sw"><i style="background:#E4ECD8"></i>嫩芽 tea sprout (badge)<br><code>#E4ECD8</code></div>
-    <div class="sw"><i style="background:#E9B9BE"></i>桃花 peach blossom<br><code>#E9B9BE</code></div>
+    <div class="sw"><i style="background:#7E9F73"></i>竹叶 bamboo leaf<br><code>#7E9F73</code></div>
+    <div class="sw"><i style="background:#5F7F57"></i>深竹 deep bamboo<br><code>#5F7F57</code></div>
     <div class="sw"><i style="background:#C9D5D6"></i>远山 far ridge<br><code>#C9D5D6</code></div>
     <div class="sw"><i style="background:#9DB2AE"></i>近山 near ridge<br><code>#9DB2AE</code></div>
-    <div class="sw"><i style="background:#E2BE7E"></i>榧木 kaya wood (board)<br><code>#E2BE7E</code></div>
+    <div class="sw"><i style="background:repeating-linear-gradient(90deg,#EEDCAE 0 11px,#DEC68C 11px 22px)"></i>竹板 bamboo board<br><code>#EEDCAE / #DEC68C</code></div>
     <div class="sw"><i style="background:#22252A"></i>墨玉 black stone<br><code>#22252A</code></div>
     <div class="sw"><i style="background:#F7F5EE"></i>贝 white stone<br><code>#F7F5EE</code></div>
   </div>
-  <h2 style="margin-top:28px">Board &amp; stones preview (M2)</h2>
-  <svg class="board-demo" width="188" height="188" viewBox="0 0 188 188" role="img" aria-label="5 by 5 board preview"><rect width="188" height="188" rx="8" fill="#E2BE7E"/><line x1="22" y1="22" x2="166" y2="22" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="22" x2="22" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="58" x2="166" y2="58" stroke="#4A3B2A" stroke-width="1"/><line x1="58" y1="22" x2="58" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="94" x2="166" y2="94" stroke="#4A3B2A" stroke-width="1"/><line x1="94" y1="22" x2="94" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="130" x2="166" y2="130" stroke="#4A3B2A" stroke-width="1"/><line x1="130" y1="22" x2="130" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="22" y1="166" x2="166" y2="166" stroke="#4A3B2A" stroke-width="1"/><line x1="166" y1="22" x2="166" y2="166" stroke="#4A3B2A" stroke-width="1"/><circle cx="94" cy="94" r="3" fill="#4A3B2A"/><circle cx="94" cy="94" r="16" fill="#22252A"/><circle cx="58" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="94" cy="58" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="130" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="58" cy="58" r="16" fill="#22252A"/></svg>
+  <h2 style="margin-top:28px">Bamboo board &amp; stones preview (M2)</h2>
+  <svg class="board-demo" width="188" height="188" viewBox="0 0 188 188" role="img" aria-label="5 by 5 bamboo board preview"><defs><clipPath id="r"><rect width="188" height="188" rx="8"/></clipPath></defs><g clip-path="url(#r)"><rect x="0.0" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="0.0" y="50.0" width="15.7" height="1.6" fill="#CDB277"/><rect x="15.7" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="15.7" y="101.4" width="15.7" height="1.6" fill="#CDB277"/><rect x="31.3" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="31.3" y="72.2" width="15.7" height="1.6" fill="#CDB277"/><rect x="47.0" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="47.0" y="111.5" width="15.7" height="1.6" fill="#CDB277"/><rect x="62.7" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="62.7" y="115.1" width="15.7" height="1.6" fill="#CDB277"/><rect x="78.3" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="78.3" y="21.0" width="15.7" height="1.6" fill="#CDB277"/><rect x="94.0" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="94.0" y="12.2" width="15.7" height="1.6" fill="#CDB277"/><rect x="109.7" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="109.7" y="150.7" width="15.7" height="1.6" fill="#CDB277"/><rect x="125.3" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="125.3" y="53.6" width="15.7" height="1.6" fill="#CDB277"/><rect x="141.0" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="141.0" y="49.4" width="15.7" height="1.6" fill="#CDB277"/><rect x="156.7" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="156.7" y="177.3" width="15.7" height="1.6" fill="#CDB277"/><rect x="172.3" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="172.3" y="89.0" width="15.7" height="1.6" fill="#CDB277"/></g><line x1="22" y1="22" x2="166" y2="22" stroke="#33281B" stroke-width="1"/><line x1="22" y1="22" x2="22" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="58" x2="166" y2="58" stroke="#33281B" stroke-width="1"/><line x1="58" y1="22" x2="58" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="94" x2="166" y2="94" stroke="#33281B" stroke-width="1"/><line x1="94" y1="22" x2="94" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="130" x2="166" y2="130" stroke="#33281B" stroke-width="1"/><line x1="130" y1="22" x2="130" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="166" x2="166" y2="166" stroke="#33281B" stroke-width="1"/><line x1="166" y1="22" x2="166" y2="166" stroke="#33281B" stroke-width="1"/><circle cx="94" cy="94" r="3" fill="#33281B"/><circle cx="94" cy="94" r="16" fill="#22252A"/><circle cx="58" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="94" cy="58" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="130" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="58" cy="58" r="16" fill="#22252A"/></svg>
 </section>
 </body>
 </html>
