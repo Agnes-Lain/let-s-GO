@@ -11,8 +11,8 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [ ] Board model, coordinates, ASCII board helper for tests
 - [ ] Groups & liberties
 - [ ] Move legality: occupied, suicide, simple ko; captures
+- [ ] Move facts after each move (captures, atari, liberties) — needed by M3 feedback and M7 tutor
 - [ ] Pass / game end, Chinese area scoring + komi
-- [ ] SGF import for problem sets
   > Prompt: "Implement <item> in src/engine test-first, using ASCII boards in tests. No React imports."
 
 ## M2 — Board UI (`src/board`)
@@ -33,6 +33,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 
 ## M5 — Units 7–14
 - [ ] Ko, forbidden points, ladders/nets
+- [ ] SGF import for problem sets (moved from M1)
 - [ ] Eyes, life & death (`sequence` runner for tsumego)
 - [ ] Territory & counting exercises
 

@@ -344,14 +344,11 @@ liberties are the first thing you'd check on a board):
 Each PR description lists its ACs with the ASCII diagrams and "test passes ✓", so the product owner
 reviews Go correctness, not code. One big PR would be ~1,500 lines of tests and code: too much to review.
 
-Decisions (to confirm): D1 coordinates bottom-left, no `i`. D2 komi defaults as AC 27. D3 SGF → M5.
-D4 `MoveFacts` in M1. D5 3 PRs. D6 marking one stone dead marks its whole group. D7 illegal moves
-return results; content errors throw `EngineError`.
-
-Open questions:
-- Q1 Is a 0.5 komi on 5×5/7×7 OK, or do you prefer 0 (draws possible) for very first games?
-- Q2 Should the ko ban also end after the opponent *passes* (simple ko, as specified) — yes, unless you object.
-- Q3 Result text `Draw` vs a Chinese-style `和棋` — the engine returns `Draw`/`B+x`; the UI translates.
+**Product-owner decisions (approved):** D1 coordinates bottom-left, no `i`. D2 komi defaults as AC 27
+(0.5 on 5×5/7×7, 7.5 on 9×9 and larger). D3 SGF → M5. D4 `MoveFacts` in M1. D5 3 PRs. D6 marking one
+stone dead marks its whole group. D7 illegal moves return results; content errors throw `EngineError`.
+D8 simple ko: the ban lasts exactly one turn, and a pass counts as that turn. D9 the engine returns
+`Draw` / `B+x` / `W+x`; the UI translates (e.g. 和棋) in M3.
 
 ## 10. Correctness check
 I checked every diagram by hand, point by point:
