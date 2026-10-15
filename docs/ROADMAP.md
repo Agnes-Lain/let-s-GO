@@ -40,3 +40,24 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [ ] Bot levels 1–3 for 9×9 (Monte-Carlo playouts for level 3)
 - [ ] Settings, onboarding, accessibility pass
 - [ ] EAS Build, TestFlight / Play internal testing
+
+---
+
+# Backlog (after MVP)
+
+## M7 — AI tutor 问老师 "Ask the teacher" (needs a small backend)
+Optional button on exercises and finished games that explains *why* a move was good or bad.
+- [ ] Engine "facts" API: `describePosition(state, move)` returns structured facts (groups, liberties,
+      atari, captures, illegal-move reason, missed capture/escape point). Pure TS, unit-tested. Useful offline too.
+- [ ] Server function (Supabase Edge Function or Cloudflare Worker) holding the Claude API key.
+      The key is **never** shipped in the app.
+- [ ] Auth + per-user rate limit / daily quota; log token usage.
+- [ ] Prompt: "patient Go teacher", answer in the user's language, short (≤ 3 sentences),
+      use only the provided engine facts, never invent board analysis.
+- [ ] App UI: "问老师" button, loading state, graceful offline message, report-bad-answer button.
+- [ ] Eval set: ~50 positions with expected key points; check answers mention the right facts.
+
+## M8 — Accounts & sync (optional)
+- [ ] Supabase auth; sync progress across devices
+- [ ] Post-game review: engine finds the biggest mistakes, AI tutor explains them
+- [ ] Play online vs friends (9×9)

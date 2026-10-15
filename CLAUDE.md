@@ -48,3 +48,8 @@ __tests__/ or *.test.ts next to the code
 7. **Mobile-first UI.** Board must fit a 360px-wide screen; tap targets ≥ 44px; stone placement
    shows a preview on touch-down and commits on touch-up.
 8. Don't add dependencies without noting why in the PR description.
+9. **No backend in the MVP.** The app works fully offline: in-app bot (`src/bot`), lesson text
+   from JSON, and engine-generated feedback messages.
+10. **AI tutor (backlog M7): the engine computes facts, the AI only phrases them.** Never ask a
+    language model to read the board by itself — send it engine facts (liberties, atari,
+    captures, legal-move reasons). The API key lives only in the server function, never in the app.
