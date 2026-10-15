@@ -3,9 +3,9 @@
 One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt into a new session.
 
 ## M0 — Project setup
-- [ ] Scaffold Expo + TS app, expo-router, ESLint/Prettier, Jest, folder layout from CLAUDE.md
+- [x] Scaffold Expo + TS app, expo-router, ESLint/Prettier, Jest, folder layout from CLAUDE.md
   > Prompt: "Scaffold the project per CLAUDE.md and docs/TECH_STACK.md. Add npm scripts lint, typecheck, test. Add a GitHub Actions workflow running them on PRs. Open a PR."
-- [ ] GitHub Actions CI (lint, typecheck, test)
+- [x] GitHub Actions CI (lint, typecheck, test)
 
 ## M1 — Rules engine (`src/engine`)
 - [ ] Board model, coordinates, ASCII board helper for tests
