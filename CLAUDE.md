@@ -53,3 +53,18 @@ __tests__/ or *.test.ts next to the code
 10. **AI tutor (backlog M7): the engine computes facts, the AI only phrases them.** Never ask a
     language model to read the board by itself — send it engine facts (liberties, atari,
     captures, legal-move reasons). The API key lives only in the server function, never in the app.
+
+## Team workflow (subagents in `.claude/agents/`)
+For each roadmap item, the main session coordinates three agents in order:
+1. **product-designer** (PO + UX/UI + game design) → writes `docs/specs/<milestone>-<name>.md`
+   with user stories, acceptance criteria, screen flow, lesson content, game-design notes.
+   Show the spec to the user for approval before development.
+2. **developer** → implements the spec test-first; lint/typecheck/tests green.
+3. **qa** → maps every acceptance criterion to a test, adds edge-case tests, checks the UI on
+   web at 360×740, reports READY / NOT READY with bugs.
+   If NOT READY → back to **developer** with the bug list, then **qa** again.
+4. Optional: **product-designer** reviews the result from the learner's view.
+5. Main session ticks the item in `docs/ROADMAP.md`, commits and opens one PR.
+
+Example prompt: "Do the next roadmap item with the team: product-designer spec → my approval →
+developer → qa loop until READY → PR."
