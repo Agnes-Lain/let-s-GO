@@ -11,7 +11,7 @@ Read before starting work:
 
 ## Stack (summary)
 Expo (React Native) + TypeScript, expo-router, react-native-svg board,
-Zustand state, MMKV for progress, i18next (zh-CN default, en second).
+Zustand state, MMKV for progress, i18next (zh-CN primary, en second; other locales fall back to en).
 Tests: Jest (+ React Native Testing Library). E2E: Maestro (later).
 
 ## Repository layout
@@ -23,6 +23,7 @@ src/lessons/         lesson + exercise JSON content, loaders, validators
 src/exercises/       exercise runners (place-stone, capture-race, tsumego, play-bot)
 src/bot/             beginner AI opponent (pure TS)
 src/store/           Zustand stores (progress, settings)
+src/theme/           design tokens (colors, typography, spacing)
 src/i18n/            zh-CN.json, en.json
 __tests__/ or *.test.ts next to the code
 ```
