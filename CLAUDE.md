@@ -11,7 +11,7 @@ Read before starting work:
 
 ## Stack (summary)
 Expo (React Native) + TypeScript, expo-router, react-native-svg board,
-Zustand state, MMKV for progress, i18next (zh-CN default, en second).
+Zustand state, MMKV for progress, i18next — languages zh-CN (primary), en, fr; other locales fall back to en.
 Tests: Jest (+ React Native Testing Library). E2E: Maestro (later).
 
 ## Repository layout
@@ -23,7 +23,8 @@ src/lessons/         lesson + exercise JSON content, loaders, validators
 src/exercises/       exercise runners (place-stone, capture-race, tsumego, play-bot)
 src/bot/             beginner AI opponent (pure TS)
 src/store/           Zustand stores (progress, settings)
-src/i18n/            zh-CN.json, en.json
+src/theme/           design tokens (colors, typography, spacing)
+src/i18n/            zh-CN.json, en.json, fr.json
 __tests__/ or *.test.ts next to the code
 ```
 
@@ -43,7 +44,8 @@ __tests__/ or *.test.ts next to the code
    positional superko not required — simple ko is enough for beginners).
 4. **Lessons are data, not code.** Add a lesson by adding JSON in `src/lessons/` that
    validates against the schema in `src/lessons/schema.ts`. Don't hardcode lesson text in screens.
-5. **All user-facing text through i18n.** Chinese term + pinyin on first use (e.g. 气 qì — liberty).
+5. **All user-facing text through i18n, in all three languages (zh-CN, en, fr).** Chinese term + pinyin
+   on first use (e.g. 气 qì — liberty / liberté). Every key must exist in every language file.
 6. **Small PRs.** One roadmap item per branch/PR. Run lint, typecheck, test before pushing.
 7. **Mobile-first UI.** Board must fit a 360px-wide screen; tap targets ≥ 44px; stone placement
    shows a preview on touch-down and commits on touch-up.

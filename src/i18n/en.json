@@ -1,0 +1,22 @@
+{
+  "app.name": "Let's GO",
+  "home.subtitle": "Learn Go (围棋 wéiqí) from zero, one rule at a time",
+  "home.path.title": "Learning path",
+  "home.unit1.title": "Unit 1 · Board & stones",
+  "home.unit.comingSoon": "Coming soon",
+  "home.moreSoon": "More units coming soon",
+  "settings.open": "Open settings",
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.language.system": "Use device language",
+  "settings.language.zh": "中文（简体）",
+  "settings.language.en": "English",
+  "settings.language.fr": "Français",
+  "settings.version": "Version",
+  "common.back": "Back",
+  "placeholder.lesson.title": "Lesson",
+  "placeholder.practice.title": "Practice",
+  "placeholder.comingSoon": "This part is coming soon. Stay tuned!",
+  "notFound.title": "Page not found",
+  "notFound.home": "Back to home"
+}

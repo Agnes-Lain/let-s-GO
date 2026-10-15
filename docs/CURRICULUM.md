@@ -37,7 +37,7 @@ Board sizes grow with the learner: 5×5 → 7×7 → 9×9 (13×13 / 19×19 intro
 {
   "id": "u04-capture",
   "unit": 4,
-  "title": { "zh": "提子", "en": "Capture" },
+  "title": { "zh": "提子", "en": "Capture", "fr": "Capture" },
   "explain": [ { "board": "5x5", "setup": "...", "text": "lesson.u04.step1", "highlight": ["c3"] } ],
   "exercises": [
     { "type": "play-move", "size": 5, "setup": { "B": ["c3"], "W": ["c2","b3","d3"] },

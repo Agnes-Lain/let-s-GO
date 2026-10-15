@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let's GO M0 Mockup</title>
+<style>
+  :root {
+    --background: #F4F1EA; --sky: #DCE6EA; --surface: #FFFDF8; --border: #E3DDD0;
+    --text: #26292B; --text2: #5E6A6E; --accent: #3E6461; --onAccent: #FFFFFF;
+    --success: #56764A; --error: #A8443F; --hint: #9A5F22; --badge: #E4ECD8; --onBadge: #3F5A35;
+    --mFar: #C9D5D6; --mNear: #9DB2AE;
+    --bamboo: #E8D3A0; --line: #33281B; --black: #22252A; --white: #F7F5EE; --whiteEdge: #8F8C80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #E6E8E4; color: var(--text); padding: 24px 16px 48px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  header.page { max-width: 1200px; margin: 0 auto 24px; }
+  header.page h1 { font-size: 22px; }
+  header.page p { color: var(--text2); font-size: 14px; margin-top: 4px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; max-width: 1200px; margin: 0 auto; }
+  figure { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  figcaption { font-size: 13px; color: var(--text2); }
+  .phone {
+    width: 360px; height: 740px; max-width: calc(100vw - 32px); background: var(--background);
+    border-radius: 28px; border: 8px solid #222; overflow: hidden; position: relative;
+    display: flex; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px);
+  }
+  .phone.thin { background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px); }
+  .status, .content { position: relative; z-index: 1; }
+  .landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 150px; z-index: 0; }
+  .board-demo { display: block; margin-top: 8px; }
+  .status { height: 28px; font-size: 12px; display: flex; justify-content: space-between; padding: 6px 16px; color: var(--text); }
+  .content { padding: 0 16px; flex: 1; }
+  .topbar { height: 52px; display: flex; align-items: center; justify-content: space-between; }
+  .iconbtn { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; color: var(--text2); }
+  .back { min-width: 44px; height: 44px; display: flex; align-items: center; gap: 4px; color: var(--accent); font-size: 16px; font-weight: 600; }
+  .topbar .title { font-size: 17px; font-weight: 600; position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; }
+  .logo { position: relative; width: 72px; height: 56px; margin: 20px auto 12px; }
+  .stone { width: 44px; height: 44px; border-radius: 50%; position: absolute; top: 6px; }
+  .stone.b { left: 4px; background: radial-gradient(circle at 35% 30%, #4a4a4a, var(--black) 60%); }
+  .stone.w { left: 26px; background: radial-gradient(circle at 35% 30%, #fff, var(--white) 60%); border: 1px solid var(--whiteEdge); }
+  .display { font-size: 28px; line-height: 34px; font-weight: 700; text-align: center; }
+  .subtitle { font-size: 16px; line-height: 24px; color: var(--text2); text-align: center; margin-top: 6px; }
+  .section { font-size: 22px; line-height: 28px; font-weight: 600; margin: 32px 0 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; min-height: 72px;
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  }
+  .card .dot { width: 32px; height: 32px; border-radius: 50%; background: var(--black); flex: none; }
+  .card .body { flex: 1; }
+  .card .t { font-size: 16px; line-height: 20px; font-weight: 600; }
+  .badge { display: inline-block; margin-top: 6px; background: var(--badge); color: var(--onBadge); font-size: 13px; line-height: 18px; padding: 2px 10px; border-radius: 999px; }
+  .chev { color: var(--text2); font-size: 22px; }
+  .caption { font-size: 13px; line-height: 18px; color: var(--text2); margin-top: 10px; }
+  .list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .row { min-height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 16px; border-top: 1px solid var(--border); }
+  .row:first-child { border-top: none; }
+  .check { color: var(--accent); font-weight: 700; font-size: 18px; }
+  .capsec { font-size: 13px; color: var(--text2); margin: 16px 0 8px; }
+  .placeholder { text-align: center; padding-top: 120px; }
+  .placeholder .id { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .placeholder p { font-size: 16px; line-height: 24px; color: var(--text2); margin-top: 24px; }
+  .tokens { max-width: 1200px; margin: 40px auto 0; }
+  .tokens h2 { font-size: 18px; margin-bottom: 12px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sw { width: 132px; font-size: 12px; }
+  .sw i { display: block; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,.12); margin-bottom: 6px; }
+  .sw code { color: var(--text2); }
+  @media (max-width: 400px) { .phone { height: 680px; } }
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>Let's GO — M0 design mockup</h1>
+  <p>Home, Settings and a placeholder screen at 360×740, in Chinese, English and French. Mood: 山水 · 茶 · 竹 — misty sky, soft mountains, tea and a bamboo board. Colors come from the spec's design tokens. Approve this before development starts.</p>
+</header>
+
+<div class="grid">
+  <figure>
+    <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
+        <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
+        <div class="display">Let's GO</div>
+        <div class="subtitle">从零开始，一步一步学会下围棋</div>
+        <div class="section">学习路线</div>
+        <div class="card"><span class="dot"></span><div class="body"><div class="t">第 1 单元 · 棋盘与棋子</div><span class="badge">即将开放</span></div><span class="chev">›</span></div>
+        <div class="caption">更多单元即将上线</div>
+      </div>
+    </div>
+    <figcaption>Home · 中文</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
+        <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
+        <div class="display">Let's GO</div>
+        <div class="subtitle">Learn Go (围棋 wéiqí) from zero, one rule at a time</div>
+        <div class="section">Learning path</div>
+        <div class="card"><span class="dot"></span><div class="body"><div class="t">Unit 1 · Board &amp; stones</div><span class="badge">Coming soon</span></div><span class="chev">›</span></div>
+        <div class="caption">More units coming soon</div>
+      </div>
+    </div>
+    <figcaption>Home · English</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone">
+      <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="var(--mFar)"/>
+        <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="var(--mNear)" opacity=".85"/>
+      </svg>
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span></span><span class="iconbtn">⚙</span></div>
+        <div class="logo"><span class="stone b"></span><span class="stone w"></span></div>
+        <div class="display">Let's GO</div>
+        <div class="subtitle">Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois</div>
+        <div class="section">Parcours d'apprentissage</div>
+        <div class="card"><span class="dot"></span><div class="body"><div class="t">Unité 1 · Le goban et les pierres</div><span class="badge">Bientôt disponible</span></div><span class="chev">›</span></div>
+        <div class="caption">D'autres unités arrivent bientôt</div>
+      </div>
+    </div>
+    <figcaption>Home · Français</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone thin">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" style="position:relative">
+        <div class="topbar"><span class="back">‹ 返回</span><span class="title">设置</span><span></span></div>
+        <div class="capsec">语言</div>
+        <div class="list">
+          <div class="row">跟随系统 <span class="check">✓</span></div>
+          <div class="row">中文（简体）</div>
+          <div class="row">English</div>
+          <div class="row">Français</div>
+        </div>
+        <div class="caption">版本 0.1.0</div>
+      </div>
+    </div>
+    <figcaption>Settings · 中文</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone thin">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" style="position:relative">
+        <div class="topbar"><span class="back">‹ Retour</span><span class="title">Réglages</span><span></span></div>
+        <div class="capsec">Langue</div>
+        <div class="list">
+          <div class="row">Langue de l'appareil</div>
+          <div class="row">中文（简体）</div>
+          <div class="row">English</div>
+          <div class="row">Français <span class="check">✓</span></div>
+        </div>
+        <div class="caption">Version 0.1.0</div>
+      </div>
+    </div>
+    <figcaption>Settings · Français (selected)</figcaption>
+  </figure>
+
+  <figure>
+    <div class="phone thin">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" style="position:relative">
+        <div class="topbar"><span class="back">‹ Back</span><span class="title">Lesson</span><span></span></div>
+        <div class="placeholder">
+          <div class="display" style="font-size:22px">Lesson</div>
+          <div class="id">u01-board</div>
+          <p>This part is coming soon. Stay tuned!</p>
+        </div>
+      </div>
+    </div>
+    <figcaption>Lesson placeholder · English</figcaption>
+  </figure>
+</div>
+
+<section class="tokens">
+  <h2>Color tokens</h2>
+  <div class="swatches">
+    <div class="sw"><i style="background:#F4F1EA"></i>宣纸 rice paper<br><code>#F4F1EA</code></div>
+    <div class="sw"><i style="background:#DCE6EA"></i>晨雾 morning mist<br><code>#DCE6EA</code></div>
+    <div class="sw"><i style="background:#FFFDF8"></i>素绢 silk<br><code>#FFFDF8</code></div>
+    <div class="sw"><i style="background:#26292B"></i>墨 ink<br><code>#26292B</code></div>
+    <div class="sw"><i style="background:#5E6A6E"></i>远山 distant mountain<br><code>#5E6A6E</code></div>
+    <div class="sw"><i style="background:#3E6461"></i>青山 green mountain (accent)<br><code>#3E6461</code></div>
+    <div class="sw"><i style="background:#56764A"></i>茶 tea green (success)<br><code>#56764A</code></div>
+    <div class="sw"><i style="background:#A8443F"></i>胭脂 rouge (error)<br><code>#A8443F</code></div>
+    <div class="sw"><i style="background:#9A5F22"></i>琥珀茶 amber tea (hint)<br><code>#9A5F22</code></div>
+    <div class="sw"><i style="background:#E4ECD8"></i>嫩芽 tea sprout (badge)<br><code>#E4ECD8</code></div>
+    <div class="sw"><i style="background:#C9D5D6"></i>远山 far ridge<br><code>#C9D5D6</code></div>
+    <div class="sw"><i style="background:#9DB2AE"></i>近山 near ridge<br><code>#9DB2AE</code></div>
+    <div class="sw"><i style="background:repeating-linear-gradient(90deg,#EEDCAE 0 11px,#DEC68C 11px 22px)"></i>竹板 bamboo board<br><code>#EEDCAE / #DEC68C</code></div>
+    <div class="sw"><i style="background:#22252A"></i>墨玉 black stone<br><code>#22252A</code></div>
+    <div class="sw"><i style="background:#F7F5EE"></i>贝 white stone<br><code>#F7F5EE</code></div>
+  </div>
+  <h2 style="margin-top:28px">Bamboo board &amp; stones preview (M2)</h2>
+  <svg class="board-demo" width="188" height="188" viewBox="0 0 188 188" role="img" aria-label="5 by 5 bamboo board preview"><defs><clipPath id="r"><rect width="188" height="188" rx="8"/></clipPath></defs><g clip-path="url(#r)"><rect x="0.0" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="0.0" y="50.0" width="15.7" height="1.6" fill="#CDB277"/><rect x="15.7" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="15.7" y="101.4" width="15.7" height="1.6" fill="#CDB277"/><rect x="31.3" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="31.3" y="72.2" width="15.7" height="1.6" fill="#CDB277"/><rect x="47.0" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="47.0" y="111.5" width="15.7" height="1.6" fill="#CDB277"/><rect x="62.7" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="62.7" y="115.1" width="15.7" height="1.6" fill="#CDB277"/><rect x="78.3" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="78.3" y="21.0" width="15.7" height="1.6" fill="#CDB277"/><rect x="94.0" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="94.0" y="12.2" width="15.7" height="1.6" fill="#CDB277"/><rect x="109.7" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="109.7" y="150.7" width="15.7" height="1.6" fill="#CDB277"/><rect x="125.3" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="125.3" y="53.6" width="15.7" height="1.6" fill="#CDB277"/><rect x="141.0" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="141.0" y="49.4" width="15.7" height="1.6" fill="#CDB277"/><rect x="156.7" y="0" width="16.2" height="188" fill="#EEDCAE"/><rect x="156.7" y="177.3" width="15.7" height="1.6" fill="#CDB277"/><rect x="172.3" y="0" width="16.2" height="188" fill="#DEC68C"/><rect x="172.3" y="89.0" width="15.7" height="1.6" fill="#CDB277"/></g><line x1="22" y1="22" x2="166" y2="22" stroke="#33281B" stroke-width="1"/><line x1="22" y1="22" x2="22" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="58" x2="166" y2="58" stroke="#33281B" stroke-width="1"/><line x1="58" y1="22" x2="58" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="94" x2="166" y2="94" stroke="#33281B" stroke-width="1"/><line x1="94" y1="22" x2="94" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="130" x2="166" y2="130" stroke="#33281B" stroke-width="1"/><line x1="130" y1="22" x2="130" y2="166" stroke="#33281B" stroke-width="1"/><line x1="22" y1="166" x2="166" y2="166" stroke="#33281B" stroke-width="1"/><line x1="166" y1="22" x2="166" y2="166" stroke="#33281B" stroke-width="1"/><circle cx="94" cy="94" r="3" fill="#33281B"/><circle cx="94" cy="94" r="16" fill="#22252A"/><circle cx="58" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="94" cy="58" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="130" cy="94" r="16" fill="#F7F5EE" stroke="#8F8C80" stroke-width="1"/><circle cx="58" cy="58" r="16" fill="#22252A"/></svg>
+</section>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "app.name": "Let's GO",
+  "home.subtitle": "Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois",
+  "home.path.title": "Parcours d'apprentissage",
+  "home.unit1.title": "Unité 1 · Le goban et les pierres",
+  "home.unit.comingSoon": "Bientôt disponible",
+  "home.moreSoon": "D'autres unités arrivent bientôt",
+  "settings.open": "Ouvrir les réglages",
+  "settings.title": "Réglages",
+  "settings.language": "Langue",
+  "settings.language.system": "Langue de l'appareil",
+  "settings.language.zh": "中文（简体）",
+  "settings.language.en": "English",
+  "settings.language.fr": "Français",
+  "settings.version": "Version",
+  "common.back": "Retour",
+  "placeholder.lesson.title": "Leçon",
+  "placeholder.practice.title": "Exercices",
+  "placeholder.comingSoon": "Cette partie arrive bientôt. Restez à l'écoute !",
+  "notFound.title": "Page introuvable",
+  "notFound.home": "Retour à l'accueil"
+}
