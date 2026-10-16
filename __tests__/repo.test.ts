@@ -52,7 +52,6 @@ describe('tooling (AC2, AC3, AC5)', () => {
 
 describe('folder layout (AC7)', () => {
   it.each([
-    ['src/engine/index.ts', 'M1'],
     ['src/board/index.ts', 'M2'],
     ['src/lessons/index.ts', 'M3'],
     ['src/exercises/index.ts', 'M3'],
@@ -67,6 +66,7 @@ describe('folder layout (AC7)', () => {
   });
 
   it.each([
+    'src/engine/index.ts', // filled in M1 (no longer a placeholder)
     'src/i18n/index.ts',
     'src/i18n/zh-CN.json',
     'src/i18n/en.json',
