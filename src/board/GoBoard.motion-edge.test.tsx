@@ -211,3 +211,47 @@ describe('sound asset (AC41)', () => {
     expect(text).toMatch(/CC0/);
   });
 });
+
+describe('fade continues across unrelated re-renders; ko undo/retake', () => {
+  const before = () => S(['e5'], ['c3']);
+  const after = () => S(['e5', 'c4']);
+
+  it('highlights change, new-but-equal stones array and coordinates toggle keep the fade', async () => {
+    reduceMotion(false);
+    const { update } = setup({ stones: before(), lastMove: at('e5') });
+    await settle();
+    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    act(() => jest.advanceTimersByTime(100));
+    update({
+      stones: after(),
+      lastMove: at('c4'),
+      lastCapture: cap(1, ['c3']),
+      highlights: [{ kind: 'hint', points: [at('g7')] }],
+    });
+    expect(ghosts()).toHaveLength(1);
+    update({
+      stones: after(),
+      lastMove: at('c4'),
+      lastCapture: cap(1, ['c3']),
+      showCoordinates: false,
+    });
+    expect(ghosts()).toHaveLength(1);
+    act(() => jest.advanceTimersByTime(250));
+    expect(ghosts()).toHaveLength(0);
+  });
+
+  it('capture, undo, retake: one fade per real capture, none on undo', async () => {
+    reduceMotion(false);
+    const { update } = setup({ stones: before(), lastMove: at('e5') });
+    await settle();
+    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    expect(ghosts()).toHaveLength(1);
+    act(() => jest.advanceTimersByTime(400));
+    update({ stones: before(), lastMove: at('e5'), lastCapture: null }); // undo
+    expect(ghosts()).toHaveLength(0);
+    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) }); // retake, same id
+    expect(ghosts()).toHaveLength(1);
+    act(() => jest.advanceTimersByTime(400));
+    expect(ghosts()).toHaveLength(0);
+  });
+});
