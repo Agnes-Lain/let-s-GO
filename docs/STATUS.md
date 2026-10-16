@@ -36,13 +36,15 @@ Paused 2026-10-16 to save tokens. Resume in a new session on this branch.
 - **Fixed (2nd pass):** fr non-breaking spaces (71 strings), M3 tests updated to the M4 map
   (units 1–5 real, only 6 "coming soon", Start learning → Unit 1 in production, sample → Next lesson),
   skeleton bars keep their fixed 72 px. **lint + typecheck + 1246 tests green.**
-- **Left to build (developer):**
+- **Developer work (done):**
   1. ~~Tests for spec §4 ACs 1–18~~ done: `__tests__/m4-units-1-5.test.ts` (93 tests, all 46
      solutions match the spec tables). AC 12 (play-move feedback keys) relies on the M3 tests.
-  2. Web screenshots at 360×740 → `docs/screenshots/M4/` (unit map en/fr/zh-CN, longest step text
-     per lesson, labelled-stone choices) — ACs 19–23.
-- **Then:** qa agent (spec §4 → tests, web check) → developer/qa loop until READY → tick
+  2. ~~Web check~~ done: `npm run verify:web:m4` (release build, en/fr/zh-CN, 106 checks pass:
+     ACs 19–23, no console errors); screenshots in `docs/screenshots/M4/`.
+- **Left:** qa agent pass (spec §4 → tests, edge cases, web check) → fixes if NOT READY → tick
   `docs/ROADMAP.md` → update this file → one PR (plain language, ASCII Go diagrams with ✓).
+- Minor follow-up seen in screenshots (M3 design, not M4): before an answer, choice/count screens
+  show the reserved feedback card as an empty white box; the mockup draws it transparent.
 - Note: in a fresh cloud session the custom agents load only if the repo is attached at session
   start; otherwise run them as general-purpose agents told to follow `.claude/agents/<role>.md`.
 

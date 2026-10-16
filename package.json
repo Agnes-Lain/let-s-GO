@@ -17,7 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:web": "node scripts/verify-web.mjs",
-    "verify:web:m3": "node scripts/verify-web-m3.mjs"
+    "verify:web:m3": "node scripts/verify-web-m3.mjs",
+    "verify:web:m4": "node scripts/verify-web-m4.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
