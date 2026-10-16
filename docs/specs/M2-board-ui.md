@@ -568,8 +568,8 @@ developer tool, not lesson content); the engine messages already carry term + pi
   (illegal fade 700 ms because it is a quiet afterglow). Flat stones, low-saturation tokens, lots of
   bamboo.
 - **One obvious action** on the demo screen: the board. Everything else is small and secondary.
-- Coordinates on by default, because Unit 1 teaches named points; lessons can turn them off for a
-  cleaner look (M3 JSON flag).
+- Coordinates on by default in the component; in lessons they appear only in the first lesson
+  (PO decision §12.3) and are turned off afterwards via an M3 JSON flag.
 
 ## 9. New dependency
 - **`expo-audio`** (SDK 57 version, `EXPO_OFFLINE=1 npx expo install expo-audio`): official Expo
@@ -600,11 +600,12 @@ stones; explanation step playback (M3); persisted settings/mute store (M3/M6 —
 `sound` prop); capture or reward sounds (M3); dark mode; tablet/landscape layouts beyond the 480 px
 cap; alternative board skins; pass/resign buttons; the bot.
 
-## 12. Open questions for the product owner
-1. 7×7 star points: center only (d4, default — calmer) or the four 3-3 points + center?
-2. Last-move marker as a small filled dot (default) rather than a ring — OK?
-3. Coordinates on by default in lessons — OK, or off except in Unit 1?
-4. Stone sound: fine with a CC0 sound found by the developer, or do you want to choose/record it?
+## 12. Product-owner decisions (approved 2026-10-16)
+1. 7×7 star points: **center only** (d4).
+2. Last-move marker: **small filled dot**.
+3. Coordinates: the component keeps `showCoordinates` default `true` (demo screen), but in lessons
+   coordinates are **shown only in the first lesson**; all later lessons set them off (M3 JSON flag).
+4. Stone sound: the developer **picks a free CC0 sound first**; the PO may replace it later.
 
 ## 13. Correctness check
 I checked every position in this spec and in `M2-mockup.html` by hand, listing each stone's

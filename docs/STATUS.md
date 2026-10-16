@@ -11,9 +11,10 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `score()` Chinese area scoring. Spec + decisions D1–D9: `docs/specs/M1-rules-engine.md` §9.
 
 ## In progress
-- **M2** board UI — branch `m2-board-ui` created from master. Next step: product-designer
-  writes `docs/specs/M2-board-ui.md` **and a visual mockup** (`docs/specs/M2-mockup.html`);
-  the product owner approves designs before any code.
+- **M2** board UI — spec `docs/specs/M2-board-ui.md` + mockup `docs/specs/M2-mockup.html`
+  **approved** by the PO (decisions in spec §12). Work branch: `claude/m2-designer-spec-mockup-f1dhkh`.
+  Next step: developer implements PR 1 (geometry + static board + markers + demo screen) per spec §10,
+  then qa; then PRs 2–4.
 
 ## Product-owner preferences
 - Approves every spec and every visual design before development.
