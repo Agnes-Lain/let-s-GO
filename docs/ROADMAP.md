@@ -10,8 +10,8 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 ## M1 — Rules engine (`src/engine`)
 - [x] Board model, coordinates, ASCII board helper for tests
 - [x] Groups & liberties
-- [ ] Move legality: occupied, suicide, simple ko; captures
-- [ ] Move facts after each move (captures, atari, liberties) — needed by M3 feedback and M7 tutor
+- [x] Move legality: occupied, suicide, simple ko; captures
+- [x] Move facts after each move (captures, atari, liberties) — needed by M3 feedback and M7 tutor
 - [ ] Pass / game end, Chinese area scoring + komi
   > Prompt: "Implement <item> in src/engine test-first, using ASCII boards in tests. No React imports."
 
