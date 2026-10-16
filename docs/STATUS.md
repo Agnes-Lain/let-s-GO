@@ -22,6 +22,9 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
 - Not a programmer: PR descriptions show Go rules as ASCII diagrams with ✓; plain language.
 - Tests on an iPhone with App Store Expo Go (`npm ci` then `npx expo start`).
 
+## Agent models
+- product-designer: default (strongest) model; developer and qa: Sonnet (cost choice by the product owner).
+
 ## Environment notes (cloud sessions)
 - Expo's online API is blocked by the proxy: use `EXPO_OFFLINE=1` for `npx expo install`.
 - Web preview: `npx expo export --platform web` + static server; Chromium at
