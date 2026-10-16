@@ -33,3 +33,13 @@ export {
   type LessonLoader,
   type LoadResult,
 } from './loader';
+export {
+  endCells,
+  explainFrames,
+  toStepMarkers,
+  type Cells,
+  type MoveFrame,
+  type StepFrames,
+  type StepHighlight,
+  type StepMarker,
+} from './explain';

@@ -14,7 +14,6 @@
   "settings.language.fr": "Français",
   "settings.version": "版本",
   "common.back": "返回",
-  "placeholder.lesson.title": "课程",
   "placeholder.practice.title": "练习",
   "placeholder.comingSoon": "这里很快就会有内容，敬请期待！",
   "notFound.title": "找不到这个页面",
@@ -85,5 +84,16 @@
   "lesson.u00-sample.e5.w2": "下在 B 以后，白子在 A 处还有一口气。",
   "lesson.u00-sample.e5.explain": "一步只能填一口气，这里要填两口。",
   "lesson.u00-sample.e6.prompt": "有标记的黑棋共有几口气？",
-  "lesson.u00-sample.e6.hint": "数一数挨着这两颗黑子的空点，每个点只数一次。"
+  "lesson.u00-sample.e6.hint": "数一数挨着这两颗黑子的空点，每个点只数一次。",
+  "lesson.close": "关闭",
+  "lesson.next": "下一步",
+  "lesson.back": "上一步",
+  "lesson.replay": "重播",
+  "lesson.skip": "跳到练习",
+  "lesson.startPractice": "开始练习",
+  "lesson.step.a11y": "第 {{current}} 步，共 {{total}} 步",
+  "complete.map": "回到学习路径",
+  "error.lesson.title": "这一课打不开",
+  "error.lesson.body": "课程文件有问题，请更新应用。",
+  "error.locked.body": "先完成上一单元才能打开这一课。"
 }

@@ -14,7 +14,6 @@
   "settings.language.fr": "Français",
   "settings.version": "Version",
   "common.back": "Back",
-  "placeholder.lesson.title": "Lesson",
   "placeholder.practice.title": "Practice",
   "placeholder.comingSoon": "This part is coming soon. Stay tuned!",
   "notFound.title": "Page not found",
@@ -85,5 +84,16 @@
   "lesson.u00-sample.e5.w2": "After B the stone still has a liberty at A.",
   "lesson.u00-sample.e5.explain": "One move fills only one liberty; here two must be filled.",
   "lesson.u00-sample.e6.prompt": "How many liberties does the marked black group have?",
-  "lesson.u00-sample.e6.hint": "Count the empty points touching either black stone, each only once."
+  "lesson.u00-sample.e6.hint": "Count the empty points touching either black stone, each only once.",
+  "lesson.close": "Close",
+  "lesson.next": "Next",
+  "lesson.back": "Back",
+  "lesson.replay": "Replay",
+  "lesson.skip": "Skip to practice",
+  "lesson.startPractice": "Start practice",
+  "lesson.step.a11y": "Step {{current}} of {{total}}",
+  "complete.map": "Back to map",
+  "error.lesson.title": "This lesson can't be opened",
+  "error.lesson.body": "Something is wrong with the lesson file. Please update the app.",
+  "error.locked.body": "Finish the previous unit to open this lesson."
 }

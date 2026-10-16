@@ -30,8 +30,12 @@ export function hasTextIn(texts: Readonly<Record<Language, Readonly<Record<strin
   };
 }
 
+/**
+ * Developer content (the unit-0 sample) is shown in dev builds (Expo Go), and in a release web
+ * export made with EXPO_PUBLIC_DEV_LESSONS=1 for the web checks (scripts/verify-web-m3.mjs).
+ */
 function isDevBuild(): boolean {
-  return typeof __DEV__ !== 'undefined' && __DEV__;
+  return (typeof __DEV__ !== 'undefined' && __DEV__) || process.env.EXPO_PUBLIC_DEV_LESSONS === '1';
 }
 
 function rawId(entry: unknown): string | null {

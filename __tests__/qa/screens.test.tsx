@@ -132,11 +132,10 @@ describe('deep links and back (AC20–AC22)', () => {
     expect(router.getPathname()).toBe('/');
   });
 
-  it('lesson placeholder in French shows id and the NBSP text', async () => {
+  it('a lesson that does not exist shows the French error screen (M3 AC 55)', async () => {
     await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
-    expect(screen.getAllByText('Leçon').length).toBeGreaterThan(0);
-    expect(screen.getByText('u01-board')).toBeOnTheScreen();
-    expect(screen.getByText("Cette partie arrive bientôt. Restez à l'écoute !")).toBeOnTheScreen();
+    expect(screen.getByText("Cette leçon ne s'ouvre pas")).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Retour à la carte' })).toBeOnTheScreen();
   });
 
   it('practice placeholder shows any id verbatim', async () => {

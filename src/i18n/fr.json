@@ -14,7 +14,6 @@
   "settings.language.fr": "Français",
   "settings.version": "Version",
   "common.back": "Retour",
-  "placeholder.lesson.title": "Leçon",
   "placeholder.practice.title": "Exercices",
   "placeholder.comingSoon": "Cette partie arrive bientôt. Restez à l'écoute !",
   "notFound.title": "Page introuvable",
@@ -85,5 +84,16 @@
   "lesson.u00-sample.e5.w2": "Après B, la pierre garde une liberté en A.",
   "lesson.u00-sample.e5.explain": "Un coup ne remplit qu'une liberté ; ici il faut en remplir deux.",
   "lesson.u00-sample.e6.prompt": "Combien de libertés le groupe noir marqué a-t-il ?",
-  "lesson.u00-sample.e6.hint": "Comptez les points vides qui touchent l'une ou l'autre pierre noire, chacun une fois."
+  "lesson.u00-sample.e6.hint": "Comptez les points vides qui touchent l'une ou l'autre pierre noire, chacun une fois.",
+  "lesson.close": "Fermer",
+  "lesson.next": "Suivant",
+  "lesson.back": "Précédent",
+  "lesson.replay": "Rejouer",
+  "lesson.skip": "Aller aux exercices",
+  "lesson.startPractice": "Commencer les exercices",
+  "lesson.step.a11y": "Étape {{current}} sur {{total}}",
+  "complete.map": "Retour à la carte",
+  "error.lesson.title": "Cette leçon ne s'ouvre pas",
+  "error.lesson.body": "Le fichier de la leçon est incorrect. Mettez l'application à jour.",
+  "error.locked.body": "Terminez l'unité précédente pour ouvrir cette leçon."
 }

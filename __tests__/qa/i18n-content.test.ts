@@ -73,11 +73,18 @@ describe('copy table §4 is implemented verbatim', () => {
   });
 
   it('has exactly the 20 keys of the spec (M2 board/engine/dev keys are counted separately)', () => {
-    // M3 adds lesson texts (`lesson.<id>.…`) and unit titles (`unit.N.title`).
+    // M3 keys (spec docs/specs/M3-lesson-framework.md §7) are counted by the M3 tests.
+    const m3Home =
+      /^home\.(continue|start|unit\.label|checkpoint\.label|sample\.label|locked\.hint|node\.a11y\..+|allDone)$/;
     const m0Keys = Object.keys(zhCN).filter(
-      (key) => !/^(engine|board|dev|unit)\.|^lesson\.u\d\d-/.test(key),
+      (key) =>
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb)\./.test(key) &&
+        !m3Home.test(key),
     );
-    expect(m0Keys).toHaveLength(20);
+    // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
+    const removedByM3 = ['placeholder.lesson.title'];
+    removedByM3.forEach((key) => expect(m0Keys).not.toContain(key));
+    expect(m0Keys).toHaveLength(20 - removedByM3.length);
   });
 });
 
