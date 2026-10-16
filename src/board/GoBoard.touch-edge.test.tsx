@@ -186,4 +186,23 @@ describe('touch edge cases', () => {
     touch('responderRelease', p.x, p.y);
     expect(onPlay).toHaveBeenCalledWith({ x: 9, y: 9 });
   });
+
+  it('exactly half a cell beyond any outer line is treated alike on all four sides', () => {
+    const { onPlay } = setup();
+    const c = at(0, 0);
+    const far = at(8, 8);
+    const spots = [
+      [c.x - g.cell / 2, c.y], // left of a1 column
+      [far.x + g.cell / 2, far.y], // right of j-column
+      [c.x, c.y + g.cell / 2], // below row 1
+      [far.x, far.y - g.cell / 2], // above row 9
+    ];
+    const results = spots.map(([x, y]) => {
+      onPlay.mockClear();
+      touch('responderGrant', x, y);
+      touch('responderRelease', x, y);
+      return onPlay.mock.calls.length;
+    });
+    expect(new Set(results).size).toBe(1);
+  });
 });
