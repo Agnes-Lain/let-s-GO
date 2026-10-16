@@ -138,10 +138,9 @@ describe('deep links and back (AC20–AC22)', () => {
     expect(screen.getByRole('button', { name: 'Retour à la carte' })).toBeOnTheScreen();
   });
 
-  it('practice placeholder shows any id verbatim', async () => {
+  it('practice for an unknown lesson shows the French error screen', async () => {
     await renderRouter('./app', { initialUrl: '/practice/u02-liberties' });
-    expect(screen.getAllByText('Exercices').length).toBeGreaterThan(0);
-    expect(screen.getByText('u02-liberties')).toBeOnTheScreen();
+    expect(screen.getByText("Cette leçon ne s'ouvre pas")).toBeOnTheScreen();
   });
 
   it.each(['/nope', '/nope/deeper', '/lesson/u01-board/extra', '/settings/x'])(

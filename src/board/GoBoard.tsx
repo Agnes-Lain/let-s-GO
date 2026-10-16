@@ -66,6 +66,11 @@ export interface GoBoardProps {
   disabled?: boolean;
   /** Ghost-stone color. Default 'B'. */
   playerColor?: Color;
+  /**
+   * Touch-down preview: a ghost stone (default) or a thin accent ring, for exercises that ask to
+   * tap a point rather than play a stone (M3 tap-point; occupied points may then be accepted).
+   */
+  pointer?: 'stone' | 'ring';
   /** Asked on every preview. Default: occupied -> illegal 'occupied', otherwise legal. */
   checkPoint?: (p: Point) => CheckResult;
   /** Touch-up on a legal point. The board does not draw the stone: the parent passes new `stones`. */
@@ -112,6 +117,7 @@ export function GoBoard({
   interactive = false,
   disabled = false,
   playerColor = 'B',
+  pointer = 'stone',
   checkPoint,
   onPlay,
   onIllegal,
@@ -164,6 +170,7 @@ export function GoBoard({
           interactive={interactive}
           disabled={disabled}
           playerColor={playerColor}
+          pointer={pointer}
           checkPoint={checkPoint}
           onPlay={onPlay}
           onIllegal={onIllegal}
@@ -193,6 +200,7 @@ interface DrawingProps {
   interactive: boolean;
   disabled: boolean;
   playerColor: Color;
+  pointer: 'stone' | 'ring';
   checkPoint: GoBoardProps['checkPoint'];
   onPlay: GoBoardProps['onPlay'];
   onIllegal: GoBoardProps['onIllegal'];
@@ -217,6 +225,7 @@ function BoardDrawing({
   interactive,
   disabled,
   playerColor,
+  pointer,
   checkPoint,
   onPlay,
   onIllegal,
@@ -400,7 +409,13 @@ function BoardDrawing({
           <MarkerLayer g={g} stones={stones} markers={markers} />
           <RingLayer g={g} highlights={highlights} />
           {preview ? (
-            <PreviewLayer g={g} preview={preview} playerColor={playerColor} tag={crosshairOn} />
+            <PreviewLayer
+              g={g}
+              preview={preview}
+              playerColor={playerColor}
+              pointer={pointer}
+              tag={crosshairOn}
+            />
           ) : null}
         </Svg>
       </View>
@@ -851,17 +866,29 @@ function PreviewLayer({
   g,
   preview,
   playerColor,
+  pointer,
   tag,
 }: {
   g: BoardGeometry;
   preview: Preview;
   playerColor: Color;
+  pointer: 'stone' | 'ring';
   tag: boolean;
 }) {
   const c = pointToLocation(g, preview.point);
   return (
     <>
-      {preview.result.legal ? (
+      {preview.result.legal && pointer === 'ring' ? (
+        <Circle
+          testID="board-pointer-ring"
+          cx={c.x}
+          cy={c.y}
+          r={0.46 * g.cell}
+          fill="none"
+          stroke={color.accent}
+          strokeWidth={RING_WIDTH}
+        />
+      ) : preview.result.legal ? (
         <Circle
           testID="board-ghost"
           cx={c.x}

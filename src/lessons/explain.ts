@@ -1,14 +1,7 @@
 // Explanation steps as board frames (spec §6.2). Pure: the player only draws what this returns.
-import {
-  parseVertex,
-  play,
-  type BoardSize,
-  type Color,
-  type GameState,
-  type Point,
-} from '@/engine';
+import { parseVertex, type BoardSize, type Color, type GameState, type Point } from '@/engine';
 
-import { startState } from './goals';
+import { playAs, startState } from './goals';
 import type { ExplainStep, HighlightKind, Lesson, MarkerDef } from './schema';
 
 export type Cells = readonly (Color | null)[];
@@ -71,9 +64,7 @@ export function explainFrames(lesson: Lesson): StepFrames[] {
     const start = state.board.cells;
     const moves: MoveFrame[] = [];
     for (const move of step.moves ?? []) {
-      const before: GameState =
-        state.toPlay === move.color ? state : { ...state, toPlay: move.color, koPoint: null };
-      const result = play(before, move.at);
+      const result = playAs(state, move.color, move.at);
       if (!result.ok) throw new Error(`lesson ${lesson.id}: illegal move ${move.color} ${move.at}`);
       state = result.state;
       moves.push({

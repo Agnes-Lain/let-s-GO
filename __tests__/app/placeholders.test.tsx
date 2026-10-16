@@ -35,23 +35,14 @@ describe('Lesson route without a lesson (M3 AC 55)', () => {
   });
 });
 
-describe('Practice placeholder (AC21)', () => {
-  it('shows title, id and coming-soon text; back returns to the previous screen', async () => {
+// M3 replaced the practice placeholder with the exercise runners (see practice.test.tsx).
+describe('Practice route without a lesson (M3 AC 55, §6.7)', () => {
+  it('shows the error screen; Back to map returns Home', async () => {
     const router = await renderRouter('./app', { initialUrl: '/settings' });
     await act(() => appRouter.push('/practice/abc'));
     expect(router.getPathname()).toBe('/practice/abc');
-
-    expect(screen.getAllByText('Practice').length).toBeGreaterThan(0);
-    expect(screen.getByText('abc')).toBeOnTheScreen();
-    expect(screen.getByText('This part is coming soon. Stay tuned!')).toBeOnTheScreen();
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
-    expect(router.getPathname()).toBe('/settings');
-  });
-
-  it('goes to Home when there is no previous screen', async () => {
-    const router = await renderRouter('./app', { initialUrl: '/practice/abc' });
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
   });
 });

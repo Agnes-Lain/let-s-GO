@@ -1,5 +1,6 @@
 // Goal checks and solutions (spec §4.3). Pure: uses src/engine only.
 import {
+  checkMove,
   createGame,
   groupAt,
   legalMoves,
@@ -123,4 +124,15 @@ function sameStones(
   b: readonly { x: number; y: number }[],
 ) {
   return a.length === b.length && a.every((p, i) => p.x === b[i].x && p.y === b[i].y);
+}
+
+/** Plays `at` for `color` (the turn is set, a stale ko ban dropped): explain steps, fixtures. */
+export function playAs(state: GameState, color: 'B' | 'W', at: Vertex): PlayResult {
+  const turn = state.toPlay === color ? state : { ...state, toPlay: color, koPoint: null };
+  return play(turn, at);
+}
+
+/** Whether `state.toPlay` may play at `at`. */
+export function isLegalMove(state: GameState, at: Vertex): boolean {
+  return checkMove(state, at).legal;
 }

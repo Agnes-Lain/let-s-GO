@@ -159,6 +159,7 @@ describe('explanation player (sample)', () => {
 
   it('AC 54: steps are announced; the dots are one element', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+    announce.mockClear();
     await open();
     expect(announce).toHaveBeenCalledWith(`Step 1 of 3. ${texts['lesson.u00-sample.s1']}`);
     await fireEvent.press(screen.getByRole('button', { name: 'Next' }));

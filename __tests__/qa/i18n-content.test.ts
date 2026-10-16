@@ -60,7 +60,6 @@ describe('copy table §4 is implemented verbatim', () => {
     ['en', 'home.subtitle', 'Learn Go (围棋 wéiqí) from zero, one rule at a time'],
     ['fr', 'home.subtitle', 'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois'],
     ['fr', 'settings.open', 'Ouvrir les réglages'],
-    ['fr', 'placeholder.practice.title', 'Exercices'],
     ['fr', 'notFound.title', 'Page introuvable'],
     ['fr', 'notFound.home', "Retour à l'accueil"],
     ['zh-CN', 'notFound.title', '找不到这个页面'],
@@ -82,7 +81,11 @@ describe('copy table §4 is implemented verbatim', () => {
         !m3Home.test(key),
     );
     // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
-    const removedByM3 = ['placeholder.lesson.title'];
+    const removedByM3 = [
+      'placeholder.lesson.title',
+      'placeholder.practice.title',
+      'placeholder.comingSoon',
+    ];
     removedByM3.forEach((key) => expect(m0Keys).not.toContain(key));
     expect(m0Keys).toHaveLength(20 - removedByM3.length);
   });
@@ -92,9 +95,14 @@ describe('every key used in code exists in all languages (and none are orphaned)
   const sources = [...sourceFiles('app'), ...sourceFiles('src')]
     .map((file) => readFileSync(join(root, file), 'utf8'))
     .join('\n');
-  // t('key') calls and `labelKey: 'key'` entries (Settings language list).
+  // t('key') calls, `labelKey: 'key'` entries (Settings language list) and `key: 'key'` feedback
+  // lines / key maps (M3 exercises).
   const usedKeys = new Set(
-    [...sources.matchAll(/\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'/g)].map((m) => m[1] ?? m[2]),
+    [
+      ...sources.matchAll(
+        /\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'|\bkey:\s*'([^']+)'|:\s*'(engine\.illegal\.[^']+)'/g,
+      ),
+    ].map((m) => m[1] ?? m[2] ?? m[3] ?? m[4]),
   );
 
   // t(`prefix.${x}`) calls and key templates such as `unit.${n}.title`: every key under that

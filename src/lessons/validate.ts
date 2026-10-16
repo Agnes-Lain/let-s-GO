@@ -1,18 +1,16 @@
 // Lesson validator (spec §4.4). Pure: uses src/engine only. Reports every error (up to 50),
 // with English messages for authors and a JSON path such as 'exercises[2].goal'.
 import {
-  checkMove,
   createGame,
   groupAt,
   parseVertex,
-  play,
   toVertex,
   type Color,
   type GameState,
   type Vertex,
 } from '@/engine';
 
-import { libertyVertices, playMoveSolutions } from './goals';
+import { isLegalMove, libertyVertices, playAs, playMoveSolutions } from './goals';
 import {
   EXERCISE_TYPES,
   LESSON_SIZES,
@@ -341,7 +339,7 @@ class Validator {
         state = null;
         return;
       }
-      const result = play(withTurn(state, color), at);
+      const result = playAs(state, color, at);
       if (!result.ok) {
         this.add('MOVE_ILLEGAL', movePath, `move ${color} ${at} is illegal here: ${result.reason}`);
         state = null;
@@ -635,7 +633,7 @@ class Validator {
       }
       let ok = true;
       points.forEach((p, i) => {
-        if (!checkMove(game, p).legal) {
+        if (!isLegalMove(game, p)) {
           this.add(
             'GOAL_POINT_ILLEGAL',
             join(join(goalPath, 'points'), i),
