@@ -1,6 +1,6 @@
 // M2 PR 2 — accessibility (AC42-AC45).
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, Platform } from 'react-native';
 
 import { checkMove, createGame } from '@/engine';
 import { setLanguageChoice } from '@/i18n';
@@ -187,5 +187,24 @@ describe('announcements (AC45)', () => {
     // undo: d4 removed, lastMove back on e5 which was already occupied
     on.rerender(<GoBoard {...props} stones={before} lastMove={{ x: 4, y: 4 }} />);
     expect(announce).not.toHaveBeenCalled();
+  });
+});
+
+describe('web (react-native-web always reports a screen reader)', () => {
+  const originalOS = Platform.OS;
+  afterEach(() => {
+    Platform.OS = originalOS;
+  });
+
+  it('renders no point layer, so the touch overlay stays on top and the ghost appears', async () => {
+    Platform.OS = 'web';
+    mockScreenReader(true);
+    await renderBoard(<GoBoard size={9} stones={stones} width={328} interactive />);
+    expect(screen.queryAllByTestId(/^board-point-/)).toHaveLength(0);
+    const overlay = screen.getByTestId('board-touch');
+    fireEvent(overlay, 'responderGrant', { nativeEvent: { locationX: 164, locationY: 100 } });
+    expect(screen.getByTestId('board-ghost')).toBeTruthy();
+    expect(screen.getByTestId('board-crosshair')).toBeTruthy();
+    expect(screen.getByTestId('board-coord-tag')).toBeTruthy();
   });
 });

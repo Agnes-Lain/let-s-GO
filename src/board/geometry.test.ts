@@ -101,6 +101,27 @@ describe('pointFromLocation / pointToLocation (AC6)', () => {
     expect(pointFromLocation(g, -5, 100)).toBeNull();
   });
 
+  it('treats exactly half a cell beyond the outer lines as on the board, on all four sides', () => {
+    const half = g.cell / 2;
+    const near = g.origin;
+    const far = g.origin + 8 * g.cell;
+    expect(pointFromLocation(g, near - half, 164)).toEqual({ x: 0, y: 4 });
+    expect(pointFromLocation(g, far + half, 164)).toEqual({ x: 8, y: 4 });
+    expect(pointFromLocation(g, 164, near - half)).toEqual({ x: 4, y: 8 });
+    expect(pointFromLocation(g, 164, far + half)).toEqual({ x: 4, y: 0 });
+  });
+
+  it('hides the preview just past half a cell on all four sides', () => {
+    const eps = 0.01;
+    const half = g.cell / 2;
+    const near = g.origin;
+    const far = g.origin + 8 * g.cell;
+    expect(pointFromLocation(g, near - half - eps, 164)).toBeNull();
+    expect(pointFromLocation(g, far + half + eps, 164)).toBeNull();
+    expect(pointFromLocation(g, 164, near - half - eps)).toBeNull();
+    expect(pointFromLocation(g, 164, far + half + eps)).toBeNull();
+  });
+
   it('maps a point to the pixel centre of its intersection', () => {
     const loc = pointToLocation(g, { x: 4, y: 4 });
     expect(loc.x).toBeCloseTo(164, 2);
