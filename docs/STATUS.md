@@ -11,10 +11,10 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `score()` Chinese area scoring. Spec + decisions D1–D9: `docs/specs/M1-rules-engine.md` §9.
 
 ## In progress
-- **M2** board UI — spec `docs/specs/M2-board-ui.md` + mockup `docs/specs/M2-mockup.html`
-  **approved** by the PO (decisions in spec §12). Work branch: `claude/m2-designer-spec-mockup-f1dhkh`.
-  Next step: developer implements PR 1 (geometry + static board + markers + demo screen) per spec §10,
-  then qa; then PRs 2–4.
+- **M2** board UI — spec `docs/specs/M2-board-ui.md` + mockup `docs/specs/M2-mockup.html` approved
+  (PO decisions in spec §12). **PR 1 (static board, demo screen `/dev/board`) done** on branch
+  `claude/m2-designer-spec-mockup-f1dhkh`. Next: PR 2 — touch & feedback (spec §10 item 2, ACs 21–34,
+  42–45, 49–52, 54–56); also remove `reservedPrefixes` in `__tests__/qa/i18n-content.test.ts` there.
 
 ## Product-owner preferences
 - Approves every spec and every visual design before development.
