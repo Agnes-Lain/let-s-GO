@@ -2,7 +2,6 @@
   "app.name": "Let's GO",
   "home.subtitle": "从零开始，一步一步学会下围棋",
   "home.path.title": "学习路线",
-  "home.unit1.title": "第 1 单元 · 棋盘与棋子",
   "home.unit.comingSoon": "即将开放",
   "home.moreSoon": "更多单元即将上线",
   "settings.open": "打开设置",
@@ -130,5 +129,16 @@
   "fb.pm.wrongPoint": "不是题目要的点。",
   "fb.pm.selfAtari": "小心：你刚下的棋也只剩一口气了。",
   "fb.choice.wrong": "不太对。",
-  "fb.count.wrong": "不太对。只数紧挨着的空点（上下左右，斜角不算），每个点只数一次。"
+  "fb.count.wrong": "不太对。只数紧挨着的空点（上下左右，斜角不算），每个点只数一次。",
+  "home.continue": "继续学习",
+  "home.start": "开始学习",
+  "home.unit.label": "第 {{n}} 单元",
+  "home.checkpoint.label": "阶段检测",
+  "home.sample.label": "示例（开发用）",
+  "home.locked.hint": "先完成上一单元，这里就会打开。",
+  "home.node.a11y.available": "{{label}}，{{title}}，未开始",
+  "home.node.a11y.done": "{{label}}，{{title}}，{{stars}} 颗星（共 3 颗）",
+  "home.node.a11y.locked": "{{label}}，{{title}}，未解锁",
+  "home.node.a11y.soon": "{{label}}，{{title}}，即将推出",
+  "home.allDone": "目前的内容都学完了，更多单元即将推出。"
 }

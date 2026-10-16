@@ -16,4 +16,5 @@ module.exports = {
     '^expo-modules-core/(.*)$': `${expoModulesCoreDir}/$1`,
   },
   testPathIgnorePatterns: ['/node_modules/', '/.expo/', '/dist/'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };

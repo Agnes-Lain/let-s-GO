@@ -98,7 +98,8 @@ export function createLessonLoader(
       const checkpoint = lessons.find((l) => l.unit === unit && l.kind === 'checkpoint') ?? null;
       return {
         unit,
-        titleKey: lesson?.titleKey ?? `unit.${unit}.title`,
+        // The sample has no unit title; curriculum units use `unit.N.title` (spec AC 100).
+        titleKey: unit === SAMPLE_UNIT && lesson ? lesson.titleKey : `unit.${unit}.title`,
         lesson,
         checkpoint,
       };

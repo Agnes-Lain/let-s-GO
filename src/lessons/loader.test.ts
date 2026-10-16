@@ -93,11 +93,11 @@ describe('getUnits (AC 27)', () => {
     expect(first.titleKey).toBe('lesson.u00-sample.title');
   });
 
-  it('a valid unit-1 lesson makes unit 1 carry it', () => {
+  it('a valid unit-1 lesson makes unit 1 carry it (the map keeps the unit title)', () => {
     const loader = createLessonLoader([unitOne()], allTexts);
     const units = loader.getUnits({ includeDev: false });
     expect(units[0].lesson?.id).toBe('u01-board');
-    expect(units[0].titleKey).toBe('lesson.u01.title');
+    expect(units[0].titleKey).toBe('unit.1.title');
     expect(units[1].lesson).toBeNull();
   });
 });

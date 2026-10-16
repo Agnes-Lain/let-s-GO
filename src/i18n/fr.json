@@ -2,7 +2,6 @@
   "app.name": "Let's GO",
   "home.subtitle": "Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois",
   "home.path.title": "Parcours d'apprentissage",
-  "home.unit1.title": "Unité 1 · Le goban et les pierres",
   "home.unit.comingSoon": "Bientôt disponible",
   "home.moreSoon": "D'autres unités arrivent bientôt",
   "settings.open": "Ouvrir les réglages",
@@ -130,5 +129,16 @@
   "fb.pm.wrongPoint": "Ce n'est pas le point demandé.",
   "fb.pm.selfAtari": "Attention : votre pierre n'a plus qu'une liberté elle aussi.",
   "fb.choice.wrong": "Pas tout à fait.",
-  "fb.count.wrong": "Pas tout à fait. Comptez les points vides directement voisins du groupe (pas en diagonale), chacun une fois."
+  "fb.count.wrong": "Pas tout à fait. Comptez les points vides directement voisins du groupe (pas en diagonale), chacun une fois.",
+  "home.continue": "Continuer",
+  "home.start": "Commencer",
+  "home.unit.label": "Unité {{n}}",
+  "home.checkpoint.label": "Point d'étape",
+  "home.sample.label": "Exemple (développeur)",
+  "home.locked.hint": "Terminez l'unité précédente pour ouvrir celle-ci.",
+  "home.node.a11y.available": "{{label}}, {{title}}, pas commencé",
+  "home.node.a11y.done": "{{label}}, {{title}}, {{stars}} étoiles sur 3",
+  "home.node.a11y.locked": "{{label}}, {{title}}, verrouillé",
+  "home.node.a11y.soon": "{{label}}, {{title}}, bientôt disponible",
+  "home.allDone": "Vous avez tout terminé pour l'instant. D'autres unités arrivent !"
 }

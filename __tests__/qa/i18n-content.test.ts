@@ -85,6 +85,7 @@ describe('copy table §4 is implemented verbatim', () => {
       'placeholder.lesson.title',
       'placeholder.practice.title',
       'placeholder.comingSoon',
+      'home.unit1.title',
     ];
     removedByM3.forEach((key) => expect(m0Keys).not.toContain(key));
     expect(m0Keys).toHaveLength(20 - removedByM3.length);

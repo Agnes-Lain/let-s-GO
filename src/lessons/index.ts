@@ -43,3 +43,4 @@ export {
   type StepHighlight,
   type StepMarker,
 } from './explain';
+export { mapRows, type MapRow, type NodeState } from './map';
