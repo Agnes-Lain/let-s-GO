@@ -646,6 +646,7 @@ describe('QA: engine agrees with an independent reference on seeded random games
         for (let turn = 0; turn < 150; turn++) {
           // 0. Two passes in a row end the game (AC 26): the engine agrees, then start over.
           expect(s.isOver).toBe(ref.passesInARow >= 2);
+          expect(s.consecutivePasses).toBe(ref.passesInARow);
           if (s.isOver) {
             s = createGame(size);
             ref = new Reference(size, 'B');
