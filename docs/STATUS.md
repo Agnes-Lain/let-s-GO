@@ -9,17 +9,24 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
 - **M1** rules engine `src/engine` (pure TS, 441 tests): board/coordinates/ASCII, groups &
   liberties, play/checkMove/legalMoves, captures, suicide, simple ko, MoveFacts, pass/game end,
   `score()` Chinese area scoring. Spec + decisions D1–D9: `docs/specs/M1-rules-engine.md` §9.
+- **M2** board UI (`src/board`, dev screen `/dev/board`): static board, touch preview/commit,
+  feedback + a11y, motion + `expo-audio` stone sound (CC0 asset in `assets/sounds/`), web
+  verification. Spec `docs/specs/M2-board-ui.md` (PO decisions §12). **Pending: the PO's iPhone
+  check** — `docs/specs/M2-iphone-checklist.md` (AC 61; stone sound not yet heard on a device).
+  - Web check: `npm run verify:web` (Playwright, 360×740, ACs 57–60; uses the global Playwright
+    install, not a devDependency, and is not part of `npm test`/CI). Screenshots:
+    `docs/screenshots/M2/`. Use `--rebuild` to force `expo export`.
 
-## In progress
-- **M2** board UI — spec `docs/specs/M2-board-ui.md` + mockup `docs/specs/M2-mockup.html` approved
-  (PO decisions in spec §12). PRs 1–3 done (static board; touch/feedback/a11y; motion + `expo-audio`
-  stone sound, synthesized CC0 asset in `assets/sounds/`). Next: **PR 4 — web verification**
-  (spec §10 item 4, ACs 57–61: Playwright at 360×740, screenshots in `docs/screenshots/M2/`).
-- Known minor follow-ups: the no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile
-  (prefer `react/jsx-no-literals` or an AST check); the engine-call guard there could also check
-  imports from `@/engine`; scenario chips scroll horizontally in fr/zh-CN.
-- Web note: react-native-web always reports a screen reader on, so `useScreenReader` returns false on web.
-- Stone sound not yet heard on a real device — PO to confirm on iPhone.
+## Next
+- **M3** lesson framework (`docs/ROADMAP.md`): lesson JSON schema + validator + loader first.
+
+## Known follow-ups (minor, not scheduled)
+- The no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile (prefer
+  `react/jsx-no-literals` or an AST check); its engine-call guard could also check imports from
+  `@/engine`.
+- Scenario chips scroll horizontally in fr/zh-CN (also in en: "Forbidden"/"Marks" are off-screen
+  at 360 px).
+- Web: react-native-web always reports a screen reader on, so `useScreenReader` returns false on web.
 
 ## Product-owner preferences
 - Approves every spec and every visual design before development.

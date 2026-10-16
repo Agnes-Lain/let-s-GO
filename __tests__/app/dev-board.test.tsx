@@ -284,3 +284,23 @@ describe('/dev/board is playable (AC49-AC52, AC54-AC56)', () => {
     expect(screen.getByTestId('board-demo-message').props.accessibilityLiveRegion).toBe('polite');
   });
 });
+
+describe('/dev/board stable test IDs for the web verification (AC57–59)', () => {
+  it('gives every size segment, scenario chip and action a locale-independent testID', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    for (const size of [5, 7, 9, 13, 19]) {
+      expect(screen.getByTestId(`board-demo-size-${size}`)).toBeOnTheScreen();
+    }
+    for (const id of ['free', 'capture', 'ko', 'forbidden', 'markers']) {
+      expect(screen.getByTestId(`board-demo-scenario-${id}`)).toBeOnTheScreen();
+    }
+    expect(screen.getByTestId('board-demo-undo')).toBeOnTheScreen();
+    expect(screen.getByTestId('board-demo-reset')).toBeOnTheScreen();
+  });
+
+  it('the size testID selects that size', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByTestId('board-demo-size-19'));
+    expect(screen.queryAllByTestId(/^board-star-/)).toHaveLength(9);
+  });
+});
