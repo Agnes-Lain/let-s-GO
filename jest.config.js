@@ -1,8 +1,8 @@
 const path = require('node:path');
 
-// jest-expo's setup requires `expo-modules-core`, which npm nests under `expo/node_modules` in
-// SDK 58 (its optional peer range for react-native-worklets does not include the SDK's 0.13).
-// Resolve it the same way `expo` does so tests work whether or not it is hoisted.
+// jest-expo's setup requires `expo-modules-core`, which npm may nest under `expo/node_modules`
+// depending on peer ranges (it did on SDK 58). Resolve it the same way `expo` does so tests work
+// whether or not it is hoisted.
 const expoModulesCoreDir = path.dirname(
   require.resolve('expo-modules-core/package.json', { paths: [require.resolve('expo')] }),
 );

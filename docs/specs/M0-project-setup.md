@@ -21,7 +21,7 @@ gets a green lint/typecheck/test pipeline to build every later milestone on.
 1. **Given** a fresh clone with the pinned Node version, **when** `npm ci` runs, **then** it exits 0
    (`package-lock.json` is committed).
 2. **Given** the repo, **then** `.nvmrc` contains `24` (Node 24 LTS, used by CI) and `package.json` has
-   `"engines": { "node": "^22.13.0 || ^24.3.0" }`. *(Dev note: Expo SDK 58 supports Node
+   `"engines": { "node": "^22.13.0 || ^24.3.0" }`. *(Dev note: the project now uses Expo SDK 57 so it runs in the App Store Expo Go; it supports Node
    `^22.13.0 || ^24.3.0 || …`; engines also allows Node 22 so local/cloud machines that still run
    Node 22 can install without warnings. CI pins 24 via `.nvmrc`.)*
 3. **Given** `package.json`, **then** it defines scripts `start` (`expo start`), `web`
