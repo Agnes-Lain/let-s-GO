@@ -64,12 +64,18 @@ export function boardGeometry(
   };
 }
 
-/** Nearest intersection to a pixel location, or null when more than half a cell off the grid. */
+/**
+ * Nearest intersection to a pixel location, or null when MORE than half a cell beyond the outer
+ * lines (exactly half a cell still counts, on all four sides).
+ */
 export function pointFromLocation(g: BoardGeometry, x: number, y: number): Point | null {
-  const col = Math.round((x - g.origin) / g.cell);
-  const row = Math.round((y - g.origin) / g.cell);
-  if (col < 0 || row < 0 || col >= g.size || row >= g.size) return null;
-  return { x: col + 0, y: g.size - 1 - row };
+  const rawCol = (x - g.origin) / g.cell;
+  const rawRow = (y - g.origin) / g.cell;
+  const limit = g.size - 1 + 0.5;
+  if (rawCol < -0.5 || rawRow < -0.5 || rawCol > limit || rawRow > limit) return null;
+  const col = Math.min(g.size - 1, Math.max(0, Math.round(rawCol)));
+  const row = Math.min(g.size - 1, Math.max(0, Math.round(rawRow)));
+  return { x: col, y: g.size - 1 - row };
 }
 
 export function pointToLocation(g: BoardGeometry, p: Point): { x: number; y: number } {

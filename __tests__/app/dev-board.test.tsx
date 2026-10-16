@@ -1,5 +1,7 @@
 import { act, fireEvent, renderRouter, screen, within } from 'expo-router/testing-library';
 
+import { boardGeometry, pointToLocation } from '@/board';
+import { parseVertex } from '@/engine';
 import { setLanguageChoice } from '@/i18n';
 
 jest.mock('expo-localization', () => ({
@@ -127,5 +129,158 @@ describe('/dev/board (AC47, AC48, AC53)', () => {
       expect(s.height).toBeGreaterThanOrEqual(44);
     }
     void within;
+  });
+});
+
+/** Touch down + up on a vertex of the demo board, using the rendered board size. */
+function tap(vertex: string) {
+  const style = flat(screen.getByTestId('go-board').props.style);
+  const size = screen.queryAllByTestId(/^board-grid-h-/).length as 5 | 7 | 9 | 13 | 19;
+  const coordinates = screen.queryAllByTestId(/^board-label-/).length > 0;
+  const { x, y } = pointToLocation(
+    boardGeometry(size, style.width, coordinates),
+    parseVertex(vertex, size),
+  );
+  const nativeEvent = { locationX: x, locationY: y };
+  fireEvent(screen.getByTestId('board-touch'), 'responderGrant', { nativeEvent });
+  fireEvent(screen.getByTestId('board-touch'), 'responderRelease', { nativeEvent });
+}
+const stoneIds = () =>
+  screen
+    .queryAllByTestId(/^board-stone-/)
+    .map((e) => e.props.testID.slice(12))
+    .sort();
+const disabled = (name: string) =>
+  screen.getByRole('button', { name }).props.accessibilityState.disabled;
+
+const KO_TEXT = "Ko (打劫 dǎjié): you can't take back right away. Play elsewhere first.";
+const SUICIDE_TEXT =
+  'Forbidden point (禁入点 jìnrùdiǎn): your stone would have no liberties and captures nothing.';
+
+describe('/dev/board is playable (AC49-AC52, AC54-AC56)', () => {
+  it('AC49: a tap places a black stone with the last-move dot, flips the turn, enables Undo', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await act(async () => tap('e5'));
+    expect(stoneIds()).toEqual(['e5']);
+    expect(screen.getByTestId('board-last-move')).toBeTruthy();
+    expect(screen.getByText('White to play')).toBeOnTheScreen();
+    expect(disabled('Undo')).toBe(false);
+    await act(async () => tap('d5'));
+    expect(stoneIds()).toEqual(['d5', 'e5']);
+    expect(screen.getByText('Black to play')).toBeOnTheScreen();
+  });
+
+  it('AC50: Capture scenario - B c4 captures c3', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Capture' }));
+    await act(async () => tap('c4'));
+    expect(stoneIds()).toEqual(['b3', 'c2', 'c4', 'd3']);
+    expect(screen.getByText('White to play')).toBeOnTheScreen();
+    expect(screen.getByText('Captures B 1 · W 0')).toBeOnTheScreen();
+  });
+
+  it('AC51: Ko scenario - immediate retake shows the ko message, later it is legal', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Ko' }));
+    await act(async () => tap('d3')); // B captures c3
+    expect(stoneIds()).not.toContain('c3');
+    await act(async () => tap('c3')); // W retakes at once: ko
+    expect(screen.getByText(KO_TEXT)).toBeOnTheScreen();
+    expect(stoneIds()).not.toContain('c3');
+    expect(screen.getByText('White to play')).toBeOnTheScreen();
+    await act(async () => tap('a1')); // W elsewhere (clears the message)
+    expect(screen.queryByText(KO_TEXT)).toBeNull();
+    await act(async () => tap('a5')); // B elsewhere
+    await act(async () => tap('c3')); // W retakes: legal now
+    expect(stoneIds()).toContain('c3');
+    expect(stoneIds()).not.toContain('d3');
+    expect(screen.getByText('Captures B 1 · W 1')).toBeOnTheScreen();
+  });
+
+  it('AC52: Forbidden scenario - W a1 shows the suicide message and changes nothing', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Forbidden' }));
+    const before = stoneIds();
+    await act(async () => tap('a1'));
+    expect(screen.getByText(SUICIDE_TEXT)).toBeOnTheScreen();
+    expect(stoneIds()).toEqual(before);
+    expect(screen.getByText('White to play')).toBeOnTheScreen();
+  });
+
+  it('occupied point shows the occupied message', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await act(async () => tap('e5'));
+    await act(async () => tap('e5'));
+    expect(screen.getByText('There is already a stone here.')).toBeOnTheScreen();
+  });
+
+  it('AC54: Undo restores the Capture start; Reset restarts the scenario', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Capture' }));
+    await act(async () => tap('c4'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Undo' }));
+    expect(stoneIds()).toEqual(['b3', 'c2', 'c3', 'd3']);
+    expect(screen.getByText('Black to play')).toBeOnTheScreen();
+    expect(screen.getByText('Captures B 0 · W 0')).toBeOnTheScreen();
+    expect(screen.queryByTestId('board-last-move')).toBeNull();
+    expect(disabled('Undo')).toBe(true);
+
+    await act(async () => tap('c4'));
+    await act(async () => tap('a1'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Reset' }));
+    expect(stoneIds()).toEqual(['b3', 'c2', 'c3', 'd3']);
+    expect(screen.getByText('Captures B 0 · W 0')).toBeOnTheScreen();
+    expect(disabled('Undo')).toBe(true);
+  });
+
+  it('AC55: toggles flip their checked state and the board follows', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('switch', { name: 'Show coordinates' }));
+    expect(
+      screen.getByRole('switch', { name: 'Show coordinates' }).props.accessibilityState.checked,
+    ).toBe(false);
+    expect(screen.queryAllByTestId(/^board-label-/)).toHaveLength(0);
+    await fireEvent.press(screen.getByRole('switch', { name: 'Stone sound' }));
+    expect(
+      screen.getByRole('switch', { name: 'Stone sound' }).props.accessibilityState.checked,
+    ).toBe(false);
+  });
+
+  it('AC56: the message disappears on a legal move, Undo, Reset, size and scenario change', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    const showMessage = async () => {
+      await fireEvent.press(screen.getByRole('button', { name: 'Forbidden' }));
+      await act(async () => tap('a1'));
+      expect(screen.getByText(SUICIDE_TEXT)).toBeOnTheScreen();
+    };
+    await showMessage();
+    await fireEvent.press(screen.getByRole('button', { name: 'Reset' }));
+    expect(screen.queryByText(SUICIDE_TEXT)).toBeNull();
+
+    await showMessage();
+    await act(async () => tap('e3')); // legal W move
+    expect(screen.queryByText(SUICIDE_TEXT)).toBeNull();
+
+    await showMessage();
+    await fireEvent.press(screen.getByRole('button', { name: '7 by 7 board' }));
+    expect(screen.queryByText(SUICIDE_TEXT)).toBeNull();
+
+    await showMessage();
+    await fireEvent.press(screen.getByRole('button', { name: 'Capture' }));
+    expect(screen.queryByText(SUICIDE_TEXT)).toBeNull();
+
+    // Undo: make a move, trigger an occupied message, then undo.
+    await act(async () => tap('c4'));
+    await act(async () => tap('c4'));
+    expect(screen.getByText('There is already a stone here.')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.queryByText('There is already a stone here.')).toBeNull();
+  });
+
+  it('the message card announces itself politely and keeps its reserved height', async () => {
+    await renderRouter('./app', { initialUrl: '/dev/board' });
+    await fireEvent.press(screen.getByRole('button', { name: 'Forbidden' }));
+    await act(async () => tap('a1'));
+    expect(screen.getByTestId('board-demo-message').props.accessibilityLiveRegion).toBe('polite');
   });
 });

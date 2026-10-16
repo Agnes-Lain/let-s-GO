@@ -12,9 +12,12 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
 
 ## In progress
 - **M2** board UI — spec `docs/specs/M2-board-ui.md` + mockup `docs/specs/M2-mockup.html` approved
-  (PO decisions in spec §12). **PR 1 (static board, demo screen `/dev/board`) done** on branch
-  `claude/m2-designer-spec-mockup-f1dhkh`. Next: PR 2 — touch & feedback (spec §10 item 2, ACs 21–34,
-  42–45, 49–52, 54–56); also remove `reservedPrefixes` in `__tests__/qa/i18n-content.test.ts` there.
+  (PO decisions in spec §12). PR 1 (static board) merged. **PR 2 (touch, illegal feedback, last-move
+  dot, accessibility, playable `/dev/board`) done.** Next: PR 3 — placement/capture animation, reduced
+  motion, `expo-audio` stone sound + CC0 asset (spec §10 item 3, ACs 35–41); then PR 4 web verification.
+- Known minor follow-ups: the no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile
+  (prefer `react/jsx-no-literals` or an AST check); scenario chips scroll horizontally in fr/zh-CN.
+- Web note: react-native-web always reports a screen reader on, so `useScreenReader` returns false on web.
 
 ## Product-owner preferences
 - Approves every spec and every visual design before development.

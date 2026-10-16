@@ -1,18 +1,66 @@
-// Dev/demo screen for <GoBoard/> (spec M2 §5). PR 1: static scenarios only; touch comes in PR 2.
-import { useState } from 'react';
+// Dev/demo screen for <GoBoard/> (spec M2 §5). The rules come from the engine; the board only draws.
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import type { TFunction } from 'i18next';
+import {
+  AccessibilityInfo,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GoBoard } from '@/board';
-import { SCENARIOS, scenarioBoard, type ScenarioId } from '@/board/scenarios';
-import { BOARD_SIZES, type BoardSize } from '@/engine';
+import { GoBoard, type CaptureEvent } from '@/board';
+import { SCENARIOS, scenarioBoard, type Scenario, type ScenarioId } from '@/board/scenarios';
+import {
+  BOARD_SIZES,
+  checkMove,
+  createGame,
+  play,
+  type BoardSize,
+  type GameState,
+  type IllegalReason,
+  type MoveFacts,
+  type Point,
+} from '@/engine';
 import { Screen, TopBar } from '@/theme/Screen';
 import { board, color, radius, spacing, stone, tapTarget, typography } from '@/theme/tokens';
 
 const MAX_BOARD = 480;
 /** Height of every row except the board (top bar, size control, turn row, message, chips, actions). */
 const OTHER_ROWS = 340;
+
+/** One position in the undo history: the game after a move, plus what that move did. */
+interface Entry {
+  game: GameState;
+  facts: MoveFacts | null;
+}
+
+const NO_MESSAGE = null as string | null;
+
+const startEntry = (scenario: Scenario, size: BoardSize): Entry => ({
+  game: createGame(size, { setup: scenario.setup, toPlay: scenario.toPlay }),
+  facts: null,
+});
+
+/** Engine reason -> message text (static keys, so the i18n usage check can see them). */
+function illegalMessage(t: TFunction, reason: IllegalReason): string | null {
+  switch (reason) {
+    case 'occupied':
+      return t('engine.illegal.occupied');
+    case 'suicide':
+      return t('engine.illegal.suicide');
+    case 'ko':
+      return t('engine.illegal.ko');
+    case 'game-over':
+      return t('engine.illegal.gameOver');
+    case 'off-board':
+      return null; // the board never produces this
+  }
+}
 
 export default function BoardDemoScreen() {
   const { t } = useTranslation();
@@ -25,6 +73,9 @@ export default function BoardDemoScreen() {
 
   const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0];
   const view = scenarioBoard(scenario, chosenSize);
+  const [history, setHistory] = useState(() => [startEntry(SCENARIOS[0], 9)]);
+  const [message, setMessage] = useState(NO_MESSAGE);
+  const { game, facts } = history[history.length - 1];
   const boardWidth = Math.floor(
     Math.min(
       window.width - 2 * spacing.lg,
@@ -33,10 +84,44 @@ export default function BoardDemoScreen() {
     ),
   );
 
+  useEffect(() => {
+    if (message) AccessibilityInfo.announceForAccessibility(message);
+  }, [message]);
+
+  const restart = (next: Scenario, size: BoardSize) => {
+    setHistory([startEntry(next, size)]);
+    setMessage(null);
+  };
   const chooseSize = (size: BoardSize) => {
     setChosenSize(size);
     setScenarioId('free');
+    restart(SCENARIOS[0], size);
   };
+  const chooseScenario = (next: Scenario) => {
+    setScenarioId(next.id);
+    restart(next, next.size ?? chosenSize);
+  };
+
+  const onPlay = (p: Point) => {
+    const result = play(game, p);
+    if (!result.ok) return;
+    setHistory((h) => [...h, { game: result.state, facts: result.facts }]);
+    setMessage(null);
+  };
+  const onIllegal = (_p: Point, reason: IllegalReason) => setMessage(illegalMessage(t, reason));
+  const undo = () => {
+    setHistory((h) => (h.length > 1 ? h.slice(0, -1) : h));
+    setMessage(null);
+  };
+
+  const lastCapture: CaptureEvent | null =
+    facts && facts.captured.length > 0
+      ? {
+          id: game.moves.length,
+          color: facts.color === 'B' ? 'W' : 'B',
+          points: facts.captured.flat(),
+        }
+      : null;
 
   return (
     <Screen>
@@ -84,9 +169,17 @@ export default function BoardDemoScreen() {
       <View style={[styles.boardSlot, { height: boardWidth }]}>
         <GoBoard
           size={view.size}
-          stones={view.stones}
+          stones={game.board.cells}
           width={boardWidth}
           showCoordinates={showCoordinates}
+          interactive
+          playerColor={game.toPlay}
+          checkPoint={(p) => checkMove(game, p)}
+          onPlay={onPlay}
+          onIllegal={onIllegal}
+          lastMove={facts?.point ?? null}
+          lastCapture={lastCapture}
+          sound={sound}
           markers={view.markers}
           highlights={view.highlights}
         />
@@ -94,14 +187,23 @@ export default function BoardDemoScreen() {
 
       <View style={styles.turnRow}>
         <View
-          style={[styles.miniStone, scenario.toPlay === 'B' ? styles.miniBlack : styles.miniWhite]}
+          style={[styles.miniStone, game.toPlay === 'B' ? styles.miniBlack : styles.miniWhite]}
         />
-        <Text style={styles.turnText}>{t(`dev.board.toPlay.${scenario.toPlay}`)}</Text>
-        <Text style={styles.captionText}>{t('dev.board.captures', { black: 0, white: 0 })}</Text>
+        <Text style={styles.turnText}>{t(`dev.board.toPlay.${game.toPlay}`)}</Text>
+        <Text style={styles.captionText}>
+          {t('dev.board.captures', { black: game.captures.B, white: game.captures.W })}
+        </Text>
       </View>
 
-      {/* Reserved for illegal-move messages (PR 2): 72 px so nothing jumps. */}
-      <View style={styles.messageSlot} />
+      {/* Reserved for illegal-move messages: 72 px so nothing jumps. */}
+      <View style={styles.messageSlot}>
+        {message ? (
+          <View testID="board-demo-message" accessibilityLiveRegion="polite" style={styles.message}>
+            <View style={styles.messageDot} />
+            <Text style={styles.messageText}>{message}</Text>
+          </View>
+        ) : null}
+      </View>
 
       <ScrollView
         horizontal
@@ -114,7 +216,7 @@ export default function BoardDemoScreen() {
           return (
             <Pressable
               key={s.id}
-              onPress={() => setScenarioId(s.id)}
+              onPress={() => chooseScenario(s)}
               accessibilityRole="button"
               accessibilityState={{ selected }}
               style={[styles.chip, selected && styles.chipSelected]}
@@ -129,18 +231,18 @@ export default function BoardDemoScreen() {
 
       <View style={styles.actions}>
         <Pressable
-          disabled
+          onPress={undo}
+          disabled={history.length <= 1}
           accessibilityRole="button"
-          accessibilityState={{ disabled: true }}
-          style={[styles.action, styles.actionDisabled]}
+          accessibilityState={{ disabled: history.length <= 1 }}
+          style={[styles.action, history.length <= 1 && styles.actionDisabled]}
         >
           <Text style={styles.actionText}>{t('dev.board.undo')}</Text>
         </Pressable>
         <Pressable
-          disabled
+          onPress={() => restart(scenario, view.size)}
           accessibilityRole="button"
-          accessibilityState={{ disabled: true }}
-          style={[styles.action, styles.actionDisabled]}
+          style={styles.action}
         >
           <Text style={styles.actionText}>{t('dev.board.reset')}</Text>
         </Pressable>
@@ -213,6 +315,25 @@ const styles = StyleSheet.create({
   turnText: { ...typography.label, color: color.textPrimary, flex: 1 },
   captionText: { ...typography.caption, color: color.textSecondary },
   messageSlot: { height: 72, marginVertical: spacing.xs },
+  message: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.sm,
+    backgroundColor: color.surface,
+  },
+  messageDot: {
+    width: 8,
+    height: 8,
+    marginTop: 6,
+    borderRadius: 4,
+    backgroundColor: color.error,
+  },
+  messageText: { ...typography.caption, flex: 1, color: color.textPrimary },
   chipScroll: { flexGrow: 0, minHeight: tapTarget.min },
   chips: { gap: spacing.sm, alignItems: 'center' },
   chip: {

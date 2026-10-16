@@ -1,6 +1,6 @@
 // Board UI — see docs/specs/M2-board-ui.md §3.
 export { GoBoard } from './GoBoard';
-export type { GoBoardProps, Highlight, HighlightKind, Marker } from './GoBoard';
+export type { CaptureEvent, GoBoardProps, Highlight, HighlightKind, Marker } from './GoBoard';
 export {
   boardGeometry,
   columnLabels,
