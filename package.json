@@ -19,6 +19,7 @@
     "verify:web": "node scripts/verify-web.mjs"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.30",
     "expo-audio": "~57.0.5",
     "expo-constants": "~57.0.22",
@@ -34,7 +35,8 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
-    "react-native-web": "~0.21.0"
+    "react-native-web": "~0.21.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@react-native/jest-preset": "~0.86.3",

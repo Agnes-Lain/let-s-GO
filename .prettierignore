@@ -6,6 +6,7 @@ coverage/
 assets/
 package-lock.json
 docs/specs/M0-mockup.html
+docs/specs/M3-mockup.html
 # Hand-written docs and agent prompts keep their own formatting.
 *.md
 .claude/
