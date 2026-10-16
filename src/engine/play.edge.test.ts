@@ -490,18 +490,17 @@ describe('QA: captures accumulate and the move history is exact', () => {
   });
 });
 
-describe('QA: minimal pass vs PR 3 AC 26', () => {
-  it('two passes count to 2; a play resets to 0; game-over only via isOver', () => {
+describe('QA: two passes end the game (AC 26)', () => {
+  it('two passes count to 2 and end the game; game-over is checked before off-board', () => {
     const s = passOk(passOk(createGame(5)));
     expect(s.consecutivePasses).toBe(2);
+    expect(s.isOver).toBe(true);
     expect(s.moves).toEqual([
       { type: 'pass', color: 'B' },
       { type: 'pass', color: 'W' },
     ]);
-    // AC 26 (PR 3) will set isOver here; PR 2 does not end the game yet.
-    const over = { ...s, isOver: true };
-    expect(reasonOf(over, { x: 99, y: 99 })).toBe('game-over'); // game-over is checked first
-    expect(reasonOf(over, 'c3')).toBe('game-over');
+    expect(reasonOf(s, { x: 99, y: 99 })).toBe('game-over'); // game-over is checked first
+    expect(reasonOf(s, 'c3')).toBe('game-over');
   });
 });
 
@@ -562,6 +561,7 @@ class Reference {
   toPlay: Color;
   previousBoard: string | null = null; // board before the last move, null after a pass
   captures = { B: 0, W: 0 };
+  passesInARow = 0; // two in a row end the game (AC 26)
   constructor(
     readonly size: number,
     toPlay: Color,
@@ -622,11 +622,13 @@ class Reference {
     this.previousBoard = this.cells.join();
     this.cells = r.cells;
     this.captures[this.toPlay] += r.captured;
+    this.passesInARow = 0;
     this.toPlay = this.toPlay === 'B' ? 'W' : 'B';
   }
 
   commitPass(): void {
     this.previousBoard = null;
+    this.passesInARow++;
     this.toPlay = this.toPlay === 'B' ? 'W' : 'B';
   }
 }
@@ -640,8 +642,14 @@ describe('QA: engine agrees with an independent reference on seeded random games
       const rand = mulberry32(0xc0ffee + size);
       for (let game = 0; game < 3; game++) {
         let s = createGame(size);
-        const ref = new Reference(size, 'B');
+        let ref = new Reference(size, 'B');
         for (let turn = 0; turn < 150; turn++) {
+          // 0. Two passes in a row end the game (AC 26): the engine agrees, then start over.
+          expect(s.isOver).toBe(ref.passesInARow >= 2);
+          if (s.isOver) {
+            s = createGame(size);
+            ref = new Reference(size, 'B');
+          }
           // 1. Every point: checkMove vs reference, and legalMoves = the legal ones, sorted.
           const expectedLegal: Point[] = [];
           for (let x = 0; x < size; x++) {

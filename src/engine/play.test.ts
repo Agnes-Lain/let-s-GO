@@ -439,7 +439,7 @@ describe('MoveFacts', () => {
   });
 });
 
-describe('minimal pass (full pass/game-end behavior is PR 3)', () => {
+describe('pass', () => {
   it('switches the turn, clears the ko point, counts the pass and records it', () => {
     const state = createGame(5);
     const result = pass(state);
@@ -448,6 +448,7 @@ describe('minimal pass (full pass/game-end behavior is PR 3)', () => {
     expect(result.state.toPlay).toBe('W');
     expect(result.state.koPoint).toBeNull();
     expect(result.state.consecutivePasses).toBe(1);
+    expect(result.state.isOver).toBe(false);
     expect(result.state.moves).toEqual([{ type: 'pass', color: 'B' }]);
     expect(result.state.board).toEqual(state.board);
     expect(state.moves).toEqual([]);
@@ -502,7 +503,7 @@ describe('legalMoves', () => {
   });
 });
 
-describe('game-over guard (setting isOver after two passes is PR 3)', () => {
+describe('game-over guard', () => {
   it('a state marked over refuses play, checkMove, legalMoves and pass', () => {
     const over: GameState = { ...createGame(5), isOver: true };
     expect(reasonOf(play(over, 'c3'))).toBe('game-over');
