@@ -87,4 +87,32 @@ export const tapTarget = {
   min: 44,
 } as const;
 
-export const tokens = { color, board, stone, typography, spacing, radius, tapTarget } as const;
+/** Board motion timings (ms). Used by <GoBoard/>; placement/capture animation lands in M2 PR 3. */
+export const motion = {
+  stonePlace: 120,
+  capture: 300,
+  illegalFade: 700,
+  hintPulse: 1200,
+  hintPulseCycles: 3,
+} as const;
+
+/** Board opacities (0..1). */
+export const opacity = {
+  ghost: 0.5,
+  libertyFill: 0.18,
+  label: 0.8,
+  crosshair: 0.55,
+  illegalFill: 0.1,
+} as const;
+
+export const tokens = {
+  color,
+  board,
+  stone,
+  typography,
+  spacing,
+  radius,
+  tapTarget,
+  motion,
+  opacity,
+} as const;
