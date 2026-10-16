@@ -631,12 +631,12 @@ Beginner bot, Capture Go mini-game and Unit 6 content (next PR); checkpoints for
 boards; any new exercise type, schema field or board feature; sound or art beyond M3; Units 7+; settings (pinyin
 toggle, mute) → M6; resume mid-set; random order.
 
-## 12. Decisions for the PO
-See the end of the report in the chat for the plain-language list; summary:
-1. Badge under the title for "Bientôt disponible" (recommended) vs shorter text.
-2. No pinyin on zh-CN titles (recommended).
-3. One review checkpoint after Unit 5 only (recommended) vs one per unit vs none.
-4. Group-liberty counting moves from Unit 2 to Unit 3 (recommended).
-5. Keep the M3 star thresholds (recommended).
-6. Keep the dev sample in the code, hidden in the public app (recommended).
-7. Chinese terms chosen for "group" (一块棋) and "extend" (长): confirm.
+## 12. PO decisions (approved 2026-10-16)
+All recommendations approved:
+1. "Bientôt disponible" (and every "coming soon" badge) moves to its own line under the unit title; titles may wrap to two lines.
+2. No pinyin on zh-CN titles or texts; en/fr keep Chinese term + pinyin on first use.
+3. One review checkpoint after Unit 5 only (`u05-review`).
+4. Unit 2 counts single-stone liberties; group liberties are taught in Unit 3.
+5. M3 star thresholds unchanged.
+6. Dev sample `u00-sample` stays in the code, shown only in `__DEV__` / `EXPO_PUBLIC_DEV_LESSONS=1`.
+7. Chinese terms confirmed: 一块棋 yíkuàiqí ("group"), 长 zhǎng ("extend").
