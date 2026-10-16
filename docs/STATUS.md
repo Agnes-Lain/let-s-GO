@@ -11,8 +11,8 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `score()` Chinese area scoring. Spec + decisions D1–D9: `docs/specs/M1-rules-engine.md` §9.
 - **M2** board UI (`src/board`, dev screen `/dev/board`): static board, touch preview/commit,
   feedback + a11y, motion + `expo-audio` stone sound (CC0 asset in `assets/sounds/`), web
-  verification. Spec `docs/specs/M2-board-ui.md` (PO decisions §12). **Pending: the PO's iPhone
-  check** — `docs/specs/M2-iphone-checklist.md` (AC 61; stone sound not yet heard on a device).
+  verification. Spec `docs/specs/M2-board-ui.md` (PO decisions §12). **iPhone check passed** (PO, 2026-10-16) —
+  `docs/specs/M2-iphone-checklist.md` (AC 61), including the stone sound.
   - Web check: `npm run verify:web` (Playwright, 360×740, ACs 57–60; uses the global Playwright
     install, not a devDependency, and is not part of `npm test`/CI). Screenshots:
     `docs/screenshots/M2/`. Use `--rebuild` to force `expo export`.
