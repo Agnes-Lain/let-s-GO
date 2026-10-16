@@ -10,15 +10,24 @@ export function LeaveSheet({
   visible,
   onStay,
   onLeave,
+  onDismissed,
 }: {
   visible: boolean;
   onStay: () => void;
   onLeave: () => void;
+  /** Called once the sheet has fully closed. */
+  onDismissed?: () => void;
 }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onStay}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onStay}
+      onDismiss={onDismissed}
+    >
       <View style={styles.backdrop}>
         <Pressable style={styles.dismiss} onPress={onStay} accessible={false} />
         <View
