@@ -19,7 +19,8 @@ describe('M2 quality (AC62, AC63)', () => {
     for (const f of boardFiles) {
       expect({
         f,
-        hit: /\b(play|checkMove|legalMoves)\s*\(/.test(read(join(boardDir, f))),
+        // Engine move functions called directly; method calls such as `player.play()` are not engine calls.
+        hit: /(?<![.\w])(play|checkMove|legalMoves)\s*\(/.test(read(join(boardDir, f))),
       }).toEqual({
         f,
         hit: false,

@@ -1,10 +1,11 @@
 // <GoBoard/> — pure-presentational SVG board. No game logic: the parent owns the GameState.
 // PR 1 = static drawing. Extension points for later PRs are marked "PR 2" / "PR 3".
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AccessibilityInfo,
   Animated,
+  Easing,
   Platform,
   Pressable,
   StyleSheet,
@@ -29,6 +30,8 @@ import {
   vertexLabel,
   type BoardGeometry,
 } from './geometry';
+import { captureAnimation, isStonePlaced, placementAnimation } from './motionPlan';
+import { playStoneSound } from './sound';
 import { useReduceMotion } from './useReduceMotion';
 import { useScreenReader } from './useScreenReader';
 
@@ -70,9 +73,9 @@ export interface GoBoardProps {
   /** Touch-up on an illegal point. */
   onIllegal?: (p: Point, reason: IllegalReason) => void;
   lastMove?: Point | null;
-  /** Used for screen-reader announcements (capture animation comes in PR 3). */
+  /** Screen-reader announcement and capture fade-out; each `id` plays once. */
   lastCapture?: CaptureEvent | null;
-  /** Stone sound on/off. Sound itself comes in PR 3. */
+  /** Stone sound on/off. Default true; plays only when a stone appears. */
   sound?: boolean;
   highlights?: readonly Highlight[];
   markers?: readonly Marker[];
@@ -114,6 +117,7 @@ export function GoBoard({
   onIllegal,
   lastMove = null,
   lastCapture = null,
+  sound = true,
   highlights = NO_HIGHLIGHTS,
   markers = NO_MARKERS,
   testID = 'go-board',
@@ -165,6 +169,7 @@ export function GoBoard({
           onIllegal={onIllegal}
           lastMove={lastMove}
           lastCapture={lastCapture}
+          sound={sound}
           screenReader={screenReader}
         />
       ) : null}
@@ -193,8 +198,12 @@ interface DrawingProps {
   onIllegal: GoBoardProps['onIllegal'];
   lastMove: Point | null;
   lastCapture: CaptureEvent | null;
+  sound: boolean;
   screenReader: boolean;
 }
+
+const sameCells = (a: readonly (Color | null)[], b: readonly (Color | null)[]) =>
+  a.length === b.length && a.every((c, i) => c === b[i]);
 
 const samePoint = (a: Point | null, b: Point | null) =>
   a !== null && b !== null && a.x === b.x && a.y === b.y;
@@ -213,9 +222,11 @@ function BoardDrawing({
   onIllegal,
   lastMove,
   lastCapture,
+  sound,
   screenReader,
 }: DrawingProps) {
   const { t } = useTranslation();
+  const reduceMotion = useReduceMotion();
   // The geometry object is rebuilt by the parent every render; keep the identity stable.
   const g = useMemo(
     () => geometry,
@@ -331,6 +342,34 @@ function BoardDrawing({
     AccessibilityInfo.announceForAccessibility(parts.join(t('board.a11y.separator')));
   }, [stones, lastMove, lastCapture, screenReader, size, t]);
 
+  // ---- Sound: only when a stone actually appears (not mount, undo, reset, illegal move) ----
+  const soundBefore = useRef(stones);
+  useEffect(() => {
+    const before = soundBefore.current;
+    soundBefore.current = stones;
+    if (sound && isStonePlaced(before, stones, lastMove, size)) void playStoneSound();
+  }, [stones, lastMove, sound, size]);
+
+  // ---- Placement & capture animation (spec 4.4). Derived during render so the first frame is right. ----
+  const captureId = lastCapture?.id ?? null;
+  const [seen, setSeen] = useState({ stones, captureId });
+  const [placed, setPlaced] = useState<number | null>(null);
+  const [capture, setCapture] = useState<CaptureEvent | null>(null);
+  if (seen.stones !== stones || seen.captureId !== captureId) {
+    setSeen({ stones, captureId });
+    const appeared = isStonePlaced(seen.stones, stones, lastMove, size);
+    if (lastMove && appeared && !reduceMotion) setPlaced(lastMove.y * size + lastMove.x);
+    if (appeared && lastCapture && captureId !== seen.captureId) {
+      // A newer capture replaces (and so instantly ends) the previous one.
+      setCapture(reduceMotion || lastCapture.points.length === 0 ? null : lastCapture);
+    } else if (captureId !== seen.captureId || !sameCells(seen.stones, stones)) {
+      // Undo / reset / capture cleared: a fade must never outlive or replay over a changed board.
+      setCapture(null);
+    }
+  }
+  const placedDone = useCallback(() => setPlaced(null), []);
+  const captureDone = useCallback((id: number) => setCapture((c) => (c?.id === id ? null : c)), []);
+
   const activate = (p: Point) => {
     if (!canTouch) return;
     const result = check(p);
@@ -353,7 +392,10 @@ function BoardDrawing({
           />
           <LibertyLayer g={g} highlights={highlights} />
           {crosshairOn ? <Crosshair g={g} point={preview.point} /> : null}
-          <StoneLayer g={g} stones={stones} />
+          <StoneLayer g={g} stones={stones} placed={placed} onPlacedDone={placedDone} />
+          {capture ? (
+            <CaptureLayer key={capture.id} g={g} capture={capture} onDone={captureDone} />
+          ) : null}
           <LastMoveDot g={g} stones={stones} lastMove={lastMove} markers={markers} />
           <MarkerLayer g={g} stones={stones} markers={markers} />
           <RingLayer g={g} highlights={highlights} />
@@ -581,9 +623,14 @@ function Crosshair({ g, point }: { g: BoardGeometry; point: Point }) {
 const StoneLayer = memo(function StoneLayer({
   g,
   stones,
+  placed,
+  onPlacedDone,
 }: {
   g: BoardGeometry;
   stones: readonly (Color | null)[];
+  /** Index (y*size+x) of the stone that plays the placement animation, if any. */
+  placed: number | null;
+  onPlacedDone: () => void;
 }) {
   const { size } = g;
   const list: { point: Point; color: Color }[] = [];
@@ -597,22 +644,118 @@ const StoneLayer = memo(function StoneLayer({
     <>
       {list.map(({ point, color: c }) => {
         const p = pointToLocation(g, point);
-        return (
-          <Circle
-            key={`stone-${toVertex(point, size)}`}
-            testID={`board-stone-${toVertex(point, size)}`}
-            cx={p.x}
-            cy={p.y}
-            r={g.stoneRadius}
-            fill={c === 'B' ? stone.black : stone.white}
-            stroke={c === 'W' ? stone.whiteEdge : undefined}
-            strokeWidth={c === 'W' ? 1 : undefined}
-          />
+        const common = {
+          testID: `board-stone-${toVertex(point, size)}`,
+          cx: p.x,
+          cy: p.y,
+          r: g.stoneRadius,
+          fill: c === 'B' ? stone.black : stone.white,
+          stroke: c === 'W' ? stone.whiteEdge : undefined,
+          strokeWidth: c === 'W' ? 1 : undefined,
+        };
+        const key = `stone-${toVertex(point, size)}`;
+        return point.y * size + point.x === placed ? (
+          <PlacedStone key={key} {...common} onDone={onPlacedDone} />
+        ) : (
+          <Circle key={key} {...common} />
         );
       })}
     </>
   );
 });
+
+interface StoneCircleProps {
+  testID: string;
+  cx: number;
+  cy: number;
+  r: number;
+  fill: string;
+  stroke: string | undefined;
+  strokeWidth: number | undefined;
+}
+
+/** New stone: scale 0.9 -> 1 and opacity 0.6 -> 1, ease-out (`placementAnimation`). */
+function PlacedStone({ r, onDone, ...rest }: StoneCircleProps & { onDone: () => void }) {
+  const [t] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    const animation = Animated.timing(t, {
+      toValue: 1,
+      duration: placementAnimation.duration,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished) onDone();
+    });
+    return () => animation.stop();
+  }, [t, onDone]);
+  return (
+    <AnimatedCircle
+      {...rest}
+      r={t.interpolate({ inputRange: [0, 1], outputRange: [r * placementAnimation.scaleFrom, r] })}
+      opacity={t.interpolate({
+        inputRange: [0, 1],
+        outputRange: [placementAnimation.opacityFrom, 1],
+      })}
+    />
+  );
+}
+
+/** Captured stones (already gone from `stones`) fade out together: scale 1 -> 0.8, opacity 1 -> 0. */
+function CaptureLayer({
+  g,
+  capture,
+  onDone,
+}: {
+  g: BoardGeometry;
+  capture: CaptureEvent;
+  onDone: (id: number) => void;
+}) {
+  const [t] = useState(() => new Animated.Value(0));
+  const { id } = capture;
+  useEffect(() => {
+    const animation = Animated.timing(t, {
+      toValue: 1,
+      duration: captureAnimation.duration,
+      easing: Easing.inOut(Easing.ease),
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished) onDone(id);
+    });
+    return () => animation.stop();
+  }, [t, id, onDone]);
+  const r = t.interpolate({
+    inputRange: [0, 1],
+    outputRange: [g.stoneRadius, g.stoneRadius * captureAnimation.scaleTo],
+  });
+  const opacityValue = t.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, captureAnimation.opacityTo],
+  });
+  const white = capture.color === 'W';
+  return (
+    <>
+      {capture.points.map((point) => {
+        const c = pointToLocation(g, point);
+        const v = toVertex(point, g.size);
+        return (
+          <AnimatedCircle
+            key={`capture-${v}`}
+            testID={`board-capture-${v}`}
+            cx={c.x}
+            cy={c.y}
+            r={r}
+            fill={white ? stone.white : stone.black}
+            stroke={white ? stone.whiteEdge : undefined}
+            strokeWidth={white ? 1 : undefined}
+            opacity={opacityValue}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 /** 8. Last-move dot: small filled dot in the opposite stone color; hidden under a marker. */
 const LastMoveDot = memo(function LastMoveDot({
