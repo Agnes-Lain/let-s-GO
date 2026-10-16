@@ -23,7 +23,7 @@
       "favicon": "./assets/favicon.png",
       "output": "single"
     },
-    "plugins": ["expo-router", "expo-localization"],
+    "plugins": ["expo-router", "expo-localization", "expo-audio"],
     "experiments": {
       "typedRoutes": false
     }
