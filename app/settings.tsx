@@ -1,9 +1,10 @@
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import appConfig from '../app.json';
 import { setLanguageChoice, useLanguageChoice, type LanguageChoice } from '@/i18n';
-import { CheckIcon } from '@/theme/icons';
+import { CheckIcon, ChevronIcon } from '@/theme/icons';
 import { Screen, TopBar } from '@/theme/Screen';
 import { color, radius, spacing, typography } from '@/theme/tokens';
 
@@ -17,6 +18,7 @@ const LANGUAGE_OPTIONS: { choice: LanguageChoice; labelKey: string }[] = [
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const currentChoice = useLanguageChoice();
+  const router = useRouter();
 
   return (
     <Screen>
@@ -47,6 +49,19 @@ export default function SettingsScreen() {
           );
         })}
       </View>
+      {__DEV__ ? (
+        <View style={[styles.list, styles.devList]}>
+          <Pressable
+            onPress={() => router.push('/dev/board')}
+            accessibilityRole="button"
+            accessibilityLabel={t('dev.board.open')}
+            style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+          >
+            <Text style={styles.rowLabel}>{t('dev.board.open')}</Text>
+            <ChevronIcon direction="right" color={color.textSecondary} size={20} />
+          </Pressable>
+        </View>
+      ) : null}
       <Text style={styles.caption}>
         {t('settings.version')} {appConfig.expo.version}
       </Text>
@@ -75,6 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
   },
+  devList: { marginTop: spacing.lg },
   rowDivider: { borderTopWidth: 1, borderTopColor: color.border },
   rowLabel: { ...typography.body, color: color.textPrimary },
   pressed: { backgroundColor: color.background },

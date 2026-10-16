@@ -16,7 +16,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
   > Prompt: "Implement <item> in src/engine test-first, using ASCII boards in tests. No React imports."
 
 ## M2 — Board UI (`src/board`)
-- [ ] `<GoBoard size stones onPlay highlights markers/>` with SVG, star points, coordinates
+- [x] `<GoBoard size stones onPlay highlights markers/>` with SVG, star points, coordinates
 - [ ] Touch preview + commit, last-move marker, capture animation, stone sound
 - [ ] Verify on web via `npx expo start --web` + Playwright screenshot at 360×740
 

@@ -52,7 +52,6 @@ describe('tooling (AC2, AC3, AC5)', () => {
 
 describe('folder layout (AC7)', () => {
   it.each([
-    ['src/board/index.ts', 'M2'],
     ['src/lessons/index.ts', 'M3'],
     ['src/exercises/index.ts', 'M3'],
     ['src/store/index.ts', 'M3'],
