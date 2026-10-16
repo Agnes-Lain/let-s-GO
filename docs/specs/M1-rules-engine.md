@@ -277,7 +277,7 @@ All diagrams are 5×5 unless stated; rows not shown are empty. "B"/"X" = black, 
 29. **Same board, dead stone not marked** (`deadStones: []`, komi 7.5): the 9 empty points on the left
     touch both colors → dame; black 5 + 0 = 5; white 6 + 4 + 7.5 = 17.5; dame has 10 points; `W+12.5`.
 30. **Dead-stone input.** Marking any one stone of a group marks the whole group (`deadStones`
-    returns all of it). Marking an empty point throws `invalid-dead-stone`. Prisoner counts
+    returns all of it). Marking an empty point, or an off-board or malformed vertex, throws `invalid-dead-stone`. `score` also validates komi like `createGame` (`invalid-komi`). Prisoner counts
     (`captures`) never change the score (area scoring).
 31. **Empty board** 9×9, komi 7.5: every point is dame, black 0, white 7.5, `W+7.5`.
 
