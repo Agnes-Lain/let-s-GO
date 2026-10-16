@@ -691,3 +691,17 @@ describe('QA: engine agrees with an independent reference on seeded random games
     expect([...reasonsSeen].sort()).toEqual(['ko', 'occupied', 'suicide']);
   });
 });
+
+describe('missing point input', () => {
+  it('play and checkMove reject null/undefined with EngineError invalid-vertex', () => {
+    const s = createGame(5);
+    for (const bad of [null, undefined, 3]) {
+      expect(() => play(s, bad as never)).toThrow(
+        expect.objectContaining({ code: 'invalid-vertex' }),
+      );
+      expect(() => checkMove(s, bad as never)).toThrow(
+        expect.objectContaining({ code: 'invalid-vertex' }),
+      );
+    }
+  });
+});

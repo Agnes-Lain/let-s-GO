@@ -4,6 +4,7 @@
 import { indexOf, neighbors, stoneAt, withStones } from './board';
 import { comparePoints, isOnBoard, parseVertex } from './coordinates';
 import { groupAt } from './groups';
+import { EngineError } from './types';
 import type {
   Board,
   Color,
@@ -110,6 +111,9 @@ export function pass(state: GameState): PassResult {
 /** Point notation is resolved here; null means a Point object that is not on the board. */
 function resolvePoint(state: GameState, at: Point | Vertex): Point | null {
   if (typeof at === 'string') return parseVertex(at, state.board.size);
+  if (typeof at !== 'object' || at === null) {
+    throw new EngineError('invalid-vertex', `Expected a point or vertex, got ${String(at)}`);
+  }
   return isOnBoard(at, state.board.size) ? { x: at.x, y: at.y } : null;
 }
 
