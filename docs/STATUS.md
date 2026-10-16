@@ -17,8 +17,17 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
     install, not a devDependency, and is not part of `npm test`/CI). Screenshots:
     `docs/screenshots/M2/`. Use `--rebuild` to force `expo export`.
 
+- **M3** lesson framework (one PR): `src/lessons` (schema, validator that proves every exercise
+  solvable with the engine, loader, stars/unlock pure functions; React-free), `src/store/progress`
+  (Zustand + `StorageAdapter` on AsyncStorage — MMKV isn't in App Store Expo Go, swap one file in
+  M6), lesson UI in `src/exercises/` (explanation player, runners tap-point/play-move/choice/count,
+  leave sheet, result screen), home unit map `app/index.tsx`. Spec `docs/specs/M3-lesson-framework.md`
+  (PO decisions §11). Dev sample lesson `u00-sample` shows only in `__DEV__` or with
+  `EXPO_PUBLIC_DEV_LESSONS=1`. Web check: `npm run verify:web:m3`; screenshots `docs/screenshots/M3/`.
+  **Pending: the PO's iPhone check** — `docs/specs/M3-iphone-checklist.md`.
+
 ## Next
-- **M3** lesson framework (`docs/ROADMAP.md`): lesson JSON schema + validator + loader first.
+- **M4** content units 1–5 (zh + en + fr) as lesson JSON + beginner bot v1 / Capture Go (`docs/ROADMAP.md`).
 
 ## Known follow-ups (minor, not scheduled)
 - The no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile (prefer
@@ -27,6 +36,11 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
 - Scenario chips scroll horizontally in fr/zh-CN (also in en: "Forbidden"/"Marks" are off-screen
   at 360 px).
 - Web: react-native-web always reports a screen reader on, so `useScreenReader` returns false on web.
+
+- M3: fr "Bientôt disponible" badge squeezes long unit titles at 360 px (shorter badge or badge
+  under the title). zh-CN unit titles have no pinyin — confirm with the designer that this is intended.
+- M3: §8 focus moves to text/feedback cards not done (only announcements); sound-off path waits
+  for the M6 settings; QA's snapback goal test only checks "no throw".
 
 ## Product-owner preferences
 - Approves every spec and every visual design before development.
