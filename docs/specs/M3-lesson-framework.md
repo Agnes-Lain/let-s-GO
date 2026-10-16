@@ -1025,7 +1025,12 @@ Coordinates: `c3` = column c, row 3 (row 1 at the bottom). "Given the sample" = 
 116. Each PR description shows the positions used by its ACs as ASCII diagrams with ✓ for the PO
      (CLAUDE.md / STATUS preference), e.g. the e3 and e4 diagrams of §9.1.
 
-## 11. Open questions for the product owner (with my recommendation)
+## 11. PO decisions (2026-10-16)
+- Q1–Q10 below: **all recommendations approved** as written.
+- Delivery: **all of M3 in one PR** (branch `claude/m3-lesson-framework`). Build in the §3 order,
+  one commit per item; §3 still defines the order and AC grouping.
+
+### Open questions as asked (with the recommendation that was approved)
 1. **Storage library — MMKV vs what works in your Expo Go.** The roadmap and TECH_STACK say MMKV
    (`react-native-mmkv`). My understanding is that MMKV contains native code that the App Store
    Expo Go does **not** include, so the app would crash on your iPhone until we make a custom
