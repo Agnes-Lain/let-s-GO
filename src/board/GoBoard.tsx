@@ -1,22 +1,36 @@
 // <GoBoard/> — pure-presentational SVG board. No game logic: the parent owns the GameState.
 // PR 1 = static drawing. Extension points for later PRs are marked "PR 2" / "PR 3".
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Platform, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  AccessibilityInfo,
+  Animated,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  type GestureResponderEvent,
+  type LayoutChangeEvent,
+} from 'react-native';
 import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 
+import '@/i18n';
 import { parseVertex, toVertex } from '@/engine';
-import type { BoardSize, Color, Point } from '@/engine';
+import type { BoardSize, CheckResult, Color, IllegalReason, Point } from '@/engine';
 import { board as boardColor, color, motion, opacity, radius, stone } from '@/theme/tokens';
 
 import {
   boardGeometry,
   columnLabels,
+  pointFromLocation,
   pointToLocation,
   rowLabels,
   starPoints,
+  vertexLabel,
   type BoardGeometry,
 } from './geometry';
 import { useReduceMotion } from './useReduceMotion';
+import { useScreenReader } from './useScreenReader';
 
 export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error';
 export interface Highlight {
@@ -28,6 +42,14 @@ export type Marker =
   | { kind: 'circle' | 'triangle' | 'square' | 'cross'; point: Point }
   | { kind: 'label'; point: Point; text: string };
 
+export interface CaptureEvent {
+  /** Changes once per move (e.g. the move number); the same id is never announced twice. */
+  id: number;
+  /** Color of the captured stones. */
+  color: Color;
+  points: readonly Point[];
+}
+
 export interface GoBoardProps {
   size: BoardSize;
   /** = GameState.board.cells (index y*size+x). */
@@ -35,8 +57,23 @@ export interface GoBoardProps {
   /** px; default: parent width (measured with onLayout). Always square. */
   width?: number;
   showCoordinates?: boolean;
-  /** Reserved for PR 2 (touch overlay). In PR 1 no touch surface is rendered. */
+  /** Adds the touch surface (preview on touch-down, commit on touch-up). Default false. */
   interactive?: boolean;
+  /** Interactive but locked: no preview, no callbacks. */
+  disabled?: boolean;
+  /** Ghost-stone color. Default 'B'. */
+  playerColor?: Color;
+  /** Asked on every preview. Default: occupied -> illegal 'occupied', otherwise legal. */
+  checkPoint?: (p: Point) => CheckResult;
+  /** Touch-up on a legal point. The board does not draw the stone: the parent passes new `stones`. */
+  onPlay?: (p: Point) => void;
+  /** Touch-up on an illegal point. */
+  onIllegal?: (p: Point, reason: IllegalReason) => void;
+  lastMove?: Point | null;
+  /** Used for screen-reader announcements (capture animation comes in PR 3). */
+  lastCapture?: CaptureEvent | null;
+  /** Stone sound on/off. Sound itself comes in PR 3. */
+  sound?: boolean;
   highlights?: readonly Highlight[];
   markers?: readonly Marker[];
   testID?: string;
@@ -49,6 +86,13 @@ const LINE_WIDTH = 1;
 const BORDER_WIDTH = 1.5;
 const RING_WIDTH = 2.5;
 const MARKER_WIDTH = 2;
+const ILLEGAL_RING_WIDTH = 2;
+const CROSSHAIR_WIDTH = 1.5;
+const TAG_HEIGHT = 22;
+const TAG_MIN_WIDTH = 28;
+const NO_HIGHLIGHTS: readonly Highlight[] = [];
+const NO_MARKERS: readonly Marker[] = [];
+const NO_STONES: readonly (Color | null)[] = [];
 const SQRT3_HALF = Math.sqrt(3) / 2;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -62,10 +106,20 @@ export function GoBoard({
   stones,
   width,
   showCoordinates = true,
-  highlights = [],
-  markers = [],
+  interactive = false,
+  disabled = false,
+  playerColor = 'B',
+  checkPoint,
+  onPlay,
+  onIllegal,
+  lastMove = null,
+  lastCapture = null,
+  highlights = NO_HIGHLIGHTS,
+  markers = NO_MARKERS,
   testID = 'go-board',
 }: GoBoardProps) {
+  const { t } = useTranslation();
+  const screenReader = useScreenReader();
   const [measured, setMeasured] = useState<number | null>(null);
   const side = width ?? measured;
   const stonesValid = stones.length === size * size;
@@ -81,20 +135,48 @@ export function GoBoard({
   };
 
   const rootStyle = side === null ? styles.rootUnmeasured : { width: side, height: side };
+  const validStones = stonesValid ? stones : NO_STONES;
+  const label = t('board.a11y.label', {
+    size,
+    black: validStones.filter((c) => c === 'B').length,
+    white: validStones.filter((c) => c === 'W').length,
+  });
 
   return (
-    <View testID={testID} style={[styles.root, rootStyle]} onLayout={onLayout}>
+    <View
+      testID={testID}
+      style={[styles.root, rootStyle]}
+      onLayout={onLayout}
+      accessibilityLabel={label}
+      accessible={!screenReader}
+    >
       {side !== null && side > 0 ? (
         <BoardDrawing
           geometry={boardGeometry(size, side, showCoordinates)}
-          stones={stonesValid ? stones : []}
+          stones={validStones}
           showCoordinates={showCoordinates}
           highlights={highlights}
           markers={markers}
+          interactive={interactive}
+          disabled={disabled}
+          playerColor={playerColor}
+          checkPoint={checkPoint}
+          onPlay={onPlay}
+          onIllegal={onIllegal}
+          lastMove={lastMove}
+          lastCapture={lastCapture}
+          screenReader={screenReader}
         />
       ) : null}
     </View>
   );
+}
+
+interface Preview {
+  point: Point;
+  result: CheckResult;
+  /** Illegal ring after touch-up: fading out over `motion.illegalFade`. */
+  fading: boolean;
 }
 
 interface DrawingProps {
@@ -103,13 +185,44 @@ interface DrawingProps {
   showCoordinates: boolean;
   highlights: readonly Highlight[];
   markers: readonly Marker[];
+  interactive: boolean;
+  disabled: boolean;
+  playerColor: Color;
+  checkPoint: GoBoardProps['checkPoint'];
+  onPlay: GoBoardProps['onPlay'];
+  onIllegal: GoBoardProps['onIllegal'];
+  lastMove: Point | null;
+  lastCapture: CaptureEvent | null;
+  screenReader: boolean;
 }
 
-function BoardDrawing({ geometry: g, stones, showCoordinates, highlights, markers }: DrawingProps) {
-  const { size, width, cell } = g;
-  const vertex = (p: Point) => toVertex(p, size);
-  const loc = (p: Point) => pointToLocation(g, p);
-  const stoneAt = (p: Point): Color | null => stones[p.y * size + p.x] ?? null;
+const samePoint = (a: Point | null, b: Point | null) =>
+  a !== null && b !== null && a.x === b.x && a.y === b.y;
+
+function BoardDrawing({
+  geometry,
+  stones,
+  showCoordinates,
+  highlights,
+  markers,
+  interactive,
+  disabled,
+  playerColor,
+  checkPoint,
+  onPlay,
+  onIllegal,
+  lastMove,
+  lastCapture,
+  screenReader,
+}: DrawingProps) {
+  const { t } = useTranslation();
+  // The geometry object is rebuilt by the parent every render; keep the identity stable.
+  const g = useMemo(
+    () => geometry,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [geometry.size, geometry.width, geometry.cell, geometry.origin],
+  );
+  const { size, cell } = g;
 
   const warnedLabel = useRef(false);
   useEffect(() => {
@@ -120,206 +233,672 @@ function BoardDrawing({ geometry: g, stones, showCoordinates, highlights, marker
     }
   }, [markers]);
 
-  const lines = Array.from({ length: size }, (_, i) => i);
-  const far = g.origin + (size - 1) * cell;
-  const stoneList = useMemo(() => {
-    const out: { point: Point; color: Color }[] = [];
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const c = stones[y * size + x];
-        if (c) out.push({ point: { x, y }, color: c });
-      }
-    }
-    return out;
-  }, [stones, size]);
+  // ---- Touch preview (spec 4.3) ----
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touching = useRef(false);
+  const canTouch = interactive && !disabled;
 
-  const libertyPoints = highlights.filter((h) => h.kind === 'liberty').flatMap((h) => h.points);
-  const ringHighlights = highlights.filter((h) => h.kind !== 'liberty');
+  const clearFadeTimer = () => {
+    if (fadeTimer.current !== null) clearTimeout(fadeTimer.current);
+    fadeTimer.current = null;
+  };
+  useEffect(() => clearFadeTimer, []);
+  // Locking the board (or turning interaction off) drops any preview at once.
+  const [wasTouchable, setWasTouchable] = useState(canTouch);
+  if (wasTouchable !== canTouch) {
+    setWasTouchable(canTouch);
+    if (!canTouch) setPreview(null);
+  }
+  useEffect(() => {
+    if (!canTouch) {
+      touching.current = false;
+      clearFadeTimer();
+    }
+  }, [canTouch]);
+
+  const check = (p: Point): CheckResult => {
+    if (checkPoint) return checkPoint(p);
+    return stones[p.y * size + p.x] ? { legal: false, reason: 'occupied' } : { legal: true };
+  };
+  const pointAt = (e: GestureResponderEvent): Point | null => {
+    const { locationX, locationY } = e.nativeEvent;
+    if (!Number.isFinite(locationX) || !Number.isFinite(locationY)) return null;
+    return pointFromLocation(g, locationX, locationY);
+  };
+  const showPreviewAt = (p: Point | null) => {
+    if (p === null) {
+      setPreview(null);
+      return;
+    }
+    setPreview((prev) =>
+      prev && !prev.fading && samePoint(prev.point, p)
+        ? prev
+        : { point: p, result: check(p), fading: false },
+    );
+  };
+
+  const onGrant = (e: GestureResponderEvent) => {
+    if (!canTouch || touching.current) return;
+    touching.current = true;
+    clearFadeTimer();
+    showPreviewAt(pointAt(e));
+  };
+  const onMove = (e: GestureResponderEvent) => {
+    if (!canTouch || !touching.current) return;
+    showPreviewAt(pointAt(e));
+  };
+  const onRelease = (e: GestureResponderEvent) => {
+    if (!canTouch || !touching.current) return;
+    touching.current = false;
+    const p = pointAt(e);
+    if (p === null) {
+      setPreview(null);
+      return;
+    }
+    const result = check(p);
+    if (result.legal) {
+      setPreview(null);
+      onPlay?.(p);
+      return;
+    }
+    setPreview({ point: p, result, fading: true });
+    clearFadeTimer();
+    fadeTimer.current = setTimeout(() => {
+      fadeTimer.current = null;
+      setPreview(null);
+    }, motion.illegalFade);
+    onIllegal?.(p, result.reason);
+  };
+  const onCancel = () => {
+    touching.current = false;
+    setPreview(null);
+  };
+
+  // ---- Screen-reader announcements (spec 4.5) ----
+  const previous = useRef({ stones, captureId: lastCapture?.id ?? null });
+  useEffect(() => {
+    const before = previous.current;
+    previous.current = { stones, captureId: lastCapture?.id ?? null };
+    if (!screenReader || !lastMove) return;
+    const index = lastMove.y * size + lastMove.x;
+    const placed = stones[index];
+    if (!placed || before.stones[index] != null) return; // not a new stone (e.g. undo)
+    const parts = [t(`board.a11y.played.${placed}`, { vertex: vertexLabel(lastMove, size) })];
+    if (lastCapture && lastCapture.id !== before.captureId && lastCapture.points.length > 0) {
+      parts.push(t('board.a11y.captured', { count: lastCapture.points.length }));
+    }
+    AccessibilityInfo.announceForAccessibility(parts.join(t('board.a11y.separator')));
+  }, [stones, lastMove, lastCapture, screenReader, size, t]);
+
+  const activate = (p: Point) => {
+    if (!canTouch) return;
+    const result = check(p);
+    if (result.legal) onPlay?.(p);
+    else onIllegal?.(p, result.reason);
+  };
+
+  const crosshairOn = preview !== null && !preview.fading && cell < 44;
 
   return (
-    <View style={[styles.shadow, { width, height: width }]}>
+    <View style={[styles.shadow, { width: g.width, height: g.width }]}>
       <View style={styles.clip}>
-        <Svg width={width} height={width}>
-          {/* 1. Bamboo */}
-          <Rect x={0} y={0} width={width} height={width} fill={boardColor.bamboo} />
-          {Array.from({ length: STRIP_COUNT }, (_, i) => {
-            const stripW = width / STRIP_COUNT;
-            return (
-              <G key={i}>
-                <Rect
-                  x={i * stripW}
-                  y={0}
-                  width={stripW}
-                  height={width}
-                  fill={i % 2 === 0 ? boardColor.bambooStripLight : boardColor.bambooStripDark}
-                />
-                <Rect
-                  x={i * stripW}
-                  y={NODE_HEIGHTS[i] * width}
-                  width={stripW}
-                  height={1.5}
-                  fill={boardColor.bambooNode}
-                />
-              </G>
-            );
-          })}
-
-          {/* 2. Grid */}
-          <G testID="board-grid">
-            {lines.map((i) => {
-              const edge = i === 0 || i === size - 1;
-              const w = edge ? BORDER_WIDTH : LINE_WIDTH;
-              const pos = g.origin + i * cell;
-              return (
-                <G key={i}>
-                  <Line
-                    testID={`board-grid-h-${i}`}
-                    x1={g.origin}
-                    y1={pos}
-                    x2={far}
-                    y2={pos}
-                    stroke={boardColor.line}
-                    strokeWidth={w}
-                  />
-                  <Line
-                    testID={`board-grid-v-${i}`}
-                    x1={pos}
-                    y1={g.origin}
-                    x2={pos}
-                    y2={far}
-                    stroke={boardColor.line}
-                    strokeWidth={w}
-                  />
-                </G>
-              );
-            })}
-          </G>
-
-          {/* 3. Star points */}
-          {starPoints(size).map((v) => {
-            const c = loc(parseVertex(v, size));
-            return (
-              <Circle
-                key={v}
-                testID={`board-star-${v}`}
-                cx={c.x}
-                cy={c.y}
-                r={g.starRadius}
-                fill={boardColor.line}
-              />
-            );
-          })}
-
-          {/* 4. Coordinate labels: letters along the bottom, numbers along the left */}
-          {showCoordinates &&
-            columnLabels(size).map((letter, x) => (
-              <SvgText
-                key={`col-${letter}`}
-                testID={`board-label-col-${letter}`}
-                x={g.origin + x * cell}
-                y={far + g.labelOffset + g.labelFontSize * 0.35}
-                fontSize={g.labelFontSize}
-                fontWeight="500"
-                textAnchor="middle"
-                fill={boardColor.line}
-                fillOpacity={opacity.label}
-              >
-                {letter}
-              </SvgText>
-            ))}
-          {showCoordinates &&
-            rowLabels(size).map((label, row) => (
-              <SvgText
-                key={`row-${label}`}
-                testID={`board-label-row-${label}`}
-                x={g.origin - g.labelOffset}
-                y={g.origin + row * cell + g.labelFontSize * 0.35}
-                fontSize={g.labelFontSize}
-                fontWeight="500"
-                textAnchor="middle"
-                fill={boardColor.line}
-                fillOpacity={opacity.label}
-              >
-                {label}
-              </SvgText>
-            ))}
-
-          {/* 5. Liberty highlights (below stones) */}
-          {libertyPoints.map((p) => {
-            const c = loc(p);
-            return (
-              <Circle
-                key={`liberty-${vertex(p)}`}
-                testID={`board-highlight-liberty-${vertex(p)}`}
-                cx={c.x}
-                cy={c.y}
-                r={0.22 * cell}
-                fill={color.accent}
-                fillOpacity={opacity.libertyFill}
-                stroke={color.accent}
-                strokeWidth={1.5}
-              />
-            );
-          })}
-
-          {/* 6. Crosshair — PR 2 */}
-
-          {/* 7. Stones */}
-          {stoneList.map(({ point, color: c }) => {
-            const p = loc(point);
-            return (
-              <Circle
-                key={`stone-${vertex(point)}`}
-                testID={`board-stone-${vertex(point)}`}
-                cx={p.x}
-                cy={p.y}
-                r={g.stoneRadius}
-                fill={c === 'B' ? stone.black : stone.white}
-                stroke={c === 'W' ? stone.whiteEdge : undefined}
-                strokeWidth={c === 'W' ? 1 : undefined}
-              />
-            );
-          })}
-
-          {/* 8. Last-move dot — PR 2 */}
-
-          {/* 9. Markers */}
-          {markers.map((m, i) => (
-            <MarkerShape
-              key={`${m.kind}-${vertex(m.point)}-${i}`}
-              marker={m}
-              g={g}
-              on={stoneAt(m.point)}
-            />
-          ))}
-
-          {/* 10. Rings: hint / success / error */}
-          {ringHighlights.flatMap((h) =>
-            h.points.map((p) => {
-              const c = loc(p);
-              const id = `board-highlight-${h.kind}-${vertex(p)}`;
-              const stroke =
-                h.kind === 'hint' ? color.hint : h.kind === 'success' ? color.success : color.error;
-              return h.kind === 'hint' ? (
-                <HintRing key={id} testID={id} cx={c.x} cy={c.y} r={0.5 * cell} stroke={stroke} />
-              ) : (
-                <Circle
-                  key={id}
-                  testID={id}
-                  cx={c.x}
-                  cy={c.y}
-                  r={0.5 * cell}
-                  fill="none"
-                  stroke={stroke}
-                  strokeWidth={RING_WIDTH}
-                />
-              );
-            }),
-          )}
-
-          {/* 11. Preview (ghost / illegal ring / tag) — PR 2 */}
+        <Svg width={g.width} height={g.width}>
+          <BoardBase g={g} />
+          <Labels
+            g={g}
+            show={showCoordinates}
+            activeColumn={crosshairOn ? preview.point.x : null}
+            activeRow={crosshairOn ? preview.point.y : null}
+          />
+          <LibertyLayer g={g} highlights={highlights} />
+          {crosshairOn ? <Crosshair g={g} point={preview.point} /> : null}
+          <StoneLayer g={g} stones={stones} />
+          <LastMoveDot g={g} stones={stones} lastMove={lastMove} markers={markers} />
+          <MarkerLayer g={g} stones={stones} markers={markers} />
+          <RingLayer g={g} highlights={highlights} />
+          {preview ? (
+            <PreviewLayer g={g} preview={preview} playerColor={playerColor} tag={crosshairOn} />
+          ) : null}
         </Svg>
       </View>
+      {interactive ? (
+        <View
+          testID="board-touch"
+          style={[styles.touch, Platform.OS === 'web' ? styles.touchWeb : null]}
+          onStartShouldSetResponder={() => canTouch}
+          onMoveShouldSetResponder={() => canTouch}
+          onResponderGrant={onGrant}
+          onResponderMove={onMove}
+          onResponderRelease={onRelease}
+          onResponderTerminate={onCancel}
+          onResponderTerminationRequest={() => false}
+        />
+      ) : null}
+      {screenReader ? (
+        <PointsLayer
+          g={g}
+          stones={stones}
+          lastMove={lastMove}
+          markers={markers}
+          highlights={highlights}
+          interactive={interactive}
+          disabled={disabled}
+          onActivate={activate}
+        />
+      ) : null}
+    </View>
+  );
+}
+
+const BoardBase = memo(function BoardBase({ g }: { g: BoardGeometry }) {
+  const { size, width, cell } = g;
+  const lines = Array.from({ length: size }, (_, i) => i);
+  const far = g.origin + (size - 1) * cell;
+  return (
+    <>
+      {/* 1. Bamboo */}
+      <Rect x={0} y={0} width={width} height={width} fill={boardColor.bamboo} />
+      {Array.from({ length: STRIP_COUNT }, (_, i) => {
+        const stripW = width / STRIP_COUNT;
+        return (
+          <G key={i}>
+            <Rect
+              x={i * stripW}
+              y={0}
+              width={stripW}
+              height={width}
+              fill={i % 2 === 0 ? boardColor.bambooStripLight : boardColor.bambooStripDark}
+            />
+            <Rect
+              x={i * stripW}
+              y={NODE_HEIGHTS[i] * width}
+              width={stripW}
+              height={1.5}
+              fill={boardColor.bambooNode}
+            />
+          </G>
+        );
+      })}
+
+      {/* 2. Grid */}
+      <G testID="board-grid">
+        {lines.map((i) => {
+          const edge = i === 0 || i === size - 1;
+          const w = edge ? BORDER_WIDTH : LINE_WIDTH;
+          const pos = g.origin + i * cell;
+          return (
+            <G key={i}>
+              <Line
+                testID={`board-grid-h-${i}`}
+                x1={g.origin}
+                y1={pos}
+                x2={far}
+                y2={pos}
+                stroke={boardColor.line}
+                strokeWidth={w}
+              />
+              <Line
+                testID={`board-grid-v-${i}`}
+                x1={pos}
+                y1={g.origin}
+                x2={pos}
+                y2={far}
+                stroke={boardColor.line}
+                strokeWidth={w}
+              />
+            </G>
+          );
+        })}
+      </G>
+
+      {/* 3. Star points */}
+      {starPoints(size).map((v) => {
+        const c = pointToLocation(g, parseVertex(v, size));
+        return (
+          <Circle
+            key={v}
+            testID={`board-star-${v}`}
+            cx={c.x}
+            cy={c.y}
+            r={g.starRadius}
+            fill={boardColor.line}
+          />
+        );
+      })}
+    </>
+  );
+});
+
+/** 4. Coordinate labels: letters along the bottom, numbers along the left. */
+const Labels = memo(function Labels({
+  g,
+  show,
+  activeColumn,
+  activeRow,
+}: {
+  g: BoardGeometry;
+  show: boolean;
+  /** Column / row index (Point.x / Point.y) of the previewed point: its labels turn accent. */
+  activeColumn: number | null;
+  activeRow: number | null;
+}) {
+  if (!show) return null;
+  const { size, cell } = g;
+  const far = g.origin + (size - 1) * cell;
+  return (
+    <>
+      {columnLabels(size).map((letter, x) => {
+        const active = x === activeColumn;
+        return (
+          <SvgText
+            key={`col-${letter}`}
+            testID={`board-label-col-${letter}`}
+            x={g.origin + x * cell}
+            y={far + g.labelOffset + g.labelFontSize * 0.35}
+            fontSize={g.labelFontSize}
+            fontWeight={active ? '700' : '500'}
+            textAnchor="middle"
+            fill={active ? color.accent : boardColor.line}
+            fillOpacity={active ? 1 : opacity.label}
+          >
+            {letter}
+          </SvgText>
+        );
+      })}
+      {rowLabels(size).map((label, row) => {
+        const active = size - 1 - row === activeRow;
+        return (
+          <SvgText
+            key={`row-${label}`}
+            testID={`board-label-row-${label}`}
+            x={g.origin - g.labelOffset}
+            y={g.origin + row * cell + g.labelFontSize * 0.35}
+            fontSize={g.labelFontSize}
+            fontWeight={active ? '700' : '500'}
+            textAnchor="middle"
+            fill={active ? color.accent : boardColor.line}
+            fillOpacity={active ? 1 : opacity.label}
+          >
+            {label}
+          </SvgText>
+        );
+      })}
+    </>
+  );
+});
+
+/** 5. Liberty highlights (below stones). */
+const LibertyLayer = memo(function LibertyLayer({
+  g,
+  highlights,
+}: {
+  g: BoardGeometry;
+  highlights: readonly Highlight[];
+}) {
+  const points = highlights.filter((h) => h.kind === 'liberty').flatMap((h) => h.points);
+  return (
+    <>
+      {points.map((p) => {
+        const c = pointToLocation(g, p);
+        const v = toVertex(p, g.size);
+        return (
+          <Circle
+            key={`liberty-${v}`}
+            testID={`board-highlight-liberty-${v}`}
+            cx={c.x}
+            cy={c.y}
+            r={0.22 * g.cell}
+            fill={color.accent}
+            fillOpacity={opacity.libertyFill}
+            stroke={color.accent}
+            strokeWidth={1.5}
+          />
+        );
+      })}
+    </>
+  );
+});
+
+/** 6. Crosshair (preview, cell < 44 px): row and column lines through the previewed point. */
+function Crosshair({ g, point }: { g: BoardGeometry; point: Point }) {
+  const c = pointToLocation(g, point);
+  const far = g.origin + (g.size - 1) * g.cell;
+  const common = {
+    stroke: color.accent,
+    strokeWidth: CROSSHAIR_WIDTH,
+    strokeOpacity: opacity.crosshair,
+  } as const;
+  return (
+    <G testID="board-crosshair">
+      <Line x1={g.origin} y1={c.y} x2={far} y2={c.y} {...common} />
+      <Line x1={c.x} y1={g.origin} x2={c.x} y2={far} {...common} />
+    </G>
+  );
+}
+
+/** 7. Stones. */
+const StoneLayer = memo(function StoneLayer({
+  g,
+  stones,
+}: {
+  g: BoardGeometry;
+  stones: readonly (Color | null)[];
+}) {
+  const { size } = g;
+  const list: { point: Point; color: Color }[] = [];
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const c = stones[y * size + x];
+      if (c) list.push({ point: { x, y }, color: c });
+    }
+  }
+  return (
+    <>
+      {list.map(({ point, color: c }) => {
+        const p = pointToLocation(g, point);
+        return (
+          <Circle
+            key={`stone-${toVertex(point, size)}`}
+            testID={`board-stone-${toVertex(point, size)}`}
+            cx={p.x}
+            cy={p.y}
+            r={g.stoneRadius}
+            fill={c === 'B' ? stone.black : stone.white}
+            stroke={c === 'W' ? stone.whiteEdge : undefined}
+            strokeWidth={c === 'W' ? 1 : undefined}
+          />
+        );
+      })}
+    </>
+  );
+});
+
+/** 8. Last-move dot: small filled dot in the opposite stone color; hidden under a marker. */
+const LastMoveDot = memo(function LastMoveDot({
+  g,
+  stones,
+  lastMove,
+  markers,
+}: {
+  g: BoardGeometry;
+  stones: readonly (Color | null)[];
+  lastMove: Point | null;
+  markers: readonly Marker[];
+}) {
+  if (!lastMove) return null;
+  const on = stones[lastMove.y * g.size + lastMove.x] ?? null;
+  if (on === null || markers.some((m) => samePoint(m.point, lastMove))) return null;
+  const c = pointToLocation(g, lastMove);
+  return (
+    <Circle
+      testID="board-last-move"
+      cx={c.x}
+      cy={c.y}
+      r={g.lastMoveRadius}
+      fill={on === 'B' ? stone.white : stone.black}
+    />
+  );
+});
+
+/** 9. Markers. */
+const MarkerLayer = memo(function MarkerLayer({
+  g,
+  stones,
+  markers,
+}: {
+  g: BoardGeometry;
+  stones: readonly (Color | null)[];
+  markers: readonly Marker[];
+}) {
+  return (
+    <>
+      {markers.map((m, i) => (
+        <MarkerShape
+          key={`${m.kind}-${toVertex(m.point, g.size)}-${i}`}
+          marker={m}
+          g={g}
+          on={stones[m.point.y * g.size + m.point.x] ?? null}
+        />
+      ))}
+    </>
+  );
+});
+
+/** 10. Rings: hint / success / error. */
+const RingLayer = memo(function RingLayer({
+  g,
+  highlights,
+}: {
+  g: BoardGeometry;
+  highlights: readonly Highlight[];
+}) {
+  return (
+    <>
+      {highlights
+        .filter((h) => h.kind !== 'liberty')
+        .flatMap((h) =>
+          h.points.map((p) => {
+            const c = pointToLocation(g, p);
+            const id = `board-highlight-${h.kind}-${toVertex(p, g.size)}`;
+            const stroke =
+              h.kind === 'hint' ? color.hint : h.kind === 'success' ? color.success : color.error;
+            return h.kind === 'hint' ? (
+              <HintRing key={id} testID={id} cx={c.x} cy={c.y} r={0.5 * g.cell} stroke={stroke} />
+            ) : (
+              <Circle
+                key={id}
+                testID={id}
+                cx={c.x}
+                cy={c.y}
+                r={0.5 * g.cell}
+                fill="none"
+                stroke={stroke}
+                strokeWidth={RING_WIDTH}
+              />
+            );
+          }),
+        )}
+    </>
+  );
+});
+
+/** 11. Preview: ghost stone or illegal ring, plus the coordinate tag when the crosshair shows. */
+function PreviewLayer({
+  g,
+  preview,
+  playerColor,
+  tag,
+}: {
+  g: BoardGeometry;
+  preview: Preview;
+  playerColor: Color;
+  tag: boolean;
+}) {
+  const c = pointToLocation(g, preview.point);
+  return (
+    <>
+      {preview.result.legal ? (
+        <Circle
+          testID="board-ghost"
+          cx={c.x}
+          cy={c.y}
+          r={g.stoneRadius}
+          fill={playerColor === 'B' ? stone.black : stone.white}
+          stroke={playerColor === 'W' ? stone.whiteEdge : undefined}
+          strokeWidth={playerColor === 'W' ? 1 : undefined}
+          opacity={opacity.ghost}
+        />
+      ) : (
+        <IllegalRing cx={c.x} cy={c.y} r={0.44 * g.cell} fading={preview.fading} />
+      )}
+      {tag ? <CoordinateTag g={g} point={preview.point} /> : null}
+    </>
+  );
+}
+
+/** Dashed error ring; after touch-up it fades out over `motion.illegalFade`. */
+function IllegalRing({
+  cx,
+  cy,
+  r,
+  fading,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  fading: boolean;
+}) {
+  const reduceMotion = useReduceMotion();
+  const [fade] = useState(() => new Animated.Value(1));
+  useEffect(() => {
+    if (!fading) {
+      fade.setValue(1);
+      return;
+    }
+    if (reduceMotion) return;
+    const animation = Animated.timing(fade, {
+      toValue: 0,
+      duration: motion.illegalFade,
+      useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [fading, reduceMotion, fade]);
+  return (
+    <AnimatedCircle
+      testID="board-illegal-ring"
+      cx={cx}
+      cy={cy}
+      r={r}
+      fill={color.error}
+      fillOpacity={opacity.illegalFill}
+      stroke={color.error}
+      strokeWidth={ILLEGAL_RING_WIDTH}
+      strokeDasharray="4,3"
+      opacity={fade}
+    />
+  );
+}
+
+/** "E5" pill, max(2.25 cell, 56 px) above the point; beside it when it would leave the board. */
+function CoordinateTag({ g, point }: { g: BoardGeometry; point: Point }) {
+  const c = pointToLocation(g, point);
+  const text = vertexLabel(point, g.size);
+  const w = Math.max(TAG_MIN_WIDTH, text.length * 8 + 12);
+  const offset = Math.max(2.25 * g.cell, 56);
+  let cx = c.x;
+  let cy = c.y - offset;
+  if (cy - TAG_HEIGHT / 2 < 0) {
+    cy = c.y;
+    cx = point.x >= g.size / 2 ? c.x - offset : c.x + offset;
+  }
+  return (
+    <>
+      <Rect
+        testID="board-coord-tag"
+        x={cx - w / 2}
+        y={cy - TAG_HEIGHT / 2}
+        width={w}
+        height={TAG_HEIGHT}
+        rx={TAG_HEIGHT / 2}
+        fill={color.surface}
+        stroke={color.border}
+        strokeWidth={1}
+      />
+      <SvgText
+        testID="board-coord-tag-text"
+        x={cx}
+        y={cy + 13 * 0.35}
+        fontSize={13}
+        fontWeight="600"
+        textAnchor="middle"
+        fill={color.accent}
+      >
+        {text}
+      </SvgText>
+    </>
+  );
+}
+
+/** One invisible accessible element per intersection; rendered only while a screen reader is on. */
+function PointsLayer({
+  g,
+  stones,
+  lastMove,
+  markers,
+  highlights,
+  interactive,
+  disabled,
+  onActivate,
+}: {
+  g: BoardGeometry;
+  stones: readonly (Color | null)[];
+  lastMove: Point | null;
+  markers: readonly Marker[];
+  highlights: readonly Highlight[];
+  interactive: boolean;
+  disabled: boolean;
+  onActivate: (p: Point) => void;
+}) {
+  const { t } = useTranslation();
+  const playable = interactive && !disabled;
+  const separator = t('board.a11y.separator');
+  const items: React.ReactElement[] = [];
+  for (let y = 0; y < g.size; y++) {
+    for (let x = 0; x < g.size; x++) {
+      const p = { x, y };
+      const v = vertexLabel(p, g.size);
+      const content = stones[y * g.size + x];
+      const parts = [
+        t(`board.a11y.point.${content === 'B' ? 'black' : content === 'W' ? 'white' : 'empty'}`, {
+          vertex: v,
+        }),
+      ];
+      if (samePoint(lastMove, p)) parts.push(t('board.a11y.lastMove'));
+      for (const m of markers) {
+        if (!samePoint(m.point, p)) continue;
+        parts.push(
+          m.kind === 'label'
+            ? t('board.a11y.marker.label', { text: m.text })
+            : t(`board.a11y.marker.${m.kind}`),
+        );
+      }
+      for (const h of highlights) {
+        if (h.points.some((q) => samePoint(q, p))) parts.push(t(`board.a11y.highlight.${h.kind}`));
+      }
+      const c = pointToLocation(g, p);
+      const style = {
+        position: 'absolute',
+        left: c.x - g.cell / 2,
+        top: c.y - g.cell / 2,
+        width: g.cell,
+        height: g.cell,
+      } as const;
+      const common = {
+        testID: `board-point-${v.toLowerCase()}`,
+        accessible: true,
+        accessibilityLabel: parts.join(separator),
+        style,
+      };
+      items.push(
+        playable ? (
+          <Pressable
+            key={v}
+            {...common}
+            accessibilityRole="button"
+            accessibilityHint={t('board.a11y.playHint')}
+            onPress={() => onActivate(p)}
+          />
+        ) : (
+          <View key={v} {...common} />
+        ),
+      );
+    }
+  }
+  return (
+    <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+      {items}
     </View>
   );
 }
@@ -438,6 +1017,8 @@ function HintRing({
 }
 
 const styles = StyleSheet.create({
+  touch: { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 },
+  touchWeb: { touchAction: 'none', cursor: 'pointer' } as object,
   root: { alignSelf: 'center' },
   rootUnmeasured: { width: '100%', aspectRatio: 1 },
   shadow: Platform.select({
