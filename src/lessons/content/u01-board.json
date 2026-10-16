@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "id": "u01-board",
+  "unit": 1,
+  "kind": "lesson",
+  "titleKey": "lesson.u01-board.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {}
+      },
+      "markers": [
+        {
+          "kind": "circle",
+          "at": "c3"
+        }
+      ],
+      "textKey": "lesson.u01-board.s1"
+    },
+    {
+      "moves": [
+        {
+          "color": "B",
+          "at": "c3"
+        },
+        {
+          "color": "W",
+          "at": "d3"
+        },
+        {
+          "color": "B",
+          "at": "c2"
+        }
+      ],
+      "textKey": "lesson.u01-board.s2"
+    },
+    {
+      "moves": [
+        {
+          "color": "W",
+          "at": "b3"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "textKey": "lesson.u01-board.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "tap-marked",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {},
+      "mode": "one",
+      "answer": {
+        "points": ["d2"]
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "d2"
+        }
+      ],
+      "promptKey": "lesson.u01-board.e1.prompt",
+      "hintKey": "lesson.u01-board.e1.hint",
+      "hintPoints": ["d2"]
+    },
+    {
+      "id": "tap-named",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {},
+      "mode": "one",
+      "answer": {
+        "points": ["c4"]
+      },
+      "promptKey": "lesson.u01-board.e2.prompt",
+      "hintKey": "lesson.u01-board.e2.hint",
+      "hintPoints": ["c4"]
+    },
+    {
+      "id": "play-black",
+      "type": "play-move",
+      "size": 5,
+      "setup": {},
+      "toPlay": "B",
+      "goal": {
+        "kind": "point",
+        "points": ["d2"]
+      },
+      "promptKey": "lesson.u01-board.e3.prompt",
+      "hintKey": "lesson.u01-board.e3.hint",
+      "hintPoints": ["d2"]
+    },
+    {
+      "id": "whose-turn",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["c3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u01-board.e4.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u01-board.e4.o2",
+          "whyKey": "lesson.u01-board.e4.w2"
+        },
+        {
+          "textKey": "lesson.u01-board.e4.o3",
+          "whyKey": "lesson.u01-board.e4.w3"
+        }
+      ],
+      "promptKey": "lesson.u01-board.e4.prompt",
+      "explainKey": "lesson.u01-board.e4.explain"
+    },
+    {
+      "id": "play-white",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c3"]
+      },
+      "toPlay": "W",
+      "goal": {
+        "kind": "point",
+        "points": ["b3"]
+      },
+      "promptKey": "lesson.u01-board.e5.prompt",
+      "hintKey": "lesson.u01-board.e5.hint",
+      "hintPoints": ["b3"]
+    },
+    {
+      "id": "stones-stay",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["d3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u01-board.e6.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u01-board.e6.o2",
+          "whyKey": "lesson.u01-board.e6.w2"
+        },
+        {
+          "textKey": "lesson.u01-board.e6.o3",
+          "whyKey": "lesson.u01-board.e6.w3"
+        }
+      ],
+      "promptKey": "lesson.u01-board.e6.prompt",
+      "explainKey": "lesson.u01-board.e6.explain"
+    },
+    {
+      "id": "tap-whites",
+      "type": "tap-point",
+      "size": 7,
+      "setup": {
+        "B": ["c3", "e5", "f2"],
+        "W": ["d4", "b2", "f6"]
+      },
+      "mode": "all",
+      "answer": {
+        "points": ["d4", "b2", "f6"]
+      },
+      "promptKey": "lesson.u01-board.e7.prompt",
+      "hintKey": "lesson.u01-board.e7.hint"
+    }
+  ]
+}

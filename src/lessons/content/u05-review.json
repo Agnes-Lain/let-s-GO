@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "id": "u05-review",
+  "unit": 5,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u05-review.title",
+  "exercises": [
+    {
+      "id": "r-liberties",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["b1"],
+        "W": ["c1"]
+      },
+      "answer": {
+        "libertiesOf": "b1"
+      },
+      "promptKey": "lesson.u05-review.e1.prompt",
+      "hintKey": "lesson.u05-review.e1.hint"
+    },
+    {
+      "id": "r-groups",
+      "type": "count",
+      "size": 7,
+      "setup": {
+        "B": ["b6", "c6", "d5", "e5", "b3", "b2"]
+      },
+      "answer": 3,
+      "promptKey": "lesson.u05-review.e2.prompt",
+      "hintKey": "lesson.u05-review.e2.hint",
+      "explainKey": "lesson.u05-review.e2.explain"
+    },
+    {
+      "id": "r-connect",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["d2", "d4"],
+        "W": ["c3", "e3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "connect",
+        "a": "d2",
+        "b": "d4"
+      },
+      "promptKey": "lesson.u05-review.e3.prompt",
+      "hintKey": "lesson.u05-review.e3.hint",
+      "hintPoints": ["d3"]
+    },
+    {
+      "id": "r-capture-group",
+      "type": "play-move",
+      "size": 7,
+      "setup": {
+        "B": ["c4", "f4", "d3", "e3", "d5"],
+        "W": ["d4", "e4"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "min": 2
+      },
+      "promptKey": "lesson.u05-review.e4.prompt",
+      "hintKey": "lesson.u05-review.e4.hint",
+      "hintPoints": ["e5"]
+    },
+    {
+      "id": "r-atari",
+      "type": "play-move",
+      "size": 7,
+      "setup": {
+        "B": ["b3", "b4", "d4", "c2"],
+        "W": ["c3", "c4"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u05-review.e5.prompt",
+      "hintKey": "lesson.u05-review.e5.hint",
+      "hintPoints": ["d3", "c5"]
+    },
+    {
+      "id": "r-escape",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["e3"],
+        "W": ["e2", "d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "save",
+        "target": "e3"
+      },
+      "promptKey": "lesson.u05-review.e6.prompt",
+      "hintKey": "lesson.u05-review.e6.hint",
+      "hintPoints": ["e4"]
+    },
+    {
+      "id": "r-tap-group-libs",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "d3"],
+        "W": ["d4"]
+      },
+      "mode": "all",
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u05-review.e7.prompt",
+      "hintKey": "lesson.u05-review.e7.hint"
+    },
+    {
+      "id": "r-which-capture",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "e3", "c4", "d4", "c2"],
+        "W": ["c3", "d3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u05-review.e8.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u05-review.e8.o2",
+          "whyKey": "lesson.u05-review.e8.w2"
+        },
+        {
+          "textKey": "lesson.u05-review.e8.o3",
+          "whyKey": "lesson.u05-review.e8.w3"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "d2",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "a5",
+          "text": "B"
+        },
+        {
+          "kind": "label",
+          "at": "e5",
+          "text": "C"
+        }
+      ],
+      "promptKey": "lesson.u05-review.e8.prompt",
+      "explainKey": "lesson.u05-review.e8.explain"
+    }
+  ]
+}

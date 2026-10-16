@@ -127,19 +127,18 @@ function NodeCard({
         <Text style={[styles.caption, dimmed && styles.dimText]} numberOfLines={1}>
           {caption}
         </Text>
-        <Text
-          style={[styles.title, dimmed && styles.dimText]}
-          numberOfLines={row.state === 'done' ? 1 : 2}
-        >
+        <Text style={[styles.title, dimmed && styles.dimText]} numberOfLines={2}>
           {title}
         </Text>
         {row.state === 'done' ? <Stars stars={row.stars} /> : null}
+        {row.state === 'soon' ? (
+          // M4 decision 1: the badge sits on its own line under the title (long fr/zh titles).
+          <View style={styles.badge} testID={`home-badge-${row.key}`}>
+            <Text style={styles.badgeLabel}>{t('home.unit.comingSoon')}</Text>
+          </View>
+        ) : null}
       </View>
-      {row.state === 'soon' ? (
-        <View style={styles.badge}>
-          <Text style={styles.badgeLabel}>{t('home.unit.comingSoon')}</Text>
-        </View>
-      ) : row.state === 'locked' ? (
+      {row.state === 'soon' ? null : row.state === 'locked' ? (
         <LockIcon color={color.hint} size={20} />
       ) : (
         <ChevronIcon color={color.textSecondary} size={22} />
@@ -288,11 +287,13 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    height: CARD_HEIGHT,
+    // Grows for a two-line title or the "coming soon" badge line (M4 §5).
+    minHeight: CARD_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
     backgroundColor: color.surface,
     borderWidth: 1,
     borderColor: color.border,
@@ -306,6 +307,8 @@ const styles = StyleSheet.create({
   dimText: { color: color.textSecondary },
   stars: { flexDirection: 'row', gap: 2, marginTop: 2 },
   badge: {
+    alignSelf: 'flex-start',
+    marginTop: 4,
     paddingVertical: 2,
     paddingHorizontal: 10,
     borderRadius: radius.pill,

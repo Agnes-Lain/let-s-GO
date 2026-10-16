@@ -26,8 +26,29 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `EXPO_PUBLIC_DEV_LESSONS=1`. Web check: `npm run verify:web:m3`; screenshots `docs/screenshots/M3/`.
   **Pending: the PO's iPhone check** — `docs/specs/M3-iphone-checklist.md`.
 
+## In progress — M4 item 1: content units 1–5 (branch `claude/m4-content-units-1-5`, no PR yet)
+Paused 2026-10-16 to save tokens. Resume in a new session on this branch.
+- **Done:** spec `docs/specs/M4-content-units-1-5.md` + mockup `docs/specs/M4-mockup.html` —
+  **approved by the PO** (all 7 decisions in spec §12). Developer started (commit "WIP M4"):
+  six lesson JSON files in `src/lessons/content/` (u01-board … u05-atari, u05-review), registry +
+  loader (`PLANNED_UNITS = [6]`), i18n texts in all three files, unit-map badge moved under the
+  title (`src/exercises/UnitMap.tsx`). Typecheck passes.
+- **Left to build (developer):**
+  1. French typography: ~140 fr strings miss the non-breaking space before `! ? : ;`
+     (`__tests__/qa/i18n-content.test.ts`) — fix in `src/i18n/fr.json`.
+  2. Update M3 tests that assume units 1–6 are all "coming soon" / only the dev sample exists:
+     `__tests__/app/{home-map,index,placeholders,practice}.test.tsx`, `__tests__/qa/screens.test.tsx`,
+     `src/lessons/loader.test.ts` (85 failing tests at pause; 1161 passing).
+  3. Check every spec §4 AC is implemented and add tests for them; confirm the validator passes
+     all six lessons; lint + typecheck + test green.
+  4. Web screenshots at 360×740 → `docs/screenshots/M4/` (unit map en/fr/zh-CN, one exercise per unit).
+- **Then:** qa agent (spec §4 → tests, web check) → developer/qa loop until READY → tick
+  `docs/ROADMAP.md` → update this file → one PR (plain language, ASCII Go diagrams with ✓).
+- Note: in a fresh cloud session the custom agents load only if the repo is attached at session
+  start; otherwise run them as general-purpose agents told to follow `.claude/agents/<role>.md`.
+
 ## Next
-- **M4** content units 1–5 (zh + en + fr) as lesson JSON + beginner bot v1 / Capture Go (`docs/ROADMAP.md`).
+- **M4 item 2:** beginner bot v1 (heuristic) + Capture Go 吃子棋 (Unit 6) — separate spec/PR.
 
 ## Known follow-ups (minor, not scheduled)
 - The no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile (prefer

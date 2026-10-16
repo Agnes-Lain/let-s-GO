@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "id": "u03-connection",
+  "unit": 3,
+  "kind": "lesson",
+  "titleKey": "lesson.u03-connection.title",
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3", "d3"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c2", "c4", "b3", "d2", "d4", "e3"]
+        }
+      ],
+      "textKey": "lesson.u03-connection.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3", "d4"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "hint",
+          "points": ["c4", "d3"]
+        }
+      ],
+      "textKey": "lesson.u03-connection.s2"
+    },
+    {
+      "moves": [
+        {
+          "color": "B",
+          "at": "d3"
+        }
+      ],
+      "textKey": "lesson.u03-connection.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "one-or-two-a",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b2", "b3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u03-connection.e1.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u03-connection.e1.o2",
+          "whyKey": "lesson.u03-connection.e1.w2"
+        }
+      ],
+      "promptKey": "lesson.u03-connection.e1.prompt",
+      "explainKey": "lesson.u03-connection.e1.explain"
+    },
+    {
+      "id": "one-or-two-b",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["c2", "d3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u03-connection.e2.o1",
+          "whyKey": "lesson.u03-connection.e2.w1"
+        },
+        {
+          "textKey": "lesson.u03-connection.e2.o2",
+          "correct": true
+        }
+      ],
+      "promptKey": "lesson.u03-connection.e2.prompt",
+      "explainKey": "lesson.u03-connection.e2.explain"
+    },
+    {
+      "id": "which-pair",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["b6", "d6", "b3", "c2", "f5", "f4"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u03-connection.e3.o1",
+          "whyKey": "lesson.u03-connection.e3.w1"
+        },
+        {
+          "textKey": "lesson.u03-connection.e3.o2",
+          "whyKey": "lesson.u03-connection.e3.w2"
+        },
+        {
+          "textKey": "lesson.u03-connection.e3.o3",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "b6",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "b3",
+          "text": "B"
+        },
+        {
+          "kind": "label",
+          "at": "f5",
+          "text": "C"
+        }
+      ],
+      "promptKey": "lesson.u03-connection.e3.prompt",
+      "hintKey": "lesson.u03-connection.e3.hint",
+      "explainKey": "lesson.u03-connection.e3.explain"
+    },
+    {
+      "id": "count-group",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "d3"],
+        "W": ["c4"]
+      },
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u03-connection.e4.prompt",
+      "hintKey": "lesson.u03-connection.e4.hint",
+      "explainKey": "lesson.u03-connection.e4.explain"
+    },
+    {
+      "id": "connect-gap",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c2", "c4"],
+        "W": ["b3", "d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "connect",
+        "a": "c2",
+        "b": "c4"
+      },
+      "promptKey": "lesson.u03-connection.e5.prompt",
+      "hintKey": "lesson.u03-connection.e5.hint",
+      "hintPoints": ["c3"],
+      "explainKey": "lesson.u03-connection.e5.explain"
+    },
+    {
+      "id": "connect-diagonal",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b2", "c3"],
+        "W": ["c2"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "connect",
+        "a": "b2",
+        "b": "c3"
+      },
+      "promptKey": "lesson.u03-connection.e6.prompt",
+      "hintKey": "lesson.u03-connection.e6.hint",
+      "hintPoints": ["b3"]
+    },
+    {
+      "id": "tap-group",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "c2", "d2", "b4"],
+        "W": ["d3", "b3"]
+      },
+      "mode": "all",
+      "answer": {
+        "points": ["c3", "c2", "d2"]
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u03-connection.e7.prompt",
+      "hintKey": "lesson.u03-connection.e7.hint",
+      "explainKey": "lesson.u03-connection.e7.explain"
+    }
+  ]
+}

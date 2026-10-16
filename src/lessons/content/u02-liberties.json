@@ -1,0 +1,227 @@
+{
+  "schema": 1,
+  "id": "u02-liberties",
+  "unit": 2,
+  "kind": "lesson",
+  "titleKey": "lesson.u02-liberties.title",
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c2", "c4", "b3", "d3"]
+        }
+      ],
+      "textKey": "lesson.u02-liberties.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a3"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["a2", "a4", "b3"]
+        }
+      ],
+      "textKey": "lesson.u02-liberties.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a1"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["a2", "b1"]
+        }
+      ],
+      "markers": [
+        {
+          "kind": "cross",
+          "at": "b2"
+        }
+      ],
+      "textKey": "lesson.u02-liberties.s3"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "W",
+          "at": "c4"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c2", "c4", "b3", "d3"]
+        }
+      ],
+      "textKey": "lesson.u02-liberties.s4"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "tap-center",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["d3"]
+      },
+      "mode": "all",
+      "answer": {
+        "libertiesOf": "d3"
+      },
+      "promptKey": "lesson.u02-liberties.e1.prompt",
+      "hintKey": "lesson.u02-liberties.e1.hint"
+    },
+    {
+      "id": "count-edge",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["e3"]
+      },
+      "answer": {
+        "libertiesOf": "e3"
+      },
+      "promptKey": "lesson.u02-liberties.e2.prompt",
+      "hintKey": "lesson.u02-liberties.e2.hint"
+    },
+    {
+      "id": "tap-corner",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a1"]
+      },
+      "mode": "all",
+      "answer": {
+        "libertiesOf": "a1"
+      },
+      "promptKey": "lesson.u02-liberties.e3.prompt",
+      "hintKey": "lesson.u02-liberties.e3.hint"
+    },
+    {
+      "id": "count-enemy",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["c4", "b3"]
+      },
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "promptKey": "lesson.u02-liberties.e4.prompt",
+      "hintKey": "lesson.u02-liberties.e4.hint"
+    },
+    {
+      "id": "fewest",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["c5", "a3", "g1"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u02-liberties.e5.o1",
+          "whyKey": "lesson.u02-liberties.e5.w1"
+        },
+        {
+          "textKey": "lesson.u02-liberties.e5.o2",
+          "whyKey": "lesson.u02-liberties.e5.w2"
+        },
+        {
+          "textKey": "lesson.u02-liberties.e5.o3",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c5",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "a3",
+          "text": "B"
+        },
+        {
+          "kind": "label",
+          "at": "g1",
+          "text": "C"
+        }
+      ],
+      "promptKey": "lesson.u02-liberties.e5.prompt",
+      "explainKey": "lesson.u02-liberties.e5.explain"
+    },
+    {
+      "id": "last-liberty",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["c4", "b3", "d3"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["c2"]
+      },
+      "promptKey": "lesson.u02-liberties.e6.prompt",
+      "hintKey": "lesson.u02-liberties.e6.hint",
+      "hintPoints": ["c2"]
+    },
+    {
+      "id": "take-liberty",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["c4"]
+      },
+      "toPlay": "W",
+      "goal": {
+        "kind": "point",
+        "points": ["c2", "b3", "d3"]
+      },
+      "promptKey": "lesson.u02-liberties.e7.prompt",
+      "hintKey": "lesson.u02-liberties.e7.hint",
+      "hintPoints": ["c2", "b3", "d3"]
+    },
+    {
+      "id": "count-diagonal",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["b2", "d4"]
+      },
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "promptKey": "lesson.u02-liberties.e8.prompt",
+      "hintKey": "lesson.u02-liberties.e8.hint",
+      "explainKey": "lesson.u02-liberties.e8.explain"
+    }
+  ]
+}
