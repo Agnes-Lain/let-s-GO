@@ -153,6 +153,7 @@ export default function BoardDemoScreen() {
             <Pressable
               key={size}
               onPress={() => chooseSize(size)}
+              testID={`board-demo-size-${size}`}
               accessibilityRole="button"
               accessibilityLabel={t('dev.board.sizeA11y', { size })}
               accessibilityState={{ selected }}
@@ -217,6 +218,7 @@ export default function BoardDemoScreen() {
             <Pressable
               key={s.id}
               onPress={() => chooseScenario(s)}
+              testID={`board-demo-scenario-${s.id}`}
               accessibilityRole="button"
               accessibilityState={{ selected }}
               style={[styles.chip, selected && styles.chipSelected]}
@@ -232,6 +234,7 @@ export default function BoardDemoScreen() {
       <View style={styles.actions}>
         <Pressable
           onPress={undo}
+          testID="board-demo-undo"
           disabled={history.length <= 1}
           accessibilityRole="button"
           accessibilityState={{ disabled: history.length <= 1 }}
@@ -241,6 +244,7 @@ export default function BoardDemoScreen() {
         </Pressable>
         <Pressable
           onPress={() => restart(scenario, view.size)}
+          testID="board-demo-reset"
           accessibilityRole="button"
           style={styles.action}
         >

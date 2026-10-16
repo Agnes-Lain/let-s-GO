@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "verify:web": "node scripts/verify-web.mjs"
   },
   "dependencies": {
     "expo": "~57.0.30",
