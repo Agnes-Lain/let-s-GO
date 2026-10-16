@@ -30,8 +30,7 @@ export async function playStoneSound(): Promise<void> {
     const p = getPlayer();
     if (!p) return;
     await p.seekTo(0);
-    // `.call` on purpose: __tests__/qa/m2-board-quality greps src/board for engine move calls.
-    await p.play.call(p);
+    await p.play();
   } catch {
     // ignore: sound is optional
   }
