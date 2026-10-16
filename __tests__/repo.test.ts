@@ -52,7 +52,6 @@ describe('tooling (AC2, AC3, AC5)', () => {
 
 describe('folder layout (AC7)', () => {
   it.each([
-    ['src/lessons/index.ts', 'M3'],
     ['src/exercises/index.ts', 'M3'],
     ['src/store/index.ts', 'M3'],
     ['src/bot/index.ts', 'M4'],
@@ -82,8 +81,8 @@ describe('folder layout (AC7)', () => {
     expect(existsSync(join(root, path))).toBe(true);
   });
 
-  it('has no lesson schema yet (M3 owns it)', () => {
-    expect(existsSync(join(root, 'src/lessons/schema.ts'))).toBe(false);
+  it('has the lesson schema (M3)', () => {
+    expect(existsSync(join(root, 'src/lessons/schema.ts'))).toBe(true);
   });
 
   it('keeps only routes in app/ (no tests or helpers that expo-router would turn into routes)', () => {

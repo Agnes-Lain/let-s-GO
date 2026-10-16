@@ -73,7 +73,10 @@ describe('copy table §4 is implemented verbatim', () => {
   });
 
   it('has exactly the 20 keys of the spec (M2 board/engine/dev keys are counted separately)', () => {
-    const m0Keys = Object.keys(zhCN).filter((key) => !/^(engine|board|dev)\./.test(key));
+    // M3 adds lesson texts (`lesson.<id>.…`) and unit titles (`unit.N.title`).
+    const m0Keys = Object.keys(zhCN).filter(
+      (key) => !/^(engine|board|dev|unit)\.|^lesson\.u\d\d-/.test(key),
+    );
     expect(m0Keys).toHaveLength(20);
   });
 });
@@ -87,8 +90,19 @@ describe('every key used in code exists in all languages (and none are orphaned)
     [...sources.matchAll(/\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'/g)].map((m) => m[1] ?? m[2]),
   );
 
-  // t(`prefix.${x}`) calls: every key under that prefix counts as used.
-  const dynamicPrefixes = [...sources.matchAll(/\bt\(\s*`([^`$]+)\$\{/g)].map((m) => m[1]);
+  // t(`prefix.${x}`) calls and key templates such as `unit.${n}.title`: every key under that
+  // prefix counts as used.
+  const dynamicPrefixes = [
+    ...sources.matchAll(/\bt\(\s*`([^`$]+)\$\{/g),
+    ...sources.matchAll(/`([a-z][\w-]*\.)\$\{/g),
+  ].map((m) => m[1]);
+
+  // Lesson JSON files reference their texts by key (`titleKey`, `promptKey`, …).
+  const lessonDir = join(root, 'src/lessons/content');
+  for (const file of readdirSync(lessonDir).filter((f) => f.endsWith('.json'))) {
+    const json = readFileSync(join(lessonDir, file), 'utf8');
+    for (const m of json.matchAll(/"\w+Key":\s*"([^"]+)"/g)) usedKeys.add(m[1]);
+  }
 
   it('finds the keys used by the screens', () => {
     expect(usedKeys.size).toBeGreaterThan(10);
