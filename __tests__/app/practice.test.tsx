@@ -1,7 +1,7 @@
 // M3 exercise runners and result screen (spec §6.3–6.6, ACs 59–95) on the sample lesson.
 import { act, fireEvent, screen } from 'expo-router/testing-library';
 import { router as appRouter } from 'expo-router';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, Modal } from 'react-native';
 
 import { boardGeometry, pointToLocation } from '@/board';
 import { playStoneSound } from '@/board/sound';
@@ -141,8 +141,33 @@ describe('shell (AC 59–67)', () => {
     await press('practice-close');
     await press('leave-confirm');
     await settle();
+    // Navigation waits for the sheet to finish closing (iOS ignores a pop during a modal dismissal).
+    await advance(600);
     expect(router.getPathname()).toBe('/');
     expect(progressStore.getState().lessons).toEqual({});
+  });
+
+  it('AC 65: Leave navigates as soon as the sheet reports it has closed', async () => {
+    const router = await open();
+    await press('practice-close');
+    await press('leave-confirm');
+    await settle();
+    expect(router.getPathname()).toBe('/practice/u00-sample');
+    const modal = screen.UNSAFE_getByType(Modal);
+    await act(async () => modal.props.onDismiss());
+    await settle();
+    expect(router.getPathname()).toBe('/');
+  });
+
+  it('AC 65: back while the sheet is open closes the sheet and stays', async () => {
+    const router = await open();
+    await act(() => appRouter.back());
+    await settle();
+    expect(screen.getByText(texts['practice.leave.title'])).toBeOnTheScreen();
+    await act(() => appRouter.back());
+    await settle();
+    expect(router.getPathname()).toBe('/practice/u00-sample');
+    expect(screen.queryByText(texts['practice.leave.title'])).toBeNull();
   });
 
   it('AC 65: the back gesture / hardware back also opens the sheet', async () => {
