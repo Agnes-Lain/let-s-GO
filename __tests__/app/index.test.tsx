@@ -185,9 +185,9 @@ describe('loading skeleton (AC 105)', () => {
     expect(screen.queryByTestId('home-dot-available')).toBeNull();
     view.rerender(<UnitPath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
     expect(screen.queryAllByTestId('home-skeleton')).toHaveLength(0);
-    expect(
-      StyleSheet.flatten(screen.getByTestId('home-node-unit-0').props.style).minHeight,
-    ).toBe(72);
+    expect(StyleSheet.flatten(screen.getByTestId('home-node-unit-0').props.style).minHeight).toBe(
+      72,
+    );
   });
 });
 
