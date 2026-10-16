@@ -83,7 +83,7 @@
   "lesson.u00-sample.e6.prompt": "Combien de libertés le groupe noir marqué a-t-il ?",
   "lesson.u00-sample.e6.hint": "Comptez les points vides qui touchent l'une ou l'autre pierre noire, chacun une fois.",
   "lesson.u01-board.title": "Plateau et pierres",
-  "lesson.u01-board.s1": "Les pierres vont sur les intersections (交叉点 jiāochādiǎn) du plateau (棋盘 qípán), pas dans les cases. Lettre = colonne, chiffre = ligne.",
+  "lesson.u01-board.s1": "Les pierres vont sur les intersections (交叉点 jiāochādiǎn) du plateau (棋盘 qípán), pas dans les cases. c3 = colonne c, ligne 3.",
   "lesson.u01-board.s2": "Les Noirs (黑 hēi) jouent toujours en premier, puis les Blancs (白 bái). On joue chacun son tour, une pierre à la fois.",
   "lesson.u01-board.s3": "Une pierre (棋子 qízǐ) ne bouge plus une fois posée. Elle reste là jusqu'à sa capture, que vous apprendrez bientôt.",
   "lesson.u01-board.e1.prompt": "Touchez l'intersection marquée d'un triangle.",

@@ -26,32 +26,22 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `EXPO_PUBLIC_DEV_LESSONS=1`. Web check: `npm run verify:web:m3`; screenshots `docs/screenshots/M3/`.
   **Pending: the PO's iPhone check** — `docs/specs/M3-iphone-checklist.md`.
 
-## In progress — M4 item 1: content units 1–5 (branch `claude/m4-content-units-1-5`, no PR yet)
-Paused 2026-10-16 to save tokens. Resume in a new session on this branch.
-- **Done:** spec `docs/specs/M4-content-units-1-5.md` + mockup `docs/specs/M4-mockup.html` —
-  **approved by the PO** (all 7 decisions in spec §12). Developer started (commit "WIP M4"):
-  six lesson JSON files in `src/lessons/content/` (u01-board … u05-atari, u05-review), registry +
-  loader (`PLANNED_UNITS = [6]`), i18n texts in all three files, unit-map badge moved under the
-  title (`src/exercises/UnitMap.tsx`). Typecheck passes.
-- **Fixed (2nd pass):** fr non-breaking spaces (71 strings), M3 tests updated to the M4 map
-  (units 1–5 real, only 6 "coming soon", Start learning → Unit 1 in production, sample → Next lesson),
-  skeleton bars keep their fixed 72 px. **lint + typecheck + 1246 tests green.**
-- **Developer work (done):**
-  1. ~~Tests for spec §4 ACs 1–18~~ done: `__tests__/m4-units-1-5.test.ts` (93 tests, all 46
-     solutions match the spec tables). AC 12 (play-move feedback keys) relies on the M3 tests.
-  2. ~~Web check~~ done: `npm run verify:web:m4` (release build, en/fr/zh-CN, 106 checks pass:
-     ACs 19–23, no console errors); screenshots in `docs/screenshots/M4/`.
-- **Left:** qa agent pass (spec §4 → tests, edge cases, web check) → fixes if NOT READY → tick
-  `docs/ROADMAP.md` → update this file → one PR (plain language, ASCII Go diagrams with ✓).
-- Minor follow-up seen in screenshots (M3 design, not M4): before an answer, choice/count screens
-  show the reserved feedback card as an empty white box; the mockup draws it transparent.
-- Note: in a fresh cloud session the custom agents load only if the repo is attached at session
-  start; otherwise run them as general-purpose agents told to follow `.claude/agents/<role>.md`.
+- **M4 item 1** content units 1–5 (PR from branch `claude/m4-content-units-1-5`; merge pending):
+  six lessons in `src/lessons/content/` (u01-board … u05-atari + checkpoint u05-review; 18 steps,
+  46 exercises, zh-CN/en/fr), only Unit 6 "coming soon", badge under the title. Spec
+  `docs/specs/M4-content-units-1-5.md` (PO decisions §12), mockup `docs/specs/M4-mockup.html`.
+  Tests: `__tests__/m4-units-1-5.test.ts`, `__tests__/qa/m4-content-rules.test.ts`. Web check:
+  `npm run verify:web:m4` (release build); screenshots `docs/screenshots/M4/`.
+  **Pending: the PO's iPhone play-through of units 1–5.**
 
 ## Next
 - **M4 item 2:** beginner bot v1 (heuristic) + Capture Go 吃子棋 (Unit 6) — separate spec/PR.
 
 ## Known follow-ups (minor, not scheduled)
+- M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is
+  the clean answer). Approved in the spec; consider dropping a1 or mentioning it in the explanation.
+- M4: before an answer, choice/count screens show the reserved feedback card as an empty white box
+  (M3 design); the M4 mockup drew it transparent.
 - The no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile (prefer
   `react/jsx-no-literals` or an AST check); its engine-call guard could also check imports from
   `@/engine`.

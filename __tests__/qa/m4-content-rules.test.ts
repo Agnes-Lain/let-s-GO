@@ -243,8 +243,7 @@ describe('Text consistency across zh-CN / en / fr', () => {
     const en = LESSON_TEXTS.en[k];
     for (const lang of ['zh-CN', 'fr'] as const) {
       const t = LESSON_TEXTS[lang][k];
-      // Known minor: fr u01 s1 omits the "c3" example that en/zh give (reported to dev).
-      if (k !== 'lesson.u01-board.s1') expect(coords(t)).toEqual(coords(en));
+      expect(coords(t)).toEqual(coords(en));
       if (!k.startsWith('lesson.u01-')) {
         for (const d of digits(en)) expect(digits(t)).toContain(d);
       }

@@ -28,7 +28,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] Home / unit map screen
 
 ## M4 — Content units 1–6 (through 吃子棋 Capture Go)
-- [ ] Units 1–5 content (zh + en + fr)
+- [x] Units 1–5 content (zh + en + fr)
 - [ ] Beginner bot v1 (heuristic) + Capture Go mini-game
 
 ## M5 — Units 7–14
