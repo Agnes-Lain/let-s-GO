@@ -90,6 +90,7 @@ describe('every key used in code exists in all languages (and none are orphaned)
   // t(`prefix.${x}`) calls: every key under that prefix counts as used.
   const dynamicPrefixes = [...sources.matchAll(/\bt\(\s*`([^`$]+)\$\{/g)].map((m) => m[1]);
   // Reserved for later M2 PRs (a11y announcements, engine messages shown by the interactive demo).
+  // TODO(M2 PR2): remove once used
   const reservedPrefixes = ['engine.illegal.', 'board.a11y.'];
 
   it('finds the keys used by the screens', () => {

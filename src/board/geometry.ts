@@ -12,6 +12,9 @@ export interface BoardGeometry {
   starRadius: number;
   lastMoveRadius: number;
   labelFontSize: number;
+  /** Distance from an outer grid line to the centre of its coordinate label: midway between the
+   * edge of a stone on that line and the board edge, so edge stones never cover labels. */
+  labelOffset: number;
 }
 
 const COLUMNS = 'ABCDEFGHJKLMNOPQRST';
@@ -46,12 +49,15 @@ export function boardGeometry(
 ): BoardGeometry {
   const margin = !showCoordinates ? 0.6 : size >= 13 ? 1.2 : 1.0;
   const cell = width / (size - 1 + 2 * margin);
+  const origin = margin * cell;
+  const stoneRadius = 0.47 * cell;
   return {
     size,
     width,
     cell,
-    origin: margin * cell,
-    stoneRadius: 0.47 * cell,
+    origin,
+    stoneRadius,
+    labelOffset: (origin + stoneRadius) / 2,
     starRadius: clamp(2.5, 0.09 * cell, 4),
     lastMoveRadius: clamp(3, 0.16 * cell, 6),
     labelFontSize: clamp(10, 0.36 * cell, 13),

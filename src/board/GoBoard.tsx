@@ -217,7 +217,7 @@ function BoardDrawing({ geometry: g, stones, showCoordinates, highlights, marker
                 key={`col-${letter}`}
                 testID={`board-label-col-${letter}`}
                 x={g.origin + x * cell}
-                y={far + g.origin / 2 + g.labelFontSize * 0.35}
+                y={far + g.labelOffset + g.labelFontSize * 0.35}
                 fontSize={g.labelFontSize}
                 fontWeight="500"
                 textAnchor="middle"
@@ -232,7 +232,7 @@ function BoardDrawing({ geometry: g, stones, showCoordinates, highlights, marker
               <SvgText
                 key={`row-${label}`}
                 testID={`board-label-row-${label}`}
-                x={g.origin / 2}
+                x={g.origin - g.labelOffset}
                 y={g.origin + row * cell + g.labelFontSize * 0.35}
                 fontSize={g.labelFontSize}
                 fontWeight="500"

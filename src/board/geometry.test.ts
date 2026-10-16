@@ -74,6 +74,16 @@ describe('boardGeometry (AC4, AC5)', () => {
   });
 });
 
+describe('coordinate labels stay clear of edge stones (AC4a)', () => {
+  it.each([5, 7, 9, 13, 19] as BoardSize[])('size %i', (size) => {
+    const g = boardGeometry(size, 328, true);
+    // Label centre is g.labelOffset from the outer line; an edge stone reaches stoneRadius.
+    expect(g.labelOffset).toBeGreaterThan(g.stoneRadius + g.labelFontSize / 2);
+    // ...and the label still lies fully inside the board (margin = origin).
+    expect(g.labelOffset + g.labelFontSize / 2).toBeLessThan(g.origin);
+  });
+});
+
 describe('pointFromLocation / pointToLocation (AC6)', () => {
   const g = boardGeometry(9, 328, true);
 

@@ -109,6 +109,7 @@ export interface BoardGeometry {
   size: BoardSize; width: number; cell: number;
   origin: number;            // px from board edge to the first line (same on all four sides)
   stoneRadius: number; starRadius: number; lastMoveRadius: number; labelFontSize: number;
+  labelOffset: number;       // outer line → label centre, = (origin + stoneRadius)/2
 }
 ```
 
@@ -161,7 +162,8 @@ offset (to the left if the column index ≥ size/2, else to the right). No loupe
    5×5 c3 · 7×7 d4 · 9×9 c3 c7 e5 g3 g7 · 13×13 d4 d10 g7 k4 k10 ·
    19×19 d4 d10 d16 k4 k10 k16 q4 q10 q16.
 4. **Coordinate labels** (if shown): letters along the bottom, numbers along the left, centred in the
-   margin; `board.line` at 80 % opacity (≥ 5:1 contrast on the darkest strip), font size
+   margin **clear of edge stones**: the label centre is `labelOffset = (origin + stoneRadius)/2` from the
+   outer line (midway between an edge stone's rim and the board edge), so no stone covers a label; `board.line` at 80 % opacity (≥ 5:1 contrast on the darkest strip), font size
    `clamp(10, 0.36·cell, 13)` px, weight 500. No labels on top/right (calm, matches diagrams).
 5. **Liberty highlights** (on empty points): circle r = 0.22·cell, fill `accent` 18 %, stroke `accent`
    1.5 px.
@@ -338,7 +340,7 @@ Unless stated: `width = 328`, `showCoordinates = true`; RNTL tests; touch events
 
    and `stoneRadius = 0.47·cell` (9/true → 15.42).
 5. **Given** `boardGeometry(9,328,true)`, **then** `starRadius` 2.95, `lastMoveRadius` 5.25,
-   `labelFontSize` 11.81. **Given** `(5,328,true)` → 4, 6, 13. **Given** `(19,328,true)` → 2.5, 3, 10.
+   `labelFontSize` 11.81. **For every size with coordinates**, `labelOffset > stoneRadius + labelFontSize/2` and `labelOffset + labelFontSize/2 < origin` (labels never touch edge stones and stay on the board); `boardGeometry` also returns `labelOffset` (add it to the `BoardGeometry` interface in §3). **Given** `(5,328,true)` → 4, 6, 13. **Given** `(19,328,true)` → 2.5, 3, 10.
 6. **Given** `g = boardGeometry(9,328,true)`, **when** `pointFromLocation(g, x, y)`, **then**:
    (32.8, 32.8) → `{x:0,y:8}` (a9); (295.2, 295.2) → `{x:8,y:0}` (j1); (164,164) → `{x:4,y:4}` (e5);
    (182,182) → `{x:5,y:3}` (f4); (20,164) → `{x:0,y:4}` (a5, within half a cell); (10,164) → `null`;
