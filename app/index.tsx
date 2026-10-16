@@ -2,15 +2,24 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { ChevronIcon, GearIcon } from '@/theme/icons';
+import {
+  ContinueCard,
+  LockedSnackbar,
+  UnitPath,
+  useHomeMap,
+  useLockedSnackbar,
+} from '@/exercises/UnitMap';
+import { GearIcon } from '@/theme/icons';
 import { Screen, TopBar } from '@/theme/Screen';
 import { color, radius, spacing, stone, tapTarget, typography } from '@/theme/tokens';
 
-const FIRST_LESSON_ID = 'u01-board';
-
+/** Home = the learning-path map (spec §6.1). The map rows come from src/lessons. */
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const map = useHomeMap();
+  const snackbar = useLockedSnackbar();
+  const open = (lessonId: string) => router.push(`/lesson/${lessonId}`);
 
   return (
     <Screen backdrop="home">
@@ -36,35 +45,38 @@ export default function HomeScreen() {
         </Text>
         <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
 
+        <View style={styles.continueSlot}>
+          {!map.hydrated && map.hasContent ? (
+            <View style={styles.continueSkeleton} testID="home-continue-skeleton" />
+          ) : map.next ? (
+            <ContinueCard
+              node={map.next}
+              started={map.started}
+              onPress={() => map.next && open(map.next.lesson.id)}
+            />
+          ) : null}
+        </View>
+
         <Text style={styles.sectionTitle} accessibilityRole="header">
           {t('home.path.title')}
         </Text>
-        <Pressable
-          onPress={() => router.push(`/lesson/${FIRST_LESSON_ID}`)}
-          accessibilityRole="button"
-          accessibilityLabel={t('home.unit1.title')}
-          accessibilityHint={t('home.unit.comingSoon')}
-          style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-        >
-          <View style={styles.unitDot} />
-          <View style={styles.cardBody}>
-            <Text style={styles.cardTitle}>{t('home.unit1.title')}</Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeLabel}>{t('home.unit.comingSoon')}</Text>
-            </View>
-          </View>
-          <ChevronIcon color={color.textSecondary} size={22} />
-        </Pressable>
+        <UnitPath rows={map.rows} hydrated={map.hydrated} onOpen={open} onLocked={snackbar.show} />
+        {map.hydrated && map.hasContent && !map.next ? (
+          <Text style={styles.caption} testID="home-all-done">
+            {t('home.allDone')}
+          </Text>
+        ) : null}
         <Text style={styles.caption}>{t('home.moreSoon')}</Text>
       </ScrollView>
+      <LockedSnackbar visible={snackbar.visible} />
     </Screen>
   );
 }
 
-const STONE_SIZE = 44;
+const STONE_SIZE = 34;
 
 const styles = StyleSheet.create({
-  scroll: { paddingBottom: spacing.xxl },
+  scroll: { paddingBottom: spacing.xxl + 44 },
   iconButton: {
     width: tapTarget.min,
     height: tapTarget.min,
@@ -73,17 +85,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { opacity: 0.6 },
-  logo: { width: 72, height: 56, alignSelf: 'center', marginTop: 20, marginBottom: spacing.md },
+  logo: { width: 56, height: 44, alignSelf: 'center', marginBottom: spacing.sm },
   stone: {
     position: 'absolute',
-    top: 6,
+    top: 5,
     width: STONE_SIZE,
     height: STONE_SIZE,
     borderRadius: STONE_SIZE / 2,
   },
-  blackStone: { left: 4, backgroundColor: stone.black },
+  blackStone: { left: 3, backgroundColor: stone.black },
   whiteStone: {
-    left: 26,
+    left: 19,
     backgroundColor: stone.white,
     borderWidth: 1,
     borderColor: stone.whiteEdge,
@@ -93,36 +105,26 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: color.textSecondary,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: spacing.xs,
+  },
+  continueSlot: { marginTop: spacing.lg },
+  continueSkeleton: {
+    height: 56,
+    borderRadius: radius.md,
+    backgroundColor: color.border,
+    opacity: 0.35,
   },
   sectionTitle: {
     ...typography.title,
+    fontSize: 18,
     color: color.textPrimary,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.md,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
   },
-  card: {
-    minHeight: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
+  caption: {
+    ...typography.caption,
+    color: color.textSecondary,
+    marginTop: spacing.md,
+    textAlign: 'center',
   },
-  unitDot: { width: 32, height: 32, borderRadius: 16, backgroundColor: stone.black },
-  cardBody: { flex: 1, alignItems: 'flex-start' },
-  cardTitle: { ...typography.label, color: color.textPrimary },
-  badge: {
-    marginTop: 6,
-    paddingVertical: 2,
-    paddingHorizontal: 10,
-    borderRadius: radius.pill,
-    backgroundColor: color.badge,
-  },
-  badgeLabel: { ...typography.caption, color: color.onBadge },
-  caption: { ...typography.caption, color: color.textSecondary, marginTop: 10 },
 });

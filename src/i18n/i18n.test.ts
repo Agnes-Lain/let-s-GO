@@ -36,8 +36,8 @@ describe('translation files (AC9)', () => {
   });
 
   it('French uses a non-breaking space before "!"', () => {
-    expect(fr['placeholder.comingSoon']).toMatch(/ !$/);
-    expect(fr['placeholder.comingSoon']).not.toMatch(/ !/);
+    expect(fr['fb.correct']).toMatch(/ !$/);
+    expect(fr['fb.correct']).not.toMatch(/ !/);
   });
 
   it('language names are always written in their own language', () => {

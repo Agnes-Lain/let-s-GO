@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Let's GO M3 Mockup</title>
+    <style>
+      :root {
+        --background: #f4f1ea;
+        --sky: #dce6ea;
+        --surface: #fffdf8;
+        --border: #e3ddd0;
+        --text: #26292b;
+        --text2: #5e6a6e;
+        --accent: #3e6461;
+        --onAccent: #ffffff;
+        --success: #56764a;
+        --error: #a8443f;
+        --hint: #9a5f22;
+        --badge: #e4ecd8;
+        --onBadge: #3f5a35;
+        --mFar: #c9d5d6;
+        --mNear: #9db2ae;
+        --bamboo: #e8d3a0;
+        --line: #33281b;
+        --black: #22252a;
+        --white: #f7f5ee;
+        --whiteEdge: #8f8c80;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        overflow-x: hidden;
+      }
+      body {
+        background: #e3ddd0;
+        color: var(--text);
+        padding: 24px 12px 48px;
+        overflow-x: hidden;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans SC',
+          sans-serif;
+      }
+      header.page {
+        max-width: 1240px;
+        margin: 0 auto 24px;
+      }
+      header.page h1 {
+        font-size: 22px;
+        line-height: 28px;
+      }
+      header.page p {
+        color: var(--text2);
+        font-size: 14px;
+        line-height: 20px;
+        margin-top: 6px;
+        max-width: 860px;
+      }
+      h2.group {
+        max-width: 1240px;
+        margin: 28px auto 12px;
+        font-size: 16px;
+        color: var(--text2);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 6px;
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        justify-content: center;
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+      figure {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+      }
+      figcaption {
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+        max-width: 360px;
+        text-align: center;
+      }
+      figcaption b {
+        color: var(--text);
+      }
+      /* 360 x 740 content box (376 x 756 with the 8 px bezel) */
+      .phone {
+        width: 376px;
+        height: 756px;
+        max-width: 100%;
+        background-color: var(--background);
+        background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px);
+        border-radius: 30px;
+        border: 8px solid var(--black);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 24px rgba(38, 41, 43, 0.15);
+      }
+      .phone.home {
+        background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px);
+      }
+      .landscape {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 130px;
+        z-index: 0;
+      }
+      .status,
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+      .status {
+        height: 28px;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 16px;
+        flex: none;
+      }
+      .content {
+        padding: 0 16px 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .topbar {
+        height: 52px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .ibtn {
+        min-width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .ibtn.txt {
+        font-size: 14px;
+        padding: 0 4px;
+      }
+      .hintbtn {
+        min-width: 56px;
+        height: 44px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--hint);
+        white-space: nowrap;
+      }
+      .hintbtn.on {
+        background: #f3e7d6;
+        border-color: var(--hint);
+      }
+      .segs {
+        flex: 1;
+        display: flex;
+        gap: 4px;
+      }
+      .segs i {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--border);
+      }
+      .segs i.d {
+        background: var(--accent);
+      }
+      .segs i.c {
+        background: var(--surface);
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .dots {
+        flex: 1;
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 16px;
+        line-height: 24px;
+        flex: none;
+      }
+      .prompt {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .text {
+        height: 120px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+      .fb {
+        min-height: 72px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        line-height: 19px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .fb.empty {
+        background: transparent;
+        border-color: transparent;
+      }
+      .fb i {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-top: 6px;
+      }
+      .fb i.err {
+        background: var(--error);
+      }
+      .fb i.ok {
+        background: var(--success);
+      }
+      .fb i.hint {
+        background: var(--hint);
+      }
+      .fb small {
+        display: block;
+        color: var(--text2);
+        margin-top: 2px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex: none;
+      }
+      .btn {
+        flex: 1;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--onAccent);
+      }
+      .btn.dis {
+        opacity: 0.45;
+      }
+      .btn.text {
+        height: 44px;
+        background: transparent;
+        border-color: transparent;
+      }
+      .replay {
+        align-self: flex-end;
+        height: 44px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 14px;
+        flex: none;
+      }
+      .boardwrap {
+        flex: none;
+        align-self: center;
+      }
+      .ms {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: -1px;
+      }
+      /* choice options */
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+        flex: none;
+      }
+      .opt {
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+      }
+      .opt.dis {
+        background: transparent;
+        color: var(--text2);
+        opacity: 0.6;
+        text-decoration: line-through;
+        text-decoration-color: var(--border);
+      }
+      .opt.ok {
+        border: 2px solid var(--success);
+      }
+      /* count chips */
+      .chips {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+        flex: none;
+      }
+      .chip {
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .chip.sel {
+        background: var(--accent);
+        color: var(--onAccent);
+        border-color: var(--accent);
+      }
+      .chip.ok {
+        outline: 2px solid var(--success);
+        outline-offset: -2px;
+      }
+      /* home */
+      .logo {
+        position: relative;
+        width: 64px;
+        height: 44px;
+        align-self: center;
+        margin-top: 4px;
+        flex: none;
+      }
+      .logo i {
+        position: absolute;
+        top: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+      }
+      .logo i:first-child {
+        left: 0;
+        background: var(--black);
+      }
+      .logo i:last-child {
+        right: 0;
+        background: var(--white);
+        border: 1px solid var(--whiteEdge);
+      }
+      .appname {
+        font-size: 28px;
+        line-height: 34px;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 4px;
+        flex: none;
+      }
+      .subtitle {
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--text2);
+        text-align: center;
+        margin: 2px 8px 10px;
+        flex: none;
+      }
+      .cont {
+        height: 60px;
+        border-radius: 12px;
+        background: var(--accent);
+        color: var(--onAccent);
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: none;
+      }
+      .cont b {
+        display: block;
+        font-size: 16px;
+        line-height: 20px;
+      }
+      .cont span {
+        font-size: 13px;
+        opacity: 0.9;
+      }
+      .cont .play {
+        font-size: 20px;
+      }
+      .sect {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 14px 0 8px;
+        flex: none;
+      }
+      .path {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .path:before {
+        content: '';
+        position: absolute;
+        left: 21px;
+        top: 20px;
+        bottom: 20px;
+        width: 2px;
+        background: var(--border);
+      }
+      .node {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+      }
+      .node.sub {
+        margin-left: 32px;
+      }
+      .dot {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .dot i {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: block;
+      }
+      .node.sub .dot i {
+        width: 20px;
+        height: 20px;
+      }
+      .dot i.done {
+        background: var(--black);
+      }
+      .dot i.avail {
+        background: var(--white);
+        border: 2px solid var(--accent);
+        box-shadow: 0 0 0 3px rgba(62, 100, 97, 0.18);
+      }
+      .dot i.lock {
+        background: var(--background);
+        border: 1.5px solid var(--border);
+      }
+      .ncard {
+        flex: 1;
+        min-width: 0;
+        height: 72px;
+        padding: 8px 12px 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .node.sub .ncard {
+        height: 56px;
+      }
+      .ncard.lock,
+      .ncard.soon {
+        background: rgba(255, 253, 248, 0.6);
+      }
+      .ncard.lock .nb,
+      .ncard.soon .nb {
+        opacity: 0.55;
+      }
+      .nb {
+        flex: 1;
+        min-width: 0;
+      }
+      .nb small {
+        display: block;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+      }
+      .nb b {
+        display: block;
+        font-size: 16px;
+        line-height: 20px;
+        font-weight: 600;
+      }
+      .stars {
+        display: flex;
+        gap: 2px;
+        margin-top: 2px;
+      }
+      .stars svg {
+        width: 16px;
+        height: 16px;
+      }
+      .chev {
+        color: var(--text2);
+        font-size: 22px;
+      }
+      .badge {
+        background: var(--badge);
+        color: var(--onBadge);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .more {
+        font-size: 13px;
+        color: var(--text2);
+        text-align: center;
+        margin-top: 10px;
+      }
+      .snack {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 24px;
+        z-index: 3;
+        background: var(--text);
+        color: #fff;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      .skel {
+        height: 72px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #ece7db, #f3efe5, #ece7db);
+      }
+      /* result */
+      .res {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 56px;
+      }
+      .res .st {
+        display: flex;
+        gap: 12px;
+      }
+      .res .st svg {
+        width: 56px;
+        height: 56px;
+      }
+      .res h3 {
+        font-size: 28px;
+        line-height: 34px;
+        margin-top: 20px;
+      }
+      .res p {
+        font-size: 16px;
+        line-height: 24px;
+        margin-top: 6px;
+        color: var(--text2);
+      }
+      .res .badge {
+        margin-top: 16px;
+        font-size: 14px;
+        padding: 10px 16px;
+      }
+      .res .acts {
+        width: 100%;
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      /* sheet */
+      .dim {
+        position: absolute;
+        inset: 0;
+        background: rgba(38, 41, 43, 0.4);
+        z-index: 4;
+      }
+      .sheet {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 5;
+        background: var(--surface);
+        border-radius: 20px 20px 0 0;
+        padding: 20px 16px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .sheet h4 {
+        font-size: 20px;
+        line-height: 26px;
+      }
+      .sheet p {
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--text2);
+        margin-bottom: 8px;
+      }
+      .center {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+        padding: 0 8px;
+      }
+      .center h3 {
+        font-size: 22px;
+        line-height: 28px;
+      }
+      .center p {
+        color: var(--text2);
+        font-size: 16px;
+        line-height: 24px;
+      }
+      /* boards */
+      .bd {
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(51, 40, 27, 0.18);
+      }
+      .bd path,
+      .bd rect,
+      .bd circle,
+      .bd line,
+      .bd polygon {
+        vector-effect: non-scaling-stroke;
+      }
+      .bd .g {
+        stroke: #33281b;
+        stroke-width: 1px;
+      }
+      .bd .edge {
+        fill: none;
+        stroke: #33281b;
+        stroke-width: 1.5px;
+      }
+      .bd .star {
+        fill: #33281b;
+      }
+      .bd .co text {
+        fill: #33281b;
+        fill-opacity: 0.8;
+        text-anchor: middle;
+        dominant-baseline: central;
+        font-weight: 500;
+      }
+      .bd .b {
+        fill: #22252a;
+      }
+      .bd .w {
+        fill: #f7f5ee;
+        stroke: #8f8c80;
+        stroke-width: 1px;
+      }
+      .bd .lib {
+        fill: #3e6461;
+        fill-opacity: 0.18;
+        stroke: #3e6461;
+        stroke-width: 1.5px;
+      }
+      .bd .okr {
+        fill: none;
+        stroke: #56764a;
+        stroke-width: 2.5px;
+      }
+      .bd .hintr {
+        fill: none;
+        stroke: #9a5f22;
+        stroke-width: 2.5px;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      .bd .errr {
+        fill: #a8443f;
+        fill-opacity: 0.1;
+        stroke: #a8443f;
+        stroke-width: 2px;
+        stroke-dasharray: 5 4;
+      }
+      .bd .ghost {
+        opacity: 0.5;
+      }
+      .bd .gone {
+        fill: #f7f5ee;
+        fill-opacity: 0.25;
+        stroke: #8f8c80;
+        stroke-width: 1px;
+        stroke-dasharray: 3 3;
+      }
+      .bd .ringprev {
+        fill: none;
+        stroke: #3e6461;
+        stroke-width: 2.5px;
+      }
+      .bd .finger {
+        fill: #26292b;
+        opacity: 0.13;
+      }
+      .bd .mk {
+        fill: none;
+        stroke-width: 2px;
+      }
+      .bd .ink {
+        stroke: #33281b;
+      }
+      .bd .pale {
+        stroke: #f7f5ee;
+      }
+      .bd .mask {
+        fill: #e8d3a0;
+      }
+      .bd .mtext {
+        fill: #33281b;
+        font-weight: 700;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      .bd .lm {
+        fill: #f7f5ee;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.5;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bd .hintr {
+          animation: none;
+        }
+      }
+      .legend {
+        max-width: 1240px;
+        margin: 0 auto 8px;
+        font-size: 13px;
+        line-height: 19px;
+        color: var(--text2);
+        columns: 2 340px;
+      }
+      .legend li {
+        margin-left: 18px;
+        break-inside: avoid;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Shared bamboo pattern (same look on every board size) -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <defs id="shared-defs"></defs>
+    </svg>
+
+    <header class="page">
+      <h1>Let's GO — M3 lesson framework design mockup</h1>
+      <p>
+        The home map, the explanation player, the four exercise runners (tap-point, play-move,
+        choice, count) with correct / wrong / hint / revealed feedback, and the result screen —
+        all at 360×740, in 中文, English and Français. Calm 山水 · 茶 · 竹 colors from the design
+        tokens; no leaves, no confetti, no red flashes. Positions are the sample lesson of the spec
+        (§9), each checked by hand (spec §9.1). Please approve before development. Spec:
+        <code>docs/specs/M3-lesson-framework.md</code>.
+      </p>
+    </header>
+    <ul class="legend">
+      <li><b>Teal fill ring</b>: a selected point / a liberty (气 qì).</li>
+      <li><b>Amber pulsing ring</b>: the hint (3 pulses, then static).</li>
+      <li><b>Green ring</b>: the right answer (shown after 3 mistakes).</li>
+      <li><b>Dashed rouge ring</b>: a mistake. Soft, no sound.</li>
+      <li><b>Dashed faint stone</b>: a captured stone fading away (300 ms).</li>
+      <li>The page is built with a few lines of script so each board can be read as plain text; the app itself draws with react-native-svg.</li>
+    </ul>
+
+    <div id="root"></div>
+
+    <script>
+      /* ---------- shared defs: bamboo pattern ---------- */
+      (function () {
+        var d = document.getElementById('shared-defs');
+        var s = '<pattern id="bamboo" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1"><rect width="1" height="1" fill="#E8D3A0"/>';
+        for (var i = 0; i < 12; i++) {
+          s += '<rect x="' + (i / 12).toFixed(4) + '" y="0" width=".0834" height="1" fill="' + (i % 2 ? '#DEC68C' : '#EEDCAE') + '"/>';
+        }
+        [[0, 0.27], [1, 0.55], [2, 0.38], [3, 0.61], [4, 0.64], [6, 0.2], [8, 0.7], [10, 0.47]].forEach(function (n) {
+          s += '<rect x="' + (n[0] / 12).toFixed(4) + '" y="' + n[1] + '" width=".0833" height=".005" fill="#CDB277"/>';
+        });
+        s += '</pattern>';
+        d.innerHTML = s;
+      })();
+
+      /* ---------- board generator ----------
+         rows: ASCII, top row first. '.' empty, 'X' black, 'O' white. Vertices 'c3' = column c, row 3 (row 1 at bottom). */
+      var COLS = 'abcdefghjklmnopqrst';
+      function pt(v, size) {
+        return { x: COLS.indexOf(v[0]), y: size - parseInt(v.slice(1), 10) };
+      }
+      function board(o) {
+        var size = o.rows.length,
+          px = o.px || 328,
+          m = o.coords ? 0.95 : 0.55,
+          span = size - 1 + 2 * m,
+          s = '';
+        s += '<svg class="bd" width="' + px + '" height="' + px + '" viewBox="' + -m + ' ' + -m + ' ' + span + ' ' + span + '" role="img" aria-label="' + (o.label || 'Go board') + '">';
+        s += '<rect class="wood" x="' + -m + '" y="' + -m + '" width="' + span + '" height="' + span + '" fill="url(#bamboo)"/>';
+        for (var i = 0; i < size; i++) {
+          s += '<line class="g" x1="0" y1="' + i + '" x2="' + (size - 1) + '" y2="' + i + '"/>';
+          s += '<line class="g" x1="' + i + '" y1="0" x2="' + i + '" y2="' + (size - 1) + '"/>';
+        }
+        s += '<rect class="edge" x="0" y="0" width="' + (size - 1) + '" height="' + (size - 1) + '"/>';
+        var stars = size === 5 || size === 7 ? [[(size - 1) / 2, (size - 1) / 2]] : size === 9 ? [[2, 2], [6, 2], [2, 6], [6, 6], [4, 4]] : [];
+        stars.forEach(function (p) {
+          s += '<circle class="star" cx="' + p[0] + '" cy="' + p[1] + '" r="0.09"/>';
+        });
+        if (o.coords) {
+          s += '<g class="co" font-size="0.4">';
+          for (var c = 0; c < size; c++) {
+            s += '<text x="' + c + '" y="' + (size - 1 + 0.68) + '">' + COLS[c].toUpperCase() + '</text>';
+            s += '<text x="-0.68" y="' + c + '">' + (size - c) + '</text>';
+          }
+          s += '</g>';
+        }
+        var cells = {};
+        o.rows.forEach(function (r, y) {
+          for (var x = 0; x < size; x++) if (r[x] === 'X' || r[x] === 'O') cells[x + ',' + y] = r[x];
+        });
+        function ring(list, cls, r) {
+          (list || []).forEach(function (v) {
+            var p = pt(v, size);
+            s += '<circle class="' + cls + '" cx="' + p.x + '" cy="' + p.y + '" r="' + (r || 0.42) + '"/>';
+          });
+        }
+        ring(o.lib, 'lib', 0.4);
+        ring(o.sel, 'lib', 0.4);
+        Object.keys(cells).forEach(function (k) {
+          var a = k.split(',');
+          s += '<circle class="' + (cells[k] === 'X' ? 'b' : 'w') + '" cx="' + a[0] + '" cy="' + a[1] + '" r="0.46"/>';
+        });
+        (o.gone || []).forEach(function (v) {
+          var p = pt(v, size);
+          s += '<circle class="gone" cx="' + p.x + '" cy="' + p.y + '" r="0.46"/>';
+        });
+        if (o.last) {
+          var l = pt(o.last, size),
+            isB = cells[l.x + ',' + l.y] === 'X';
+          s += '<circle cx="' + l.x + '" cy="' + l.y + '" r="0.14" class="' + (isB ? 'lm' : 'b') + '"/>';
+        }
+        (o.marks || []).forEach(function (mk) {
+          var p = pt(mk.at, size),
+            on = cells[p.x + ',' + p.y],
+            col = on === 'X' ? 'pale' : 'ink';
+          if (mk.k === 'circle') s += '<circle class="mk ' + col + '" cx="' + p.x + '" cy="' + p.y + '" r="0.22"/>';
+          if (mk.k === 'triangle') s += '<polygon class="mk ' + col + '" points="' + p.x + ',' + (p.y - 0.26) + ' ' + (p.x + 0.25) + ',' + (p.y + 0.2) + ' ' + (p.x - 0.25) + ',' + (p.y + 0.2) + '"/>';
+          if (mk.k === 'label') {
+            s += '<circle class="mask" cx="' + p.x + '" cy="' + p.y + '" r="0.3"/><text class="mtext" x="' + p.x + '" y="' + p.y + '" font-size="0.5">' + mk.t + '</text>';
+          }
+        });
+        ring(o.hint, 'hintr', 0.5);
+        ring(o.ok, 'okr', 0.5);
+        ring(o.err, 'errr', 0.46);
+        if (o.ghost) {
+          var g = pt(o.ghost.at, size);
+          s += '<circle class="ghost ' + (o.ghost.c === 'X' ? 'b' : 'w') + '" cx="' + g.x + '" cy="' + g.y + '" r="0.46"/>';
+        }
+        if (o.ring) {
+          var q = pt(o.ring, size);
+          s += '<circle class="finger" cx="' + q.x + '" cy="' + (q.y + 1.0) + '" r="0.7"/><circle class="ringprev" cx="' + q.x + '" cy="' + q.y + '" r="0.42"/>';
+        }
+        return s + '</svg>';
+      }
+
+      /* ---------- small UI helpers ---------- */
+      var LAND =
+        '<svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/><path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></svg>';
+      function star(on) {
+        return '<svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="' + (on ? '#9A5F22' : 'none') + '" stroke="' + (on ? '#9A5F22' : '#CFC8B8') + '" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+      }
+      function stars(n) {
+        return '<div class="stars">' + [1, 2, 3].map(function (i) { return star(i <= n); }).join('') + '</div>';
+      }
+      function phone(lang, inner, o) {
+        o = o || {};
+        return '<div class="phone ' + (o.home ? 'home' : '') + '" lang="' + lang + '">' + (o.home ? LAND : '') + '<div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content">' + inner + '</div>' + (o.over || '') + '</div>';
+      }
+      function fig(title, cap, html) {
+        return '<figure>' + html + '<figcaption><b>' + title + '</b><br>' + cap + '</figcaption></figure>';
+      }
+      function runnerBar(total, cur, hintOn, T) {
+        var segs = '';
+        for (var i = 0; i < total; i++) segs += '<i class="' + (i < cur ? 'd' : i === cur ? 'c' : '') + '"></i>';
+        return '<div class="topbar"><span class="ibtn" aria-label="close">✕</span><div class="segs">' + segs + '</div><span class="hintbtn ' + (hintOn ? 'on' : '') + '">' + T + '</span></div>';
+      }
+      function prompt(t) {
+        return '<div class="card prompt">' + t + '</div>';
+      }
+      function fb(kind, t, small) {
+        if (!kind) return '<div class="card fb empty"></div>';
+        return '<div class="card fb"><i class="' + kind + '"></i><div>' + t + (small ? '<small>' + small + '</small>' : '') + '</div></div>';
+      }
+      function btn(t, cls) {
+        return '<div class="btn ' + (cls || '') + '">' + t + '</div>';
+      }
+      function bw(b, extra) {
+        return '<div class="boardwrap">' + b + '</div>';
+      }
+
+      /* ---------- positions (spec §9) ---------- */
+      var S1 = ['.....', '.....', '.XOX.', '..X..', '.....']; // B c2 b3 d3, W c3
+      var E3 = ['.....', '....X', '....O', '....X', '.....']; // B e4 e2, W e3
+      var E4 = ['.....', '..O..', '.X.X.', '..O..', '.....']; // B b3 d3, W c4 c2
+      var E5 = ['.....', '.....', '.XO..', '..X..', '.....']; // B b3 c2, W c3
+      var E6 = ['.......', '.......', '...O...', '...XX..', '.......', '.......', '.......']; // 7x7 B d4 e4, W d5
+      var figs = [];
+
+      /* ===== HOME ===== */
+      function node(kind, unit, title, o) {
+        o = o || {};
+        var dot = '<div class="dot"><i class="' + (kind === 'done' ? 'done' : kind === 'avail' ? 'avail' : 'lock') + '"></i></div>';
+        var right = '';
+        if (kind === 'done') right = '<span class="chev">›</span>';
+        if (kind === 'avail') right = '<span class="chev">›</span>';
+        if (kind === 'lock') right = '<span style="font-size:18px;opacity:.6">🔒</span>';
+        if (kind === 'soon') right = '<span class="badge">' + o.soon + '</span>';
+        var body = '<div class="nb"><small>' + unit + '</small><b>' + title + '</b>' + (kind === 'done' ? stars(o.stars) : '') + '</div>';
+        return '<div class="node ' + (o.sub ? 'sub' : '') + '">' + dot + '<div class="ncard ' + (kind === 'lock' ? 'lock' : kind === 'soon' ? 'soon' : '') + '">' + body + right + '</div></div>';
+      }
+      function homeHead(sub) {
+        return '<div class="topbar" style="justify-content:flex-end"><span class="ibtn" style="font-size:22px">⚙</span></div><div class="logo"><i></i><i></i></div><div class="appname">Let\'s GO</div><div class="subtitle">' + sub + '</div>';
+      }
+      figs.push(
+        fig(
+          '1 · Home map — fresh install (Expo Go / dev build)',
+          'Sample lesson is the only playable node; Units 1–6 are “coming soon”. <b>Continue</b> card points at it. The list scrolls.',
+          phone(
+            'en',
+            homeHead('Learn Go (围棋 wéiqí) from zero, one rule at a time') +
+              '<div class="cont"><span class="play">▶</span><div><b>Start learning</b><span>Sample (developer)</span></div></div><div class="sect">Learning path</div><div class="path">' +
+              node('avail', 'Sample (developer)', 'Sample: Capture') +
+              node('soon', 'Unit 1', 'Board &amp; stones · 棋盘 qípán', { soon: 'Coming soon' }) +
+              node('soon', 'Unit 2', 'Liberties · 气 qì', { soon: 'Coming soon' }) +
+              node('soon', 'Unit 3', 'Connection · 连接 liánjiē', { soon: 'Coming soon' }) +
+              '</div>',
+            { home: true },
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '2 · Home map — with progress (how it looks once M4 content exists), 中文',
+          'Done = black stone + amber stars · available = white stone with teal ring · locked = faded + 🔒, tap shows the hint below · checkpoint = small indented node.',
+          phone(
+            'zh-CN',
+            homeHead('从零开始学围棋（wéiqí），一次只学一条规则') +
+              '<div class="cont"><span class="play">▶</span><div><b>继续学习</b><span>第 3 单元 · 连接</span></div></div><div class="sect">学习路径</div><div class="path">' +
+              node('done', '第 1 单元', '棋盘与棋子', { stars: 3 }) +
+              node('done', '第 2 单元', '气', { stars: 2 }) +
+              node('avail', '第 3 单元', '连接') +
+              node('lock', '第 4 单元', '提子') +
+              '</div>',
+            {
+              home: true,
+              over: '<div class="snack">先完成上一单元，这里就会打开。</div>',
+            },
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '2b · Home map — checkpoint node and loading skeleton, Français',
+          'While progress is being read, cards are neutral bars (no locked/available flash). Checkpoint sits under its unit.',
+          phone(
+            'fr',
+            homeHead('Apprenez le go (围棋 wéiqí) de zéro, une règle à la fois') +
+              '<div class="sect">Parcours</div><div class="path">' +
+              node('done', 'Unité 2', 'Libertés · 气 qì', { stars: 1 }) +
+              node('avail', 'Point d\'étape', 'Libertés — révision', { sub: true }) +
+              node('lock', 'Unité 3', 'Connexion · 连接 liánjiē') +
+              '<div class="skel"></div><div class="skel"></div></div>',
+            { home: true },
+          ),
+        ),
+      );
+
+      /* ===== EXPLANATION ===== */
+      function explBar(n, total, skip, lbl) {
+        var d = '';
+        for (var i = 0; i < total; i++) d += '<i class="' + (i === n ? 'on' : '') + '"></i>';
+        return '<div class="topbar"><span class="ibtn">✕</span><div class="dots">' + d + '</div>' + (skip ? '<span class="ibtn txt">' + skip + ' ›</span>' : '<span class="ibtn" style="visibility:hidden">·</span>') + '</div>';
+      }
+      figs.push(
+        fig(
+          '3 · Explanation step 1 of 3 — 中文',
+          'Display-only board, liberty ring on c4, triangle on the white stone. No Back on step 1.',
+          phone(
+            'zh-CN',
+            explBar(0, 3) +
+              bw(board({ rows: S1, lib: ['c4'], marks: [{ k: 'triangle', at: 'c3' }] })) +
+              '<div class="card text">棋子旁边的空点叫“气”（qì）。这颗白子只剩一口气。</div><div class="spacer"></div><div class="row">' +
+              btn('下一步 ›', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '4 · Explanation step 2 of 3 — English',
+          'After ≈ 500 ms Black plays c4 (tock), the white stone fades out (300 ms; dashed ghost shown here). Replay re-runs it.',
+          phone(
+            'en',
+            explBar(1, 3) +
+              bw(board({ rows: ['.....', '..X..', '.X.X.', '..X..', '.....'], gone: ['c3'], last: 'c4' })) +
+              '<div class="card text">Black fills the last liberty. The white stone is captured (提子 tízǐ) and removed.</div><div class="replay">↻ Replay</div><div class="row">' +
+              btn('‹ Back') +
+              btn('Next ›', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '5 · Explanation last step — Français',
+          'Own board (group of two). Last step: the primary button becomes “Commencer les exercices”. “Aller aux exercices” appears top-right only once the lesson has a star.',
+          phone(
+            'fr',
+            explBar(2, 3, 'Aller aux exercices') +
+              bw(board({ rows: ['.....', '.XX..', 'XOO..', '.XX..', '.....'], lib: ['d3'] })) +
+              '<div class="card text">Les pierres qui se touchent forment un groupe et partagent leurs libertés. Remplissez la dernière : tout le groupe est capturé.</div><div class="spacer"></div><div class="row">' +
+              btn('‹ Précédent') +
+              btn('Commencer les exercices', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+
+      /* ===== RUNNERS ===== */
+      figs.push(
+        fig(
+          '6 · tap-point (one) — touch-down preview, Français',
+          'A thin ring (not a stone) follows the finger; lifting commits. Every point is tappable, occupied or not. Hint button always visible.',
+          phone(
+            'fr',
+            runnerBar(6, 0, false, 'Indice') +
+              prompt('Touchez la dernière liberté de la pierre blanche.') +
+              bw(board({ rows: S1, ring: 'c4' })) +
+              fb() +
+              '<div class="spacer"></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '7 · tap-point (all) — wrong check, English',
+          'b1 correct (stays selected). c3 was not a liberty: red ring fades and it is removed. “1 of 3 found” — the missing points are not revealed.',
+          phone(
+            'en',
+            runnerBar(6, 1, false, 'Hint') +
+              prompt('Tap all the liberties of the black stone, then press Check.') +
+              bw(board({ rows: ['.....', '.....', '.....', '.....', '..X..'], sel: ['b1'], err: ['c3'] })) +
+              fb('err', '1 of 3 found. Keep looking.', 'The points in red are not right — they were removed.') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('Check', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '8 · play-move — legal but wrong move, 中文',
+          'The move is played so the learner sees the result; dashed ring on it, board locked until “再试一次”. Message from engine facts (nothing captured).',
+          phone(
+            'zh-CN',
+            runnerBar(6, 2, false, '提示') +
+              prompt('提掉这颗白子。') +
+              bw(board({ rows: ['.....', '....X', '..X.O', '....X', '.....'], err: ['c3'], last: 'c3' })) +
+              fb('err', '没有提到子。对方的棋子被填满最后一口气才会被提走。') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('再试一次', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '9 · play-move — hint state after the 2nd mistake, English',
+          'Board is reset; the amber ring pulses on d3 (3 cycles, then static) and the hint card opens by itself. Hint button turns amber-filled.',
+          phone(
+            'en',
+            runnerBar(6, 2, true, 'Hint') +
+              prompt('Capture the white stone.') +
+              bw(board({ rows: E3, hint: ['d3'], ghost: null })) +
+              fb('hint', 'It has one liberty left. Fill it.') +
+              '<div class="spacer"></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '10 · play-move — correct, Français',
+          'Stone tock + capture fade, last-move dot, green dot and “Bien joué !”, one obvious button.',
+          phone(
+            'fr',
+            runnerBar(6, 2, false, 'Indice') +
+              prompt('Capturez la pierre blanche.') +
+              bw(board({ rows: ['.....', '....X', '...X.', '....X', '.....'], gone: ['e3'], last: 'd3' })) +
+              fb('ok', 'Bien joué !', 'La pierre n\'avait plus de liberté : elle est capturée.') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('Suivant', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '11 · play-move — answer revealed after 3 mistakes, English',
+          'The answer is shown, not played: green ring on every solution point. No red, no sound. Outcome “revealed”.',
+          phone(
+            'en',
+            runnerBar(6, 2, true, 'Hint') +
+              prompt('Capture the white stone.') +
+              bw(board({ rows: E3, ok: ['d3'] })) +
+              fb('ok', 'Here is the answer. Take a look, then continue.', 'The stone had no liberties left, so it was captured.') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('Next', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '12 · play-move (connect) — 中文, 4th exercise',
+          'Same runner, different goal: the two black stones must end in one group. Only c3 touches both.',
+          phone(
+            'zh-CN',
+            runnerBar(6, 3, false, '提示') +
+              prompt('把两颗黑子连成一块。') +
+              bw(board({ rows: E4, ghost: { at: 'c3', c: 'X' } })) +
+              fb() +
+              '<div class="spacer"></div>',
+          ),
+        ),
+      );
+      var optsOf = function (a) {
+        return '<div class="opts">' + a.map(function (o) { return '<div class="opt ' + (o[1] || '') + '">' + o[0] + '</div>'; }).join('') + '</div>';
+      };
+      figs.push(
+        fig(
+          '13 · choice — initial, 中文',
+          'Board shrinks to ≈ 240 px; labels A/B stand in for coordinates; options ≥ 48 px, authored order.',
+          phone(
+            'zh-CN',
+            runnerBar(6, 4, false, '提示') +
+              prompt('黑棋一步能提掉这颗白子吗？') +
+              bw(board({ rows: E5, px: 232, marks: [{ k: 'label', at: 'c4', t: 'A' }, { k: 'label', at: 'd3', t: 'B' }] })) +
+              optsOf([['能，下在 A'], ['能，下在 B'], ['不能，它还有两口气']]) +
+              fb() +
+              '<div class="spacer"></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '14 · choice — first wrong option, English',
+          'Wrong option greys out and the “why” appears. One more wrong tap (max 2 for 3 options) would reveal the answer.',
+          phone(
+            'en',
+            runnerBar(6, 4, false, 'Hint') +
+              prompt('Can Black capture the white stone with one move?') +
+              bw(board({ rows: E5, px: 232, marks: [{ k: 'label', at: 'c4', t: 'A' }, { k: 'label', at: 'd3', t: 'B' }] })) +
+              optsOf([['Yes, at A', 'dis'], ['Yes, at B'], ['No, it has two liberties']]) +
+              fb('err', 'After A the stone still has a liberty at B.') +
+              '<div class="spacer"></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '15 · count — wrong number, Français',
+          'Chips 0–9 (56×44), nothing is judged until “Vérifier”. Message states how to count; the chip stays selected.',
+          phone(
+            'fr',
+            runnerBar(6, 5, false, 'Indice') +
+              prompt('Combien de libertés le groupe noir marqué a-t-il ?') +
+              bw(board({ rows: E6, px: 232, marks: [{ k: 'triangle', at: 'd4' }] })) +
+              '<div class="chips">' +
+              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (n) { return '<div class="chip ' + (n === 4 ? 'sel' : '') + '">' + n + '</div>'; }).join('') +
+              '</div>' +
+              fb('err', 'Pas tout à fait. Comptez les points vides directement voisins du groupe (pas en diagonale), chacun une fois.') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('Vérifier', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '16 · count — answer revealed, English',
+          'The 5 liberties (d3, c4, e5, e3, f4) are ringed in green and chip 5 is outlined. Last exercise: button reads “Finish”.',
+          phone(
+            'en',
+            runnerBar(6, 5, true, 'Hint') +
+              prompt('How many liberties does the marked black group have?') +
+              bw(board({ rows: E6, px: 232, marks: [{ k: 'triangle', at: 'd4' }], ok: ['d3', 'c4', 'e5', 'e3', 'f4'] })) +
+              '<div class="chips">' +
+              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (n) { return '<div class="chip ' + (n === 5 ? 'ok' : '') + '">' + n + '</div>'; }).join('') +
+              '</div>' +
+              fb('ok', 'Here is the answer. Take a look, then continue.') +
+              '<div class="spacer"></div><div class="row">' +
+              btn('Finish', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+
+      /* ===== RESULT & OTHER ===== */
+      figs.push(
+        fig(
+          '17 · Result — 3 stars, English',
+          'Stars appear one by one (250 ms, soft tock each). “Unit 2 unlocked” only when a unit newly opens. Primary = next lesson.',
+          phone(
+            'en',
+            '<div class="res"><div class="st">' + star(1) + star(1) + star(1) + '</div><h3>Calm and precise</h3><p>6 of 6 right the first time</p><div class="badge">Unit 2 unlocked</div><div class="acts">' +
+              btn('Next lesson ›', 'primary') +
+              btn('Practice again') +
+              btn('Back to map', 'text') +
+              '</div></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '18 · Result — 0 stars (not yet), 中文',
+          'No shame: no red, no empty-stars drama beyond outlines. The primary action sends the learner back to the explanation. Next unit stays locked.',
+          phone(
+            'zh-CN',
+            '<div class="res"><div class="st">' + star(0) + star(0) + star(0) + '</div><h3>还差一点</h3><p>你自己答对了 2 题（共 6 题）。回头看看讲解，再来一次吧。</p><div class="acts">' +
+              btn('回顾讲解', 'primary') +
+              btn('再试一次') +
+              btn('回到学习路径', 'text') +
+              '</div></div>',
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '19 · Leave the practice? — English',
+          '✕, Android back and the iOS back gesture open this sheet. Nothing from the set is saved if you leave.',
+          phone(
+            'en',
+            runnerBar(6, 2, false, 'Hint') +
+              prompt('Capture the white stone.') +
+              bw(board({ rows: E3 })) +
+              fb() +
+              '<div class="spacer"></div>',
+            {
+              over: '<div class="dim"></div><div class="sheet"><h4>Leave practice?</h4><p>Your progress in this set won\'t be saved.</p>' + btn('Keep going', 'primary') + btn('Leave') + '</div>',
+            },
+          ),
+        ),
+      );
+      figs.push(
+        fig(
+          '20 · Lesson cannot be opened — Français',
+          'Unknown id, invalid lesson file, or (with another text) a locked lesson opened by link. One calm button.',
+          phone(
+            'fr',
+            '<div class="topbar"><span class="ibtn">‹</span><span></span><span class="ibtn" style="visibility:hidden">·</span></div><div class="center"><h3>Cette leçon ne s\'ouvre pas</h3><p>Le fichier de la leçon est incorrect. Mettez l\'application à jour.</p></div><div class="row">' +
+              btn('Retour à la carte', 'primary') +
+              '</div>',
+          ),
+        ),
+      );
+
+      var groups = [
+        ['Home / unit map', figs.slice(0, 3)],
+        ['Explanation player', figs.slice(3, 6)],
+        ['Exercise runners — tap-point, play-move', figs.slice(6, 13)],
+        ['Exercise runners — choice, count', figs.slice(13, 17)],
+        ['Result, leave sheet, error', figs.slice(17)],
+      ];
+      document.getElementById('root').innerHTML = groups
+        .map(function (g) {
+          return '<h2 class="group">' + g[0] + '</h2><div class="grid">' + g[1].join('') + '</div>';
+        })
+        .join('');
+    </script>
+  </body>
+</html>

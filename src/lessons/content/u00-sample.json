@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "id": "u00-sample",
+  "unit": 0,
+  "kind": "lesson",
+  "titleKey": "lesson.u00-sample.title",
+  "coordinates": false,
+  "explain": [
+    {
+      "board": { "size": 5, "setup": { "B": ["c2", "b3", "d3"], "W": ["c3"] } },
+      "highlights": [{ "kind": "liberty", "points": ["c4"] }],
+      "markers": [{ "kind": "triangle", "at": "c3" }],
+      "textKey": "lesson.u00-sample.s1"
+    },
+    {
+      "moves": [{ "color": "B", "at": "c4" }],
+      "textKey": "lesson.u00-sample.s2"
+    },
+    {
+      "board": { "size": 5, "setup": { "B": ["a3", "b4", "c4", "b2", "c2"], "W": ["b3", "c3"] } },
+      "highlights": [{ "kind": "liberty", "points": ["d3"] }],
+      "moves": [{ "color": "B", "at": "d3" }],
+      "textKey": "lesson.u00-sample.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "tap-last-liberty",
+      "type": "tap-point",
+      "mode": "one",
+      "size": 5,
+      "setup": { "B": ["c2", "b3", "d3"], "W": ["c3"] },
+      "answer": { "points": ["c4"] },
+      "promptKey": "lesson.u00-sample.e1.prompt",
+      "hintKey": "lesson.u00-sample.e1.hint",
+      "hintPoints": ["c4"]
+    },
+    {
+      "id": "tap-all-liberties",
+      "type": "tap-point",
+      "mode": "all",
+      "size": 5,
+      "setup": { "B": ["c1"] },
+      "answer": { "libertiesOf": "c1" },
+      "promptKey": "lesson.u00-sample.e2.prompt",
+      "hintKey": "lesson.u00-sample.e2.hint"
+    },
+    {
+      "id": "capture-edge-stone",
+      "type": "play-move",
+      "toPlay": "B",
+      "size": 5,
+      "setup": { "B": ["e4", "e2"], "W": ["e3"] },
+      "goal": { "kind": "capture" },
+      "promptKey": "lesson.u00-sample.e3.prompt",
+      "hintKey": "lesson.u00-sample.e3.hint",
+      "hintPoints": ["d3"],
+      "explainKey": "lesson.u00-sample.e3.explain"
+    },
+    {
+      "id": "connect-two",
+      "type": "play-move",
+      "toPlay": "B",
+      "size": 5,
+      "setup": { "B": ["b3", "d3"], "W": ["c4", "c2"] },
+      "goal": { "kind": "connect", "a": "b3", "b": "d3" },
+      "promptKey": "lesson.u00-sample.e4.prompt",
+      "hintKey": "lesson.u00-sample.e4.hint",
+      "hintPoints": ["c3"]
+    },
+    {
+      "id": "one-move-capture",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["b3", "c2"], "W": ["c3"] },
+      "markers": [
+        { "kind": "label", "at": "c4", "text": "A" },
+        { "kind": "label", "at": "d3", "text": "B" }
+      ],
+      "promptKey": "lesson.u00-sample.e5.prompt",
+      "options": [
+        { "textKey": "lesson.u00-sample.e5.o1", "whyKey": "lesson.u00-sample.e5.w1" },
+        { "textKey": "lesson.u00-sample.e5.o2", "whyKey": "lesson.u00-sample.e5.w2" },
+        { "textKey": "lesson.u00-sample.e5.o3", "correct": true }
+      ],
+      "explainKey": "lesson.u00-sample.e5.explain"
+    },
+    {
+      "id": "count-group-liberties",
+      "type": "count",
+      "size": 7,
+      "setup": { "B": ["d4", "e4"], "W": ["d5"] },
+      "markers": [{ "kind": "triangle", "at": "d4" }],
+      "answer": { "libertiesOf": "d4" },
+      "promptKey": "lesson.u00-sample.e6.prompt",
+      "hintKey": "lesson.u00-sample.e6.hint"
+    }
+  ]
+}

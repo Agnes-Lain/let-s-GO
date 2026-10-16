@@ -60,7 +60,6 @@ describe('copy table §4 is implemented verbatim', () => {
     ['en', 'home.subtitle', 'Learn Go (围棋 wéiqí) from zero, one rule at a time'],
     ['fr', 'home.subtitle', 'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois'],
     ['fr', 'settings.open', 'Ouvrir les réglages'],
-    ['fr', 'placeholder.practice.title', 'Exercices'],
     ['fr', 'notFound.title', 'Page introuvable'],
     ['fr', 'notFound.home', "Retour à l'accueil"],
     ['zh-CN', 'notFound.title', '找不到这个页面'],
@@ -73,8 +72,23 @@ describe('copy table §4 is implemented verbatim', () => {
   });
 
   it('has exactly the 20 keys of the spec (M2 board/engine/dev keys are counted separately)', () => {
-    const m0Keys = Object.keys(zhCN).filter((key) => !/^(engine|board|dev)\./.test(key));
-    expect(m0Keys).toHaveLength(20);
+    // M3 keys (spec docs/specs/M3-lesson-framework.md §7) are counted by the M3 tests.
+    const m3Home =
+      /^home\.(continue|start|unit\.label|checkpoint\.label|sample\.label|locked\.hint|node\.a11y\..+|allDone)$/;
+    const m0Keys = Object.keys(zhCN).filter(
+      (key) =>
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb)\./.test(key) &&
+        !m3Home.test(key),
+    );
+    // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
+    const removedByM3 = [
+      'placeholder.lesson.title',
+      'placeholder.practice.title',
+      'placeholder.comingSoon',
+      'home.unit1.title',
+    ];
+    removedByM3.forEach((key) => expect(m0Keys).not.toContain(key));
+    expect(m0Keys).toHaveLength(20 - removedByM3.length);
   });
 });
 
@@ -82,13 +96,29 @@ describe('every key used in code exists in all languages (and none are orphaned)
   const sources = [...sourceFiles('app'), ...sourceFiles('src')]
     .map((file) => readFileSync(join(root, file), 'utf8'))
     .join('\n');
-  // t('key') calls and `labelKey: 'key'` entries (Settings language list).
+  // t('key') calls, `labelKey: 'key'` entries (Settings language list) and `key: 'key'` feedback
+  // lines / key maps (M3 exercises).
   const usedKeys = new Set(
-    [...sources.matchAll(/\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'/g)].map((m) => m[1] ?? m[2]),
+    [
+      ...sources.matchAll(
+        /\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'|\bkey:\s*'([^']+)'|:\s*'(engine\.illegal\.[^']+)'/g,
+      ),
+    ].map((m) => m[1] ?? m[2] ?? m[3] ?? m[4]),
   );
 
-  // t(`prefix.${x}`) calls: every key under that prefix counts as used.
-  const dynamicPrefixes = [...sources.matchAll(/\bt\(\s*`([^`$]+)\$\{/g)].map((m) => m[1]);
+  // t(`prefix.${x}`) calls and key templates such as `unit.${n}.title`: every key under that
+  // prefix counts as used.
+  const dynamicPrefixes = [
+    ...sources.matchAll(/\bt\(\s*`([^`$]+)\$\{/g),
+    ...sources.matchAll(/`([a-z][\w-]*\.)\$\{/g),
+  ].map((m) => m[1]);
+
+  // Lesson JSON files reference their texts by key (`titleKey`, `promptKey`, …).
+  const lessonDir = join(root, 'src/lessons/content');
+  for (const file of readdirSync(lessonDir).filter((f) => f.endsWith('.json'))) {
+    const json = readFileSync(join(lessonDir, file), 'utf8');
+    for (const m of json.matchAll(/"\w+Key":\s*"([^"]+)"/g)) usedKeys.add(m[1]);
+  }
 
   it('finds the keys used by the screens', () => {
     expect(usedKeys.size).toBeGreaterThan(10);

@@ -1,57 +1,58 @@
+// Home = learning-path map (M0 ACs 15–19, M3 ACs 97–99, 101–102, 105–106) on the real catalog.
+import { render } from '@testing-library/react-native';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
-import { StyleSheet } from 'react-native';
+import { AccessibilityInfo, StyleSheet } from 'react-native';
 
+import { UnitPath } from '@/exercises/UnitMap';
 import { setLanguageChoice, type Language } from '@/i18n';
+import { getUnits, mapRows } from '@/lessons';
+import { progressStore } from '@/store';
 
 // Device locale: Simplified Chinese (the primary language).
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'zh-Hans-CN', languageCode: 'zh' }],
 }));
 
+const hidden = { includeHiddenElements: true };
+
 async function renderHome(language: Language) {
   await act(() => setLanguageChoice(language));
-  return renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/' });
+  await act(async () => {});
+  return router;
 }
 
+beforeEach(() => {
+  progressStore.getState().reset();
+});
 afterEach(async () => {
   await act(() => setLanguageChoice('system'));
 });
 
-describe('Home screen', () => {
+describe('Home screen (M0 copy)', () => {
   it('shows the zh-CN home content (AC15)', async () => {
     const router = await renderHome('zh-CN');
     expect(router.getPathname()).toBe('/');
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
     expect(screen.getByText('从零开始，一步一步学会下围棋')).toBeOnTheScreen();
     expect(screen.getByText('学习路线')).toBeOnTheScreen();
-    expect(screen.getByText('第 1 单元 · 棋盘与棋子')).toBeOnTheScreen();
-    expect(screen.getByText('即将开放')).toBeOnTheScreen();
+    expect(screen.getByText('第 1 单元')).toBeOnTheScreen();
+    expect(screen.getByText('棋盘与棋子')).toBeOnTheScreen();
+    expect(screen.getAllByText('即将开放')).toHaveLength(6);
     expect(screen.getByText('更多单元即将上线')).toBeOnTheScreen();
   });
 
-  it('shows the English home content (AC16)', async () => {
+  it('shows the English and French home content (AC16)', async () => {
     await renderHome('en');
-    expect(screen.getByText("Let's GO")).toBeOnTheScreen();
     expect(
       screen.getByText('Learn Go (围棋 wéiqí) from zero, one rule at a time'),
     ).toBeOnTheScreen();
     expect(screen.getByText('Learning path')).toBeOnTheScreen();
-    expect(screen.getByText('Unit 1 · Board & stones')).toBeOnTheScreen();
-    expect(screen.getByText('Coming soon')).toBeOnTheScreen();
-  });
-
-  it('shows the French home content (AC16)', async () => {
-    await renderHome('fr');
-    expect(screen.getByText("Let's GO")).toBeOnTheScreen();
+    expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
+    await act(() => setLanguageChoice('fr'));
     expect(screen.getByText("Parcours d'apprentissage")).toBeOnTheScreen();
-    expect(screen.getByText('Unité 1 · Le goban et les pierres')).toBeOnTheScreen();
-    expect(screen.getByText('Bientôt disponible')).toBeOnTheScreen();
-  });
-
-  it('opens the first lesson when the Unit 1 card is tapped (AC17)', async () => {
-    const router = await renderHome('zh-CN');
-    await fireEvent.press(screen.getByRole('button', { name: '第 1 单元 · 棋盘与棋子' }));
-    expect(router.getPathname()).toBe('/lesson/u01-board');
+    expect(screen.getByText('Plateau et pierres · 棋盘 qípán')).toBeOnTheScreen();
+    expect(screen.getAllByText('Bientôt disponible')).toHaveLength(6);
   });
 
   it('opens Settings from the gear button (AC18)', async () => {
@@ -60,29 +61,119 @@ describe('Home screen', () => {
     expect(router.getPathname()).toBe('/settings');
   });
 
-  it('gives every pressable a button role, an i18n label and a 44×44 hit area (AC19)', async () => {
-    await renderHome('zh-CN');
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.map((b) => b.props.accessibilityLabel)).toEqual([
-      '打开设置',
-      '第 1 单元 · 棋盘与棋子',
-    ]);
-    for (const button of buttons) {
-      const style = StyleSheet.flatten(button.props.style);
-      const width = style.width ?? style.minWidth ?? 0;
-      const height = style.height ?? style.minHeight ?? 0;
-      // The card stretches to the content width (328px at 360px), so only its height is fixed.
-      expect(height).toBeGreaterThanOrEqual(44);
-      if (style.width !== undefined || style.minWidth !== undefined) {
-        expect(width).toBeGreaterThanOrEqual(44);
-      }
-    }
-  });
-
   it('draws the decorative landscape hidden from accessibility and touches', async () => {
     await renderHome('zh-CN');
-    const landscape = screen.getByTestId('landscape-home', { includeHiddenElements: true });
+    const landscape = screen.getByTestId('landscape-home', hidden);
     expect(landscape.props.accessible).toBe(false);
     expect(landscape.props.pointerEvents).toBe('none');
+  });
+});
+
+describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
+  it('AC 97: fresh install — Start learning → sample; sample available; units 1–6 soon', async () => {
+    const router = await renderHome('en');
+    const card = screen.getByTestId('home-continue');
+    expect(card.props.accessibilityLabel).toBe('Start learning, Sample (developer)');
+    expect(screen.getByTestId('home-node-unit-0').props.accessibilityLabel).toBe(
+      'Sample (developer), Sample: Capture, not started',
+    );
+    expect(screen.getByTestId('home-dot-available')).toBeTruthy();
+    for (let n = 1; n <= 6; n++) {
+      expect(screen.getByTestId(`home-node-unit-${n}`).props.accessibilityLabel).toMatch(
+        /coming soon$/,
+      );
+    }
+    expect(screen.getByText('More units coming soon')).toBeOnTheScreen();
+    await fireEvent.press(card);
+    expect(router.getPathname()).toBe('/lesson/u00-sample');
+  });
+
+  it('AC 99: 2★ on the sample → ★★☆, black dot; Continue hidden; all done', async () => {
+    act(() => {
+      progressStore
+        .getState()
+        .record('u00-sample', ['clean', 'clean', 'clean', 'clean', 'solved', 'solved']);
+    });
+    await renderHome('en');
+    expect(screen.getByTestId('home-node-unit-0').props.accessibilityLabel).toBe(
+      'Sample (developer), Sample: Capture, 2 of 3 stars',
+    );
+    expect(screen.getByTestId('home-dot-done')).toBeTruthy();
+    expect(screen.queryByTestId('home-continue')).toBeNull();
+    expect(screen.getByText(/You've finished everything available/)).toBeOnTheScreen();
+  });
+
+  it('AC 101: tapping the sample opens its lesson', async () => {
+    const router = await renderHome('en');
+    await fireEvent.press(screen.getByTestId('home-node-unit-0'));
+    expect(router.getPathname()).toBe('/lesson/u00-sample');
+  });
+
+  it('AC 102: a coming-soon node is not a button', async () => {
+    await renderHome('en');
+    const node = screen.getByTestId('home-node-unit-1');
+    expect(node.props.accessibilityRole).toBeUndefined();
+    expect(node.props.onClick ?? node.props.onPress).toBeUndefined();
+    expect(screen.getAllByRole('button').map((b) => b.props.accessibilityLabel)).toEqual([
+      'Open settings',
+      'Start learning, Sample (developer)',
+      'Sample (developer), Sample: Capture, not started',
+    ]);
+  });
+
+  it('AC 106: gear 44×44, Continue ≥ 56, node cards 72 high', async () => {
+    await renderHome('zh-CN');
+    const gear = StyleSheet.flatten(screen.getByRole('button', { name: '打开设置' }).props.style);
+    expect(gear.width).toBeGreaterThanOrEqual(44);
+    expect(gear.height).toBeGreaterThanOrEqual(44);
+    const cont = StyleSheet.flatten(screen.getByTestId('home-continue').props.style);
+    expect(cont.minHeight).toBeGreaterThanOrEqual(56);
+    for (let n = 0; n <= 6; n++) {
+      expect(StyleSheet.flatten(screen.getByTestId(`home-node-unit-${n}`).props.style).height).toBe(
+        72,
+      );
+    }
+  });
+});
+
+describe('release build (AC 98)', () => {
+  it('no sample node and no Continue card; units 1–6 coming soon', async () => {
+    const original = (globalThis as { __DEV__?: boolean }).__DEV__;
+    (globalThis as { __DEV__?: boolean }).__DEV__ = false;
+    try {
+      await renderHome('en');
+      expect(screen.queryByTestId('home-node-unit-0')).toBeNull();
+      expect(screen.queryByTestId('home-continue')).toBeNull();
+      expect(screen.queryByTestId('home-all-done')).toBeNull();
+      expect(screen.getAllByText('Coming soon')).toHaveLength(6);
+    } finally {
+      (globalThis as { __DEV__?: boolean }).__DEV__ = original;
+    }
+  });
+});
+
+describe('loading skeleton (AC 105)', () => {
+  it('shows 72 px skeleton bars until progress is read, then the nodes', () => {
+    const rows = mapRows(getUnits({ includeDev: true }), {});
+    const view = render(
+      <UnitPath rows={rows} hydrated={false} onOpen={jest.fn()} onLocked={jest.fn()} />,
+    );
+    const skeletons = screen.getAllByTestId('home-skeleton');
+    expect(skeletons).toHaveLength(rows.length);
+    for (const s of skeletons) expect(StyleSheet.flatten(s.props.style).height).toBe(72);
+    expect(screen.queryByTestId('home-dot-locked')).toBeNull();
+    expect(screen.queryByTestId('home-dot-available')).toBeNull();
+    view.rerender(<UnitPath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
+    expect(screen.queryAllByTestId('home-skeleton')).toHaveLength(0);
+    expect(StyleSheet.flatten(screen.getByTestId('home-node-unit-0').props.style).height).toBe(72);
+  });
+});
+
+describe('announcements', () => {
+  it('does not announce anything on a plain home render', async () => {
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+    announce.mockClear();
+    await renderHome('en');
+    expect(announce).not.toHaveBeenCalled();
   });
 });

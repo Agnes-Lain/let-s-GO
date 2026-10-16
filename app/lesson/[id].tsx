@@ -1,20 +1,29 @@
-import { useLocalSearchParams } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 
-import { PlaceholderBody } from '@/theme/PlaceholderBody';
-import { Screen, TopBar } from '@/theme/Screen';
+import { ExplainPlayer } from '@/exercises/ExplainPlayer';
+import { LessonMessage } from '@/exercises/LessonMessage';
+import { useGoHome } from '@/exercises/navigation';
+import { useLessonGate } from '@/exercises/useLessonGate';
 
-export default function LessonPlaceholderScreen() {
-  const { t } = useTranslation();
+/** Explanation player route (spec §6.2). UI only: the lesson data drives everything. */
+export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const goHome = useGoHome();
+  const gate = useLessonGate(id);
+
+  if (gate.status !== 'ok') return <LessonMessage status={gate.status} />;
+  const { lesson } = gate;
+  if ((lesson.explain ?? []).length === 0) {
+    // A checkpoint has no explanation: go straight to the practice set.
+    return <Redirect href={`/practice/${lesson.id}`} />;
+  }
   return (
-    <Screen>
-      <TopBar showBack title={t('placeholder.lesson.title')} />
-      <PlaceholderBody
-        title={t('placeholder.lesson.title')}
-        id={id}
-        body={t('placeholder.comingSoon')}
-      />
-    </Screen>
+    <ExplainPlayer
+      lesson={lesson}
+      stars={gate.stars}
+      onClose={goHome}
+      onStartPractice={() => router.push(`/practice/${lesson.id}`)}
+    />
   );
 }

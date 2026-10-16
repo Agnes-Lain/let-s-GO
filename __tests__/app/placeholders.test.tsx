@@ -11,53 +11,38 @@ beforeEach(async () => {
   await act(() => setLanguageChoice('system'));
 });
 
-describe('Lesson placeholder (AC20)', () => {
-  it('shows title, id, coming-soon text and a back button to Home', async () => {
+// M3 replaced the lesson placeholder with the explanation player (see lesson.test.tsx).
+describe('Lesson route without a lesson (M3 AC 55)', () => {
+  it('shows the error screen; Back to map returns Home', async () => {
     const router = await renderRouter('./app', { initialUrl: '/' });
-    await fireEvent.press(screen.getByRole('button', { name: 'Unit 1 · Board & stones' }));
-    expect(router.getPathname()).toBe('/lesson/u01-board');
-
-    expect(screen.getAllByText('Lesson').length).toBeGreaterThan(0);
-    expect(screen.getByText('u01-board')).toBeOnTheScreen();
-    expect(screen.getByText('This part is coming soon. Stay tuned!')).toBeOnTheScreen();
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+    await act(() => appRouter.push('/lesson/u01-board'));
+    expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
-    expect(screen.getByText('Learning path')).toBeOnTheScreen();
   });
 
   it('goes to Home when opened directly (no history)', async () => {
     const router = await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
   });
 
-  it('shows the lesson placeholder in Chinese', async () => {
+  it('is translated (Chinese)', async () => {
     await act(() => setLanguageChoice('zh-CN'));
     await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
-    expect(screen.getAllByText('课程').length).toBeGreaterThan(0);
-    expect(screen.getByText('这里很快就会有内容，敬请期待！')).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: '返回' })).toBeOnTheScreen();
+    expect(screen.getByText('这一课打不开')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: '回到学习路径' })).toBeOnTheScreen();
   });
 });
 
-describe('Practice placeholder (AC21)', () => {
-  it('shows title, id and coming-soon text; back returns to the previous screen', async () => {
+// M3 replaced the practice placeholder with the exercise runners (see practice.test.tsx).
+describe('Practice route without a lesson (M3 AC 55, §6.7)', () => {
+  it('shows the error screen; Back to map returns Home', async () => {
     const router = await renderRouter('./app', { initialUrl: '/settings' });
     await act(() => appRouter.push('/practice/abc'));
     expect(router.getPathname()).toBe('/practice/abc');
-
-    expect(screen.getAllByText('Practice').length).toBeGreaterThan(0);
-    expect(screen.getByText('abc')).toBeOnTheScreen();
-    expect(screen.getByText('This part is coming soon. Stay tuned!')).toBeOnTheScreen();
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
-    expect(router.getPathname()).toBe('/settings');
-  });
-
-  it('goes to Home when there is no previous screen', async () => {
-    const router = await renderRouter('./app', { initialUrl: '/practice/abc' });
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
   });
 });

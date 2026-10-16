@@ -3,9 +3,10 @@ const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 const prettierConfig = require('eslint-config-prettier');
 
-// The rules engine and the bot must stay pure TypeScript (see CLAUDE.md rule 2).
+// The rules engine, the bot and the lesson model must stay pure TypeScript (CLAUDE.md rule 2,
+// M3 spec §4.1).
 const pureModuleRestrictions = {
-  files: ['src/engine/**', 'src/bot/**'],
+  files: ['src/engine/**', 'src/bot/**', 'src/lessons/**'],
   rules: {
     'no-restricted-imports': [
       'error',

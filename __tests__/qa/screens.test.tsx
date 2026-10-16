@@ -93,11 +93,12 @@ describe('Settings language round trip (AC23–AC25)', () => {
       "Let's GO",
       '从零开始，一步一步学会下围棋',
       '学习路线',
-      '第 1 单元 · 棋盘与棋子',
+      '棋盘与棋子',
       '即将开放',
       '更多单元即将上线',
     ]) {
-      expect(screen.getByText(text)).toBeOnTheScreen();
+      // Several nodes share the badge text, so any match will do.
+      expect(screen.getAllByText(text)[0]).toBeOnTheScreen();
     }
     expect(screen.getByRole('button', { name: '打开设置' })).toBeOnTheScreen();
   });
@@ -108,11 +109,12 @@ describe('Settings language round trip (AC23–AC25)', () => {
       "Let's GO",
       'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois',
       "Parcours d'apprentissage",
-      'Unité 1 · Le goban et les pierres',
+      'Plateau et pierres · 棋盘 qípán',
       'Bientôt disponible',
       "D'autres unités arrivent bientôt",
     ]) {
-      expect(screen.getByText(text)).toBeOnTheScreen();
+      // Several nodes share the badge text, so any match will do.
+      expect(screen.getAllByText(text)[0]).toBeOnTheScreen();
     }
   });
 });
@@ -132,17 +134,15 @@ describe('deep links and back (AC20–AC22)', () => {
     expect(router.getPathname()).toBe('/');
   });
 
-  it('lesson placeholder in French shows id and the NBSP text', async () => {
+  it('a lesson that does not exist shows the French error screen (M3 AC 55)', async () => {
     await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
-    expect(screen.getAllByText('Leçon').length).toBeGreaterThan(0);
-    expect(screen.getByText('u01-board')).toBeOnTheScreen();
-    expect(screen.getByText("Cette partie arrive bientôt. Restez à l'écoute !")).toBeOnTheScreen();
+    expect(screen.getByText("Cette leçon ne s'ouvre pas")).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Retour à la carte' })).toBeOnTheScreen();
   });
 
-  it('practice placeholder shows any id verbatim', async () => {
+  it('practice for an unknown lesson shows the French error screen', async () => {
     await renderRouter('./app', { initialUrl: '/practice/u02-liberties' });
-    expect(screen.getAllByText('Exercices').length).toBeGreaterThan(0);
-    expect(screen.getByText('u02-liberties')).toBeOnTheScreen();
+    expect(screen.getByText("Cette leçon ne s'ouvre pas")).toBeOnTheScreen();
   });
 
   it.each(['/nope', '/nope/deeper', '/lesson/u01-board/extra', '/settings/x'])(

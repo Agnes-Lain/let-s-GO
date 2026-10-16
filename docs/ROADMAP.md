@@ -21,11 +21,11 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] Verify on web via `npx expo start --web` + Playwright screenshot at 360×740
 
 ## M3 — Lesson framework
-- [ ] Lesson JSON schema + validator + loader
-- [ ] Explanation player (step-through boards with text)
-- [ ] Exercise runners: tap-point, play-move, choice, count
-- [ ] Progress store (stars, unlocks) with MMKV
-- [ ] Home / unit map screen
+- [x] Lesson JSON schema + validator + loader
+- [x] Explanation player (step-through boards with text)
+- [x] Exercise runners: tap-point, play-move, choice, count
+- [x] Progress store (stars, unlocks) — AsyncStorage behind an adapter; MMKV at the EAS build (M6)
+- [x] Home / unit map screen
 
 ## M4 — Content units 1–6 (through 吃子棋 Capture Go)
 - [ ] Units 1–5 content (zh + en + fr)

@@ -45,7 +45,7 @@ describe('Settings', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
     expect(router.getPathname()).toBe('/');
-    expect(screen.getByText('Unit 1 · Board & stones')).toBeOnTheScreen();
+    expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
   });
 
   it('switches to French immediately and Home follows (AC24)', async () => {
@@ -59,7 +59,7 @@ describe('Settings', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Retour' }));
     expect(router.getPathname()).toBe('/');
-    expect(screen.getByText('Unité 1 · Le goban et les pierres')).toBeOnTheScreen();
+    expect(screen.getByText('Plateau et pierres · 棋盘 qípán')).toBeOnTheScreen();
   });
 
   it('"use device language" goes back to the device language (AC25)', async () => {

@@ -26,6 +26,8 @@ export const color = {
   error: '#A8443F',
   /** 琥珀茶 amber tea — hint highlight (M3+) */
   hint: '#9A5F22',
+  /** pale amber — the Hint button once the hint is open (M3) */
+  hintSoft: '#F3E3CC',
   /** 嫩芽 tea sprout — "coming soon" badge background */
   badge: '#E4ECD8',
   /** badge text */
