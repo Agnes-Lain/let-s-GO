@@ -1,0 +1,260 @@
+{
+  "schema": 1,
+  "id": "u05-atari",
+  "unit": 5,
+  "kind": "lesson",
+  "titleKey": "lesson.u05-atari.title",
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c2", "b3"],
+          "W": ["c3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "d3"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c4", "d3"]
+        }
+      ],
+      "textKey": "lesson.u05-atari.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3"],
+          "W": ["c2", "b3", "d3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c4"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c4"]
+        }
+      ],
+      "textKey": "lesson.u05-atari.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3"],
+          "W": ["c2", "b3", "d3", "b4", "d4"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c4"
+        }
+      ],
+      "textKey": "lesson.u05-atari.s3"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c3", "b2", "b4"],
+          "W": ["b3", "c2", "d3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "a3"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "hint",
+          "points": ["a3"]
+        }
+      ],
+      "textKey": "lesson.u05-atari.s4"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "make-atari",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c2", "b3"],
+        "W": ["c3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u05-atari.e1.prompt",
+      "hintKey": "lesson.u05-atari.e1.hint",
+      "hintPoints": ["c4", "d3"],
+      "explainKey": "lesson.u05-atari.e1.explain"
+    },
+    {
+      "id": "which-atari",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["a5", "b6", "d3", "f3", "e2"],
+        "W": ["b5", "e3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u05-atari.e2.o1",
+          "whyKey": "lesson.u05-atari.e2.w1"
+        },
+        {
+          "textKey": "lesson.u05-atari.e2.o2",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u05-atari.e2.o3",
+          "whyKey": "lesson.u05-atari.e2.w3"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "b5",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "e3",
+          "text": "B"
+        }
+      ],
+      "promptKey": "lesson.u05-atari.e2.prompt",
+      "explainKey": "lesson.u05-atari.e2.explain"
+    },
+    {
+      "id": "last-liberty-b",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["d3"],
+        "W": ["c3", "e3", "d4"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["d2"]
+      },
+      "promptKey": "lesson.u05-atari.e3.prompt",
+      "hintKey": "lesson.u05-atari.e3.hint",
+      "hintPoints": ["d2"]
+    },
+    {
+      "id": "escape-extend",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["c4", "b3", "d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "save",
+        "target": "c3"
+      },
+      "promptKey": "lesson.u05-atari.e4.prompt",
+      "hintKey": "lesson.u05-atari.e4.hint",
+      "hintPoints": ["c2"],
+      "explainKey": "lesson.u05-atari.e4.explain"
+    },
+    {
+      "id": "escape-edge",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["a3"],
+        "W": ["a2", "b3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "save",
+        "target": "a3"
+      },
+      "promptKey": "lesson.u05-atari.e5.prompt",
+      "hintKey": "lesson.u05-atari.e5.hint",
+      "hintPoints": ["a4"]
+    },
+    {
+      "id": "escape-trap",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["c3"],
+        "W": ["c2", "b3", "d3", "b4", "d4"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u05-atari.e6.o1",
+          "whyKey": "lesson.u05-atari.e6.w1"
+        },
+        {
+          "textKey": "lesson.u05-atari.e6.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c4",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u05-atari.e6.prompt",
+      "explainKey": "lesson.u05-atari.e6.explain"
+    },
+    {
+      "id": "atari-group",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["d1", "b2"],
+        "W": ["b1", "c1"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u05-atari.e7.prompt",
+      "hintKey": "lesson.u05-atari.e7.hint",
+      "hintPoints": ["a1", "c2"],
+      "explainKey": "lesson.u05-atari.e7.explain"
+    },
+    {
+      "id": "rescue-capture",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "d2", "d4"],
+        "W": ["b3", "c2", "d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u05-atari.e8.prompt",
+      "hintKey": "lesson.u05-atari.e8.hint",
+      "hintPoints": ["e3"],
+      "explainKey": "lesson.u05-atari.e8.explain"
+    }
+  ]
+}

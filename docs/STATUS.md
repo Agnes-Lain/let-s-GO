@@ -26,10 +26,22 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `EXPO_PUBLIC_DEV_LESSONS=1`. Web check: `npm run verify:web:m3`; screenshots `docs/screenshots/M3/`.
   **Pending: the PO's iPhone check** — `docs/specs/M3-iphone-checklist.md`.
 
+- **M4 item 1** content units 1–5 (PR from branch `claude/m4-content-units-1-5`; merge pending):
+  six lessons in `src/lessons/content/` (u01-board … u05-atari + checkpoint u05-review; 18 steps,
+  46 exercises, zh-CN/en/fr), only Unit 6 "coming soon", badge under the title. Spec
+  `docs/specs/M4-content-units-1-5.md` (PO decisions §12), mockup `docs/specs/M4-mockup.html`.
+  Tests: `__tests__/m4-units-1-5.test.ts`, `__tests__/qa/m4-content-rules.test.ts`. Web check:
+  `npm run verify:web:m4` (release build); screenshots `docs/screenshots/M4/`.
+  **Pending: the PO's iPhone play-through of units 1–5.**
+
 ## Next
-- **M4** content units 1–5 (zh + en + fr) as lesson JSON + beginner bot v1 / Capture Go (`docs/ROADMAP.md`).
+- **M4 item 2:** beginner bot v1 (heuristic) + Capture Go 吃子棋 (Unit 6) — separate spec/PR.
 
 ## Known follow-ups (minor, not scheduled)
+- M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is
+  the clean answer). Approved in the spec; consider dropping a1 or mentioning it in the explanation.
+- M4: before an answer, choice/count screens show the reserved feedback card as an empty white box
+  (M3 design); the M4 mockup drew it transparent.
 - The no-JSX-text regex in `__tests__/qa/m2-board-quality.test.ts` is fragile (prefer
   `react/jsx-no-literals` or an AST check); its engine-call guard could also check imports from
   `@/engine`.

@@ -135,7 +135,7 @@ describe('deep links and back (AC20–AC22)', () => {
   });
 
   it('a lesson that does not exist shows the French error screen (M3 AC 55)', async () => {
-    await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
+    await renderRouter('./app', { initialUrl: '/lesson/u99-missing' });
     expect(screen.getByText("Cette leçon ne s'ouvre pas")).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Retour à la carte' })).toBeOnTheScreen();
   });

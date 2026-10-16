@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "id": "u04-capture",
+  "unit": 4,
+  "kind": "lesson",
+  "titleKey": "lesson.u04-capture.title",
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c2", "b3", "d3"],
+          "W": ["c3"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c4"]
+        }
+      ],
+      "textKey": "lesson.u04-capture.s1"
+    },
+    {
+      "moves": [
+        {
+          "color": "B",
+          "at": "c4"
+        }
+      ],
+      "textKey": "lesson.u04-capture.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["b1"],
+          "W": ["a1"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "a2"
+        }
+      ],
+      "textKey": "lesson.u04-capture.s3"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["b2", "b3", "d2", "d3", "c1"],
+          "W": ["c2", "c3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c4"
+        }
+      ],
+      "textKey": "lesson.u04-capture.s4"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "capture-one",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b2", "b4", "c3"],
+        "W": ["b3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u04-capture.e1.prompt",
+      "hintKey": "lesson.u04-capture.e1.hint",
+      "hintPoints": ["a3"],
+      "explainKey": "lesson.u04-capture.e1.explain"
+    },
+    {
+      "id": "capture-edge",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "d1"],
+        "W": ["c1"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u04-capture.e2.prompt",
+      "hintKey": "lesson.u04-capture.e2.hint",
+      "hintPoints": ["c2"]
+    },
+    {
+      "id": "capture-corner",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b1"],
+        "W": ["a1"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u04-capture.e3.prompt",
+      "hintKey": "lesson.u04-capture.e3.hint",
+      "hintPoints": ["a2"]
+    },
+    {
+      "id": "capture-or-not",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b2", "b4"],
+        "W": ["b3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u04-capture.e4.o1",
+          "whyKey": "lesson.u04-capture.e4.w1"
+        },
+        {
+          "textKey": "lesson.u04-capture.e4.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "a3",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u04-capture.e4.prompt",
+      "explainKey": "lesson.u04-capture.e4.explain"
+    },
+    {
+      "id": "capture-group",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "a3", "b1", "b4", "c2"],
+        "W": ["b2", "b3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "min": 2
+      },
+      "promptKey": "lesson.u04-capture.e5.prompt",
+      "hintKey": "lesson.u04-capture.e5.hint",
+      "hintPoints": ["c3"],
+      "explainKey": "lesson.u04-capture.e5.explain"
+    },
+    {
+      "id": "tap-capture",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5"],
+        "W": ["c4", "e1"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["c3"]
+      },
+      "promptKey": "lesson.u04-capture.e6.prompt",
+      "hintKey": "lesson.u04-capture.e6.hint",
+      "hintPoints": ["c3"],
+      "explainKey": "lesson.u04-capture.e6.explain"
+    },
+    {
+      "id": "find-capture",
+      "type": "play-move",
+      "size": 7,
+      "setup": {
+        "B": ["c4", "e4", "d3", "b5"],
+        "W": ["d4", "b6"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u04-capture.e7.prompt",
+      "hintKey": "lesson.u04-capture.e7.hint",
+      "hintPoints": ["d5"],
+      "explainKey": "lesson.u04-capture.e7.explain"
+    },
+    {
+      "id": "count-captured",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["c2", "c3", "c4", "d1", "d5", "e2", "e4"],
+        "W": ["d2", "d3", "d4"]
+      },
+      "answer": 3,
+      "markers": [
+        {
+          "kind": "label",
+          "at": "e3",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u04-capture.e8.prompt",
+      "hintKey": "lesson.u04-capture.e8.hint",
+      "explainKey": "lesson.u04-capture.e8.explain"
+    }
+  ]
+}

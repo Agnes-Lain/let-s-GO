@@ -14,7 +14,7 @@ export interface ListOptions {
 }
 
 /** Units shown as "coming soon" until their content exists (§4.6). */
-export const PLANNED_UNITS: readonly number[] = [1, 2, 3, 4, 5, 6];
+export const PLANNED_UNITS: readonly number[] = [6];
 
 export interface LessonLoader {
   loadLesson(id: string, opts?: ListOptions): LoadResult;

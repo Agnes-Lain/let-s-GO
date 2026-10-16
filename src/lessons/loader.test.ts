@@ -73,17 +73,18 @@ describe('dev sample visibility (AC 26)', () => {
 });
 
 describe('getUnits (AC 27)', () => {
-  it('without content, units 1–6 are planned', () => {
+  it('M4: units 1–5 carry their lessons (unit 5 has the review checkpoint); unit 6 is planned', () => {
     const units = getUnits({ includeDev: false });
-    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6]);
-    for (const unit of units) {
-      expect(unit).toEqual({
-        unit: unit.unit,
-        titleKey: `unit.${unit.unit}.title`,
-        lesson: null,
-        checkpoint: null,
-      });
-    }
+    expect(
+      units.map((u) => [u.unit, u.titleKey, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
+    ).toEqual([
+      [1, 'unit.1.title', 'u01-board', null],
+      [2, 'unit.2.title', 'u02-liberties', null],
+      [3, 'unit.3.title', 'u03-connection', null],
+      [4, 'unit.4.title', 'u04-capture', null],
+      [5, 'unit.5.title', 'u05-atari', 'u05-review'],
+      [6, 'unit.6.title', null, null],
+    ]);
   });
 
   it('a dev build adds the sample as unit 0', () => {
