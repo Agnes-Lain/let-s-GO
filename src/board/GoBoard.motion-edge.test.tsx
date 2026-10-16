@@ -153,7 +153,7 @@ describe('capture fade (edge)', () => {
 
   // KNOWN BUG (minor): undo while a capture fade is running leaves the ghost until it ends,
   // drawn over the restored stone. The dev screen passes lastCapture=null after undo.
-  it.failing('undo during a fade leaves no ghost captured stones', async () => {
+  it('undo during a fade leaves no ghost captured stones', async () => {
     reduceMotion(false);
     const { update } = setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
     await settle();
@@ -165,7 +165,7 @@ describe('capture fade (edge)', () => {
 
   // KNOWN BUG (minor/major): undoing back to a move that had its own earlier capture (lower id)
   // is treated as a new capture and fades ghosts of stones that are not on the board.
-  it.failing('undo to an older capture id does not replay a fade', async () => {
+  it('undo to an older capture id does not replay a fade', async () => {
     reduceMotion(false);
     const { update } = setup({
       stones: S(['e5', 'c4'], ['g7']),

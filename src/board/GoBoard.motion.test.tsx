@@ -151,7 +151,12 @@ describe('capture fade-out (AC38-AC40)', () => {
     await settle();
     update({ stones: capturedC3, lastMove: at('c4'), lastCapture: capture(1) });
     act(() => jest.advanceTimersByTime(100));
-    update({ stones: capturedC3, lastMove: at('c4'), lastCapture: capture(2, ['g7']) });
+    // A real second capture arrives together with a new stone.
+    update({
+      stones: stonesFromSetup(9, { B: ['e5', 'c2', 'b3', 'd3', 'c4', 'h7'] }),
+      lastMove: at('h7'),
+      lastCapture: capture(2, ['g7']),
+    });
     expect(screen.queryByTestId('board-capture-c3')).toBeNull();
     expect(screen.getByTestId('board-capture-g7')).toBeTruthy();
   });

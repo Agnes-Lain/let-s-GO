@@ -202,6 +202,9 @@ interface DrawingProps {
   screenReader: boolean;
 }
 
+const sameCells = (a: readonly (Color | null)[], b: readonly (Color | null)[]) =>
+  a.length === b.length && a.every((c, i) => c === b[i]);
+
 const samePoint = (a: Point | null, b: Point | null) =>
   a !== null && b !== null && a.x === b.x && a.y === b.y;
 
@@ -354,12 +357,14 @@ function BoardDrawing({
   const [capture, setCapture] = useState<CaptureEvent | null>(null);
   if (seen.stones !== stones || seen.captureId !== captureId) {
     setSeen({ stones, captureId });
-    if (lastMove && isStonePlaced(seen.stones, stones, lastMove, size) && !reduceMotion) {
-      setPlaced(lastMove.y * size + lastMove.x);
-    }
-    if (lastCapture && captureId !== seen.captureId) {
+    const appeared = isStonePlaced(seen.stones, stones, lastMove, size);
+    if (lastMove && appeared && !reduceMotion) setPlaced(lastMove.y * size + lastMove.x);
+    if (appeared && lastCapture && captureId !== seen.captureId) {
       // A newer capture replaces (and so instantly ends) the previous one.
       setCapture(reduceMotion || lastCapture.points.length === 0 ? null : lastCapture);
+    } else if (captureId !== seen.captureId || !sameCells(seen.stones, stones)) {
+      // Undo / reset / capture cleared: a fade must never outlive or replay over a changed board.
+      setCapture(null);
     }
   }
   const placedDone = useCallback(() => setPlaced(null), []);
