@@ -29,7 +29,7 @@ __tests__/ or *.test.ts next to the code
 ```
 
 ## Commands
-- `npm install` — install deps
+- `npm ci` — install deps exactly from the lockfile (use `npm install <pkg>` only to add a dependency)
 - `npx expo start --web` — run in browser (use this in cloud sessions to screenshot UI with Playwright)
 - `npm test` — Jest
 - `npm run lint` / `npm run typecheck` — must pass before every commit
@@ -70,3 +70,15 @@ For each roadmap item, the main session coordinates three agents in order:
 
 Example prompt: "Do the next roadmap item with the team: product-designer spec → my approval →
 developer → qa loop until READY → PR."
+
+## Token efficiency (keep the prompt cache warm and context small)
+- **One session per milestone.** Start a new session for each milestone; read `docs/STATUS.md`
+  first instead of re-deriving history. Long idle gaps (> ~1 h) expire the prompt cache.
+- **Read only what you need:** the spec sections for the current item (use offsets/grep), not
+  whole specs or old specs. Don't re-read files you just wrote.
+- **Keep outputs short:** pipe test/lint output through `tail`/`grep`; never paste full logs.
+- **Don't duplicate checks:** QA runs the full suite; the main session re-runs it once before
+  the PR, not after every step.
+- **Subagent prompts:** point to file paths and spec sections instead of restating them;
+  agent reports should be concise (tables, no repeated diagrams).
+- Keep `CLAUDE.md` and agent files stable — edits change the cached prefix of every session.
