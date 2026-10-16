@@ -1,7 +1,16 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { checkMove, createGame, legalMoves, pass, play, type GameState } from './index';
+import {
+  checkMove,
+  createGame,
+  legalMoves,
+  parseBoard,
+  pass,
+  play,
+  score,
+  type GameState,
+} from './index';
 
 function deepFreeze<T>(value: T): T {
   if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -23,7 +32,7 @@ function koPosition(): GameState {
 }
 
 describe('purity', () => {
-  it('AC 24: play, pass, checkMove and legalMoves never change a deep-frozen state', () => {
+  it('AC 24: play, pass, checkMove, legalMoves and score never change a deep-frozen state', () => {
     const state = deepFreeze(koPosition());
     const copy = JSON.parse(JSON.stringify(state));
 
@@ -36,8 +45,31 @@ describe('purity', () => {
       checkMove(state, 'a1');
       checkMove(state, 'c3');
       legalMoves(state);
+      score(state.board, { komi: state.komi });
     }).not.toThrow();
     expect(state).toEqual(copy);
+  });
+
+  it('AC 24: score never changes a deep-frozen board or dead-stone list', () => {
+    const { board } = parseBoard(`
+      5 . . X O .
+      4 o . X O .
+      3 . . X . O
+      2 . . X O .
+      1 . . X O .
+        a b c d e
+    `);
+    const state = deepFreeze({ ...koPosition(), board });
+    const deadStones = deepFreeze(['a4', { x: 0, y: 3 }]);
+    const copy = JSON.parse(JSON.stringify({ state, deadStones }));
+
+    let first: ReturnType<typeof score> | undefined;
+    expect(() => {
+      first = score(state.board, { komi: state.komi, deadStones });
+      score(state.board, { komi: 7.5 });
+    }).not.toThrow();
+    expect({ state, deadStones }).toEqual(copy);
+    expect(score(state.board, { komi: state.komi, deadStones })).toEqual(first);
   });
 
   it('AC 24: a capture from a deep-frozen state does not change it', () => {
@@ -56,6 +88,7 @@ describe('purity', () => {
     expect(play(state, 'c3')).toEqual(play(state, 'c3'));
     expect(pass(state)).toEqual(pass(state));
     expect(legalMoves(state)).toEqual(legalMoves(state));
+    expect(score(state.board, { komi: 0.5 })).toEqual(score(state.board, { komi: 0.5 }));
   });
 
   it('AC 24: results share no mutable arrays with the input', () => {

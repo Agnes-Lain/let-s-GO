@@ -30,7 +30,7 @@ export function createGame(size: number, opts: GameOptions = {}): GameState {
   }
 
   const komi = opts.komi ?? defaultKomi(size);
-  if (!Number.isFinite(komi) || !Number.isInteger(komi * 2)) {
+  if (!isValidKomi(komi)) {
     throw new EngineError('invalid-komi', `Komi must be a multiple of 0.5, got ${komi}`);
   }
 
@@ -49,6 +49,11 @@ export function createGame(size: number, opts: GameOptions = {}): GameState {
     isOver: false,
     moves: [],
   };
+}
+
+/** Komi must be a finite multiple of 0.5 (so a result is never a fraction like 0.25). */
+export function isValidKomi(komi: number): boolean {
+  return Number.isFinite(komi) && Number.isInteger(komi * 2);
 }
 
 function setupBoard(size: BoardSize, setup: NonNullable<GameOptions['setup']>): Board {

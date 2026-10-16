@@ -91,18 +91,21 @@ export function legalMoves(state: GameState): Point[] {
 }
 
 /**
- * Minimal pass for PR 2: switches the turn, lifts the ko ban (a pass counts as the one turn,
- * decision D8), counts the pass and records it. Ending the game after two passes is M1 PR 3.
+ * Passes for `state.toPlay`: switches the turn, lifts the ko ban (a pass counts as the one
+ * turn, decision D8), counts the pass and records it. The second pass in a row ends the game
+ * (`isOver`); after that, `play` and `pass` return 'game-over'.
  */
 export function pass(state: GameState): PassResult {
   if (state.isOver) return { ok: false, reason: 'game-over' };
+  const consecutivePasses = state.consecutivePasses + 1;
   return {
     ok: true,
     state: {
       ...state,
       toPlay: other(state.toPlay),
       koPoint: null,
-      consecutivePasses: state.consecutivePasses + 1,
+      consecutivePasses,
+      isOver: consecutivePasses >= 2,
       moves: [...state.moves, { type: 'pass', color: state.toPlay }],
     },
   };
