@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let's GO M2 Mockup</title>
+<style>
+  :root {
+    --background: #F4F1EA; --sky: #DCE6EA; --surface: #FFFDF8; --border: #E3DDD0;
+    --text: #26292B; --text2: #5E6A6E; --accent: #3E6461; --onAccent: #FFFFFF;
+    --success: #56764A; --error: #A8443F; --hint: #9A5F22; --badge: #E4ECD8; --onBadge: #3F5A35;
+    --mFar: #C9D5D6; --mNear: #9DB2AE;
+    --bamboo: #E8D3A0; --line: #33281B; --black: #22252A; --white: #F7F5EE; --whiteEdge: #8F8C80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: hidden; }
+  body {
+    background: #E3DDD0; color: #26292B; padding: 24px 12px 48px; overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  header.page { max-width: 1240px; margin: 0 auto 24px; }
+  header.page h1 { font-size: 22px; line-height: 28px; }
+  header.page p { color: var(--text2); font-size: 14px; line-height: 20px; margin-top: 6px; max-width: 820px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; max-width: 1240px; margin: 0 auto; }
+  figure { display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 100%; }
+  figcaption { font-size: 13px; line-height: 18px; color: var(--text2); max-width: 360px; text-align: center; }
+  .phone {
+    width: 376px; height: 756px; max-width: 100%; background: var(--background);
+    border-radius: 30px; border: 8px solid var(--black); overflow: hidden; position: relative;
+    display: flex; flex-direction: column; box-shadow: 0 8px 24px rgba(38,41,43,.15);
+    background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px);
+  }
+  .phone.tall { background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px); }
+  .landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 130px; z-index: 0; }
+  .status, .content { position: relative; z-index: 1; }
+  .status { height: 28px; font-size: 12px; display: flex; justify-content: space-between; padding: 6px 16px; }
+  .content { padding: 0 16px; flex: 1; display: flex; flex-direction: column; }
+  .topbar { height: 52px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+  .back { min-width: 44px; height: 44px; display: flex; align-items: center; color: var(--accent); font-size: 16px; font-weight: 600; }
+  .topbar .title { font-size: 17px; font-weight: 600; position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; }
+  .icons { display: flex; }
+  .iconbtn { width: 44px; height: 44px; display: grid; place-items: center; font-size: 14px; font-weight: 700; color: var(--accent); }
+  .seg { display: flex; height: 44px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .seg span { flex: 1; display: grid; place-items: center; font-size: 14px; color: var(--text); border-left: 1px solid var(--border); white-space: nowrap; }
+  .seg span:first-child { border-left: none; }
+  .seg span.on { background: var(--accent); color: var(--onAccent); font-weight: 600; }
+  .boardwrap { margin-top: 12px; }
+  .turn { height: 28px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 16px; }
+  .turn .cap { font-size: 13px; color: var(--text2); }
+  .ms { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; }
+  .ms.b { background: var(--black); }
+  .ms.w { background: var(--white); border: 1px solid var(--whiteEdge); }
+  .msgarea { min-height: 72px; margin-top: 4px; }
+  .msg { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 19px; }
+  .msg i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--error); margin-top: 6px; }
+  .chips { display: flex; gap: 8px; margin-top: 8px; overflow: hidden; white-space: nowrap; }
+  .chip { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; font-size: 14px; }
+  .chip.on { background: var(--badge); color: var(--onBadge); border-color: var(--badge); font-weight: 600; }
+  .actions { display: flex; gap: 12px; margin-top: 8px; }
+  .btn { flex: 1; height: 44px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; font-size: 16px; font-weight: 600; color: var(--accent); }
+  .btn.dis { color: var(--text2); opacity: .5; }
+  .btn.primary { background: var(--accent); color: var(--onAccent); border-color: var(--accent); height: 48px; }
+  .frames { display: flex; gap: 10px; margin-top: 10px; }
+  .frames div { flex: 1; text-align: center; font-size: 12px; color: var(--text2); }
+  .frames svg { margin-bottom: 4px; }
+  .lesson-text { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-size: 16px; line-height: 24px; margin: 4px 0 12px; }
+  .lesson-text b { font-weight: 600; }
+  .dots { display: flex; gap: 6px; justify-content: center; margin: 2px 0 10px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .dots i.on { background: var(--accent); }
+  .note { font-size: 13px; color: var(--text2); text-align: center; margin-top: 8px; }
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13px; line-height: 18px; color: var(--text2); max-width: 360px; width: 100%; padding: 0 8px; }
+  .legend b { color: var(--text); font-weight: 600; display: inline-block; min-width: 20px; }
+
+  /* Board SVGs: intersections at integer coordinates, 1 unit = 1 cell */
+  .bd { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 6px rgba(51,40,27,.18); }
+  .bd path, .bd rect, .bd circle, .bd line, .bd polygon { vector-effect: non-scaling-stroke; }
+  .bd .wood { fill: url(#bamboo); }
+  .bd .g { fill: none; stroke: #33281B; stroke-width: 1px; }
+  .bd .edge { fill: none; stroke: #33281B; stroke-width: 1.5px; }
+  .bd .st { fill: #33281B; }
+  .bd .lbl text { fill: #33281B; fill-opacity: .8; text-anchor: middle; dominant-baseline: central; font-weight: 500; }
+  .bd .lbl text.on { fill: #3E6461; fill-opacity: 1; font-weight: 700; }
+  .bd .b { fill: #22252A; }
+  .bd .w { fill: #F7F5EE; stroke: #8F8C80; stroke-width: 1px; }
+  .bd .lm-w { fill: #F7F5EE; }
+  .bd .lm-b { fill: #22252A; }
+  .bd .ghost { opacity: .5; }
+  .bd .xh { fill: none; stroke: #3E6461; stroke-width: 1.5px; stroke-opacity: .55; }
+  .bd .tag rect { fill: #FFFDF8; stroke: #E3DDD0; stroke-width: 1px; }
+  .bd .tag text { fill: #3E6461; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+  .bd .finger { fill: #26292B; opacity: .13; }
+  .bd .lib { fill: #3E6461; fill-opacity: .18; stroke: #3E6461; stroke-width: 1.5px; }
+  .bd .mk { fill: none; stroke-width: 2px; }
+  .bd .mk.ink { stroke: #33281B; }
+  .bd .mk.pale { stroke: #F7F5EE; }
+  .bd .mask { fill: #E8D3A0; }
+  .bd .mtext { fill: #33281B; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+  .bd .ring-hint { fill: none; stroke: #9A5F22; stroke-width: 2.5px; transform-box: fill-box; transform-origin: center; animation: pulse 1.2s ease-in-out infinite; }
+  .bd .illegal { vector-effect: none; fill: #A8443F; fill-opacity: .1; stroke: #A8443F; animation: illfade 2.4s ease-in-out infinite alternate; }
+  .bd .anim { transform-box: fill-box; transform-origin: center; }
+  .bd .place-in { animation: placeIn 4s ease-out infinite; }
+  .bd .ghost-anim { opacity: 0; animation: ghostShow 4s linear infinite; }
+  .bd .cap-gone { opacity: 0; animation: capOut 4s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: .5; } }
+  @keyframes illfade { 0%, 50% { opacity: 1; } 100% { opacity: .25; } }
+  @keyframes ghostShow { 0%, 19% { opacity: 0; } 20%, 39% { opacity: .5; } 40%, 100% { opacity: 0; } }
+  @keyframes placeIn { 0%, 39% { opacity: 0; transform: scale(.9); } 42% { opacity: 1; transform: scale(1); } 92% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
+  @keyframes capOut { 0%, 40% { opacity: 1; transform: scale(1); } 47.5% { opacity: 0; transform: scale(.8); } 97% { opacity: 0; transform: scale(.8); } 100% { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .bd .place-in, .bd .ghost-anim, .bd .cap-gone, .bd .ring-hint, .bd .illegal { animation: none; } }
+
+  section.info { max-width: 1240px; margin: 40px auto 0; }
+  section.info h2 { font-size: 18px; margin: 24px 0 10px; }
+  section.info p, section.info li { font-size: 14px; line-height: 20px; color: var(--text2); }
+  section.info ul { padding-left: 18px; }
+  .tablewrap { overflow-x: auto; max-width: 100%; }
+  table { border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); font-size: 13px; }
+  th, td { padding: 6px 10px; border-top: 1px solid var(--border); text-align: left; white-space: nowrap; }
+  th { color: var(--text2); font-weight: 600; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sw { width: 132px; font-size: 12px; line-height: 16px; }
+  .sw i { display: block; height: 36px; border-radius: 8px; border: 1px solid rgba(38,41,43,.12); margin-bottom: 6px; }
+  .sw code { color: var(--text2); }
+  @media (max-width: 400px) { .phone { height: 720px; } }
+</style>
+</head>
+<body>
+<!-- Shared bamboo pattern (objectBoundingBox: same look on every board size) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="bamboo" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1">
+      <rect width="1" height="1" fill="#E8D3A0"/>
+      <rect x="0" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".0833" y="0" width=".084" height="1" fill="#DEC68C"/>
+      <rect x=".1667" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".25" y="0" width=".084" height="1" fill="#DEC68C"/>
+      <rect x=".3333" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".4167" y="0" width=".084" height="1" fill="#DEC68C"/>
+      <rect x=".5" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".5833" y="0" width=".084" height="1" fill="#DEC68C"/>
+      <rect x=".6667" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".75" y="0" width=".084" height="1" fill="#DEC68C"/>
+      <rect x=".8333" y="0" width=".084" height="1" fill="#EEDCAE"/>
+      <rect x=".9167" y="0" width=".0833" height="1" fill="#DEC68C"/>
+      <rect x="0" y=".27" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".0833" y=".55" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".1667" y=".38" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".25" y=".61" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".3333" y=".64" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".4167" y=".11" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".5" y=".07" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".5833" y=".80" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".6667" y=".29" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".75" y=".26" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".8333" y=".94" width=".0833" height=".005" fill="#CDB277"/>
+      <rect x=".9167" y=".47" width=".0833" height=".005" fill="#CDB277"/>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="page">
+  <h1>Let's GO — M2 board design mockup</h1>
+  <p>The Go board used by every lesson and game, shown on the developer "Board demo" screen at 360×740 (中文, English, Français). Bamboo board, calm 山水 · 茶 · 竹 colors from the design tokens. Touch-down shows a ghost stone, lifting the finger plays it, sliding off cancels. Please approve before development. Spec: <code>docs/specs/M2-board-ui.md</code>.</p>
+</header>
+
+<div class="grid">
+
+  <!-- 1. 9×9 empty, zh -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" lang="zh-CN">
+        <div class="topbar"><span class="back">‹ 返回</span><span class="title">棋盘演示</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span>5路</span><span>7路</span><span class="on">9路</span><span>13路</span><span>19路</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 10 10" role="img" aria-label="9路空棋盘">
+            <rect class="wood" width="10" height="10" rx=".25"/>
+            <path class="g" d="M1 2H9M1 3H9M1 4H9M1 5H9M1 6H9M1 7H9M1 8H9M2 1V9M3 1V9M4 1V9M5 1V9M6 1V9M7 1V9M8 1V9"/>
+            <rect class="edge" x="1" y="1" width="8" height="8"/>
+            <g class="st"><circle cx="3" cy="3" r=".09"/><circle cx="7" cy="3" r=".09"/><circle cx="5" cy="5" r=".09"/><circle cx="3" cy="7" r=".09"/><circle cx="7" cy="7" r=".09"/></g>
+            <g class="lbl" font-size=".36"><text x="1" y="9.62">A</text><text x="2" y="9.62">B</text><text x="3" y="9.62">C</text><text x="4" y="9.62">D</text><text x="5" y="9.62">E</text><text x="6" y="9.62">F</text><text x="7" y="9.62">G</text><text x="8" y="9.62">H</text><text x="9" y="9.62">J</text><text x=".42" y="1">9</text><text x=".42" y="2">8</text><text x=".42" y="3">7</text><text x=".42" y="4">6</text><text x=".42" y="5">5</text><text x=".42" y="6">4</text><text x=".42" y="7">3</text><text x=".42" y="8">2</text><text x=".42" y="9">1</text></g>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms b"></i>轮到黑棋</span><span class="cap">提子 黑 0 · 白 0</span></div>
+        <div class="msgarea"></div>
+        <div class="chips"><span class="chip on">自由</span><span class="chip">提子</span><span class="chip">打劫</span><span class="chip">禁入点</span><span class="chip">标记</span></div>
+        <div class="actions"><span class="btn dis">悔棋</span><span class="btn">重来</span></div>
+      </div>
+    </div>
+    <figcaption>① 9×9 empty · star points c3 c7 e5 g3 g7 · coordinates A–J (no I), 1 at the bottom · 中文</figcaption>
+  </figure>
+
+  <!-- 2. 9×9 mid-game, last move, en -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span class="back">‹ Back</span><span class="title">Board demo</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span>5×5</span><span>7×7</span><span class="on">9×9</span><span>13×13</span><span>19×19</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 10 10" role="img" aria-label="9 by 9 board, mid-game, last move F6">
+            <rect class="wood" width="10" height="10" rx=".25"/>
+            <path class="g" d="M1 2H9M1 3H9M1 4H9M1 5H9M1 6H9M1 7H9M1 8H9M2 1V9M3 1V9M4 1V9M5 1V9M6 1V9M7 1V9M8 1V9"/>
+            <rect class="edge" x="1" y="1" width="8" height="8"/>
+            <g class="st"><circle cx="3" cy="3" r=".09"/><circle cx="7" cy="3" r=".09"/><circle cx="5" cy="5" r=".09"/><circle cx="3" cy="7" r=".09"/><circle cx="7" cy="7" r=".09"/></g>
+            <g class="lbl" font-size=".36"><text x="1" y="9.62">A</text><text x="2" y="9.62">B</text><text x="3" y="9.62">C</text><text x="4" y="9.62">D</text><text x="5" y="9.62">E</text><text x="6" y="9.62">F</text><text x="7" y="9.62">G</text><text x="8" y="9.62">H</text><text x="9" y="9.62">J</text><text x=".42" y="1">9</text><text x=".42" y="2">8</text><text x=".42" y="3">7</text><text x=".42" y="4">6</text><text x=".42" y="5">5</text><text x=".42" y="6">4</text><text x=".42" y="7">3</text><text x=".42" y="8">2</text><text x=".42" y="9">1</text></g>
+            <!-- B e5 c4 f3 g6 f6 · W c6 g4 d7 f5 -->
+            <circle class="b" cx="5" cy="5" r=".47"/><circle class="b" cx="3" cy="6" r=".47"/><circle class="b" cx="6" cy="7" r=".47"/><circle class="b" cx="7" cy="4" r=".47"/><circle class="b" cx="6" cy="4" r=".47"/>
+            <circle class="w" cx="3" cy="4" r=".47"/><circle class="w" cx="7" cy="6" r=".47"/><circle class="w" cx="4" cy="3" r=".47"/><circle class="w" cx="6" cy="5" r=".47"/>
+            <circle class="lm-w" cx="6" cy="4" r=".16"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms w"></i>White to play</span><span class="cap">Captures B 0 · W 0</span></div>
+        <div class="msgarea"></div>
+        <div class="chips"><span class="chip on">Free</span><span class="chip">Capture</span><span class="chip">Ko</span><span class="chip">Forbidden</span><span class="chip">Marks</span></div>
+        <div class="actions"><span class="btn">Undo</span><span class="btn">Reset</span></div>
+      </div>
+    </div>
+    <figcaption>② Mid-game · the last stone played (Black F6) carries a small filled dot · English</figcaption>
+  </figure>
+
+  <!-- 3. Touch preview, en -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span class="back">‹ Back</span><span class="title">Board demo</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span>5×5</span><span>7×7</span><span class="on">9×9</span><span>13×13</span><span>19×19</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 10 10" role="img" aria-label="Preview: white ghost stone at G5">
+            <rect class="wood" width="10" height="10" rx=".25"/>
+            <path class="g" d="M1 2H9M1 3H9M1 4H9M1 5H9M1 6H9M1 7H9M1 8H9M2 1V9M3 1V9M4 1V9M5 1V9M6 1V9M7 1V9M8 1V9"/>
+            <rect class="edge" x="1" y="1" width="8" height="8"/>
+            <g class="st"><circle cx="3" cy="3" r=".09"/><circle cx="7" cy="3" r=".09"/><circle cx="5" cy="5" r=".09"/><circle cx="3" cy="7" r=".09"/><circle cx="7" cy="7" r=".09"/></g>
+            <g class="lbl" font-size=".36"><text x="1" y="9.62">A</text><text x="2" y="9.62">B</text><text x="3" y="9.62">C</text><text x="4" y="9.62">D</text><text x="5" y="9.62">E</text><text x="6" y="9.62">F</text><text class="on" x="7" y="9.62">G</text><text x="8" y="9.62">H</text><text x="9" y="9.62">J</text><text x=".42" y="1">9</text><text x=".42" y="2">8</text><text x=".42" y="3">7</text><text x=".42" y="4">6</text><text class="on" x=".42" y="5">5</text><text x=".42" y="6">4</text><text x=".42" y="7">3</text><text x=".42" y="8">2</text><text x=".42" y="9">1</text></g>
+            <path class="xh" d="M7 1V9M1 5H9"/>
+            <circle class="b" cx="5" cy="5" r=".47"/><circle class="b" cx="3" cy="6" r=".47"/><circle class="b" cx="6" cy="7" r=".47"/><circle class="b" cx="7" cy="4" r=".47"/><circle class="b" cx="6" cy="4" r=".47"/>
+            <circle class="w" cx="3" cy="4" r=".47"/><circle class="w" cx="7" cy="6" r=".47"/><circle class="w" cx="4" cy="3" r=".47"/><circle class="w" cx="6" cy="5" r=".47"/>
+            <circle class="lm-w" cx="6" cy="4" r=".16"/>
+            <circle class="w ghost" cx="7" cy="5" r=".47"/>
+            <g class="tag"><rect x="6.3" y="2.4" width="1.4" height=".7" rx=".35"/><text x="7" y="2.75" font-size=".4">G5</text></g>
+            <circle class="finger" cx="7.25" cy="5.75" r=".72"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms w"></i>White to play</span><span class="cap">Captures B 0 · W 0</span></div>
+        <div class="msgarea"></div>
+        <div class="chips"><span class="chip on">Free</span><span class="chip">Capture</span><span class="chip">Ko</span><span class="chip">Forbidden</span><span class="chip">Marks</span></div>
+        <div class="actions"><span class="btn">Undo</span><span class="btn">Reset</span></div>
+      </div>
+    </div>
+    <figcaption>③ Finger down: half-transparent ghost stone, crosshair, highlighted G / 5 and a "G5" tag above the finger. Slide to adjust, lift to play, slide off the board to cancel (grey disc = finger)</figcaption>
+  </figure>
+
+  <!-- 4. Illegal point, fr -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" lang="fr">
+        <div class="topbar"><span class="back">‹ Retour</span><span class="title">Démo du goban</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span class="on">5×5</span><span>7×7</span><span>9×9</span><span>13×13</span><span>19×19</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 6 6" role="img" aria-label="Goban 5×5, point interdit A1">
+            <rect class="wood" width="6" height="6" rx=".15"/>
+            <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/>
+            <rect class="edge" x="1" y="1" width="4" height="4"/>
+            <g class="st"><circle cx="3" cy="3" r=".073"/></g>
+            <g class="lbl" font-size=".24"><text x="1" y="5.7">A</text><text x="2" y="5.7">B</text><text x="3" y="5.7">C</text><text x="4" y="5.7">D</text><text x="5" y="5.7">E</text><text x=".3" y="1">5</text><text x=".3" y="2">4</text><text x=".3" y="3">3</text><text x=".3" y="4">2</text><text x=".3" y="5">1</text></g>
+            <!-- B a2 b1 c3 · W d3 c4 · White to play -->
+            <circle class="b" cx="1" cy="4" r=".47"/><circle class="b" cx="2" cy="5" r=".47"/><circle class="b" cx="3" cy="3" r=".47"/>
+            <circle class="w" cx="4" cy="3" r=".47"/><circle class="w" cx="3" cy="2" r=".47"/>
+            <circle class="lm-w" cx="3" cy="3" r=".11"/>
+            <circle class="illegal" cx="1" cy="5" r=".44" stroke-width=".04" stroke-dasharray=".073 .055"/>
+            <circle class="finger" cx="1.3" cy="5.3" r=".42"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms w"></i>Aux Blancs de jouer</span><span class="cap">Prises N 0 · B 0</span></div>
+        <div class="msgarea"><div class="msg"><i></i><span>Point interdit (禁入点 jìnrùdiǎn) : votre pierre n'aurait aucune liberté et ne capture rien.</span></div></div>
+        <div class="chips"><span class="chip">Libre</span><span class="chip">Capture</span><span class="chip">Ko</span><span class="chip on">Interdit</span><span class="chip">Marques</span></div>
+        <div class="actions"><span class="btn dis">Annuler</span><span class="btn">Recommencer</span></div>
+      </div>
+    </div>
+    <figcaption>④ Illegal point (suicide at A1): soft dashed rouge ring instead of a ghost, no sound; the reason comes from the rules engine · Français · 5×5 points are 55 px, so no crosshair</figcaption>
+  </figure>
+
+  <!-- 5. Capture animation, zh -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" lang="zh-CN">
+        <div class="topbar"><span class="back">‹ 返回</span><span class="title">棋盘演示</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span class="on">5路</span><span>7路</span><span>9路</span><span>13路</span><span>19路</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 6 6" role="img" aria-label="黑棋下在 C4，提掉 C3 的白子">
+            <rect class="wood" width="6" height="6" rx=".15"/>
+            <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/>
+            <rect class="edge" x="1" y="1" width="4" height="4"/>
+            <g class="st"><circle cx="3" cy="3" r=".073"/></g>
+            <g class="lbl" font-size=".24"><text x="1" y="5.7">A</text><text x="2" y="5.7">B</text><text x="3" y="5.7">C</text><text x="4" y="5.7">D</text><text x="5" y="5.7">E</text><text x=".3" y="1">5</text><text x=".3" y="2">4</text><text x=".3" y="3">3</text><text x=".3" y="4">2</text><text x=".3" y="5">1</text></g>
+            <!-- B c2 b3 d3; W c3 is captured by B c4 -->
+            <circle class="b" cx="3" cy="4" r=".47"/><circle class="b" cx="2" cy="3" r=".47"/><circle class="b" cx="4" cy="3" r=".47"/>
+            <circle class="w anim cap-gone" cx="3" cy="3" r=".47"/>
+            <circle class="b anim ghost-anim" cx="3" cy="2" r=".47"/>
+            <circle class="b anim place-in" cx="3" cy="2" r=".47"/>
+            <circle class="lm-w anim place-in" cx="3" cy="2" r=".11"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms w"></i>轮到白棋</span><span class="cap">提子 黑 1 · 白 0</span></div>
+        <div class="frames">
+          <div>
+            <svg class="bd" viewBox=".4 .4 5.2 5.2" aria-hidden="true">
+              <rect class="wood" x=".4" y=".4" width="5.2" height="5.2" rx=".15"/>
+              <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/><rect class="edge" x="1" y="1" width="4" height="4"/>
+              <circle class="b" cx="3" cy="4" r=".47"/><circle class="b" cx="2" cy="3" r=".47"/><circle class="b" cx="4" cy="3" r=".47"/><circle class="b" cx="3" cy="2" r=".47"/>
+              <circle class="w" cx="3" cy="3" r=".47"/><circle class="lm-w" cx="3" cy="2" r=".11"/>
+            </svg>0 ms
+          </div>
+          <div>
+            <svg class="bd" viewBox=".4 .4 5.2 5.2" aria-hidden="true">
+              <rect class="wood" x=".4" y=".4" width="5.2" height="5.2" rx=".15"/>
+              <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/><rect class="edge" x="1" y="1" width="4" height="4"/>
+              <circle class="b" cx="3" cy="4" r=".47"/><circle class="b" cx="2" cy="3" r=".47"/><circle class="b" cx="4" cy="3" r=".47"/><circle class="b" cx="3" cy="2" r=".47"/>
+              <circle class="w" cx="3" cy="3" r=".423" opacity=".5"/><circle class="lm-w" cx="3" cy="2" r=".11"/>
+            </svg>150 ms
+          </div>
+          <div>
+            <svg class="bd" viewBox=".4 .4 5.2 5.2" aria-hidden="true">
+              <rect class="wood" x=".4" y=".4" width="5.2" height="5.2" rx=".15"/>
+              <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/><rect class="edge" x="1" y="1" width="4" height="4"/>
+              <circle class="st" cx="3" cy="3" r=".073"/>
+              <circle class="b" cx="3" cy="4" r=".47"/><circle class="b" cx="2" cy="3" r=".47"/><circle class="b" cx="4" cy="3" r=".47"/><circle class="b" cx="3" cy="2" r=".47"/>
+              <circle class="lm-w" cx="3" cy="2" r=".11"/>
+            </svg>300 ms
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption>⑤ Capture (提子 tízǐ): ghost → black lands on C4 with a soft "tock" → the white stone on C3 fades and shrinks in 300 ms (looping here). With "Reduce motion" it simply disappears · 中文</figcaption>
+  </figure>
+
+  <!-- 6. Lesson-style liberties, zh -->
+  <figure>
+    <div class="phone tall">
+      <svg class="landscape" viewBox="0 0 360 130" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C40 34 70 26 110 48 C140 62 160 30 200 22 C240 13 270 44 300 39 C330 34 345 48 360 44 L360 130 L0 130 Z" fill="#C9D5D6"/>
+        <path d="M0 96 C30 78 60 70 95 83 C130 96 150 66 190 68 C230 72 250 92 290 86 C320 80 340 88 360 84 L360 130 L0 130 Z" fill="#9DB2AE" opacity=".85"/>
+      </svg>
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content" lang="zh-CN">
+        <div class="topbar"><span class="back">‹ 返回</span><span class="title">第 2 单元 · 气</span><span></span></div>
+        <div class="dots"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+        <div class="lesson-text"><b>气（qì）</b>是棋子上下左右相邻的空交叉点。<br>这块黑棋有 <b>5</b> 口气。</div>
+        <svg class="bd" viewBox=".4 .4 5.2 5.2" role="img" aria-label="5路棋盘：黑棋 C3、D3 有 5 口气">
+          <rect class="wood" x=".4" y=".4" width="5.2" height="5.2" rx=".15"/>
+          <path class="g" d="M1 2H5M1 3H5M1 4H5M2 1V5M3 1V5M4 1V5"/>
+          <rect class="edge" x="1" y="1" width="4" height="4"/>
+          <!-- liberties of B c3+d3: b3 c2 d4 e3 d2 -->
+          <circle class="lib" cx="2" cy="3" r=".22"/><circle class="lib" cx="3" cy="4" r=".22"/><circle class="lib" cx="4" cy="2" r=".22"/><circle class="lib" cx="5" cy="3" r=".22"/><circle class="lib" cx="4" cy="4" r=".22"/>
+          <circle class="b" cx="3" cy="3" r=".47"/><circle class="b" cx="4" cy="3" r=".47"/>
+          <circle class="w" cx="3" cy="2" r=".47"/>
+        </svg>
+        <div class="note">示例文字 · 课程画面在 M3 设计</div>
+        <div style="flex:1"></div>
+        <div class="btn primary" style="margin-bottom:24px">继续</div>
+      </div>
+    </div>
+    <figcaption>⑥ Lesson-style use (preview of M3): highlighted liberties (气 qì) in 青山 green, board without coordinates (63 px points) · 中文</figcaption>
+  </figure>
+
+  <!-- 7. Markers gallery 7×7, en -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span class="back">‹ Back</span><span class="title">Board demo</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span>5×5</span><span class="on">7×7</span><span>9×9</span><span>13×13</span><span>19×19</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="0 0 8 8" role="img" aria-label="7 by 7 board with lesson markers">
+            <rect class="wood" width="8" height="8" rx=".2"/>
+            <path class="g" d="M1 2H7M1 3H7M1 4H7M1 5H7M1 6H7M2 1V7M3 1V7M4 1V7M5 1V7M6 1V7"/>
+            <rect class="edge" x="1" y="1" width="6" height="6"/>
+            <g class="st"><circle cx="4" cy="4" r=".09"/></g>
+            <g class="lbl" font-size=".317"><text x="1" y="7.66">A</text><text x="2" y="7.66">B</text><text x="3" y="7.66">C</text><text x="4" y="7.66">D</text><text x="5" y="7.66">E</text><text x="6" y="7.66">F</text><text x="7" y="7.66">G</text><text x=".36" y="1">7</text><text x=".36" y="2">6</text><text x=".36" y="3">5</text><text x=".36" y="4">4</text><text x=".36" y="5">3</text><text x=".36" y="6">2</text><text x=".36" y="7">1</text></g>
+            <!-- B c5 d4 · W e3 e4 -->
+            <circle class="b" cx="3" cy="3" r=".47"/><circle class="b" cx="4" cy="4" r=".47"/>
+            <circle class="w" cx="5" cy="5" r=".47"/><circle class="w" cx="5" cy="4" r=".47"/>
+            <circle class="mk pale" cx="3" cy="3" r=".25"/>
+            <polygon class="mk ink" points="5,4.683 5.275,5.159 4.725,5.159"/>
+            <rect class="mk ink" x="1.78" y="5.78" width=".44" height=".44"/>
+            <path class="mk ink" d="M5.8 1.8L6.2 2.2M6.2 1.8L5.8 2.2"/>
+            <circle class="mask" cx="3" cy="6" r=".32"/><text class="mtext" x="3" y="6" font-size=".42">A</text>
+            <circle class="mask" cx="6" cy="6" r=".32"/><text class="mtext" x="6" y="6" font-size=".42">B</text>
+            <circle class="ring-hint" cx="4" cy="5" r=".5"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms b"></i>Black to play</span><span class="cap">Captures B 0 · W 0</span></div>
+        <div class="msgarea"></div>
+        <div class="chips"><span class="chip">Free</span><span class="chip">Capture</span><span class="chip">Ko</span><span class="chip">Forbidden</span><span class="chip on">Marks</span></div>
+        <div class="actions"><span class="btn dis">Undo</span><span class="btn">Reset</span></div>
+      </div>
+    </div>
+    <figcaption>⑦ Lesson markers on 7×7 (41 px points) · English</figcaption>
+    <div class="legend">
+      <span><b>○</b> circle — C5 (light on black)</span>
+      <span><b>△</b> triangle — E3 (ink on white)</span>
+      <span><b>□</b> square — B2</span>
+      <span><b>×</b> cross — F6</span>
+      <span><b>A B</b> labels — C2, F2</span>
+      <span><b style="color:#9A5F22">◯</b> hint ring — D3, pulses 3×</span>
+      <span><b style="color:#56764A">◯</b> success ring (M3)</span>
+      <span><b style="color:#A8443F">◯</b> mistake ring (M3)</span>
+    </div>
+  </figure>
+
+  <!-- 8. 19×19 scaling with preview, en -->
+  <figure>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+      <div class="content">
+        <div class="topbar"><span class="back">‹ Back</span><span class="title">Board demo</span><span class="icons"><span class="iconbtn">A1</span><span class="iconbtn">♪</span></span></div>
+        <div class="seg"><span>5×5</span><span>7×7</span><span>9×9</span><span>13×13</span><span class="on">19×19</span></div>
+        <div class="boardwrap">
+          <svg class="bd" viewBox="-0.2 -0.2 20.4 20.4" role="img" aria-label="19 by 19 board, preview at Q6">
+            <rect class="wood" x="-0.2" y="-0.2" width="20.4" height="20.4" rx=".5"/>
+            <path class="g" d="M1 2H19M1 3H19M1 4H19M1 5H19M1 6H19M1 7H19M1 8H19M1 9H19M1 10H19M1 11H19M1 12H19M1 13H19M1 14H19M1 15H19M1 16H19M1 17H19M1 18H19M2 1V19M3 1V19M4 1V19M5 1V19M6 1V19M7 1V19M8 1V19M9 1V19M10 1V19M11 1V19M12 1V19M13 1V19M14 1V19M15 1V19M16 1V19M17 1V19M18 1V19"/>
+            <rect class="edge" x="1" y="1" width="18" height="18"/>
+            <g class="st"><circle cx="4" cy="4" r=".152"/><circle cx="10" cy="4" r=".152"/><circle cx="16" cy="4" r=".152"/><circle cx="4" cy="10" r=".152"/><circle cx="10" cy="10" r=".152"/><circle cx="16" cy="10" r=".152"/><circle cx="4" cy="16" r=".152"/><circle cx="10" cy="16" r=".152"/><circle cx="16" cy="16" r=".152"/></g>
+            <g class="lbl" font-size=".55"><text x="1" y="19.85">A</text><text x="2" y="19.85">B</text><text x="3" y="19.85">C</text><text x="4" y="19.85">D</text><text x="5" y="19.85">E</text><text x="6" y="19.85">F</text><text x="7" y="19.85">G</text><text x="8" y="19.85">H</text><text x="9" y="19.85">J</text><text x="10" y="19.85">K</text><text x="11" y="19.85">L</text><text x="12" y="19.85">M</text><text x="13" y="19.85">N</text><text x="14" y="19.85">O</text><text x="15" y="19.85">P</text><text class="on" x="16" y="19.85">Q</text><text x="17" y="19.85">R</text><text x="18" y="19.85">S</text><text x="19" y="19.85">T</text><text x=".2" y="1">19</text><text x=".2" y="2">18</text><text x=".2" y="3">17</text><text x=".2" y="4">16</text><text x=".2" y="5">15</text><text x=".2" y="6">14</text><text x=".2" y="7">13</text><text x=".2" y="8">12</text><text x=".2" y="9">11</text><text x=".2" y="10">10</text><text x=".2" y="11">9</text><text x=".2" y="12">8</text><text x=".2" y="13">7</text><text class="on" x=".2" y="14">6</text><text x=".2" y="15">5</text><text x=".2" y="16">4</text><text x=".2" y="17">3</text><text x=".2" y="18">2</text><text x=".2" y="19">1</text></g>
+            <path class="xh" d="M16 1V19M1 14H19"/>
+            <!-- B q16 d4 f17 · W d16 q4 -->
+            <circle class="b" cx="16" cy="4" r=".47"/><circle class="b" cx="4" cy="16" r=".47"/><circle class="b" cx="6" cy="3" r=".47"/>
+            <circle class="w" cx="4" cy="4" r=".47"/><circle class="w" cx="16" cy="16" r=".47"/>
+            <circle class="lm-w" cx="6" cy="3" r=".2"/>
+            <circle class="w ghost" cx="16" cy="14" r=".47"/>
+            <g class="tag"><rect x="14.9" y="9.9" width="2.2" height="1.2" rx=".6"/><text x="16" y="10.5" font-size=".8">Q6</text></g>
+            <circle class="finger" cx="16.35" cy="15" r="1.4"/>
+          </svg>
+        </div>
+        <div class="turn"><span><i class="ms w"></i>White to play</span><span class="cap">Captures B 0 · W 0</span></div>
+        <div class="msgarea"></div>
+        <div class="chips"><span class="chip on">Free</span><span class="chip">Capture</span><span class="chip">Ko</span><span class="chip">Forbidden</span><span class="chip">Marks</span></div>
+        <div class="actions"><span class="btn">Undo</span><span class="btn">Reset</span></div>
+      </div>
+    </div>
+    <figcaption>⑧ 19×19 still fits: 16 px points (wider margin for two-digit numbers). The "Q6" tag sits 56 px above the finger so it is never hidden · English</figcaption>
+  </figure>
+</div>
+
+<section class="info">
+  <h2>Board sizes on a 360 px phone (board 328 px)</h2>
+  <div class="tablewrap">
+    <table>
+      <tr><th>Size</th><th>Point spacing, with coordinates</th><th>Without coordinates</th><th>Star points 星位</th><th>Touch help</th></tr>
+      <tr><td>5×5</td><td>55 px</td><td>63 px</td><td>C3</td><td>ghost stone</td></tr>
+      <tr><td>7×7</td><td>41 px</td><td>46 px</td><td>D4</td><td>+ crosshair &amp; tag below 44 px</td></tr>
+      <tr><td>9×9</td><td>33 px</td><td>36 px</td><td>C3 C7 E5 G3 G7</td><td>ghost + crosshair + tag</td></tr>
+      <tr><td>13×13</td><td>23 px</td><td>25 px</td><td>D4 D10 G7 K4 K10</td><td>ghost + crosshair + tag</td></tr>
+      <tr><td>19×19</td><td>16 px</td><td>17 px</td><td>D4 D10 D16 K4 K10 K16 Q4 Q10 Q16</td><td>ghost + crosshair + tag</td></tr>
+    </table>
+  </div>
+
+  <h2>Motion &amp; sound</h2>
+  <ul>
+    <li>Stone lands: settles from 90 % to full size in 0.12 s, with one soft wooden "tock" (respects the silent switch; can be muted).</li>
+    <li>Capture: captured stones fade and shrink in 0.3 s. Illegal point: dashed ring fades in 0.7 s, no sound.</li>
+    <li>Hint ring: gentle amber pulse, 3 times, then still. "Reduce motion" turns every animation into an instant change.</li>
+  </ul>
+
+  <h2>Colors used (all from <code>src/theme/tokens.ts</code>)</h2>
+  <div class="swatches">
+    <div class="sw"><i style="background:repeating-linear-gradient(90deg,#EEDCAE 0 14px,#DEC68C 14px 28px)"></i>竹板 bamboo strips<br><code>#EEDCAE / #DEC68C</code></div>
+    <div class="sw"><i style="background:#CDB277"></i>竹节 bamboo node<br><code>#CDB277</code></div>
+    <div class="sw"><i style="background:#33281B"></i>grid lines, stars<br><code>#33281B</code></div>
+    <div class="sw"><i style="background:#22252A"></i>墨玉 black stone<br><code>#22252A</code></div>
+    <div class="sw"><i style="background:#F7F5EE"></i>贝 white stone<br><code>#F7F5EE / #8F8C80</code></div>
+    <div class="sw"><i style="background:#3E6461"></i>青山 crosshair, liberties<br><code>#3E6461</code></div>
+    <div class="sw"><i style="background:#9A5F22"></i>琥珀茶 hint ring<br><code>#9A5F22</code></div>
+    <div class="sw"><i style="background:#A8443F"></i>胭脂 illegal / mistake<br><code>#A8443F</code></div>
+    <div class="sw"><i style="background:#56764A"></i>茶 success ring<br><code>#56764A</code></div>
+  </div>
+  <p style="margin-top:20px">All positions were checked by hand: every stone shown has at least one liberty, the C4 capture removes a stone whose only liberty was C4, and A1 in ④ is a true suicide point (it captures nothing).</p>
+</section>
+</body>
+</html>
