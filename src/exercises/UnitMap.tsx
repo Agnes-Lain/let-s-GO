@@ -315,7 +315,8 @@ const styles = StyleSheet.create({
     backgroundColor: color.badge,
   },
   badgeLabel: { ...typography.caption, color: color.onBadge },
-  skeleton: { backgroundColor: color.border, opacity: 0.35, borderWidth: 0 },
+  // Skeleton bars keep the fixed M3 height (M3 AC 105); real cards only set minHeight.
+  skeleton: { height: CARD_HEIGHT, backgroundColor: color.border, opacity: 0.35, borderWidth: 0 },
   skeletonDot: {
     width: DOT,
     height: DOT,

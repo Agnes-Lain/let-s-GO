@@ -33,15 +33,14 @@ Paused 2026-10-16 to save tokens. Resume in a new session on this branch.
   six lesson JSON files in `src/lessons/content/` (u01-board … u05-atari, u05-review), registry +
   loader (`PLANNED_UNITS = [6]`), i18n texts in all three files, unit-map badge moved under the
   title (`src/exercises/UnitMap.tsx`). Typecheck passes.
+- **Fixed (2nd pass):** fr non-breaking spaces (71 strings), M3 tests updated to the M4 map
+  (units 1–5 real, only 6 "coming soon", Start learning → Unit 1 in production, sample → Next lesson),
+  skeleton bars keep their fixed 72 px. **lint + typecheck + 1246 tests green.**
 - **Left to build (developer):**
-  1. French typography: ~140 fr strings miss the non-breaking space before `! ? : ;`
-     (`__tests__/qa/i18n-content.test.ts`) — fix in `src/i18n/fr.json`.
-  2. Update M3 tests that assume units 1–6 are all "coming soon" / only the dev sample exists:
-     `__tests__/app/{home-map,index,placeholders,practice}.test.tsx`, `__tests__/qa/screens.test.tsx`,
-     `src/lessons/loader.test.ts` (85 failing tests at pause; 1161 passing).
-  3. Check every spec §4 AC is implemented and add tests for them; confirm the validator passes
-     all six lessons; lint + typecheck + test green.
-  4. Web screenshots at 360×740 → `docs/screenshots/M4/` (unit map en/fr/zh-CN, one exercise per unit).
+  1. Write tests for the new M4 acceptance criteria (spec §4 AC 1–18: counts, solutions table,
+     text rules, play-through/unlock, stars, map states, result Next → `u05-review`).
+  2. Web screenshots at 360×740 → `docs/screenshots/M4/` (unit map en/fr/zh-CN, longest step text
+     per lesson, labelled-stone choices) — ACs 19–23.
 - **Then:** qa agent (spec §4 → tests, web check) → developer/qa loop until READY → tick
   `docs/ROADMAP.md` → update this file → one PR (plain language, ASCII Go diagrams with ✓).
 - Note: in a fresh cloud session the custom agents load only if the repo is attached at session

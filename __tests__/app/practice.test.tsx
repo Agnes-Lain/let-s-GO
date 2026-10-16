@@ -424,7 +424,8 @@ describe('result screen (AC 89–95)', () => {
     expect(screen.getByText(texts['complete.title.3'])).toBeOnTheScreen();
     expect(screen.getByText('6 of 6 right the first time')).toBeOnTheScreen();
     expect(screen.getByTestId('result-map')).toBeTruthy();
-    expect(screen.queryByTestId('result-next')).toBeNull();
+    // M4: Unit 1 now exists after the dev sample, so a Next lesson button is offered.
+    expect(screen.getByTestId('result-next')).toBeTruthy();
     expect(progressStore.getState().starsOf('u00-sample')).toBe(3);
   });
 

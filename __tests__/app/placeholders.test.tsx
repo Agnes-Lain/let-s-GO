@@ -15,21 +15,21 @@ beforeEach(async () => {
 describe('Lesson route without a lesson (M3 AC 55)', () => {
   it('shows the error screen; Back to map returns Home', async () => {
     const router = await renderRouter('./app', { initialUrl: '/' });
-    await act(() => appRouter.push('/lesson/u01-board'));
+    await act(() => appRouter.push('/lesson/u99-missing'));
     expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
   });
 
   it('goes to Home when opened directly (no history)', async () => {
-    const router = await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
+    const router = await renderRouter('./app', { initialUrl: '/lesson/u99-missing' });
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
     expect(router.getPathname()).toBe('/');
   });
 
   it('is translated (Chinese)', async () => {
     await act(() => setLanguageChoice('zh-CN'));
-    await renderRouter('./app', { initialUrl: '/lesson/u01-board' });
+    await renderRouter('./app', { initialUrl: '/lesson/u99-missing' });
     expect(screen.getByText('这一课打不开')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: '回到学习路径' })).toBeOnTheScreen();
   });

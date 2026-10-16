@@ -56,7 +56,9 @@ describe('fixture catalog (AC 100, 103, 104)', () => {
     expect(label('home-node-unit-1')).toBe('Unit 1, Board & stones · 棋盘 qípán, 3 of 3 stars');
     expect(label('home-node-unit-2')).toBe('Unit 2, Liberties · 气 qì, not started');
     expect(label('home-node-unit-3')).toBe('Unit 3, Connection · 连接 liánjiē, locked');
-    expect(label('home-node-unit-4')).toBe('Unit 4, Capture · 提子 tízǐ, coming soon');
+    // M4: only unit 6 is planned, so units without content and not planned are not listed.
+    expect(screen.queryByTestId('home-node-unit-4')).toBeNull();
+    expect(label('home-node-unit-6')).toBe('Unit 6, Capture Go · 吃子棋 chīzǐqí, coming soon');
     expect(screen.getByText('Unit 2 · Liberties · 气 qì')).toBeOnTheScreen();
     await fireEvent.press(screen.getByTestId('home-continue'));
     expect(router.getPathname()).toBe('/lesson/u02-liberties');
