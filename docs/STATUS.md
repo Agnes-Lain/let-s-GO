@@ -37,8 +37,8 @@ Paused 2026-10-16 to save tokens. Resume in a new session on this branch.
   (units 1–5 real, only 6 "coming soon", Start learning → Unit 1 in production, sample → Next lesson),
   skeleton bars keep their fixed 72 px. **lint + typecheck + 1246 tests green.**
 - **Left to build (developer):**
-  1. Write tests for the new M4 acceptance criteria (spec §4 AC 1–18: counts, solutions table,
-     text rules, play-through/unlock, stars, map states, result Next → `u05-review`).
+  1. ~~Tests for spec §4 ACs 1–18~~ done: `__tests__/m4-units-1-5.test.ts` (93 tests, all 46
+     solutions match the spec tables). AC 12 (play-move feedback keys) relies on the M3 tests.
   2. Web screenshots at 360×740 → `docs/screenshots/M4/` (unit map en/fr/zh-CN, longest step text
      per lesson, labelled-stone choices) — ACs 19–23.
 - **Then:** qa agent (spec §4 → tests, web check) → developer/qa loop until READY → tick
