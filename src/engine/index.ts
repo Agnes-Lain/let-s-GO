@@ -23,4 +23,5 @@ export {
 export { BOARD_SIZES, isBoardSize, parseVertex, toVertex } from './coordinates';
 export { createGame, defaultKomi } from './game';
 export { groupAt, isAtari, liberties } from './groups';
+export { checkMove, legalMoves, pass, play, type CheckResult } from './play';
 export { parseBoard, printBoard } from './ascii';
