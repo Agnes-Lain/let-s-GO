@@ -671,3 +671,7 @@ Units 7+; new board features.
 14. Draw/limit rule: **more captures wins at the move limit, equal = draw** (draw is a retry)? **Yes**.
 15. The five `blunder` values (0.7, 0.5, 0.4, 0.3, 0.2) are provisional. **Developer measures with AC 64,
     PO approves the final numbers from the report** before merge.
+
+## 15. PO decisions (2026-10-17)
+The PO approved the spec and the mockup and accepted **every recommended default in §14** (Q1–Q15).
+Q15: the developer measures the five `blunder` values against AC 64; the PO approves the final numbers before merge.
