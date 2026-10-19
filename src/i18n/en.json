@@ -340,7 +340,6 @@
   "game.white": "White",
   "game.turn.you": "Your turn",
   "game.turn.bot": "Bot is thinking",
-  "game.score": "{{n}} / {{total}}",
   "game.fb.yourAtari": "Atari! Your stones at {{at}} have one liberty left: {{lib}}.",
   "game.fb.botAtari": "The bot's stones at {{at}} are in atari: one liberty left.",
   "game.fb.captured": "You captured {{n}}.",

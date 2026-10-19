@@ -291,7 +291,8 @@ function ScoreHalf({
   testID: string;
 }) {
   const { t } = useTranslation();
-  // A slot is filled by a captured stone, which has the opponent's colour.
+  // A slot is filled by a captured stone, which has the opponent's colour. The count itself is
+  // only in the a11y label: a "0 / 2" text does not fit next to 2–3 slots at 360 px (mockup).
   const capturedColor: Color = side === 'B' ? 'W' : 'B';
   return (
     <View
@@ -306,7 +307,7 @@ function ScoreHalf({
           {name}
         </Text>
         <Text style={styles.halfColor} numberOfLines={1}>
-          {`${side === 'B' ? t('game.black') : t('game.white')} · ${t('game.score', { n: captured, total: n })}`}
+          {side === 'B' ? t('game.black') : t('game.white')}
         </Text>
       </View>
       <View style={styles.slots}>
@@ -442,7 +443,8 @@ function EndCard({
           testID={isLast ? 'game-finish' : 'game-next'}
         />
       ) : (
-        <>
+        // One block without the body gap: with *Skip* the lose card must still fit 740 px (AC 68).
+        <View>
           <Button label={t('game.retry')} onPress={onRetry} testID="game-retry" />
           {canSkip(g) ? (
             <Button
@@ -453,7 +455,7 @@ function EndCard({
               style={styles.restart}
             />
           ) : null}
-        </>
+        </View>
       )}
     </>
   );
@@ -509,7 +511,7 @@ const styles = StyleSheet.create({
   spacer: { flex: 1 },
   restart: { minHeight: 44 },
   endCard: {
-    minHeight: 132,
+    minHeight: 124,
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,

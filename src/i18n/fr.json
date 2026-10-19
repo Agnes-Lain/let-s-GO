@@ -340,7 +340,6 @@
   "game.white": "Blancs",
   "game.turn.you": "À vous",
   "game.turn.bot": "Le robot réfléchit",
-  "game.score": "{{n}} / {{total}}",
   "game.fb.yourAtari": "Atari ! Vos pierres en {{at}} n'ont plus qu'une liberté : {{lib}}.",
   "game.fb.botAtari": "Les pierres du robot en {{at}} sont en atari : une seule liberté.",
   "game.fb.captured": "Vous avez capturé {{n}}.",

@@ -1,6 +1,6 @@
 // The Capture Go game screen (spec docs/specs/M4-bot-capture-go.md §5, ACs 43–54, 56, 57,
 // 66, 67, 69) with hand-made games, so the bot's replies are known.
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, within } from '@testing-library/react-native';
 import { AccessibilityInfo, StyleSheet, processColor } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -193,7 +193,7 @@ describe('the end of a game (AC 46, 47, 52–54, 56)', () => {
     expect(screen.getByTestId('game-score-you').props.accessibilityLabel).toBe(
       'You have captured 1 of 1 stones',
     );
-    expect(screen.getByText('Black · 1 / 1')).toBeOnTheScreen();
+    expect(screen.getAllByTestId('game-score-you-slot-filled')).toHaveLength(1);
     expect(screen.queryByTestId('game-win')).toBeNull();
     await advance(END_BEAT_MS);
     expect(screen.getByTestId('game-win')).toBeTruthy();
@@ -283,8 +283,8 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
         win: { kind: 'captureN', n: 3 },
       }),
     );
-    expect(screen.getByText('White · 0 / 3')).toBeOnTheScreen();
-    expect(screen.getByText('Black · 0 / 3')).toBeOnTheScreen();
+    expect(within(screen.getByTestId('game-score-you')).getByText('White')).toBeOnTheScreen();
+    expect(within(screen.getByTestId('game-score-bot')).getByText('Black')).toBeOnTheScreen();
     expect(screen.getAllByTestId('game-score-you-slot-empty')).toHaveLength(3);
     expect(screen.getByTestId('game-score-bot').props.accessibilityLabel).toBe(
       'The bot has captured 0 of 3 stones',

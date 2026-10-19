@@ -120,7 +120,6 @@ describe('D. content (AC 34, 37–42)', () => {
       'game.white',
       'game.turn.you',
       'game.turn.bot',
-      'game.score',
       'game.fb.yourAtari',
       'game.fb.botAtari',
       'game.fb.captured',
@@ -152,7 +151,11 @@ describe('D. content (AC 34, 37–42)', () => {
     ];
     for (const key of keys) {
       for (const lang of ['zh-CN', 'en', 'fr'] as const) {
-        expect({ key, lang, ok: Boolean(LESSON_TEXTS[lang][key]) }).toEqual({ key, lang, ok: true });
+        expect({ key, lang, ok: Boolean(LESSON_TEXTS[lang][key]) }).toEqual({
+          key,
+          lang,
+          ok: true,
+        });
       }
     }
   });
@@ -195,7 +198,8 @@ describe('D. content (AC 34, 37–42)', () => {
       const state = createGame(g.size, { setup: g.setup });
       const all = [...(g.setup.B ?? []), ...(g.setup.W ?? [])];
       expect(all).toHaveLength(4);
-      for (const at of all) expect({ at, libs: groupAt(state.board, at)?.liberties.length }).toEqual({ at, libs: 2 });
+      for (const at of all)
+        expect({ at, libs: groupAt(state.board, at)?.liberties.length }).toEqual({ at, libs: 2 });
     }
   });
 

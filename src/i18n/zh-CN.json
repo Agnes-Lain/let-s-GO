@@ -340,7 +340,6 @@
   "game.white": "白棋",
   "game.turn.you": "轮到你了",
   "game.turn.bot": "机器人在思考",
-  "game.score": "{{n}} / {{total}}",
   "game.fb.yourAtari": "叫吃！你在 {{at}} 的棋子只剩一口气：{{lib}}。",
   "game.fb.botAtari": "机器人在 {{at}} 的棋子被叫吃了，只剩一口气。",
   "game.fb.captured": "你提了 {{n}} 颗子。",
