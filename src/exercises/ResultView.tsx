@@ -17,6 +17,8 @@ export const STAR_INTERVAL = 250;
 type Props = {
   outcomes: readonly Outcome[];
   result: RecordResult;
+  /** The set is made only of Capture Go games: the summary counts games (M4 item 2 AC 62). */
+  games?: boolean;
   /** Primary action when the run earned a star: the next node, or null → *Back to map*. */
   hasNext: boolean;
   onNext: () => void;
@@ -25,7 +27,16 @@ type Props = {
   onMap: () => void;
 };
 
-export function ResultView({ outcomes, result, hasNext, onNext, onAgain, onReview, onMap }: Props) {
+export function ResultView({
+  outcomes,
+  result,
+  games = false,
+  hasNext,
+  onNext,
+  onAgain,
+  onReview,
+  onMap,
+}: Props) {
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
   const { stars } = result;
@@ -79,9 +90,11 @@ export function ResultView({ outcomes, result, hasNext, onNext, onAgain, onRevie
           {t(`complete.title.${stars}`)}
         </Text>
         <Text style={styles.summary}>
-          {stars === 0
-            ? t('complete.body.0', { solved, total })
-            : t('complete.summary', { clean, total })}
+          {games
+            ? t('complete.gamesFirstTry', { n: clean, total })
+            : stars === 0
+              ? t('complete.body.0', { solved, total })
+              : t('complete.summary', { clean, total })}
         </Text>
         {result.unlockedUnit !== null ? (
           <View style={styles.badge} testID="result-unlocked">

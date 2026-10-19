@@ -90,6 +90,7 @@ export function PracticeRunner({ lesson, onExit, onOpenLesson, onReview }: Props
       <ResultView
         outcomes={finished.outcomes}
         result={finished.result}
+        games={lesson.exercises.every((e) => e.type === 'play-bot')}
         hasNext={finished.next !== null}
         onNext={() => finished.next && exit(() => onOpenLesson(finished.next!.lesson.id))}
         onAgain={restart}

@@ -40,7 +40,7 @@ export interface Lesson {
   coordinates?: boolean;
   /** 'lesson': 2–4 steps. 'checkpoint': omitted or []. */
   explain?: ExplainStep[];
-  /** 5–10 exercises, played in the authored order. */
+  /** 5–10 exercises (2–6 when all are play-bot games), played in the authored order. */
   exercises: Exercise[];
 }
 
@@ -104,13 +104,33 @@ export interface CountExercise extends ExerciseBase {
   answer: number | LibertiesOf;
 }
 
-export type Exercise = TapPointExercise | PlayMoveExercise | ChoiceExercise | CountExercise;
+export type BotLevel = 1 | 2 | 3;
+/** Capture Go: the first side to capture `n` stones wins. M6 adds { kind: 'score' }. */
+export type GameWin = { kind: 'captureN'; n: number };
+
+/** A game against the bot (M4 item 2, spec docs/specs/M4-bot-capture-go.md §7.1). */
+export interface PlayBotExercise extends ExerciseBase {
+  type: 'play-bot';
+  win: GameWin;
+  /** blunder: 0..1, default 0. seed: tests and replays only (default: random per attempt). */
+  bot: { level: BotLevel; blunder?: number; seed?: number };
+  /** The learner's colour. Default 'B'. */
+  player?: Color;
+  /** Who moves first. Default 'B'. */
+  first?: Color;
+  /** Safety net in plies. Default 2 × size × size. */
+  maxMoves?: number;
+}
+
+export type Exercise =
+  TapPointExercise | PlayMoveExercise | ChoiceExercise | CountExercise | PlayBotExercise;
 export type ExerciseType = Exercise['type'];
 export const EXERCISE_TYPES: readonly ExerciseType[] = [
   'tap-point',
   'play-move',
   'choice',
   'count',
+  'play-bot',
 ];
 
 /** What the runner needs to check an answer and to show it (§4.3). */

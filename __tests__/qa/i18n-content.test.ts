@@ -72,12 +72,13 @@ describe('copy table §4 is implemented verbatim', () => {
   });
 
   it('has exactly the 20 keys of the spec (M2 board/engine/dev keys are counted separately)', () => {
-    // M3 keys (spec docs/specs/M3-lesson-framework.md §7) are counted by the M3 tests.
+    // M3 keys (spec docs/specs/M3-lesson-framework.md §7) are counted by the M3 tests; the M4
+    // Capture Go keys (game.*, docs/specs/M4-bot-capture-go.md §11) by src/exercises tests.
     const m3Home =
       /^home\.(continue|start|unit\.label|checkpoint\.label|sample\.label|locked\.hint|node\.a11y\..+|allDone)$/;
     const m0Keys = Object.keys(zhCN).filter(
       (key) =>
-        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb)\./.test(key) &&
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game)\./.test(key) &&
         !m3Home.test(key),
     );
     // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).

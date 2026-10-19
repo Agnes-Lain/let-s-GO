@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "id": "u06-capture-go",
+  "unit": 6,
+  "kind": "lesson",
+  "titleKey": "lesson.u06-capture-go.title",
+  "explain": [
+    {
+      "board": { "size": 5, "setup": { "B": ["c4", "b3", "d3"], "W": ["c3"] } },
+      "moves": [{ "color": "B", "at": "c2" }],
+      "textKey": "lesson.u06-capture-go.s1"
+    },
+    {
+      "board": { "size": 5, "setup": { "B": ["c3"], "W": ["b3", "d3", "c2"] } },
+      "moves": [{ "color": "W", "at": "c4" }],
+      "textKey": "lesson.u06-capture-go.s2"
+    },
+    {
+      "board": { "size": 5, "setup": { "B": ["c3", "d2"], "W": ["d3", "c2"] } },
+      "highlights": [
+        { "kind": "liberty", "points": ["b3", "c4", "e3", "d4", "b2", "c1", "e2", "d1"] }
+      ],
+      "textKey": "lesson.u06-capture-go.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "first-capture",
+      "type": "play-bot",
+      "size": 5,
+      "setup": { "B": ["b3", "c2", "d3"], "W": ["c3"] },
+      "win": { "kind": "captureN", "n": 1 },
+      "bot": { "level": 1, "blunder": 0.7 },
+      "promptKey": "lesson.u06-capture-go.e1.prompt",
+      "hintKey": "lesson.u06-capture-go.e1.hint",
+      "explainKey": "lesson.u06-capture-go.e1.explain"
+    },
+    {
+      "id": "crosscut-first",
+      "type": "play-bot",
+      "size": 5,
+      "setup": { "B": ["c3", "d2"], "W": ["d3", "c2"] },
+      "win": { "kind": "captureN", "n": 1 },
+      "bot": { "level": 1, "blunder": 0.75 },
+      "promptKey": "lesson.u06-capture-go.e2.prompt",
+      "hintKey": "lesson.u06-capture-go.e2.hint",
+      "explainKey": "lesson.u06-capture-go.e2.explain"
+    },
+    {
+      "id": "crosscut-two",
+      "type": "play-bot",
+      "size": 5,
+      "setup": { "B": ["b3", "c2"], "W": ["c3", "b2"] },
+      "win": { "kind": "captureN", "n": 2 },
+      "bot": { "level": 1, "blunder": 0.7 },
+      "promptKey": "lesson.u06-capture-go.e3.prompt",
+      "hintKey": "lesson.u06-capture-go.e3.hint",
+      "explainKey": "lesson.u06-capture-go.e3.explain"
+    }
+  ]
+}

@@ -35,7 +35,20 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   **Pending: the PO's iPhone play-through of units 1–5.**
 
 ## Next
-- **M4 item 2:** beginner bot v1 (heuristic) + Capture Go 吃子棋 (Unit 6) — separate spec/PR.
+- **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch
+  `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
+  (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.
+  - Done (committed): `src/bot` (seeded RNG, level-1 heuristic, Capture Go rules, analysis, tests).
+  - Developer pass done (2026-10-19, local): typecheck fixed, content + i18n checked against §8/§11,
+    route tests for AC 55/62, score halves show the colour only (mockup; `game.score` removed), lose
+    card with Skip fits 740 px. Bot tuning: `npm run tune:bot` (`scripts/bot-tuning.tune.ts`, own
+    Jest config, not in `npm test`); report in spec §16 — blunder values PO-approved (2026-10-19).
+    Web check `npm run verify:web:m4` covers Unit 6 (screenshots `docs/screenshots/M4/10-*`…`17-*`).
+  - QA READY (+15 edge-case tests, 1859 tests total); roadmap ticked; PR #13.
+  - Idea for later (PO): learner-selectable bot difficulty Easy / Normal / Challenge (Normal = §16
+    values); spec it as its own roadmap item, aligned with M6 "Bot levels 1–3".
+  - Local macOS: use Node 22 (`.nvmrc`); if watchman is broken run `npx jest --no-watchman`; web check
+    with `CHROMIUM_PATH` (local Chrome) and `PLAYWRIGHT_PATH` (a `playwright-core` install).
 
 ## Known follow-ups (minor, not scheduled)
 - M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is

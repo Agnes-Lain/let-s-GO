@@ -51,16 +51,9 @@ describe('tooling (AC2, AC3, AC5)', () => {
 });
 
 describe('folder layout (AC7)', () => {
-  it.each([['src/bot/index.ts', 'M4']])('%s is a placeholder for %s', (path, milestone) => {
-    const lines = read(path).trim().split('\n');
-    expect(lines).toHaveLength(2);
-    expect(lines[0]).toMatch(/^\/\/ /);
-    expect(lines[0]).toContain(milestone);
-    expect(lines[1]).toBe('export {};');
-  });
-
   it.each([
     'src/engine/index.ts', // filled in M1 (no longer a placeholder)
+    'src/bot/index.ts', // filled in M4 item 2 (no longer a placeholder)
     'src/i18n/index.ts',
     'src/i18n/zh-CN.json',
     'src/i18n/en.json',

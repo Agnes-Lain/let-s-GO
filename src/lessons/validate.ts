@@ -1,5 +1,6 @@
 // Lesson validator (spec §4.4). Pure: uses src/engine only. Reports every error (up to 50),
 // with English messages for authors and a JSON path such as 'exercises[2].goal'.
+import { referencePlayout } from '@/bot';
 import {
   createGame,
   groupAt,
@@ -10,7 +11,14 @@ import {
   type Vertex,
 } from '@/engine';
 
-import { isLegalMove, libertyVertices, playAs, playMoveSolutions } from './goals';
+import {
+  hasLegalMove,
+  isLegalMove,
+  libertyVertices,
+  lostBeforeStart,
+  playAs,
+  playMoveSolutions,
+} from './goals';
 import {
   EXERCISE_TYPES,
   LESSON_SIZES,
@@ -20,6 +28,7 @@ import {
   type Lesson,
   type LessonError,
   type LessonSize,
+  type Setup,
   type ValidationContext,
   type ValidationResult,
 } from './schema';
@@ -30,6 +39,8 @@ const LESSON_ID = /^u\d{2}-[a-z0-9]+(-[a-z0-9]+)*$/;
 const EXERCISE_ID = /^[a-z0-9-]+$/;
 const VERTEX = /^[a-z][1-9][0-9]?$/;
 const COLUMNS = 'abcdefghjklmnopqrst';
+/** Smoke playouts per play-bot exercise (spec §7.2). */
+export const BOT_PLAYOUTS = 10;
 
 type Json = Record<string, unknown>;
 
@@ -242,7 +253,15 @@ class Validator {
     if ('exercises' in obj) {
       const exercises = this.array(obj.exercises, 'exercises', 'exercises');
       if (exercises) {
-        if (exercises.length < 5 || exercises.length > 10) {
+        const onlyGames =
+          exercises.length > 0 && exercises.every((e) => isObject(e) && e.type === 'play-bot');
+        if (onlyGames && (exercises.length < 2 || exercises.length > 6)) {
+          this.add(
+            'BAD_EXERCISE_COUNT',
+            'exercises',
+            `a set made only of play-bot games must have 2 to 6 exercises, found ${exercises.length}`,
+          );
+        } else if (!onlyGames && (exercises.length < 5 || exercises.length > 10)) {
           this.add(
             'BAD_EXERCISE_COUNT',
             'exercises',
@@ -493,8 +512,17 @@ class Validator {
       'play-move': ['toPlay', 'goal'],
       choice: ['options'],
       count: ['answer'],
+      'play-bot': ['win', 'bot'],
     };
-    const state = this.position(ex, path, [...base, ...specific[type as string]], baseOptional);
+    const specificOptional: Record<string, string[]> = {
+      'play-bot': ['player', 'first', 'maxMoves'],
+    };
+    const state = this.position(
+      ex,
+      path,
+      [...base, ...specific[type as string]],
+      [...baseOptional, ...(specificOptional[type as string] ?? [])],
+    );
 
     if ('id' in ex && (typeof ex.id !== 'string' || !EXERCISE_ID.test(ex.id))) {
       this.add(
@@ -509,6 +537,17 @@ class Validator {
 
     const size = state?.board.size as LessonSize | undefined;
     if ('markers' in ex && size) this.markers(ex.markers, join(path, 'markers'), size);
+    if (type === 'play-bot') {
+      if ('hintPoints' in ex) {
+        this.add(
+          'BOT_HINTPOINTS',
+          join(path, 'hintPoints'),
+          'a play-bot game has no hintPoints: the hint point is computed by the bot',
+        );
+      }
+      this.playBot(ex, path, state);
+      return;
+    }
     const hintPoints =
       'hintPoints' in ex && size
         ? this.vertices(ex.hintPoints, join(path, 'hintPoints'), 'hintPoints', size)
@@ -689,6 +728,125 @@ class Validator {
       return null;
     }
     return solutions;
+  }
+
+  /** Play-bot rules (spec §7.2): structure first, then 10 smoke playouts. */
+  private playBot(ex: Json, path: string, state: GameState | null) {
+    const before = this.report.errors.length;
+    const size = state?.board.size;
+
+    let n: number | null = null;
+    if ('win' in ex) {
+      const win = ex.win;
+      if (!isObject(win) || win.kind !== 'captureN') {
+        this.add('BOT_NO_WIN', join(path, 'win'), 'win must be { "kind": "captureN", "n": … }');
+      } else {
+        this.fields(win, join(path, 'win'), ['kind'], ['n']);
+        const value = win.n;
+        const max = Math.min(10, size ?? 10);
+        if (!Number.isInteger(value) || (value as number) < 1 || (value as number) > max) {
+          this.add(
+            'BOT_BAD_N',
+            join(join(path, 'win'), 'n'),
+            `n must be an integer from 1 to ${max}, got ${String(value)}`,
+          );
+        } else {
+          n = value as number;
+        }
+      }
+    }
+
+    let level: 1 | 2 | 3 = 1;
+    let blunder = 0;
+    if ('bot' in ex) {
+      const bot = this.object(ex.bot, join(path, 'bot'), 'bot');
+      if (bot) {
+        const botPath = join(path, 'bot');
+        this.fields(bot, botPath, [], ['level', 'blunder', 'seed']);
+        if (![1, 2, 3].includes(bot.level as number)) {
+          this.add('BOT_BAD_LEVEL', join(botPath, 'level'), 'bot.level must be 1, 2 or 3');
+        } else {
+          level = bot.level as 1 | 2 | 3;
+        }
+        if ('blunder' in bot) {
+          const b = bot.blunder;
+          if (typeof b !== 'number' || !Number.isFinite(b) || b < 0 || b > 1) {
+            this.add(
+              'BOT_BAD_BLUNDER',
+              join(botPath, 'blunder'),
+              'bot.blunder must be from 0 to 1',
+            );
+          } else {
+            blunder = b;
+          }
+        }
+        if ('seed' in bot && !Number.isInteger(bot.seed)) {
+          this.badType(join(botPath, 'seed'), 'seed', 'an integer');
+        }
+      }
+    }
+
+    for (const key of ['player', 'first']) {
+      if (key in ex && ex[key] !== 'B' && ex[key] !== 'W') {
+        this.add('BOT_BAD_PLAYER', join(path, key), `${key} must be "B" or "W"`);
+      }
+    }
+    if ('maxMoves' in ex && !(Number.isInteger(ex.maxMoves) && (ex.maxMoves as number) >= 1)) {
+      this.badType(join(path, 'maxMoves'), 'maxMoves', 'an integer of at least 1');
+    }
+
+    if (this.report.errors.length > before || !state || n === null) return;
+    const player = (ex.player ?? 'B') as Color;
+    const first = (ex.first ?? 'B') as Color;
+    const start = withTurn(state, first);
+    if (!hasLegalMove(start)) {
+      this.add('BOT_NO_MOVE', path, `${first} moves first but has no legal move`);
+      return;
+    }
+    if (n === 1 && first === player && lostBeforeStart(start)) {
+      this.add(
+        'BOT_START_LOST',
+        path,
+        'every first move of the learner lets the bot capture at once: the game is lost before it starts',
+      );
+      return;
+    }
+
+    const maxMoves = (ex.maxMoves as number | undefined) ?? 2 * start.board.size * start.board.size;
+    const config = {
+      size: start.board.size,
+      setup: ex.setup as Setup,
+      first,
+      rules: { n, player, maxMoves },
+      level,
+      blunder,
+    };
+    let wins = 0;
+    for (let seed = 1; seed <= BOT_PLAYOUTS; seed++) {
+      try {
+        const result = referencePlayout(config, seed);
+        if (result.plies > maxMoves) {
+          this.add(
+            'BOT_RUNAWAY',
+            path,
+            `playout ${seed} ran ${result.plies} plies (max ${maxMoves})`,
+          );
+          return;
+        }
+        if (result.status === 'won') wins++;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.add('BOT_RUNAWAY', path, `playout ${seed} failed: ${message}`);
+        return;
+      }
+    }
+    if (wins === 0) {
+      this.add(
+        'BOT_UNWINNABLE',
+        path,
+        `the reference learner won none of ${BOT_PLAYOUTS} playouts against this bot`,
+      );
+    }
   }
 
   private choice(ex: Json, path: string) {

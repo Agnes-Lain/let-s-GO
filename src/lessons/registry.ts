@@ -12,6 +12,8 @@ import u03Connection from './content/u03-connection.json';
 import u04Capture from './content/u04-capture.json';
 import u05Atari from './content/u05-atari.json';
 import u05Review from './content/u05-review.json';
+import u06CaptureGo from './content/u06-capture-go.json';
+import u06Checkpoint from './content/u06-checkpoint.json';
 import type { Language } from './schema';
 
 export const LESSON_FILES: readonly unknown[] = [
@@ -22,6 +24,8 @@ export const LESSON_FILES: readonly unknown[] = [
   u04Capture,
   u05Atari,
   u05Review,
+  u06CaptureGo,
+  u06Checkpoint,
 ];
 
 export const LESSON_TEXTS: Readonly<Record<Language, Readonly<Record<string, string>>>> = {

@@ -73,7 +73,7 @@ describe('dev sample visibility (AC 26)', () => {
 });
 
 describe('getUnits (AC 27)', () => {
-  it('M4: units 1–5 carry their lessons (unit 5 has the review checkpoint); unit 6 is planned', () => {
+  it('M4: units 1–6 carry their lessons (units 5 and 6 have a checkpoint); nothing is planned', () => {
     const units = getUnits({ includeDev: false });
     expect(
       units.map((u) => [u.unit, u.titleKey, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
@@ -83,7 +83,7 @@ describe('getUnits (AC 27)', () => {
       [3, 'unit.3.title', 'u03-connection', null],
       [4, 'unit.4.title', 'u04-capture', null],
       [5, 'unit.5.title', 'u05-atari', 'u05-review'],
-      [6, 'unit.6.title', null, null],
+      [6, 'unit.6.title', 'u06-capture-go', 'u06-checkpoint'],
     ]);
   });
 
@@ -99,6 +99,7 @@ describe('getUnits (AC 27)', () => {
     const units = loader.getUnits({ includeDev: false });
     expect(units[0].lesson?.id).toBe('u01-board');
     expect(units[0].titleKey).toBe('unit.1.title');
-    expect(units[1].lesson).toBeNull();
+    // No planned ("coming soon") units since M4 item 2 (PLANNED_UNITS = []).
+    expect(units).toHaveLength(1);
   });
 });

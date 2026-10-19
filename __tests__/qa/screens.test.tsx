@@ -94,7 +94,7 @@ describe('Settings language round trip (AC23–AC25)', () => {
       '从零开始，一步一步学会下围棋',
       '学习路线',
       '棋盘与棋子',
-      '即将开放',
+      '吃子棋',
       '更多单元即将上线',
     ]) {
       // Several nodes share the badge text, so any match will do.
@@ -110,7 +110,7 @@ describe('Settings language round trip (AC23–AC25)', () => {
       'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois',
       "Parcours d'apprentissage",
       'Plateau et pierres · 棋盘 qípán',
-      'Bientôt disponible',
+      'Jeu de capture · 吃子棋 chīzǐqí',
       "D'autres unités arrivent bientôt",
     ]) {
       // Several nodes share the badge text, so any match will do.
