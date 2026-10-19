@@ -811,48 +811,1279 @@
         margin-left: 18px;
         break-inside: avoid;
       }
-    
-      .bd { max-width: 100%; height: auto; }
-      .ncard { height: auto; min-height: 72px; }
-      .node.sub .ncard { min-height: 56px; }
-      .nb b { line-height: 21px; }
-      .nb .badge { display: inline-block; margin-top: 4px; font-size: 12px; line-height: 16px; }
-      .step-note { font-size: 12px; color: var(--text2); text-align: center; margin-top: 4px; }
-      .phone .landscape { height: 110px; }
-      .scrollcut { height: 18px; flex: none; text-align:center; font-size: 11px; color: var(--text2); }
-</style>
+
+      .bd {
+        max-width: 100%;
+        height: auto;
+      }
+      .ncard {
+        height: auto;
+        min-height: 72px;
+      }
+      .node.sub .ncard {
+        min-height: 56px;
+      }
+      .nb b {
+        line-height: 21px;
+      }
+      .nb .badge {
+        display: inline-block;
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .step-note {
+        font-size: 12px;
+        color: var(--text2);
+        text-align: center;
+        margin-top: 4px;
+      }
+      .phone .landscape {
+        height: 110px;
+      }
+      .scrollcut {
+        height: 18px;
+        flex: none;
+        text-align: center;
+        font-size: 11px;
+        color: var(--text2);
+      }
+    </style>
   </head>
   <body>
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
       <defs>
-        <pattern id="bamboo" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1"><rect width="1" height="1" fill="#E8D3A0"/><rect x="0.0000" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.0833" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.1667" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.2500" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.3333" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.4167" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.5000" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.5833" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.6667" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.7500" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.8333" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.9167" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.0000" y="0.27" width=".0833" height=".005" fill="#CDB277"/><rect x="0.0833" y="0.55" width=".0833" height=".005" fill="#CDB277"/><rect x="0.1667" y="0.38" width=".0833" height=".005" fill="#CDB277"/><rect x="0.2500" y="0.61" width=".0833" height=".005" fill="#CDB277"/><rect x="0.3333" y="0.64" width=".0833" height=".005" fill="#CDB277"/><rect x="0.5000" y="0.2" width=".0833" height=".005" fill="#CDB277"/><rect x="0.6667" y="0.7" width=".0833" height=".005" fill="#CDB277"/><rect x="0.8333" y="0.47" width=".0833" height=".005" fill="#CDB277"/></pattern>
+        <pattern
+          id="bamboo"
+          patternUnits="objectBoundingBox"
+          patternContentUnits="objectBoundingBox"
+          width="1"
+          height="1"
+        >
+          <rect width="1" height="1" fill="#E8D3A0" />
+          <rect x="0.0000" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.0833" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.1667" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.2500" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.3333" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.4167" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.5000" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.5833" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.6667" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.7500" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.8333" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.9167" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.0000" y="0.27" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.0833" y="0.55" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.1667" y="0.38" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.2500" y="0.61" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.3333" y="0.64" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.5000" y="0.2" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.6667" y="0.7" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.8333" y="0.47" width=".0833" height=".005" fill="#CDB277" />
+        </pattern>
       </defs>
     </svg>
     <header class="page">
       <h1>Let's GO — M4 content mockup (Units 1–5)</h1>
       <p>
         What changes visually when the real lessons arrive: the unit map with Units 1–5 playable, an
-        explanation step and one exercise of each look (tap-point one with coordinates, tap-point all,
-        play-move, choice with labels on stones, count), correct / mistake / hint feedback, and the
-        result screen. Everything else is the approved M3 design at 360×740. Calm 山水 · 茶 · 竹 colours
-        from <code>src/theme/tokens.ts</code>; no leaves, no confetti. Positions are the ones in
-        <code>docs/specs/M4-content-units-1-5.md</code>, each checked by hand and by the validator.
+        explanation step and one exercise of each look (tap-point one with coordinates, tap-point
+        all, play-move, choice with labels on stones, count), correct / mistake / hint feedback, and
+        the result screen. Everything else is the approved M3 design at 360×740. Calm 山水 · 茶 · 竹
+        colours from <code>src/theme/tokens.ts</code>; no leaves, no confetti. Positions are the
+        ones in <code>docs/specs/M4-content-units-1-5.md</code>, each checked by hand and by the
+        validator.
       </p>
     </header>
     <ul class="legend">
       <li><b>Teal ring / fill</b>: a liberty, or a point you selected.</li>
       <li><b>Amber pulsing ring</b>: hint. <b>Green ring</b>: the right answer.</li>
-      <li><b>Dashed rouge ring</b>: a mistake (soft, no sound). <b>Dashed faint stone</b>: a captured stone fading away.</li>
-      <li><b>Circle / triangle / cross / letter</b>: marks drawn by the lesson to point at a stone or a crossing.</li>
-      <li>This page is static HTML and SVG, no script; the app draws the same board with react-native-svg.</li>
+      <li>
+        <b>Dashed rouge ring</b>: a mistake (soft, no sound). <b>Dashed faint stone</b>: a captured
+        stone fading away.
+      </li>
+      <li>
+        <b>Circle / triangle / cross / letter</b>: marks drawn by the lesson to point at a stone or
+        a crossing.
+      </li>
+      <li>
+        This page is static HTML and SVG, no script; the app draws the same board with
+        react-native-svg.
+      </li>
     </ul>
     <h2 class="group">A · Unit map</h2>
-    <div class="grid"><figure><div class="phone home" lang="en"><svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/><path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></svg><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar" style="justify-content:flex-end"><span class="ibtn" style="font-size:22px">⚙</span></div><div class="logo"><i></i><i></i></div><div class="appname">Let's GO</div><div class="subtitle">Learn Go (围棋 wéiqí) from zero, one rule at a time</div><div class="cont"><span class="play">▶</span><div><b>Continue</b><span>Unit 5 · Atari &amp; escape</span></div></div><div class="sect">Learning path</div><div class="path"><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unit 1</small><b>Board &amp; stones · 棋盘 qípán</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unit 2</small><b>Liberties · 气 qì</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unit 3</small><b>Connection · 连接 liánjiē</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unit 4</small><b>Capture · 提子 tízǐ</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="avail"></i></div><div class="ncard "><div class="nb"><small>Unit 5</small><b>Atari &amp; escape · 叫吃 jiàochī</b></div><span class="chev">›</span></div></div><div class="node sub"><div class="dot"><i class="lock"></i></div><div class="ncard lock"><div class="nb"><small>Checkpoint</small><b>Review</b></div><span style="font-size:18px;opacity:.6">🔒</span></div></div><div class="node "><div class="dot"><i class="lock"></i></div><div class="ncard soon"><div class="nb"><small>Unit 6</small><b>Capture Go · 吃子棋 chīzǐqí</b><span class="badge">Coming soon</span></div></div></div></div><div class="more">More units coming soon</div></div></div><figcaption><b>1 · Home map, English — Units 1–5 playable</b><br>A learner who has passed Unit 4 (Unit 5 is open). Units 1–5 are real nodes; Unit 6 is “coming soon”; the Unit 5 review checkpoint opens after 1★ on Unit 5. The dev sample is not shown (production build). The list scrolls.</figcaption></figure><figure><div class="phone home" lang="fr"><svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/><path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></svg><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="scrollcut">▲ …</div><div class="path"><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unité 3</small><b>Connexion · 连接 liánjiē</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>Unité 4</small><b>Capture · 提子 tízǐ</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="avail"></i></div><div class="ncard "><div class="nb"><small>Unité 5</small><b>Atari et fuite · 叫吃 jiàochī</b></div><span class="chev">›</span></div></div><div class="node sub"><div class="dot"><i class="lock"></i></div><div class="ncard lock"><div class="nb"><small>Point d'étape</small><b>Révision</b></div><span style="font-size:18px;opacity:.6">🔒</span></div></div><div class="node "><div class="dot"><i class="lock"></i></div><div class="ncard soon"><div class="nb"><small>Unité 6</small><b>Jeu de capture · 吃子棋 chīzǐqí</b><span class="badge">Bientôt disponible</span></div></div></div></div><div class="more">D'autres unités arrivent bientôt</div></div></div><figcaption><b>2 · Home map, Français — the “soon” badge fix (list scrolled to its end)</b><br>Decision 1: the “Bientôt disponible” badge moves under the title on its own line; titles may use two lines (the card grows). No text change, works in every language.</figcaption></figure><figure><div class="phone home" lang="zh-CN"><svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/><path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></svg><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="scrollcut">▲ …</div><div class="path"><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>第 3 单元</small><b>连接</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="done"></i></div><div class="ncard "><div class="nb"><small>第 4 单元</small><b>提子</b><div class="stars"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div><span class="chev">›</span></div></div><div class="node "><div class="dot"><i class="avail"></i></div><div class="ncard "><div class="nb"><small>第 5 单元</small><b>叫吃与逃跑</b></div><span class="chev">›</span></div></div><div class="node sub"><div class="dot"><i class="lock"></i></div><div class="ncard lock"><div class="nb"><small>阶段检测</small><b>综合复习</b></div><span style="font-size:18px;opacity:.6">🔒</span></div></div><div class="node "><div class="dot"><i class="lock"></i></div><div class="ncard soon"><div class="nb"><small>第 6 单元</small><b>吃子棋</b><span class="badge">即将推出</span></div></div></div></div><div class="more">更多单元即将推出</div></div></div><figcaption><b>3 · Home map, 中文 — titles without pinyin</b><br>Decision 2: zh-CN unit titles stay in hanzi only (readers of Chinese do not need pinyin). English and French keep “term + pinyin”.</figcaption></figure></div>
+    <div class="grid">
+      <figure>
+        <div class="phone home" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar" style="justify-content: flex-end">
+              <span class="ibtn" style="font-size: 22px">⚙</span>
+            </div>
+            <div class="logo"><i></i><i></i></div>
+            <div class="appname">Let's GO</div>
+            <div class="subtitle">Learn Go (围棋 wéiqí) from zero, one rule at a time</div>
+            <div class="cont">
+              <span class="play">▶</span>
+              <div><b>Continue</b><span>Unit 5 · Atari &amp; escape</span></div>
+            </div>
+            <div class="sect">Learning path</div>
+            <div class="path">
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 1</small><b>Board &amp; stones · 棋盘 qípán</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 2</small><b>Liberties · 气 qì</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 3</small><b>Connection · 连接 liánjiē</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 4</small><b>Capture · 提子 tízǐ</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="avail"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 5</small><b>Atari &amp; escape · 叫吃 jiàochī</b>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node sub">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard lock">
+                  <div class="nb"><small>Checkpoint</small><b>Review</b></div>
+                  <span style="font-size: 18px; opacity: 0.6">🔒</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard soon">
+                  <div class="nb">
+                    <small>Unit 6</small><b>Capture Go · 吃子棋 chīzǐqí</b
+                    ><span class="badge">Coming soon</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="more">More units coming soon</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>1 · Home map, English — Units 1–5 playable</b><br />A learner who has passed Unit 4
+          (Unit 5 is open). Units 1–5 are real nodes; Unit 6 is “coming soon”; the Unit 5 review
+          checkpoint opens after 1★ on Unit 5. The dev sample is not shown (production build). The
+          list scrolls.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone home" lang="fr">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="scrollcut">▲ …</div>
+            <div class="path">
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unité 3</small><b>Connexion · 连接 liánjiē</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unité 4</small><b>Capture · 提子 tízǐ</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="avail"></i></div>
+                <div class="ncard">
+                  <div class="nb"><small>Unité 5</small><b>Atari et fuite · 叫吃 jiàochī</b></div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node sub">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard lock">
+                  <div class="nb"><small>Point d'étape</small><b>Révision</b></div>
+                  <span style="font-size: 18px; opacity: 0.6">🔒</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard soon">
+                  <div class="nb">
+                    <small>Unité 6</small><b>Jeu de capture · 吃子棋 chīzǐqí</b
+                    ><span class="badge">Bientôt disponible</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="more">D'autres unités arrivent bientôt</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>2 · Home map, Français — the “soon” badge fix (list scrolled to its end)</b
+          ><br />Decision 1: the “Bientôt disponible” badge moves under the title on its own line;
+          titles may use two lines (the card grows). No text change, works in every language.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone home" lang="zh-CN">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="scrollcut">▲ …</div>
+            <div class="path">
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>第 3 单元</small><b>连接</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>第 4 单元</small><b>提子</b>
+                    <div class="stars">
+                      <svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="#9A5F22"
+                          stroke="#9A5F22"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        /></svg
+                      ><svg viewBox="0 0 24 24">
+                        <polygon
+                          points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                          fill="none"
+                          stroke="#CFC8B8"
+                          stroke-width="1.6"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="avail"></i></div>
+                <div class="ncard">
+                  <div class="nb"><small>第 5 单元</small><b>叫吃与逃跑</b></div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node sub">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard lock">
+                  <div class="nb"><small>阶段检测</small><b>综合复习</b></div>
+                  <span style="font-size: 18px; opacity: 0.6">🔒</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard soon">
+                  <div class="nb">
+                    <small>第 6 单元</small><b>吃子棋</b><span class="badge">即将推出</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="more">更多单元即将推出</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>3 · Home map, 中文 — titles without pinyin</b><br />Decision 2: zh-CN unit titles stay
+          in hanzi only (readers of Chinese do not need pinyin). English and French keep “term +
+          pinyin”.
+        </figcaption>
+      </figure>
+    </div>
     <h2 class="group">B · Explanation steps</h2>
-    <div class="grid"><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="dots"><i class="on"></i><i class=""></i><i class=""></i></div><span class="ibtn txt"></span></div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.95 -0.95 5.9 5.9" role="img" aria-label="Empty 5 by 5 board with coordinates"><rect x="-0.95" y="-0.95" width="5.9" height="5.9" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><g class="co" font-size="0.4"><text x="0" y="4.68">A</text><text x="-0.68" y="0">5</text><text x="1" y="4.68">B</text><text x="-0.68" y="1">4</text><text x="2" y="4.68">C</text><text x="-0.68" y="2">3</text><text x="3" y="4.68">D</text><text x="-0.68" y="3">2</text><text x="4" y="4.68">E</text><text x="-0.68" y="4">1</text></g><circle class="mk ink" cx="2" cy="2" r="0.22"/></svg></div><div class="card text">Stones go on the crossing points (交叉点 jiāochādiǎn) of the board (棋盘 qípán), not in squares. Letters = columns, numbers = rows: c3.</div><div style="height:44px;flex:none"></div><div class="spacer"></div><div class="row"><div class="btn primary">Next ›</div></div></div></div><figcaption><b>4 · Explanation, Unit 1 step 1 (coordinates on)</b><br>Unit 1 shows letters and numbers around every board. Circle marks the crossing being described. The text card has the first-use term + pinyin.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="dots"><i class=""></i><i class=""></i><i class=""></i><i class="on"></i></div><span class="ibtn txt"></span></div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Black captured two white stones"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="b" cx="1" cy="3" r="0.46"/><circle class="b" cx="1" cy="2" r="0.46"/><circle class="b" cx="3" cy="3" r="0.46"/><circle class="b" cx="3" cy="2" r="0.46"/><circle class="b" cx="2" cy="4" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="gone" cx="2" cy="3" r="0.46"/><circle class="gone" cx="2" cy="2" r="0.46"/><circle cx="2" cy="1" r="0.14" class="lm"/></svg></div><div class="card text">When a group is captured, all its stones come off together, however many there are.</div><div class="replay">↻ Replay</div><div class="spacer"></div><div class="row"><div class="btn ">‹ Back</div><div class="btn primary">Start practice ›</div></div></div></div><figcaption><b>5 · Explanation, Unit 4 step 4 (a group is captured)</b><br>End of the step: the two white stones fade away (dashed) after Black plays c4. Replay restarts the move.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="dots"><i class=""></i><i class=""></i><i class="on"></i><i class=""></i></div><span class="ibtn txt"></span></div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Extension leaves one liberty"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="lib" cx="2" cy="0" r="0.4"/><circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="w" cx="2" cy="3" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="1" cy="1" r="0.46"/><circle class="w" cx="3" cy="1" r="0.46"/><circle cx="2" cy="1" r="0.14" class="lm"/></svg></div><div class="card text">Count first! Here the extension leaves only one liberty (c5): still in atari, no escape.</div><div class="replay">↻ Replay</div><div class="spacer"></div><div class="row"><div class="btn ">‹ Back</div><div class="btn primary">Next ›</div></div></div></div><figcaption><b>6 · Explanation, Unit 5 step 3 (count first!)</b><br>Black has extended to c4 but only c5 is free: the highlighted liberty shows why the escape fails. Same player, same layout in every unit.</figcaption></figure></div>
+    <div class="grid">
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="dots"><i class="on"></i><i class=""></i><i class=""></i></div>
+              <span class="ibtn txt"></span>
+            </div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.95 -0.95 5.9 5.9"
+                role="img"
+                aria-label="Empty 5 by 5 board with coordinates"
+              >
+                <rect x="-0.95" y="-0.95" width="5.9" height="5.9" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <g class="co" font-size="0.4">
+                  <text x="0" y="4.68">A</text>
+                  <text x="-0.68" y="0">5</text>
+                  <text x="1" y="4.68">B</text>
+                  <text x="-0.68" y="1">4</text>
+                  <text x="2" y="4.68">C</text>
+                  <text x="-0.68" y="2">3</text>
+                  <text x="3" y="4.68">D</text>
+                  <text x="-0.68" y="3">2</text>
+                  <text x="4" y="4.68">E</text>
+                  <text x="-0.68" y="4">1</text>
+                </g>
+                <circle class="mk ink" cx="2" cy="2" r="0.22" />
+              </svg>
+            </div>
+            <div class="card text">
+              Stones go on the crossing points (交叉点 jiāochādiǎn) of the board (棋盘 qípán), not
+              in squares. Letters = columns, numbers = rows: c3.
+            </div>
+            <div style="height: 44px; flex: none"></div>
+            <div class="spacer"></div>
+            <div class="row"><div class="btn primary">Next ›</div></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>4 · Explanation, Unit 1 step 1 (coordinates on)</b><br />Unit 1 shows letters and
+          numbers around every board. Circle marks the crossing being described. The text card has
+          the first-use term + pinyin.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="dots">
+                <i class=""></i><i class=""></i><i class=""></i><i class="on"></i>
+              </div>
+              <span class="ibtn txt"></span>
+            </div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Black captured two white stones"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="b" cx="1" cy="3" r="0.46" />
+                <circle class="b" cx="1" cy="2" r="0.46" />
+                <circle class="b" cx="3" cy="3" r="0.46" />
+                <circle class="b" cx="3" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="4" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="gone" cx="2" cy="3" r="0.46" />
+                <circle class="gone" cx="2" cy="2" r="0.46" />
+                <circle cx="2" cy="1" r="0.14" class="lm" />
+              </svg>
+            </div>
+            <div class="card text">
+              When a group is captured, all its stones come off together, however many there are.
+            </div>
+            <div class="replay">↻ Replay</div>
+            <div class="spacer"></div>
+            <div class="row">
+              <div class="btn">‹ Back</div>
+              <div class="btn primary">Start practice ›</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>5 · Explanation, Unit 4 step 4 (a group is captured)</b><br />End of the step: the two
+          white stones fade away (dashed) after Black plays c4. Replay restarts the move.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="dots">
+                <i class=""></i><i class=""></i><i class="on"></i><i class=""></i>
+              </div>
+              <span class="ibtn txt"></span>
+            </div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Extension leaves one liberty"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="lib" cx="2" cy="0" r="0.4" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="w" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="1" cy="1" r="0.46" />
+                <circle class="w" cx="3" cy="1" r="0.46" />
+                <circle cx="2" cy="1" r="0.14" class="lm" />
+              </svg>
+            </div>
+            <div class="card text">
+              Count first! Here the extension leaves only one liberty (c5): still in atari, no
+              escape.
+            </div>
+            <div class="replay">↻ Replay</div>
+            <div class="spacer"></div>
+            <div class="row">
+              <div class="btn">‹ Back</div>
+              <div class="btn primary">Next ›</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>6 · Explanation, Unit 5 step 3 (count first!)</b><br />Black has extended to c4 but
+          only c5 is free: the highlighted liberty shows why the escape fails. Same player, same
+          layout in every unit.
+        </figcaption>
+      </figure>
+    </div>
     <h2 class="group">C · Exercises</h2>
-    <div class="grid"><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">Tap the point c4.</div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.95 -0.95 5.9 5.9" role="img" aria-label="Tap c4"><rect x="-0.95" y="-0.95" width="5.9" height="5.9" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><g class="co" font-size="0.4"><text x="0" y="4.68">A</text><text x="-0.68" y="0">5</text><text x="1" y="4.68">B</text><text x="-0.68" y="1">4</text><text x="2" y="4.68">C</text><text x="-0.68" y="2">3</text><text x="3" y="4.68">D</text><text x="-0.68" y="3">2</text><text x="4" y="4.68">E</text><text x="-0.68" y="4">1</text></g><circle class="finger" cx="2" cy="2.0" r="0.7"/><circle class="ringprev" cx="2" cy="1" r="0.42"/></svg></div><div class="card fb empty"></div><div class="spacer"></div></div></div><figcaption><b>7 · tap-point, mode one — with coordinates (Unit 1, exercise 2)</b><br>Touch-down shows a ring (not a stone) on the nearest crossing; letting go commits. Coordinates are visible so “c4” can be found.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">Tap all the liberties of the corner stone, then press Check.</div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Corner stone with one liberty selected"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="lib" cx="0" cy="3" r="0.4"/><circle class="b" cx="0" cy="4" r="0.46"/></svg></div><div class="card fb empty"></div><div class="spacer"></div><div class="btn primary">Check</div></div></div><figcaption><b>8 · tap-point, mode all (Unit 2, exercise 3)</b><br>One liberty already chosen (teal fill); Check is enabled. The first Check would say “1 of 2 found”. Corner stone: the diagonal b2 is not a liberty.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn on">Hint</span></div><div class="card prompt">Capture both white stones with one move.</div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Capture the white group"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="b" cx="0" cy="3" r="0.46"/><circle class="b" cx="0" cy="2" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/><circle class="b" cx="1" cy="1" r="0.46"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="w" cx="1" cy="3" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="hintr" cx="2" cy="2" r="0.5"/></svg></div><div class="card fb"><i class="hint"></i><div>The two white stones are one group. Where is its last liberty?</div></div><div class="spacer"></div></div></div><figcaption><b>9 · play-move, hint open (Unit 4, exercise 5)</b><br>Two white stones, one shared last liberty. The hint is open: amber pulse on c3 and the hint text. Black plays by touch-down preview, touch-up commit.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">The black stone is in atari. Extend to make it escape.</div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Stone played away from the liberty"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="4" cy="2" r="0.46"/><circle class="w" cx="2" cy="1" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="errr" cx="4" cy="2" r="0.46"/></svg></div><div class="card fb"><i class="err"></i><div>The group still has only one liberty, so it can still be captured.</div></div><div class="spacer"></div><div class="btn primary">Try again</div></div></div><figcaption><b>10 · play-move, a mistake (Unit 5, exercise 4)</b><br>Black played the wrong point (dashed rouge ring on the stone); the message states a fact about the position; “Try again” resets the board. Nothing red-flashes.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">Which pair of black stones is one group?</div><div class="boardwrap"><svg class="bd" width="236" height="236" viewBox="-0.55 -0.55 7.1 7.1" role="img" aria-label="Three pairs of black stones"><rect x="-0.55" y="-0.55" width="7.1" height="7.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="6" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="6"/><line class="g" x1="0" y1="1" x2="6" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="6"/><line class="g" x1="0" y1="2" x2="6" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="6"/><line class="g" x1="0" y1="3" x2="6" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="6"/><line class="g" x1="0" y1="4" x2="6" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="6"/><line class="g" x1="0" y1="5" x2="6" y2="5"/><line class="g" x1="5" y1="0" x2="5" y2="6"/><line class="g" x1="0" y1="6" x2="6" y2="6"/><line class="g" x1="6" y1="0" x2="6" y2="6"/><rect class="edge" x="0" y="0" width="6" height="6"/><circle class="star" cx="3.0" cy="3.0" r="0.09"/><circle class="b" cx="1" cy="1" r="0.46"/><circle class="b" cx="3" cy="1" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/><circle class="b" cx="2" cy="5" r="0.46"/><circle class="b" cx="5" cy="2" r="0.46"/><circle class="b" cx="5" cy="3" r="0.46"/><text class="mtext" style="fill:#f7f5ee" x="1" y="1" font-size="0.5">A</text><text class="mtext" style="fill:#f7f5ee" x="1" y="4" font-size="0.5">B</text><text class="mtext" style="fill:#f7f5ee" x="5" y="2" font-size="0.5">C</text></svg></div><div class="opts"><div class="opt dis">Pair A</div><div class="opt">Pair B</div><div class="opt">Pair C</div></div><div class="card fb"><i class="err"></i><div>Pair A has an empty point between its stones.</div></div></div></div><figcaption><b>11 · choice with labels on stones (Unit 3, exercise 3)</b><br>Board shrinks to ≈ 240 px to fit three options. Pair A was tapped: it is greyed out and the reason appears. Labels are drawn on the stones in a contrasting colour.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">How many liberties does the marked black group have?</div><div class="boardwrap"><svg class="bd" width="292" height="292" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Marked black group"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="3" cy="2" r="0.46"/><circle class="w" cx="2" cy="1" r="0.46"/><polygon class="mk pale" points="2,1.74 2.25,2.2 1.75,2.2"/></svg></div><div class="chips"><div class="chip ">0</div><div class="chip ">1</div><div class="chip ">2</div><div class="chip ">3</div><div class="chip ">4</div><div class="chip sel">5</div><div class="chip ">6</div><div class="chip ">7</div><div class="chip ">8</div><div class="chip ">9</div></div><div class="card fb empty"></div><div class="spacer"></div><div class="btn primary">Check</div></div></div><figcaption><b>12 · count (Unit 3, exercise 4)</b><br>Group of two with one white stone on top: 5 liberties. 5 is selected. After three wrong tries the liberties get a green ring and the right chip is outlined.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i></div><span class="hintbtn ">Hint</span></div><div class="card prompt">Black to play. Connect the two black stones into one group.</div><div class="boardwrap"><svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Connected"><rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="0" y1="4" x2="4" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/><rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2.0" cy="2.0" r="0.09"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle cx="2" cy="2" r="0.14" class="lm"/><circle class="okr" cx="2" cy="2" r="0.5"/></svg></div><div class="card fb"><i class="ok"></i><div>Correct!<small>c3 touches both stones, so they became one group.</small></div></div><div class="spacer"></div><div class="btn primary">Next</div></div></div><figcaption><b>13 · Correct (Unit 3, exercise 5)</b><br>Green ring on the answer, one sentence of explanation, one obvious next action.</figcaption></figure></div>
+    <div class="grid">
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="c"></i><i class=""></i><i class=""></i><i class=""></i
+                ><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">Tap the point c4.</div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.95 -0.95 5.9 5.9"
+                role="img"
+                aria-label="Tap c4"
+              >
+                <rect x="-0.95" y="-0.95" width="5.9" height="5.9" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <g class="co" font-size="0.4">
+                  <text x="0" y="4.68">A</text>
+                  <text x="-0.68" y="0">5</text>
+                  <text x="1" y="4.68">B</text>
+                  <text x="-0.68" y="1">4</text>
+                  <text x="2" y="4.68">C</text>
+                  <text x="-0.68" y="2">3</text>
+                  <text x="3" y="4.68">D</text>
+                  <text x="-0.68" y="3">2</text>
+                  <text x="4" y="4.68">E</text>
+                  <text x="-0.68" y="4">1</text>
+                </g>
+                <circle class="finger" cx="2" cy="2.0" r="0.7" />
+                <circle class="ringprev" cx="2" cy="1" r="0.42" />
+              </svg>
+            </div>
+            <div class="card fb empty"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>7 · tap-point, mode one — with coordinates (Unit 1, exercise 2)</b><br />Touch-down
+          shows a ring (not a stone) on the nearest crossing; letting go commits. Coordinates are
+          visible so “c4” can be found.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i
+                ><i class=""></i><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">
+              Tap all the liberties of the corner stone, then press Check.
+            </div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Corner stone with one liberty selected"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="lib" cx="0" cy="3" r="0.4" />
+                <circle class="b" cx="0" cy="4" r="0.46" />
+              </svg>
+            </div>
+            <div class="card fb empty"></div>
+            <div class="spacer"></div>
+            <div class="btn primary">Check</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>8 · tap-point, mode all (Unit 2, exercise 3)</b><br />One liberty already chosen (teal
+          fill); Check is enabled. The first Check would say “1 of 2 found”. Corner stone: the
+          diagonal b2 is not a liberty.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i
+                ><i class=""></i><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn on">Hint</span>
+            </div>
+            <div class="card prompt">Capture both white stones with one move.</div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Capture the white group"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="b" cx="0" cy="3" r="0.46" />
+                <circle class="b" cx="0" cy="2" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="b" cx="1" cy="1" r="0.46" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="hintr" cx="2" cy="2" r="0.5" />
+              </svg>
+            </div>
+            <div class="card fb">
+              <i class="hint"></i>
+              <div>The two white stones are one group. Where is its last liberty?</div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>9 · play-move, hint open (Unit 4, exercise 5)</b><br />Two white stones, one shared
+          last liberty. The hint is open: amber pulse on c3 and the hint text. Black plays by
+          touch-down preview, touch-up commit.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i
+                ><i class=""></i><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">The black stone is in atari. Extend to make it escape.</div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Stone played away from the liberty"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="4" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="1" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="errr" cx="4" cy="2" r="0.46" />
+              </svg>
+            </div>
+            <div class="card fb">
+              <i class="err"></i>
+              <div>The group still has only one liberty, so it can still be captured.</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="btn primary">Try again</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>10 · play-move, a mistake (Unit 5, exercise 4)</b><br />Black played the wrong point
+          (dashed rouge ring on the stone); the message states a fact about the position; “Try
+          again” resets the board. Nothing red-flashes.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i><i class=""></i
+                ><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">Which pair of black stones is one group?</div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="236"
+                height="236"
+                viewBox="-0.55 -0.55 7.1 7.1"
+                role="img"
+                aria-label="Three pairs of black stones"
+              >
+                <rect x="-0.55" y="-0.55" width="7.1" height="7.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="6" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="6" />
+                <line class="g" x1="0" y1="1" x2="6" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="6" />
+                <line class="g" x1="0" y1="2" x2="6" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="6" />
+                <line class="g" x1="0" y1="3" x2="6" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="6" />
+                <line class="g" x1="0" y1="4" x2="6" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="6" />
+                <line class="g" x1="0" y1="5" x2="6" y2="5" />
+                <line class="g" x1="5" y1="0" x2="5" y2="6" />
+                <line class="g" x1="0" y1="6" x2="6" y2="6" />
+                <line class="g" x1="6" y1="0" x2="6" y2="6" />
+                <rect class="edge" x="0" y="0" width="6" height="6" />
+                <circle class="star" cx="3.0" cy="3.0" r="0.09" />
+                <circle class="b" cx="1" cy="1" r="0.46" />
+                <circle class="b" cx="3" cy="1" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="b" cx="2" cy="5" r="0.46" />
+                <circle class="b" cx="5" cy="2" r="0.46" />
+                <circle class="b" cx="5" cy="3" r="0.46" />
+                <text class="mtext" style="fill: #f7f5ee" x="1" y="1" font-size="0.5">A</text>
+                <text class="mtext" style="fill: #f7f5ee" x="1" y="4" font-size="0.5">B</text>
+                <text class="mtext" style="fill: #f7f5ee" x="5" y="2" font-size="0.5">C</text>
+              </svg>
+            </div>
+            <div class="opts">
+              <div class="opt dis">Pair A</div>
+              <div class="opt">Pair B</div>
+              <div class="opt">Pair C</div>
+            </div>
+            <div class="card fb">
+              <i class="err"></i>
+              <div>Pair A has an empty point between its stones.</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>11 · choice with labels on stones (Unit 3, exercise 3)</b><br />Board shrinks to ≈ 240
+          px to fit three options. Pair A was tapped: it is greyed out and the reason appears.
+          Labels are drawn on the stones in a contrasting colour.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i class=""></i
+                ><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">How many liberties does the marked black group have?</div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="292"
+                height="292"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Marked black group"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="1" r="0.46" />
+                <polygon class="mk pale" points="2,1.74 2.25,2.2 1.75,2.2" />
+              </svg>
+            </div>
+            <div class="chips">
+              <div class="chip">0</div>
+              <div class="chip">1</div>
+              <div class="chip">2</div>
+              <div class="chip">3</div>
+              <div class="chip">4</div>
+              <div class="chip sel">5</div>
+              <div class="chip">6</div>
+              <div class="chip">7</div>
+              <div class="chip">8</div>
+              <div class="chip">9</div>
+            </div>
+            <div class="card fb empty"></div>
+            <div class="spacer"></div>
+            <div class="btn primary">Check</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>12 · count (Unit 3, exercise 4)</b><br />Group of two with one white stone on top: 5
+          liberties. 5 is selected. After three wrong tries the liberties get a green ring and the
+          right chip is outlined.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i
+                ><i class=""></i><i class=""></i>
+              </div>
+              <span class="hintbtn">Hint</span>
+            </div>
+            <div class="card prompt">
+              Black to play. Connect the two black stones into one group.
+            </div>
+            <div class="boardwrap">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Connected"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <line class="g" x1="0" y1="0" x2="4" y2="0" />
+                <line class="g" x1="0" y1="0" x2="0" y2="4" />
+                <line class="g" x1="0" y1="1" x2="4" y2="1" />
+                <line class="g" x1="1" y1="0" x2="1" y2="4" />
+                <line class="g" x1="0" y1="2" x2="4" y2="2" />
+                <line class="g" x1="2" y1="0" x2="2" y2="4" />
+                <line class="g" x1="0" y1="3" x2="4" y2="3" />
+                <line class="g" x1="3" y1="0" x2="3" y2="4" />
+                <line class="g" x1="0" y1="4" x2="4" y2="4" />
+                <line class="g" x1="4" y1="0" x2="4" y2="4" />
+                <rect class="edge" x="0" y="0" width="4" height="4" />
+                <circle class="star" cx="2.0" cy="2.0" r="0.09" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle cx="2" cy="2" r="0.14" class="lm" />
+                <circle class="okr" cx="2" cy="2" r="0.5" />
+              </svg>
+            </div>
+            <div class="card fb">
+              <i class="ok"></i>
+              <div>Correct!<small>c3 touches both stones, so they became one group.</small></div>
+            </div>
+            <div class="spacer"></div>
+            <div class="btn primary">Next</div>
+          </div>
+        </div>
+        <figcaption>
+          <b>13 · Correct (Unit 3, exercise 5)</b><br />Green ring on the answer, one sentence of
+          explanation, one obvious next action.
+        </figcaption>
+      </figure>
+    </div>
     <h2 class="group">D · Result screen</h2>
-    <div class="grid"><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="res"><div class="st"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></svg></div><h3>Well done</h3><p>5 of 7 right the first time</p><span class="badge">Unit 4 unlocked</span><div class="acts"><div class="btn primary">Next lesson</div><div class="btn ">Practice again</div><div class="btn text">Back to map</div></div></div></div></div><figcaption><b>14 · Result — 2★ after Unit 3</b><br>6 of 7 solved, 5 on the first try. Unit 4 unlocks. Same screen as M3.</figcaption></figure><figure><div class="phone " lang="en"><div class="status"><span>9:41</span><span>▮▮▮</span></div><div class="content"><div class="res"><div class="st"><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></svg></div><h3>Calm and precise</h3><p>7 of 8 right the first time</p><div class="acts"><div class="btn primary">Back to map</div><div class="btn ">Practice again</div><div class="btn text">Review the lesson</div></div></div></div></div><figcaption><b>15 · Result — after the Unit 5 review</b><br>No further unit is open yet (Unit 6 is coming soon), so the primary button returns to the map.</figcaption></figure></div>
+    <div class="grid">
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="res">
+              <div class="st">
+                <svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="#9A5F22"
+                    stroke="#9A5F22"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  /></svg
+                ><svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="#9A5F22"
+                    stroke="#9A5F22"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  /></svg
+                ><svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="none"
+                    stroke="#CFC8B8"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3>Well done</h3>
+              <p>5 of 7 right the first time</p>
+              <span class="badge">Unit 4 unlocked</span>
+              <div class="acts">
+                <div class="btn primary">Next lesson</div>
+                <div class="btn">Practice again</div>
+                <div class="btn text">Back to map</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>14 · Result — 2★ after Unit 3</b><br />6 of 7 solved, 5 on the first try. Unit 4
+          unlocks. Same screen as M3.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="phone" lang="en">
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="res">
+              <div class="st">
+                <svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="#9A5F22"
+                    stroke="#9A5F22"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  /></svg
+                ><svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="#9A5F22"
+                    stroke="#9A5F22"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  /></svg
+                ><svg viewBox="0 0 24 24">
+                  <polygon
+                    points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+                    fill="#9A5F22"
+                    stroke="#9A5F22"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3>Calm and precise</h3>
+              <p>7 of 8 right the first time</p>
+              <div class="acts">
+                <div class="btn primary">Back to map</div>
+                <div class="btn">Practice again</div>
+                <div class="btn text">Review the lesson</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>15 · Result — after the Unit 5 review</b><br />No further unit is open yet (Unit 6 is
+          coming soon), so the primary button returns to the map.
+        </figcaption>
+      </figure>
+    </div>
   </body>
 </html>

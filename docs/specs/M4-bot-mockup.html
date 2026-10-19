@@ -23,173 +23,840 @@
         --white: #f7f5ee;
         --whiteEdge: #8f8c80;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      html { overflow-x: hidden; }
-      body {
-        background: #e3ddd0; color: var(--text); padding: 24px 12px 48px; overflow-x: hidden;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans SC', sans-serif;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      header.page { max-width: 1240px; margin: 0 auto 24px; }
-      header.page h1 { font-size: 22px; line-height: 28px; }
-      header.page p { color: var(--text2); font-size: 14px; line-height: 20px; margin-top: 6px; max-width: 860px; }
-      h2.group { max-width: 1240px; margin: 28px auto 12px; font-size: 16px; color: var(--text2); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-      .grid { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; max-width: 1240px; margin: 0 auto; }
-      figure { display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 100%; }
-      figcaption { font-size: 13px; line-height: 18px; color: var(--text2); max-width: 360px; text-align: center; }
-      figcaption b { color: var(--text); }
-      .legend { max-width: 1240px; margin: 0 auto 8px; font-size: 13px; line-height: 19px; color: var(--text2); columns: 2 340px; }
-      .legend li { margin-left: 18px; break-inside: avoid; }
+      html {
+        overflow-x: hidden;
+      }
+      body {
+        background: #e3ddd0;
+        color: var(--text);
+        padding: 24px 12px 48px;
+        overflow-x: hidden;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans SC',
+          sans-serif;
+      }
+      header.page {
+        max-width: 1240px;
+        margin: 0 auto 24px;
+      }
+      header.page h1 {
+        font-size: 22px;
+        line-height: 28px;
+      }
+      header.page p {
+        color: var(--text2);
+        font-size: 14px;
+        line-height: 20px;
+        margin-top: 6px;
+        max-width: 860px;
+      }
+      h2.group {
+        max-width: 1240px;
+        margin: 28px auto 12px;
+        font-size: 16px;
+        color: var(--text2);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 6px;
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        justify-content: center;
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+      figure {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+      }
+      figcaption {
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+        max-width: 360px;
+        text-align: center;
+      }
+      figcaption b {
+        color: var(--text);
+      }
+      .legend {
+        max-width: 1240px;
+        margin: 0 auto 8px;
+        font-size: 13px;
+        line-height: 19px;
+        color: var(--text2);
+        columns: 2 340px;
+      }
+      .legend li {
+        margin-left: 18px;
+        break-inside: avoid;
+      }
       /* 360 x 740 content box (376 x 756 with the 8 px bezel) */
       .phone {
-        width: 376px; height: 756px; max-width: 100%; background-color: var(--background);
+        width: 376px;
+        height: 756px;
+        max-width: 100%;
+        background-color: var(--background);
         background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px);
-        border-radius: 30px; border: 8px solid var(--black); overflow: hidden; position: relative;
-        display: flex; flex-direction: column; box-shadow: 0 8px 24px rgba(38, 41, 43, 0.15);
+        border-radius: 30px;
+        border: 8px solid var(--black);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 24px rgba(38, 41, 43, 0.15);
       }
-      .phone.home { background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px); }
-      .landscape { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 110px; z-index: 0; }
-      .status, .content { position: relative; z-index: 1; }
-      .status { height: 28px; font-size: 12px; display: flex; justify-content: space-between; padding: 6px 16px; flex: none; }
-      .content { padding: 0 16px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
-      .topbar { height: 52px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-      .ibtn { min-width: 44px; height: 44px; display: grid; place-items: center; font-size: 18px; color: var(--accent); font-weight: 600; }
-      .ibtn.txt { font-size: 14px; padding: 0 4px; }
-      .hintbtn { min-width: 56px; height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; font-size: 14px; font-weight: 600; color: var(--hint); white-space: nowrap; }
-      .hintbtn.on { background: #f3e7d6; border-color: var(--hint); }
-      .segs { flex: 1; display: flex; gap: 4px; }
-      .segs i { flex: 1; height: 6px; border-radius: 3px; background: var(--border); }
-      .segs i.d { background: var(--accent); }
-      .segs i.c { background: var(--surface); outline: 2px solid var(--accent); outline-offset: -2px; }
-      .dots { flex: 1; display: flex; gap: 6px; justify-content: center; }
-      .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-      .dots i.on { background: var(--accent); }
-      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-size: 16px; line-height: 24px; flex: none; }
-      .text { height: 120px; margin-top: 8px; overflow: hidden; }
-      .fb { min-height: 72px; margin-top: 8px; padding: 8px 12px; font-size: 14px; line-height: 19px; display: flex; gap: 10px; align-items: flex-start; }
-      .fb.empty { background: transparent; border-color: transparent; }
-      .fb i, .end i.dot { flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; }
-      .fb i.err, .end i.dot.err { background: var(--error); }
-      .fb i.ok, .end i.dot.ok { background: var(--success); }
-      .fb i.hint { background: var(--hint); }
-      .end i.dot.grey { background: var(--whiteEdge); }
-      .fb small { display: block; color: var(--text2); margin-top: 2px; }
-      .spacer { flex: 1; }
-      .row { display: flex; gap: 12px; flex: none; }
-      .btn { flex: 1; height: 48px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); display: grid; place-items: center; font-size: 16px; font-weight: 600; color: var(--accent); white-space: nowrap; }
-      .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--onAccent); }
-      .btn.text { height: 44px; background: transparent; border-color: transparent; }
-      .replay { align-self: flex-end; height: 44px; padding: 0 8px; display: flex; align-items: center; color: var(--accent); font-weight: 600; font-size: 14px; flex: none; }
-      .boardwrap { flex: none; align-self: center; }
+      .phone.home {
+        background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 160px);
+      }
+      .landscape {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 110px;
+        z-index: 0;
+      }
+      .status,
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+      .status {
+        height: 28px;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 16px;
+        flex: none;
+      }
+      .content {
+        padding: 0 16px 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .topbar {
+        height: 52px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .ibtn {
+        min-width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .ibtn.txt {
+        font-size: 14px;
+        padding: 0 4px;
+      }
+      .hintbtn {
+        min-width: 56px;
+        height: 44px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--hint);
+        white-space: nowrap;
+      }
+      .hintbtn.on {
+        background: #f3e7d6;
+        border-color: var(--hint);
+      }
+      .segs {
+        flex: 1;
+        display: flex;
+        gap: 4px;
+      }
+      .segs i {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--border);
+      }
+      .segs i.d {
+        background: var(--accent);
+      }
+      .segs i.c {
+        background: var(--surface);
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .dots {
+        flex: 1;
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 16px;
+        line-height: 24px;
+        flex: none;
+      }
+      .text {
+        height: 120px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+      .fb {
+        min-height: 72px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        line-height: 19px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .fb.empty {
+        background: transparent;
+        border-color: transparent;
+      }
+      .fb i,
+      .end i.dot {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-top: 6px;
+      }
+      .fb i.err,
+      .end i.dot.err {
+        background: var(--error);
+      }
+      .fb i.ok,
+      .end i.dot.ok {
+        background: var(--success);
+      }
+      .fb i.hint {
+        background: var(--hint);
+      }
+      .end i.dot.grey {
+        background: var(--whiteEdge);
+      }
+      .fb small {
+        display: block;
+        color: var(--text2);
+        margin-top: 2px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex: none;
+      }
+      .btn {
+        flex: 1;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--onAccent);
+      }
+      .btn.text {
+        height: 44px;
+        background: transparent;
+        border-color: transparent;
+      }
+      .replay {
+        align-self: flex-end;
+        height: 44px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 14px;
+        flex: none;
+      }
+      .boardwrap {
+        flex: none;
+        align-self: center;
+      }
       /* game screen */
-      .score { display: flex; gap: 8px; flex: none; margin-bottom: 8px; }
-      .side { flex: 1; height: 56px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); display: flex; align-items: center; gap: 8px; padding: 0 10px; min-width: 0; }
-      .side.on { border: 2px solid var(--accent); padding: 0 9px; }
-      .stn { flex: none; width: 24px; height: 24px; border-radius: 50%; }
-      .stn.b { background: var(--black); }
-      .stn.w { background: var(--white); border: 1px solid var(--whiteEdge); }
-      .stn.sm { width: 14px; height: 14px; }
-      .lab { flex: 1; min-width: 0; }
-      .lab b { display: block; font-size: 14px; line-height: 18px; white-space: nowrap; }
-      .lab small { display: block; font-size: 12px; line-height: 15px; color: var(--text2); white-space: nowrap; }
-      .slots { display: flex; gap: 4px; flex: none; }
-      .slot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); display: block; }
-      .slot.w { background: var(--white); border-color: var(--whiteEdge); }
-      .slot.k { background: var(--black); border-color: var(--black); }
-      .turn { height: 36px; flex: none; align-self: center; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-      .turn.wait { color: var(--text2); background: rgba(255, 253, 248, 0.7); }
-      .d3 { display: inline-flex; gap: 3px; margin-left: 2px; }
-      .d3 i { width: 4px; height: 4px; border-radius: 50%; background: var(--text2); animation: blink 1.2s infinite; }
-      .d3 i:nth-child(2) { animation-delay: 0.2s; }
-      .d3 i:nth-child(3) { animation-delay: 0.4s; }
-      @keyframes blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
-      .end { margin-top: 8px; min-height: 132px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; }
-      .end h4 { font-size: 20px; line-height: 26px; }
-      .end p { font-size: 14px; line-height: 20px; color: var(--text); margin-top: 4px; }
-      .end small { display: block; font-size: 13px; line-height: 18px; color: var(--text2); margin-top: 4px; }
-      .end i.dot { margin-top: 10px; }
-      .restart { height: 44px; flex: none; display: grid; place-items: center; font-size: 14px; font-weight: 600; color: var(--accent); }
+      .score {
+        display: flex;
+        gap: 8px;
+        flex: none;
+        margin-bottom: 8px;
+      }
+      .side {
+        flex: 1;
+        height: 56px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 10px;
+        min-width: 0;
+      }
+      .side.on {
+        border: 2px solid var(--accent);
+        padding: 0 9px;
+      }
+      .stn {
+        flex: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+      }
+      .stn.b {
+        background: var(--black);
+      }
+      .stn.w {
+        background: var(--white);
+        border: 1px solid var(--whiteEdge);
+      }
+      .stn.sm {
+        width: 14px;
+        height: 14px;
+      }
+      .lab {
+        flex: 1;
+        min-width: 0;
+      }
+      .lab b {
+        display: block;
+        font-size: 14px;
+        line-height: 18px;
+        white-space: nowrap;
+      }
+      .lab small {
+        display: block;
+        font-size: 12px;
+        line-height: 15px;
+        color: var(--text2);
+        white-space: nowrap;
+      }
+      .slots {
+        display: flex;
+        gap: 4px;
+        flex: none;
+      }
+      .slot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        display: block;
+      }
+      .slot.w {
+        background: var(--white);
+        border-color: var(--whiteEdge);
+      }
+      .slot.k {
+        background: var(--black);
+        border-color: var(--black);
+      }
+      .turn {
+        height: 36px;
+        flex: none;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .turn.wait {
+        color: var(--text2);
+        background: rgba(255, 253, 248, 0.7);
+      }
+      .d3 {
+        display: inline-flex;
+        gap: 3px;
+        margin-left: 2px;
+      }
+      .d3 i {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--text2);
+        animation: blink 1.2s infinite;
+      }
+      .d3 i:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .d3 i:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 0.25;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      .end {
+        margin-top: 8px;
+        min-height: 132px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 12px 16px;
+      }
+      .end h4 {
+        font-size: 20px;
+        line-height: 26px;
+      }
+      .end p {
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--text);
+        margin-top: 4px;
+      }
+      .end small {
+        display: block;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+        margin-top: 4px;
+      }
+      .end i.dot {
+        margin-top: 10px;
+      }
+      .restart {
+        height: 44px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--accent);
+      }
       /* home */
-      .path { position: relative; display: flex; flex-direction: column; gap: 8px; }
-      .path:before { content: ''; position: absolute; left: 21px; top: 20px; bottom: 20px; width: 2px; background: var(--border); }
-      .node { display: flex; align-items: center; gap: 12px; position: relative; }
-      .node.sub { margin-left: 32px; }
-      .dot { width: 44px; height: 44px; display: grid; place-items: center; flex: none; }
-      .dot i { width: 30px; height: 30px; border-radius: 50%; display: block; }
-      .node.sub .dot i { width: 20px; height: 20px; }
-      .dot i.done { background: var(--black); }
-      .dot i.avail { background: var(--white); border: 2px solid var(--accent); box-shadow: 0 0 0 3px rgba(62, 100, 97, 0.18); }
-      .dot i.lock { background: var(--background); border: 1.5px solid var(--border); }
-      .ncard { flex: 1; min-width: 0; min-height: 72px; padding: 8px 12px 8px 16px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-      .node.sub .ncard { min-height: 56px; }
-      .ncard.lock { background: rgba(255, 253, 248, 0.6); }
-      .ncard.lock .nb { opacity: 0.55; }
-      .nb { flex: 1; min-width: 0; }
-      .nb small { display: block; font-size: 13px; line-height: 18px; color: var(--text2); }
-      .nb b { display: block; font-size: 16px; line-height: 21px; font-weight: 600; }
-      .stars { display: flex; gap: 2px; margin-top: 2px; }
-      .stars svg { width: 16px; height: 16px; }
-      .chev { color: var(--text2); font-size: 22px; }
-      .more { font-size: 13px; color: var(--text2); text-align: center; margin-top: 10px; }
-      .scrollcut { height: 18px; flex: none; text-align: center; font-size: 11px; color: var(--text2); }
-      .cont { height: 60px; border-radius: 12px; background: var(--accent); color: var(--onAccent); padding: 8px 16px; display: flex; align-items: center; gap: 12px; flex: none; margin: 4px 0 10px; }
-      .cont b { display: block; font-size: 16px; line-height: 20px; }
-      .cont span { font-size: 13px; opacity: 0.9; }
+      .path {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .path:before {
+        content: '';
+        position: absolute;
+        left: 21px;
+        top: 20px;
+        bottom: 20px;
+        width: 2px;
+        background: var(--border);
+      }
+      .node {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+      }
+      .node.sub {
+        margin-left: 32px;
+      }
+      .dot {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .dot i {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: block;
+      }
+      .node.sub .dot i {
+        width: 20px;
+        height: 20px;
+      }
+      .dot i.done {
+        background: var(--black);
+      }
+      .dot i.avail {
+        background: var(--white);
+        border: 2px solid var(--accent);
+        box-shadow: 0 0 0 3px rgba(62, 100, 97, 0.18);
+      }
+      .dot i.lock {
+        background: var(--background);
+        border: 1.5px solid var(--border);
+      }
+      .ncard {
+        flex: 1;
+        min-width: 0;
+        min-height: 72px;
+        padding: 8px 12px 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .node.sub .ncard {
+        min-height: 56px;
+      }
+      .ncard.lock {
+        background: rgba(255, 253, 248, 0.6);
+      }
+      .ncard.lock .nb {
+        opacity: 0.55;
+      }
+      .nb {
+        flex: 1;
+        min-width: 0;
+      }
+      .nb small {
+        display: block;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+      }
+      .nb b {
+        display: block;
+        font-size: 16px;
+        line-height: 21px;
+        font-weight: 600;
+      }
+      .stars {
+        display: flex;
+        gap: 2px;
+        margin-top: 2px;
+      }
+      .stars svg {
+        width: 16px;
+        height: 16px;
+      }
+      .chev {
+        color: var(--text2);
+        font-size: 22px;
+      }
+      .more {
+        font-size: 13px;
+        color: var(--text2);
+        text-align: center;
+        margin-top: 10px;
+      }
+      .scrollcut {
+        height: 18px;
+        flex: none;
+        text-align: center;
+        font-size: 11px;
+        color: var(--text2);
+      }
+      .cont {
+        height: 60px;
+        border-radius: 12px;
+        background: var(--accent);
+        color: var(--onAccent);
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: none;
+        margin: 4px 0 10px;
+      }
+      .cont b {
+        display: block;
+        font-size: 16px;
+        line-height: 20px;
+      }
+      .cont span {
+        font-size: 13px;
+        opacity: 0.9;
+      }
       /* result */
-      .res { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 56px; }
-      .res .st { display: flex; gap: 12px; }
-      .res .st svg { width: 56px; height: 56px; }
-      .res h3 { font-size: 28px; line-height: 34px; margin-top: 20px; }
-      .res p { font-size: 16px; line-height: 24px; margin-top: 6px; color: var(--text2); }
-      .res .acts { width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+      .res {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 56px;
+      }
+      .res .st {
+        display: flex;
+        gap: 12px;
+      }
+      .res .st svg {
+        width: 56px;
+        height: 56px;
+      }
+      .res h3 {
+        font-size: 28px;
+        line-height: 34px;
+        margin-top: 20px;
+      }
+      .res p {
+        font-size: 16px;
+        line-height: 24px;
+        margin-top: 6px;
+        color: var(--text2);
+      }
+      .res .acts {
+        width: 100%;
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
       /* boards */
-      .bd { display: block; border-radius: 8px; box-shadow: 0 2px 6px rgba(51, 40, 27, 0.18); max-width: 100%; height: auto; }
-      .g { stroke: #33281b; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-      .edge { fill: none; stroke: #33281b; stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
-      .star { fill: #33281b; }
-      .b { fill: #22252a; }
-      .w { fill: #f7f5ee; stroke: #8f8c80; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-      .lib { fill: #3e6461; fill-opacity: 0.18; stroke: #3e6461; stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
-      .okr { fill: none; stroke: #56764a; stroke-width: 2.5px; vector-effect: non-scaling-stroke; }
-      .hintr { fill: none; stroke: #9a5f22; stroke-width: 2.5px; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: pulse 1.2s ease-in-out infinite; }
-      .errr { fill: #a8443f; fill-opacity: 0.1; stroke: #a8443f; stroke-width: 2px; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
-      .gone { fill: #f7f5ee; fill-opacity: 0.25; stroke: #8f8c80; stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
-      .finger { fill: #26292b; opacity: 0.13; }
-      .lm { fill: #f7f5ee; }
-      .lmd { fill: #33281b; }
-      @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.5; } }
-      @media (prefers-reduced-motion: reduce) { .hintr, .d3 i { animation: none; } }
+      .bd {
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(51, 40, 27, 0.18);
+        max-width: 100%;
+        height: auto;
+      }
+      .g {
+        stroke: #33281b;
+        stroke-width: 1px;
+        vector-effect: non-scaling-stroke;
+      }
+      .edge {
+        fill: none;
+        stroke: #33281b;
+        stroke-width: 1.5px;
+        vector-effect: non-scaling-stroke;
+      }
+      .star {
+        fill: #33281b;
+      }
+      .b {
+        fill: #22252a;
+      }
+      .w {
+        fill: #f7f5ee;
+        stroke: #8f8c80;
+        stroke-width: 1px;
+        vector-effect: non-scaling-stroke;
+      }
+      .lib {
+        fill: #3e6461;
+        fill-opacity: 0.18;
+        stroke: #3e6461;
+        stroke-width: 1.5px;
+        vector-effect: non-scaling-stroke;
+      }
+      .okr {
+        fill: none;
+        stroke: #56764a;
+        stroke-width: 2.5px;
+        vector-effect: non-scaling-stroke;
+      }
+      .hintr {
+        fill: none;
+        stroke: #9a5f22;
+        stroke-width: 2.5px;
+        vector-effect: non-scaling-stroke;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      .errr {
+        fill: #a8443f;
+        fill-opacity: 0.1;
+        stroke: #a8443f;
+        stroke-width: 2px;
+        stroke-dasharray: 5 4;
+        vector-effect: non-scaling-stroke;
+      }
+      .gone {
+        fill: #f7f5ee;
+        fill-opacity: 0.25;
+        stroke: #8f8c80;
+        stroke-width: 1px;
+        stroke-dasharray: 3 3;
+        vector-effect: non-scaling-stroke;
+      }
+      .finger {
+        fill: #26292b;
+        opacity: 0.13;
+      }
+      .lm {
+        fill: #f7f5ee;
+      }
+      .lmd {
+        fill: #33281b;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.5;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hintr,
+        .d3 i {
+          animation: none;
+        }
+      }
     </style>
   </head>
   <body>
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
       <defs>
-        <pattern id="bamboo" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1"><rect width="1" height="1" fill="#E8D3A0"/><rect x="0.0000" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.0833" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.1667" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.2500" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.3333" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.4167" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.5000" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.5833" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.6667" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.7500" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.8333" y="0" width=".0834" height="1" fill="#EEDCAE"/><rect x="0.9167" y="0" width=".0834" height="1" fill="#DEC68C"/><rect x="0.0000" y="0.27" width=".0833" height=".005" fill="#CDB277"/><rect x="0.0833" y="0.55" width=".0833" height=".005" fill="#CDB277"/><rect x="0.1667" y="0.38" width=".0833" height=".005" fill="#CDB277"/><rect x="0.2500" y="0.61" width=".0833" height=".005" fill="#CDB277"/><rect x="0.3333" y="0.64" width=".0833" height=".005" fill="#CDB277"/><rect x="0.5000" y="0.2" width=".0833" height=".005" fill="#CDB277"/><rect x="0.6667" y="0.7" width=".0833" height=".005" fill="#CDB277"/><rect x="0.8333" y="0.47" width=".0833" height=".005" fill="#CDB277"/></pattern>
+        <pattern
+          id="bamboo"
+          patternUnits="objectBoundingBox"
+          patternContentUnits="objectBoundingBox"
+          width="1"
+          height="1"
+        >
+          <rect width="1" height="1" fill="#E8D3A0" />
+          <rect x="0.0000" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.0833" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.1667" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.2500" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.3333" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.4167" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.5000" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.5833" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.6667" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.7500" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.8333" y="0" width=".0834" height="1" fill="#EEDCAE" />
+          <rect x="0.9167" y="0" width=".0834" height="1" fill="#DEC68C" />
+          <rect x="0.0000" y="0.27" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.0833" y="0.55" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.1667" y="0.38" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.2500" y="0.61" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.3333" y="0.64" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.5000" y="0.2" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.6667" y="0.7" width=".0833" height=".005" fill="#CDB277" />
+          <rect x="0.8333" y="0.47" width=".0833" height=".005" fill="#CDB277" />
+        </pattern>
         <g id="grid5">
-          <line class="g" x1="0" y1="0" x2="4" y2="0"/><line class="g" x1="0" y1="1" x2="4" y2="1"/><line class="g" x1="0" y1="2" x2="4" y2="2"/><line class="g" x1="0" y1="3" x2="4" y2="3"/><line class="g" x1="0" y1="4" x2="4" y2="4"/>
-          <line class="g" x1="0" y1="0" x2="0" y2="4"/><line class="g" x1="1" y1="0" x2="1" y2="4"/><line class="g" x1="2" y1="0" x2="2" y2="4"/><line class="g" x1="3" y1="0" x2="3" y2="4"/><line class="g" x1="4" y1="0" x2="4" y2="4"/>
-          <rect class="edge" x="0" y="0" width="4" height="4"/><circle class="star" cx="2" cy="2" r="0.09"/>
+          <line class="g" x1="0" y1="0" x2="4" y2="0" />
+          <line class="g" x1="0" y1="1" x2="4" y2="1" />
+          <line class="g" x1="0" y1="2" x2="4" y2="2" />
+          <line class="g" x1="0" y1="3" x2="4" y2="3" />
+          <line class="g" x1="0" y1="4" x2="4" y2="4" />
+          <line class="g" x1="0" y1="0" x2="0" y2="4" />
+          <line class="g" x1="1" y1="0" x2="1" y2="4" />
+          <line class="g" x1="2" y1="0" x2="2" y2="4" />
+          <line class="g" x1="3" y1="0" x2="3" y2="4" />
+          <line class="g" x1="4" y1="0" x2="4" y2="4" />
+          <rect class="edge" x="0" y="0" width="4" height="4" />
+          <circle class="star" cx="2" cy="2" r="0.09" />
         </g>
-        <symbol id="st1" viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="#9A5F22" stroke="#9A5F22" stroke-width="1.6" stroke-linejoin="round"/></symbol>
-        <symbol id="st0" viewBox="0 0 24 24"><polygon points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8" fill="none" stroke="#CFC8B8" stroke-width="1.6" stroke-linejoin="round"/></symbol>
-        <symbol id="land" viewBox="0 0 360 150" preserveAspectRatio="none"><path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/><path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></symbol>
+        <symbol id="st1" viewBox="0 0 24 24">
+          <polygon
+            points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+            fill="#9A5F22"
+            stroke="#9A5F22"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="st0" viewBox="0 0 24 24">
+          <polygon
+            points="12,2.5 14.9,8.8 21.7,9.5 16.6,14.1 18.1,20.8 12,17.3 5.9,20.8 7.4,14.1 2.3,9.5 9.1,8.8"
+            fill="none"
+            stroke="#CFC8B8"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="land" viewBox="0 0 360 150" preserveAspectRatio="none">
+          <path
+            d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+            fill="#C9D5D6"
+          />
+          <path
+            d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+            fill="#9DB2AE"
+            opacity=".85"
+          />
+        </symbol>
       </defs>
     </svg>
 
     <header class="page">
       <h1>Let's GO — M4 item 2 mockup: Capture Go (吃子棋) vs the bot</h1>
       <p>
-        Unit 6 on the map, the game screen (your turn, bot thinking, atari warning, hint, illegal move),
-        win, lose and lose-after-three-tries, and the result screen. Approved M3/M4 design at 360×740,
-        山水 · 茶 · 竹 colours from <code>src/theme/tokens.ts</code>; no leaves, no confetti. Positions are
-        the hand-verified ones in <code>docs/specs/M4-bot-capture-go.md</code> (§8, §12); the mid-game
-        and end positions follow one legal move sequence for game 3 (listed in each caption).
+        Unit 6 on the map, the game screen (your turn, bot thinking, atari warning, hint, illegal
+        move), win, lose and lose-after-three-tries, and the result screen. Approved M3/M4 design at
+        360×740, 山水 · 茶 · 竹 colours from <code>src/theme/tokens.ts</code>; no leaves, no
+        confetti. Positions are the hand-verified ones in
+        <code>docs/specs/M4-bot-capture-go.md</code> (§8, §12); the mid-game and end positions
+        follow one legal move sequence for game 3 (listed in each caption).
       </p>
     </header>
     <ul class="legend">
-      <li><b>Slots under You / Bot</b>: stones still needed; a filled slot is a captured stone (a white stone for Black's captures).</li>
-      <li><b>Teal border</b> on a score half: whose turn it is. The pill below says it in words.</li>
-      <li><b>Small dot on a stone</b>: the last move. <b>Dashed faint stone</b>: just captured, fading away.</li>
-      <li><b>Amber pulsing ring</b>: hint. <b>Green ring</b>: the winning move. <b>Dashed rouge ring</b>: illegal tap or the move that hurt you (soft, no sound).</li>
+      <li>
+        <b>Slots under You / Bot</b>: stones still needed; a filled slot is a captured stone (a
+        white stone for Black's captures).
+      </li>
+      <li>
+        <b>Teal border</b> on a score half: whose turn it is. The pill below says it in words.
+      </li>
+      <li>
+        <b>Small dot on a stone</b>: the last move. <b>Dashed faint stone</b>: just captured, fading
+        away.
+      </li>
+      <li>
+        <b>Amber pulsing ring</b>: hint. <b>Green ring</b>: the winning move.
+        <b>Dashed rouge ring</b>: illegal tap or the move that hurt you (soft, no sound).
+      </li>
       <li>Static HTML and SVG; the three dots animate in CSS only (off with reduce-motion).</li>
     </ul>
 
@@ -197,43 +864,131 @@
     <div class="grid">
       <figure>
         <div class="phone home" lang="en">
-          <svg class="landscape" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true"><use href="#land"/></svg>
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <use href="#land" />
+          </svg>
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
             <div class="scrollcut">▲ …</div>
-            <div class="cont"><span style="font-size:20px">▶</span><div><b>Continue</b><span>Unit 6 · Capture Go</span></div></div>
+            <div class="cont">
+              <span style="font-size: 20px">▶</span>
+              <div><b>Continue</b><span>Unit 6 · Capture Go</span></div>
+            </div>
             <div class="path">
-              <div class="node"><div class="dot"><i class="done"></i></div><div class="ncard"><div class="nb"><small>Unit 4</small><b>Capture · 提子 tízǐ</b><div class="stars"><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg></div></div><span class="chev">›</span></div></div>
-              <div class="node"><div class="dot"><i class="done"></i></div><div class="ncard"><div class="nb"><small>Unit 5</small><b>Atari &amp; escape · 叫吃 jiàochī</b><div class="stars"><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg><svg><use href="#st0"/></svg></div></div><span class="chev">›</span></div></div>
-              <div class="node sub"><div class="dot"><i class="done"></i></div><div class="ncard"><div class="nb"><small>Checkpoint</small><b>Review</b><div class="stars"><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg></div></div><span class="chev">›</span></div></div>
-              <div class="node"><div class="dot"><i class="avail"></i></div><div class="ncard"><div class="nb"><small>Unit 6</small><b>Capture Go · 吃子棋 chīzǐqí</b></div><span class="chev">›</span></div></div>
-              <div class="node sub"><div class="dot"><i class="lock"></i></div><div class="ncard lock"><div class="nb"><small>Checkpoint</small><b>Capture Go games</b></div><span style="font-size:18px;opacity:.6">🔒</span></div></div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 4</small><b>Capture · 提子 tízǐ</b>
+                    <div class="stars">
+                      <svg><use href="#st1" /></svg><svg><use href="#st1" /></svg
+                      ><svg><use href="#st1" /></svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Unit 5</small><b>Atari &amp; escape · 叫吃 jiàochī</b>
+                    <div class="stars">
+                      <svg><use href="#st1" /></svg><svg><use href="#st1" /></svg
+                      ><svg><use href="#st0" /></svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node sub">
+                <div class="dot"><i class="done"></i></div>
+                <div class="ncard">
+                  <div class="nb">
+                    <small>Checkpoint</small><b>Review</b>
+                    <div class="stars">
+                      <svg><use href="#st1" /></svg><svg><use href="#st1" /></svg
+                      ><svg><use href="#st1" /></svg>
+                    </div>
+                  </div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node">
+                <div class="dot"><i class="avail"></i></div>
+                <div class="ncard">
+                  <div class="nb"><small>Unit 6</small><b>Capture Go · 吃子棋 chīzǐqí</b></div>
+                  <span class="chev">›</span>
+                </div>
+              </div>
+              <div class="node sub">
+                <div class="dot"><i class="lock"></i></div>
+                <div class="ncard lock">
+                  <div class="nb"><small>Checkpoint</small><b>Capture Go games</b></div>
+                  <span style="font-size: 18px; opacity: 0.6">🔒</span>
+                </div>
+              </div>
             </div>
             <div class="more">More units coming soon</div>
           </div>
         </div>
-        <figcaption><b>1 · Map, English — Unit 6 is now playable</b><br>Unit 5 and its review are done, so Unit 6 (ringed dot) is open and is <i>Continue</i>. Its checkpoint (2 games on 7×7) unlocks after 1★. The “coming soon” badge is gone: no Unit 7 row yet, only the footer.</figcaption>
+        <figcaption>
+          <b>1 · Map, English — Unit 6 is now playable</b><br />Unit 5 and its review are done, so
+          Unit 6 (ringed dot) is open and is <i>Continue</i>. Its checkpoint (2 games on 7×7)
+          unlocks after 1★. The “coming soon” badge is gone: no Unit 7 row yet, only the footer.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="dots"><i></i><i class="on"></i><i></i></div><span class="ibtn txt"></span></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="dots"><i></i><i class="on"></i><i></i></div>
+              <span class="ibtn txt"></span>
+            </div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="White plays c4 and captures the black stone on c3">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="2" cy="3" r="0.46"/><circle class="w" cx="2" cy="1" r="0.46"/>
-                <circle class="gone" cx="2" cy="2" r="0.46"/><circle class="lmd" cx="2" cy="1" r="0.14"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="White plays c4 and captures the black stone on c3"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="2" cy="1" r="0.46" />
+                <circle class="gone" cx="2" cy="2" r="0.46" />
+                <circle class="lmd" cx="2" cy="1" r="0.14" />
               </svg>
             </div>
-            <div class="card text">You play Black and move first; the bot plays White. Guard your own stones too: here White plays c4 and captures.</div>
+            <div class="card text">
+              You play Black and move first; the bot plays White. Guard your own stones too: here
+              White plays c4 and captures.
+            </div>
             <div class="replay">↻ Replay</div>
             <div class="spacer"></div>
-            <div class="row"><div class="btn">‹ Back</div><div class="btn primary">Next ›</div></div>
+            <div class="row">
+              <div class="btn">‹ Back</div>
+              <div class="btn primary">Next ›</div>
+            </div>
           </div>
         </div>
-        <figcaption><b>2 · Explanation step 2 (of 3)</b><br>Same player as every unit. The black stone on c3 had one liberty (c4); White plays there and the stone fades. Step 1 shows a capture win; step 3 the four-stone start.</figcaption>
+        <figcaption>
+          <b>2 · Explanation step 2 (of 3)</b><br />Same player as every unit. The black stone on c3
+          had one liberty (c4); White plays there and the stone fades. Step 1 shows a capture win;
+          step 3 the four-stone start.
+        </figcaption>
       </figure>
     </div>
 
@@ -243,18 +998,45 @@
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div><span class="hintbtn">Hint</span></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div>
+              <span class="hintbtn">Hint</span>
+            </div>
             <div class="score">
-              <div class="side on"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot w"></i><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot"></i><i class="slot"></i></div></div>
+              <div class="side on">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot w"></i><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot"></i><i class="slot"></i></div>
+              </div>
             </div>
             <div class="turn"><span class="stn b sm"></span>Your turn</div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="5 by 5 game board, your turn">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="1" cy="2" r="0.46"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="b" cx="0" cy="3" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/>
-                <circle class="w" cx="2" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="4" cy="0" r="0.46"/><circle class="w" cx="3" cy="3" r="0.46"/>
-                <circle class="lmd" cx="3" cy="3" r="0.14"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="5 by 5 game board, your turn"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="1" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="b" cx="0" cy="3" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="w" cx="2" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="4" cy="0" r="0.46" />
+                <circle class="w" cx="3" cy="3" r="0.46" />
+                <circle class="lmd" cx="3" cy="3" r="0.14" />
               </svg>
             </div>
             <div class="card fb empty"></div>
@@ -262,112 +1044,251 @@
             <div class="restart">Restart</div>
           </div>
         </div>
-        <figcaption><b>3 · Your turn, English</b><br>Moves so far (B first): B c4, W d3, B a2, W e5, B b1 (captures b2: You 1/2), W d2. Teal border and pill say it is your turn; White’s last move d2 has the small dark dot. The feedback card is reserved but empty (calm).</figcaption>
+        <figcaption>
+          <b>3 · Your turn, English</b><br />Moves so far (B first): B c4, W d3, B a2, W e5, B b1
+          (captures b2: You 1/2), W d2. Teal border and pill say it is your turn; White’s last move
+          d2 has the small dark dot. The feedback card is reserved but empty (calm).
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div><span class="hintbtn">Hint</span></div>
-            <div class="score">
-              <div class="side"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot w"></i><i class="slot"></i></div></div>
-              <div class="side on"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot"></i><i class="slot"></i></div></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div>
+              <span class="hintbtn">Hint</span>
             </div>
-            <div class="turn wait"><span class="stn w sm"></span>Bot is thinking<span class="d3"><i></i><i></i><i></i></span></div>
+            <div class="score">
+              <div class="side">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot w"></i><i class="slot"></i></div>
+              </div>
+              <div class="side on">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot"></i><i class="slot"></i></div>
+              </div>
+            </div>
+            <div class="turn wait">
+              <span class="stn w sm"></span>Bot is thinking<span class="d3"
+                ><i></i><i></i><i></i
+              ></span>
+            </div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="5 by 5 game board, the bot is thinking">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="1" cy="2" r="0.46"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="b" cx="0" cy="3" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/>
-                <circle class="w" cx="2" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="4" cy="0" r="0.46"/>
-                <circle class="gone" cx="1" cy="3" r="0.46"/><circle class="lm" cx="1" cy="4" r="0.14"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="5 by 5 game board, the bot is thinking"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="1" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="b" cx="0" cy="3" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="w" cx="2" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="4" cy="0" r="0.46" />
+                <circle class="gone" cx="1" cy="3" r="0.46" />
+                <circle class="lm" cx="1" cy="4" r="0.14" />
               </svg>
             </div>
-            <div class="card fb"><i class="ok"></i><div>You captured 1.</div></div>
+            <div class="card fb">
+              <i class="ok"></i>
+              <div>You captured 1.</div>
+            </div>
             <div class="spacer"></div>
             <div class="restart">Restart</div>
           </div>
         </div>
-        <figcaption><b>4 · Bot thinking (700 ms)</b><br>You just played b1 and captured b2 (dashed, fading). The half on the bot’s side has the border, the pill is greyed with three soft dots, the board ignores touches. No spinner, no blur. The reply appears after the pause.</figcaption>
+        <figcaption>
+          <b>4 · Bot thinking (700 ms)</b><br />You just played b1 and captured b2 (dashed, fading).
+          The half on the bot’s side has the border, the pill is greyed with three soft dots, the
+          board ignores touches. No spinner, no blur. The reply appears after the pause.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="c"></i><i></i></div><span class="hintbtn">Hint</span></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="c"></i><i></i></div>
+              <span class="hintbtn">Hint</span>
+            </div>
             <div class="score">
-              <div class="side on"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot"></i></div></div>
+              <div class="side on">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
             </div>
             <div class="turn"><span class="stn b sm"></span>Your turn</div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Your stone on c3 is in atari">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="lib" cx="2" cy="1" r="0.4"/>
-                <circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="3" cy="3" r="0.46"/><circle class="b" cx="4" cy="4" r="0.46"/>
-                <circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="2" cy="3" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/>
-                <circle class="lmd" cx="1" cy="2" r="0.14"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Your stone on c3 is in atari"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="lib" cx="2" cy="1" r="0.4" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="3" cy="3" r="0.46" />
+                <circle class="b" cx="4" cy="4" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="lmd" cx="1" cy="2" r="0.14" />
               </svg>
             </div>
-            <div class="card fb"><i class="hint"></i><div>Atari! Your stone at c3 has one liberty left: c4.</div></div>
+            <div class="card fb">
+              <i class="hint"></i>
+              <div>Atari! Your stone at c3 has one liberty left: c4.</div>
+            </div>
             <div class="spacer"></div>
             <div class="restart">Restart</div>
           </div>
         </div>
-        <figcaption><b>5 · Atari warning (reading help)</b><br>Game 2 (first to 1): B e1, W b3. The engine finds that Black c3 has one liberty; the liberty is shown in teal and the card names it. This is the same position as the lose screen below, one move earlier.</figcaption>
+        <figcaption>
+          <b>5 · Atari warning (reading help)</b><br />Game 2 (first to 1): B e1, W b3. The engine
+          finds that Black c3 has one liberty; the liberty is shown in teal and the card names it.
+          This is the same position as the lose screen below, one move earlier.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="zh-CN">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div><span class="hintbtn on">提示</span></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div>
+              <span class="hintbtn on">提示</span>
+            </div>
             <div class="score">
-              <div class="side on"><span class="stn b"></span><div class="lab"><b>你</b><small>黑棋</small></div><div class="slots"><i class="slot w"></i><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>机器人</b><small>白棋</small></div><div class="slots"><i class="slot"></i><i class="slot"></i></div></div>
+              <div class="side on">
+                <span class="stn b"></span>
+                <div class="lab"><b>你</b><small>黑棋</small></div>
+                <div class="slots"><i class="slot w"></i><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>机器人</b><small>白棋</small></div>
+                <div class="slots"><i class="slot"></i><i class="slot"></i></div>
+              </div>
             </div>
             <div class="turn"><span class="stn b sm"></span>轮到你了</div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="提示：下在 d5">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="1" cy="2" r="0.46"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="b" cx="0" cy="3" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/>
-                <circle class="w" cx="2" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="4" cy="0" r="0.46"/><circle class="w" cx="3" cy="3" r="0.46"/>
-                <circle class="lmd" cx="3" cy="3" r="0.14"/><circle class="hintr" cx="3" cy="0" r="0.5"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="提示：下在 d5"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="1" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="b" cx="0" cy="3" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="w" cx="2" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="4" cy="0" r="0.46" />
+                <circle class="w" cx="3" cy="3" r="0.46" />
+                <circle class="lmd" cx="3" cy="3" r="0.14" />
+                <circle class="hintr" cx="3" cy="0" r="0.5" />
               </svg>
             </div>
-            <div class="card fb"><i class="hint"></i><div>叫吃对方的同时，数一数自己棋子的气。<small>下在 d5，可以叫吃白棋。</small></div></div>
+            <div class="card fb">
+              <i class="hint"></i>
+              <div>叫吃对方的同时，数一数自己棋子的气。<small>下在 d5，可以叫吃白棋。</small></div>
+            </div>
             <div class="spacer"></div>
             <div class="restart">重新开始</div>
           </div>
         </div>
-        <figcaption><b>6 · Hint open, 中文 (same position as 3)</b><br>Two lines: the lesson tip, then the engine’s own best move by the bot’s rules (here d5, which leaves White e5 with only e4). Amber pulse on d5. The hint costs the first-try credit. No pinyin in zh-CN.</figcaption>
+        <figcaption>
+          <b>6 · Hint open, 中文 (same position as 3)</b><br />Two lines: the lesson tip, then the
+          engine’s own best move by the bot’s rules (here d5, which leaves White e5 with only e4).
+          Amber pulse on d5. The hint costs the first-try credit. No pinyin in zh-CN.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="c"></i><i></i></div><span class="hintbtn">Hint</span></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="c"></i><i></i></div>
+              <span class="hintbtn">Hint</span>
+            </div>
             <div class="score">
-              <div class="side on"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot"></i></div></div>
+              <div class="side on">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
             </div>
             <div class="turn"><span class="stn b sm"></span>Your turn</div>
             <div class="boardwrap">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="a1 is not allowed">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="2" cy="2" r="0.46"/><circle class="b" cx="3" cy="1" r="0.46"/>
-                <circle class="w" cx="0" cy="3" r="0.46"/><circle class="w" cx="1" cy="4" r="0.46"/>
-                <circle class="finger" cx="0" cy="4" r="0.7"/><circle class="errr" cx="0" cy="4" r="0.46"/>
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="a1 is not allowed"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="2" cy="2" r="0.46" />
+                <circle class="b" cx="3" cy="1" r="0.46" />
+                <circle class="w" cx="0" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="4" r="0.46" />
+                <circle class="finger" cx="0" cy="4" r="0.7" />
+                <circle class="errr" cx="0" cy="4" r="0.46" />
               </svg>
             </div>
-            <div class="card fb"><i class="err"></i><div>Not allowed: that stone would have no liberties and capture nothing.</div></div>
+            <div class="card fb">
+              <i class="err"></i>
+              <div>Not allowed: that stone would have no liberties and capture nothing.</div>
+            </div>
             <div class="spacer"></div>
             <div class="restart">Restart</div>
           </div>
         </div>
-        <figcaption><b>7 · Illegal tap (suicide)</b><br>Illustrative position: White a2 and b1 surround the corner a1 and nothing is captured. The stone is not placed, the turn stays yours, no mistake is counted, no sound. The ko message is the same card with different words. (Ko and suicide are not named: they are Units 7–8.)</figcaption>
+        <figcaption>
+          <b>7 · Illegal tap (suicide)</b><br />Illustrative position: White a2 and b1 surround the
+          corner a1 and nothing is captured. The stone is not placed, the turn stays yours, no
+          mistake is counted, no sound. The ko message is the same card with different words. (Ko
+          and suicide are not named: they are Units 7–8.)
+        </figcaption>
       </figure>
     </div>
 
@@ -377,76 +1298,203 @@
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div><span class="hintbtn" style="opacity:.45">Hint</span></div>
-            <div class="score">
-              <div class="side"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot w"></i><i class="slot w"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot"></i><i class="slot"></i></div></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="d"></i><i class="c"></i></div>
+              <span class="hintbtn" style="opacity: 0.45">Hint</span>
             </div>
-            <div class="boardwrap" style="margin-top:44px">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="You captured two stones and win">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="1" cy="2" r="0.46"/><circle class="b" cx="2" cy="3" r="0.46"/><circle class="b" cx="2" cy="1" r="0.46"/><circle class="b" cx="0" cy="3" r="0.46"/><circle class="b" cx="1" cy="4" r="0.46"/><circle class="b" cx="3" cy="0" r="0.46"/><circle class="b" cx="4" cy="1" r="0.46"/>
-                <circle class="w" cx="2" cy="2" r="0.46"/><circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="3" cy="3" r="0.46"/><circle class="w" cx="4" cy="2" r="0.46"/>
-                <circle class="gone" cx="4" cy="0" r="0.46"/><circle class="lm" cx="4" cy="1" r="0.14"/><circle class="okr" cx="4" cy="1" r="0.5"/>
+            <div class="score">
+              <div class="side">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot w"></i><i class="slot w"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot"></i><i class="slot"></i></div>
+              </div>
+            </div>
+            <div class="boardwrap" style="margin-top: 44px">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="You captured two stones and win"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="1" cy="2" r="0.46" />
+                <circle class="b" cx="2" cy="3" r="0.46" />
+                <circle class="b" cx="2" cy="1" r="0.46" />
+                <circle class="b" cx="0" cy="3" r="0.46" />
+                <circle class="b" cx="1" cy="4" r="0.46" />
+                <circle class="b" cx="3" cy="0" r="0.46" />
+                <circle class="b" cx="4" cy="1" r="0.46" />
+                <circle class="w" cx="2" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="3" cy="3" r="0.46" />
+                <circle class="w" cx="4" cy="2" r="0.46" />
+                <circle class="gone" cx="4" cy="0" r="0.46" />
+                <circle class="lm" cx="4" cy="1" r="0.14" />
+                <circle class="okr" cx="4" cy="1" r="0.5" />
               </svg>
             </div>
-            <div class="card end"><i class="dot ok"></i><div><h4>You win!</h4><p>You captured 2 stones first.</p><small>You captured two stones before the bot did.</small></div></div>
+            <div class="card end">
+              <i class="dot ok"></i>
+              <div>
+                <h4>You win!</h4>
+                <p>You captured 2 stones first.</p>
+                <small>You captured two stones before the bot did.</small>
+              </div>
+            </div>
             <div class="spacer"></div>
             <div class="row"><div class="btn primary">Finish</div></div>
           </div>
         </div>
-        <figcaption><b>8 · Win card</b><br>Continues 3: W e3 after B d5 (bot ignores the atari), then B e4 captures e5 (dashed): 2/2. The card replaces the turn pill and feedback; one sentence from the lesson’s <code>explainKey</code>; one obvious button (<i>Next game</i>, or <i>Finish</i> on the last game). Appears 600 ms after the capture.</figcaption>
+        <figcaption>
+          <b>8 · Win card</b><br />Continues 3: W e3 after B d5 (bot ignores the atari), then B e4
+          captures e5 (dashed): 2/2. The card replaces the turn pill and feedback; one sentence from
+          the lesson’s <code>explainKey</code>; one obvious button (<i>Next game</i>, or
+          <i>Finish</i> on the last game). Appears 600 ms after the capture.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="en">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="c"></i><i></i></div><span class="hintbtn" style="opacity:.45">Hint</span></div>
-            <div class="score">
-              <div class="side"><span class="stn b"></span><div class="lab"><b>You</b><small>Black</small></div><div class="slots"><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Bot</b><small>White</small></div><div class="slots"><i class="slot k"></i></div></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="c"></i><i></i></div>
+              <span class="hintbtn" style="opacity: 0.45">Hint</span>
             </div>
-            <div class="boardwrap" style="margin-top:44px">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="White captured your stone on c3">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="3" cy="3" r="0.46"/><circle class="b" cx="4" cy="4" r="0.46"/><circle class="b" cx="1" cy="1" r="0.46"/>
-                <circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="2" cy="3" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="2" cy="1" r="0.46"/>
-                <circle class="gone" cx="2" cy="2" r="0.46"/><circle class="lmd" cx="2" cy="1" r="0.14"/><circle class="errr" cx="2" cy="1" r="0.5"/>
+            <div class="score">
+              <div class="side">
+                <span class="stn b"></span>
+                <div class="lab"><b>You</b><small>Black</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Bot</b><small>White</small></div>
+                <div class="slots"><i class="slot k"></i></div>
+              </div>
+            </div>
+            <div class="boardwrap" style="margin-top: 44px">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="White captured your stone on c3"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="3" cy="3" r="0.46" />
+                <circle class="b" cx="4" cy="4" r="0.46" />
+                <circle class="b" cx="1" cy="1" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="1" r="0.46" />
+                <circle class="gone" cx="2" cy="2" r="0.46" />
+                <circle class="lmd" cx="2" cy="1" r="0.14" />
+                <circle class="errr" cx="2" cy="1" r="0.5" />
               </svg>
             </div>
-            <div class="card end"><i class="dot err"></i><div><h4>Not this time</h4><p>The bot captured 1 first.</p><small>Your stone at c3 had one liberty (c4) and the bot filled it. Look for atari on your own stones too.</small></div></div>
+            <div class="card end">
+              <i class="dot err"></i>
+              <div>
+                <h4>Not this time</h4>
+                <p>The bot captured 1 first.</p>
+                <small
+                  >Your stone at c3 had one liberty (c4) and the bot filled it. Look for atari on
+                  your own stones too.</small
+                >
+              </div>
+            </div>
             <div class="spacer"></div>
             <div class="row"><div class="btn primary">Try again</div></div>
           </div>
         </div>
-        <figcaption><b>9 · Lose card (first loss)</b><br>Game 2 continues from 5: B b4 (ignores the atari), W c4 captures c3. The rouge dashed ring marks the move that did it; the fact sentence comes from the engine (the captured group’s last liberty). The next try is a new game with a slightly gentler bot. No “wrong”, no red flash.</figcaption>
+        <figcaption>
+          <b>9 · Lose card (first loss)</b><br />Game 2 continues from 5: B b4 (ignores the atari),
+          W c4 captures c3. The rouge dashed ring marks the move that did it; the fact sentence
+          comes from the engine (the captured group’s last liberty). The next try is a new game with
+          a slightly gentler bot. No “wrong”, no red flash.
+        </figcaption>
       </figure>
 
       <figure>
         <div class="phone" lang="fr">
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
-            <div class="topbar"><span class="ibtn">✕</span><div class="segs"><i class="d"></i><i class="c"></i><i></i></div><span class="hintbtn" style="opacity:.45">Indice</span></div>
-            <div class="score">
-              <div class="side"><span class="stn b"></span><div class="lab"><b>Vous</b><small>Noirs</small></div><div class="slots"><i class="slot"></i></div></div>
-              <div class="side"><span class="stn w"></span><div class="lab"><b>Robot</b><small>Blancs</small></div><div class="slots"><i class="slot k"></i></div></div>
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs"><i class="d"></i><i class="c"></i><i></i></div>
+              <span class="hintbtn" style="opacity: 0.45">Indice</span>
             </div>
-            <div class="boardwrap" style="margin-top:44px">
-              <svg class="bd" width="328" height="328" viewBox="-0.55 -0.55 5.1 5.1" role="img" aria-label="Les Blancs ont capturé votre pierre en c3">
-                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)"/><use href="#grid5"/>
-                <circle class="b" cx="3" cy="3" r="0.46"/><circle class="b" cx="4" cy="4" r="0.46"/><circle class="b" cx="1" cy="1" r="0.46"/>
-                <circle class="w" cx="3" cy="2" r="0.46"/><circle class="w" cx="2" cy="3" r="0.46"/><circle class="w" cx="1" cy="2" r="0.46"/><circle class="w" cx="2" cy="1" r="0.46"/>
-                <circle class="gone" cx="2" cy="2" r="0.46"/><circle class="lmd" cx="2" cy="1" r="0.14"/><circle class="errr" cx="2" cy="1" r="0.5"/>
+            <div class="score">
+              <div class="side">
+                <span class="stn b"></span>
+                <div class="lab"><b>Vous</b><small>Noirs</small></div>
+                <div class="slots"><i class="slot"></i></div>
+              </div>
+              <div class="side">
+                <span class="stn w"></span>
+                <div class="lab"><b>Robot</b><small>Blancs</small></div>
+                <div class="slots"><i class="slot k"></i></div>
+              </div>
+            </div>
+            <div class="boardwrap" style="margin-top: 44px">
+              <svg
+                class="bd"
+                width="328"
+                height="328"
+                viewBox="-0.55 -0.55 5.1 5.1"
+                role="img"
+                aria-label="Les Blancs ont capturé votre pierre en c3"
+              >
+                <rect x="-0.55" y="-0.55" width="5.1" height="5.1" fill="url(#bamboo)" />
+                <use href="#grid5" />
+                <circle class="b" cx="3" cy="3" r="0.46" />
+                <circle class="b" cx="4" cy="4" r="0.46" />
+                <circle class="b" cx="1" cy="1" r="0.46" />
+                <circle class="w" cx="3" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="3" r="0.46" />
+                <circle class="w" cx="1" cy="2" r="0.46" />
+                <circle class="w" cx="2" cy="1" r="0.46" />
+                <circle class="gone" cx="2" cy="2" r="0.46" />
+                <circle class="lmd" cx="2" cy="1" r="0.14" />
+                <circle class="errr" cx="2" cy="1" r="0.5" />
               </svg>
             </div>
-            <div class="card end" style="min-height:150px"><i class="dot err"></i><div><h4>Pas cette fois</h4><p>Le robot a capturé 1 pierre en premier.</p><small>Vos pierres en c3 n'avaient plus qu'une liberté (c4) et le robot l'a remplie.</small></div></div>
+            <div class="card end" style="min-height: 150px">
+              <i class="dot err"></i>
+              <div>
+                <h4>Pas cette fois</h4>
+                <p>Le robot a capturé 1 pierre en premier.</p>
+                <small
+                  >Vos pierres en c3 n'avaient plus qu'une liberté (c4) et le robot l'a
+                  remplie.</small
+                >
+              </div>
+            </div>
             <div class="spacer"></div>
             <div class="row"><div class="btn primary">Réessayer</div></div>
-            <div class="btn text" style="margin-top:4px;flex:none">Passer cette partie</div>
+            <div class="btn text" style="margin-top: 4px; flex: none">Passer cette partie</div>
           </div>
         </div>
-        <figcaption><b>10 · Lose card after the third loss, Français</b><br>Same card, plus the text button <i>Passer cette partie</i> (Skip this game, 44 px). By now the bot is at base + 0.45 blunder, so <i>Réessayer</i> is usually a win. Skipping counts as “answer shown” for the stars and never blocks the way.</figcaption>
+        <figcaption>
+          <b>10 · Lose card after the third loss, Français</b><br />Same card, plus the text button
+          <i>Passer cette partie</i> (Skip this game, 44 px). By now the bot is at base + 0.45
+          blunder, so <i>Réessayer</i> is usually a win. Skipping counts as “answer shown” for the
+          stars and never blocks the way.
+        </figcaption>
       </figure>
 
       <figure>
@@ -454,14 +1502,26 @@
           <div class="status"><span>9:41</span><span>▮▮▮</span></div>
           <div class="content">
             <div class="res">
-              <div class="st"><svg><use href="#st1"/></svg><svg><use href="#st1"/></svg><svg><use href="#st0"/></svg></div>
+              <div class="st">
+                <svg><use href="#st1" /></svg><svg><use href="#st1" /></svg
+                ><svg><use href="#st0" /></svg>
+              </div>
               <h3>Well done</h3>
               <p>2 of 3 games won on the first try</p>
-              <div class="acts"><div class="btn primary">Next lesson</div><div class="btn">Practice again</div><div class="btn text">Back to map</div></div>
+              <div class="acts">
+                <div class="btn primary">Next lesson</div>
+                <div class="btn">Practice again</div>
+                <div class="btn text">Back to map</div>
+              </div>
             </div>
           </div>
         </div>
-        <figcaption><b>11 · Lesson result, 2★</b><br>Same screen as M3. Subtitle uses the games wording (<code>result.gamesFirstTry</code>). One loss before a win gives “solved”, so 3 games → 2★ at best. Primary button leads to the Unit 6 checkpoint (after the checkpoint: <i>Back to map</i>).</figcaption>
+        <figcaption>
+          <b>11 · Lesson result, 2★</b><br />Same screen as M3. Subtitle uses the games wording
+          (<code>result.gamesFirstTry</code>). One loss before a win gives “solved”, so 3 games → 2★
+          at best. Primary button leads to the Unit 6 checkpoint (after the checkpoint:
+          <i>Back to map</i>).
+        </figcaption>
       </figure>
     </div>
   </body>

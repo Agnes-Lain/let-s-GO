@@ -75,9 +75,9 @@ export function libertyVertices(state: GameState, at: Vertex): Vertex[] | null {
   return group ? group.liberties.map((p) => toVertex(p, state.board.size)) : null;
 }
 
-export function getSolution(
-  exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise,
-): { points: Vertex[] };
+export function getSolution(exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise): {
+  points: Vertex[];
+};
 export function getSolution(exercise: ChoiceExercise): { index: number };
 export function getSolution(exercise: CountExercise): { value: number };
 export function getSolution(exercise: Exercise): Solution;
