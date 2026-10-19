@@ -157,7 +157,14 @@ describe('turns and the bot delay (AC 43–45)', () => {
     await tap('a1');
     const dots = screen.getAllByTestId('game-thinking-dots')[0];
     const opacities = dots.children.map(
-      (d) => StyleSheet.flatten((d as { props: { style: unknown } }).props.style as never).opacity,
+      (d) =>
+        (
+          StyleSheet.flatten(
+            (d as unknown as { props: { style: unknown } }).props.style as never,
+          ) as {
+            opacity?: unknown;
+          }
+        ).opacity,
     );
     expect(opacities.every((o) => typeof o === 'number')).toBe(true);
     await advance(BOT_DELAY_REDUCED_MS - 1);
