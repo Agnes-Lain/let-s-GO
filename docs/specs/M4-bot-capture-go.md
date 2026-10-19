@@ -675,3 +675,40 @@ Units 7+; new board features.
 ## 15. PO decisions (2026-10-17)
 The PO approved the spec and the mockup and accepted **every recommended default in §14** (Q1–Q15).
 Q15: the developer measures the five `blunder` values against AC 64; the PO approves the final numbers before merge.
+
+## 16. AC 64 tuning report (developer, 2026-10-19) — awaiting PO approval
+Measured with `npm run tune:bot` (`scripts/bot-tuning.tune.ts`, own Jest config, not part of `npm test`):
+every Unit 6 game from its lesson JSON, seeds 1–200, learners *Sensible* and *Noob* (AC 64). No game threw
+or exceeded `maxMoves` (AC 65, hard check).
+
+**A. The provisional §8 values (0.7 / 0.5 / 0.4 / 0.3 / 0.2)** — Noob is far below target in G2–G5
+(G4 2.5%, G5 0.5%): a real beginner would lose almost every 7×7 game on the first try.
+| Game | blunder | Sensible wins (target) | Noob wins (target) |
+|---|---|---|---|
+| G1 | 0.7 | 100% (≥95) | 100% (≥70) |
+| G2 | 0.5 | 95.5% (≥80) | **24%** (40–70) |
+| G3 | 0.4 | 97% (≥75) | **14%** (30–60) |
+| G4 | 0.3 | 79% (70–90) | **2.5%** (20–50) |
+| G5 | 0.2 | 71% (60–85) | **0.5%** (10–40) |
+
+**B. Proposed values, now in the JSON (0.7 / 0.75 / 0.7 / 0.75 / 0.75)** — Noob in range everywhere;
+Sensible above the upper bound in G4/G5.
+| Game | blunder | Sensible wins (target) | Noob wins (target) | Avg plies Sensible / Noob (estimate) |
+|---|---|---|---|---|
+| G1 `first-capture` | 0.7 | 100% (≥95) | 100% (≥70) | 1.0 / 1.0 (2–6) |
+| G2 `crosscut-first` | 0.75 | 99.5% (≥80) | 42.5% (40–70) | 3.8 / 6.3 (8–16) |
+| G3 `crosscut-two` | 0.7 | 98.5% (≥75) | 37.5% (30–60) | 7.8 / 11.3 (12–24) |
+| G4 `seven-two` | 0.75 | **99.5%** (70–90) | 27% (20–50) | 9.9 / 17.5 (16–34) |
+| G5 `seven-white` | 0.75 | **99%** (60–85) | 17.5% (10–40) | 15.7 / 23.4 (24–50) |
+
+**Why both ranges cannot hold in G4/G5:** the Noob floor needs blunder ≥ ~0.7 (G4 0.7 → 21%), but Sensible
+passes 90% already at 0.5 (G4 92.5%, Noob 6.5%). We chose the Noob floor because a real beginner sits
+between the two (§6.5) and losing is the bigger risk for motivation; Sensible winning ~99% is fine — it is the
+"has learned the habits" player. The automatic ease (+0.15 per loss) brings every game to 0.9 after one loss.
+
+**Game length (AC 65 ±30%):** the §6.5 ply estimates are too high: G1 is a 1-ply forced win (the learner
+captures at once) and Sensible wins G2–G4 quickly. All other numbers are within the move limit
+(longest game 43 of 98 plies). Proposal: accept the measured lengths as the new estimates.
+
+**PO decision needed:** approve B (or ask for a different trade-off, e.g. G4/G5 = 0.6: Sensible 97%,
+Noob 13.5% / 8%).
