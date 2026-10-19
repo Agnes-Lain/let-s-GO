@@ -35,7 +35,21 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   **Pending: the PO's iPhone play-through of units 1–5.**
 
 ## Next
-- **M4 item 2:** beginner bot v1 (heuristic) + Capture Go 吃子棋 (Unit 6) — separate spec/PR.
+- **M4 item 2 — IN PROGRESS (handed over to local development, 2026-10-19).** Branch
+  `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
+  (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.
+  - Done (committed): `src/bot` (seeded RNG, level-1 heuristic, Capture Go rules, analysis, tests).
+  - Work in progress (committed as WIP, not reviewed): `play-bot` schema + validator
+    (`validate.bot/runaway` tests), `src/exercises/botGame.ts` + `runners/PlayBotRunner.tsx`,
+    `ExerciseTopBar.tsx`, Unit 6 JSON (`u06-capture-go`, `u06-checkpoint`), i18n, map/result changes,
+    `__tests__/m4-unit-6.test.ts`. The developer stopped while writing content JSON + i18n strings.
+  - State at handover: lint ✓, jest 71 suites / 1846 tests ✓, **typecheck ✗** — 2 errors in
+    `src/exercises/runners/PlayBotRunner.test.tsx:160` (cast through `unknown`).
+  - `src/bot/__scratch__/` = the developer's win-rate measurement/profiling tests (AC 64); turn
+    into a proper script or delete before the PR.
+  - Still to do: finish/check content + i18n against spec §8/§11, fix typecheck, AC 64 blunder
+    tuning (report table to PO for approval), web check + screenshots (`docs/screenshots/M4/`),
+    QA pass, tick roadmap, PR.
 
 ## Known follow-ups (minor, not scheduled)
 - M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is

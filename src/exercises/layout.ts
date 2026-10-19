@@ -50,3 +50,14 @@ export function practiceBoardWidth(
       return Math.max(0, Math.min(base, free));
   }
 }
+
+/**
+ * Capture Go screen budget (M4 item 2 §5.2) in its tallest state, the end card: top bar 52,
+ * score 56 + 8, turn-pill slot 36 + 8, gap 8, end card 132, gap 8, button 48, bottom padding 16.
+ */
+export const GAME_FIXED_HEIGHT = 52 + 64 + 44 + 8 + 132 + 8 + 48 + 16;
+
+/** Board width on the game screen: the M2 rule, limited by the free height (328 px at 360×740). */
+export function gameBoardWidth(window: { width: number; height: number }): number {
+  return Math.max(0, Math.min(boardWidthFor(window.width), window.height - GAME_FIXED_HEIGHT));
+}

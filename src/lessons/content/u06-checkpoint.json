@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "id": "u06-checkpoint",
+  "unit": 6,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u06-checkpoint.title",
+  "exercises": [
+    {
+      "id": "seven-two",
+      "type": "play-bot",
+      "size": 7,
+      "setup": { "B": ["d4", "e3"], "W": ["e4", "d3"] },
+      "win": { "kind": "captureN", "n": 2 },
+      "bot": { "level": 1, "blunder": 0.75 },
+      "promptKey": "lesson.u06-checkpoint.e1.prompt",
+      "hintKey": "lesson.u06-checkpoint.e1.hint",
+      "explainKey": "lesson.u06-checkpoint.e1.explain"
+    },
+    {
+      "id": "seven-white",
+      "type": "play-bot",
+      "size": 7,
+      "setup": { "B": ["c4", "d3"], "W": ["d4", "c3"] },
+      "player": "W",
+      "win": { "kind": "captureN", "n": 3 },
+      "bot": { "level": 1, "blunder": 0.75 },
+      "promptKey": "lesson.u06-checkpoint.e2.prompt",
+      "hintKey": "lesson.u06-checkpoint.e2.hint",
+      "explainKey": "lesson.u06-checkpoint.e2.explain"
+    }
+  ]
+}

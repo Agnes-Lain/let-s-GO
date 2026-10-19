@@ -17,6 +17,7 @@ import type {
   CountExercise,
   Exercise,
   Goal,
+  PlayBotExercise,
   PlayMoveExercise,
   PositionDef,
   Solution,
@@ -74,7 +75,9 @@ export function libertyVertices(state: GameState, at: Vertex): Vertex[] | null {
   return group ? group.liberties.map((p) => toVertex(p, state.board.size)) : null;
 }
 
-export function getSolution(exercise: TapPointExercise | PlayMoveExercise): { points: Vertex[] };
+export function getSolution(
+  exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise,
+): { points: Vertex[] };
 export function getSolution(exercise: ChoiceExercise): { index: number };
 export function getSolution(exercise: CountExercise): { value: number };
 export function getSolution(exercise: Exercise): Solution;
@@ -92,6 +95,9 @@ export function getSolution(exercise: Exercise): Solution {
       if (typeof answer === 'number') return { value: answer };
       return { value: libertyVertices(startState(exercise), answer.libertiesOf)?.length ?? 0 };
     }
+    case 'play-bot':
+      // A game has no fixed answer: the hint point is computed live by the bot (spec §5.5).
+      return { points: [] };
   }
 }
 
@@ -109,6 +115,7 @@ export function solutionPoints(exercise: Exercise): Vertex[] {
         ? []
         : (libertyVertices(startState(exercise), exercise.answer.libertiesOf) ?? []);
     case 'choice':
+    case 'play-bot':
       return [];
   }
 }
@@ -135,4 +142,27 @@ export function playAs(state: GameState, color: 'B' | 'W', at: Vertex): PlayResu
 /** Whether `state.toPlay` may play at `at`. */
 export function isLegalMove(state: GameState, at: Vertex): boolean {
   return checkMove(state, at).legal;
+}
+
+/** Whether `state.toPlay` has at least one legal point (play-bot rule BOT_NO_MOVE). */
+export function hasLegalMove(state: GameState): boolean {
+  return legalMoves(state).length > 0;
+}
+
+/**
+ * Play-bot rule BOT_START_LOST (spec §7.2), for "first to capture 1" with the learner to move:
+ * true when every legal learner move captures nothing and lets the bot capture at once.
+ * 2-ply exhaustive (at most 81 × 81 plays on 9×9).
+ */
+export function lostBeforeStart(state: GameState): boolean {
+  return legalMoves(state).every((point) => {
+    const result = play(state, point);
+    if (!result.ok) return true;
+    if (capturedCount(result.facts) > 0) return false; // the learner wins at once
+    const reply = result.state;
+    return legalMoves(reply).some((p) => {
+      const answer = play(reply, p);
+      return answer.ok && capturedCount(answer.facts) > 0;
+    });
+  });
 }

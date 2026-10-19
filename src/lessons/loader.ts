@@ -13,8 +13,11 @@ export interface ListOptions {
   includeDev?: boolean;
 }
 
-/** Units shown as "coming soon" until their content exists (§4.6). */
-export const PLANNED_UNITS: readonly number[] = [6];
+/**
+ * Units shown as "coming soon" until their content exists (§4.6). Empty since Unit 6 shipped
+ * (M4 item 2): the map ends with the "More units coming soon" footer until M5 content exists.
+ */
+export const PLANNED_UNITS: readonly number[] = [];
 
 export interface LessonLoader {
   loadLesson(id: string, opts?: ListOptions): LoadResult;

@@ -2,11 +2,15 @@
 // rule-free; runners ask here whether a move is legal and what it did.
 import {
   checkMove,
+  legalMoves,
+  pass,
   play,
   type CheckResult,
   type GameState,
   type IllegalReason,
+  type Move,
   type MoveFacts,
+  type PlayResult,
   type Point,
 } from '@/engine';
 import { goalMet, startState, type PlayMoveExercise } from '@/lessons';
@@ -50,4 +54,22 @@ export function judgePlayMove(
     correct,
     lines: correct ? [] : playMoveFeedback(exercise.goal, result.facts),
   };
+}
+
+/** Plays or passes for `state.toPlay` (Capture Go games, src/exercises/botGame.ts). */
+export function applyGameMove(
+  state: GameState,
+  move: Move,
+): { ok: true; state: GameState; facts: MoveFacts | null } | { ok: false; reason: IllegalReason } {
+  if (move.type === 'pass') {
+    const result = pass(state);
+    return result.ok ? { ok: true, state: result.state, facts: null } : result;
+  }
+  const result: PlayResult = play(state, move.point);
+  return result.ok ? { ok: true, state: result.state, facts: result.facts } : result;
+}
+
+/** Whether `state.toPlay` has a legal point to play. */
+export function hasLegalPoint(state: GameState): boolean {
+  return legalMoves(state).length > 0;
 }

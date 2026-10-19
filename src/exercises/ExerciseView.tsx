@@ -2,20 +2,11 @@
 // Remounted for every exercise, so each one starts with fresh attempts.
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  AccessibilityInfo,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { AccessibilityInfo, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Exercise, Lesson, Outcome } from '@/lessons';
-import { IconButton } from '@/theme/Button';
-import { CloseIcon } from '@/theme/icons';
-import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
+import type { Exercise, Lesson, Outcome, PlayBotExercise } from '@/lessons';
+import { color, radius, spacing, typography } from '@/theme/tokens';
 
 import {
   INITIAL_ATTEMPTS,
@@ -25,9 +16,11 @@ import {
   type AttemptState,
 } from './attempts';
 import type { FeedbackText, FrameAction } from './ExerciseFrame';
+import { ExerciseTopBar } from './ExerciseTopBar';
 import { practiceBoardWidth } from './layout';
 import { ChoiceRunner } from './runners/ChoiceRunner';
 import { CountRunner } from './runners/CountRunner';
+import { PlayBotRunner } from './runners/PlayBotRunner';
 import { PlayMoveRunner } from './runners/PlayMoveRunner';
 import { TapPointRunner } from './runners/TapPointRunner';
 
@@ -41,7 +34,7 @@ type Props = {
 type T = ReturnType<typeof useTranslation>['t'];
 
 /** The feedback card's sentences for the current attempt state (spec §6.3 table). */
-function feedbackFor(exercise: Exercise, attempts: AttemptState, t: T): FeedbackText[] {
+function feedbackFor(exercise: MoveExercise, attempts: AttemptState, t: T): FeedbackText[] {
   const explain = exercise.explainKey
     ? [{ text: t(exercise.explainKey), tone: 'success' as const }]
     : [];
@@ -59,11 +52,25 @@ function feedbackFor(exercise: Exercise, attempts: AttemptState, t: T): Feedback
   return lines;
 }
 
-export function ExerciseView({ lesson, index, onClose, onDone }: Props) {
+type MoveExercise = Exclude<Exercise, PlayBotExercise>;
+
+/** One exercise: a Capture Go game (PlayBotRunner) or a move / answer exercise. */
+export function ExerciseView(props: Props) {
+  const exercise = props.lesson.exercises[props.index];
+  if (exercise.type === 'play-bot') return <PlayBotRunner exercise={exercise} {...props} />;
+  return <MoveExerciseView exercise={exercise} {...props} />;
+}
+
+function MoveExerciseView({
+  lesson,
+  index,
+  onClose,
+  onDone,
+  exercise,
+}: Props & { exercise: MoveExercise }) {
   const { t } = useTranslation();
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const exercise = lesson.exercises[index];
   const total = lesson.exercises.length;
   const reducer = useMemo(() => attemptsReducer(exercise), [exercise]);
   const [attempts, dispatch] = useReducer(reducer, INITIAL_ATTEMPTS);
@@ -97,48 +104,17 @@ export function ExerciseView({ lesson, index, onClose, onDone }: Props) {
 
   return (
     <>
-      <View style={styles.topBar}>
-        <IconButton label={t('lesson.close')} onPress={onClose} testID="practice-close">
-          <CloseIcon color={color.accent} size={22} />
-        </IconButton>
-        <View
-          style={styles.segments}
-          accessible
-          accessibilityRole="progressbar"
-          accessibilityLabel={t('practice.progress.a11y', { current: index + 1, total })}
-          testID="practice-progress"
-        >
-          {lesson.exercises.map((_, i) => (
-            <View
-              key={i}
-              testID={i < index ? 'segment-done' : i === index ? 'segment-current' : 'segment-next'}
-              style={[
-                styles.segment,
-                i < index && styles.segmentDone,
-                i === index && styles.segmentCurrent,
-              ]}
-            />
-          ))}
-        </View>
-        <Pressable
-          testID="practice-hint"
-          onPress={() => dispatch({ type: 'hint' })}
-          disabled={!hintEnabled}
-          accessibilityRole="button"
-          accessibilityLabel={t('practice.hint')}
-          accessibilityState={{ disabled: !hintEnabled, expanded: attempts.hintOpen }}
-          style={({ pressed }) => [
-            styles.hint,
-            attempts.hintOpen && styles.hintOpen,
-            !hasHint(exercise) && styles.hintUnavailable,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.hintLabel} numberOfLines={1}>
-            {t('practice.hint')}
-          </Text>
-        </Pressable>
-      </View>
+      <ExerciseTopBar
+        index={index}
+        total={total}
+        onClose={onClose}
+        hint={{
+          available: hasHint(exercise),
+          enabled: hintEnabled,
+          open: attempts.hintOpen,
+          onPress: () => dispatch({ type: 'hint' }),
+        }}
+      />
 
       <View style={styles.prompt} testID="practice-prompt">
         <Text style={styles.promptText}>{t(exercise.promptKey)}</Text>
@@ -158,35 +134,6 @@ export function ExerciseView({ lesson, index, onClose, onDone }: Props) {
 }
 
 const styles = StyleSheet.create({
-  topBar: { height: 52, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  segments: { flex: 1, flexDirection: 'row', gap: spacing.xs },
-  segment: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: color.border,
-  },
-  segmentDone: { backgroundColor: color.accent },
-  segmentCurrent: {
-    backgroundColor: color.surface,
-    borderWidth: 1.5,
-    borderColor: color.accent,
-  },
-  hint: {
-    minWidth: tapTarget.min,
-    minHeight: tapTarget.min,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: color.border,
-    backgroundColor: color.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hintOpen: { backgroundColor: color.hintSoft, borderColor: color.hint },
-  hintUnavailable: { opacity: 0.4 },
-  hintLabel: { ...typography.label, fontSize: 15, color: color.hint },
-  pressed: { opacity: 0.7 },
   prompt: {
     minHeight: 72,
     justifyContent: 'center',
