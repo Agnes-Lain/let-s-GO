@@ -34,7 +34,19 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `npm run verify:web:m4` (release build); screenshots `docs/screenshots/M4/`.
   **Pending: the PO's iPhone play-through of units 1–5.**
 
+- **M5 item 1** Units 7–9 + checkpoint (branch `claude/m5-ko-ladders`): `u07-forbidden`,
+  `u08-ko`, `u09-ladder`, `u09-review` (29 exercises, zh-CN/en/fr), new optional exercise field
+  `prelude` (moves played before the exercise starts; carries the ko ban). Ladders taught with
+  one-move exercises (Option B, no `sequence` runner yet); nets 枷 deferred. Spec
+  `docs/specs/M5-ko-forbidden-ladders.md` (PO decisions §12a). Web check `npm run verify:web:m5`;
+  screenshots `docs/screenshots/M5/`. 7×7 boards with coordinates have 41 px cells (PO: keep).
+  **Pending: the PO's iPhone play-through of units 7–9.**
+
 ## Next
+- M5 item 2 (SGF import), then life & death with the `sequence` runner (spec §13 holds the
+  ladder play-along exercises to add once it exists); a net 枷 lesson needs a search helper.
+- Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
+  card under choice options (same as the M4 note below).
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch
   `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
   (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.

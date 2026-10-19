@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "id": "u09-review",
+  "unit": 9,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u09-review.title",
+  "coordinates": true,
+  "exercises": [
+    {
+      "id": "r-forbidden",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "W": ["b2", "a3", "c3", "b4"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["b3"]
+      },
+      "promptKey": "lesson.u09-review.e1.prompt",
+      "hintKey": "lesson.u09-review.e1.hint",
+      "hintPoints": ["b3"],
+      "explainKey": "lesson.u09-review.e1.explain"
+    },
+    {
+      "id": "r-capture-legal",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b4", "c5"],
+        "W": ["a4", "b5"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-review.e2.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u09-review.e2.o2",
+          "whyKey": "lesson.u09-review.e2.w2"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "a5",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u09-review.e2.prompt",
+      "explainKey": "lesson.u09-review.e2.explain"
+    },
+    {
+      "id": "r-ko-retake",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["e2", "e4"],
+        "W": ["e3", "d2", "d4", "c3"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "d3"
+        }
+      ],
+      "options": [
+        {
+          "textKey": "lesson.u09-review.e3.o1",
+          "whyKey": "lesson.u09-review.e3.w1"
+        },
+        {
+          "textKey": "lesson.u09-review.e3.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "d3"
+        },
+        {
+          "kind": "label",
+          "at": "e3",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u09-review.e3.prompt",
+      "explainKey": "lesson.u09-review.e3.explain"
+    },
+    {
+      "id": "r-count-group",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "d3"],
+        "W": ["c4"]
+      },
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u09-review.e4.prompt",
+      "hintKey": "lesson.u09-review.e4.hint"
+    },
+    {
+      "id": "r-atari",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["c3", "d2"],
+        "W": ["d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u09-review.e5.prompt",
+      "hintKey": "lesson.u09-review.e5.hint",
+      "hintPoints": ["e3", "d4"],
+      "explainKey": "lesson.u09-review.e5.explain"
+    },
+    {
+      "id": "r-capture",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b1", "c2"],
+        "W": ["b2"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u09-review.e6.prompt",
+      "hintKey": "lesson.u09-review.e6.hint",
+      "hintPoints": ["b3"],
+      "explainKey": "lesson.u09-review.e6.explain"
+    },
+    {
+      "id": "r-ladder-first",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["d3", "c2", "b2"],
+        "W": ["c3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-review.e7.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u09-review.e7.o2",
+          "whyKey": "lesson.u09-review.e7.w2"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c4",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "b3",
+          "text": "B"
+        }
+      ],
+      "promptKey": "lesson.u09-review.e7.prompt",
+      "explainKey": "lesson.u09-review.e7.explain"
+    },
+    {
+      "id": "r-ladder-breaker",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["f3", "e2", "d2"],
+        "W": ["e3", "c5"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-review.e8.o1",
+          "whyKey": "lesson.u09-review.e8.w1"
+        },
+        {
+          "textKey": "lesson.u09-review.e8.o2",
+          "correct": true
+        }
+      ],
+      "promptKey": "lesson.u09-review.e8.prompt",
+      "explainKey": "lesson.u09-review.e8.explain"
+    }
+  ]
+}

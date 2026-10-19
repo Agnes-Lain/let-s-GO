@@ -4,7 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { GoBoard } from '@/board';
 import { toVertex, type Point, type Vertex } from '@/engine';
-import { getSolution, startState, toStepMarkers, type TapPointExercise } from '@/lessons';
+import {
+  getSolution,
+  lastPlayedPoint,
+  startState,
+  toStepMarkers,
+  type TapPointExercise,
+} from '@/lessons';
 
 import { ExerciseFrame } from '../ExerciseFrame';
 import { tapAllFeedback } from '../feedback';
@@ -24,7 +30,10 @@ export function TapPointRunner({
 }: RunnerProps<TapPointExercise>) {
   const { t } = useTranslation();
   const { size } = exercise;
-  const stones = useMemo(() => startState(exercise).board.cells, [exercise]);
+  const start = useMemo(() => startState(exercise), [exercise]);
+  const stones = start.board.cells;
+  // A prelude's last move keeps the normal last-move mark (spec M5 AC 12).
+  const lastMove = useMemo(() => lastPlayedPoint(start), [start]);
   const markers = useMemo(() => toStepMarkers(exercise.markers, size), [exercise, size]);
   const answer = useMemo(() => getSolution(exercise).points, [exercise]);
   const active = attempts.status === 'active';
@@ -97,6 +106,7 @@ export function TapPointRunner({
   return (
     <ExerciseFrame feedback={feedback} action={action}>
       <GoBoard
+        lastMove={lastMove}
         size={size}
         stones={stones}
         width={boardWidth}

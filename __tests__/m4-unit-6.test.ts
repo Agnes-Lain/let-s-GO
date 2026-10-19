@@ -231,11 +231,12 @@ describe('D. content (AC 34, 37–42)', () => {
 describe('F. map, stars and flow (AC 58–61)', () => {
   const units = getUnits({ includeDev: false });
 
-  it('AC 58: units 1–6 all have a lesson, Unit 6 a checkpoint, nothing planned', () => {
-    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(units.every((u) => u.lesson !== null)).toBe(true);
+  // Updated by M5 item 1: Units 7–9 follow, Unit 10 is planned.
+  it('AC 58: units 1–6 all have a lesson, Unit 6 a checkpoint (Units 7–9 and planned 10 follow)', () => {
+    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(units.slice(0, 9).every((u) => u.lesson !== null)).toBe(true);
     expect(units[5].checkpoint?.id).toBe('u06-checkpoint');
-    expect(PLANNED_UNITS).toEqual([]);
+    expect(PLANNED_UNITS).toEqual([10]);
   });
 
   it('AC 59: Unit 6 opens with 1★ on Unit 5; its checkpoint after 1★ on Unit 6', () => {
@@ -246,14 +247,23 @@ describe('F. map, stars and flow (AC 58–61)', () => {
     expect(isCheckpointUnlocked(units, stars(five), 6)).toBe(false);
     expect(isCheckpointUnlocked(units, stars({ ...five, 'u06-capture-go': 1 }), 6)).toBe(true);
     const rows = mapRows(units, stars({ ...five, 'u06-capture-go': 1 }));
-    expect(rows.slice(-2).map((r) => `${r.key}:${r.state}`)).toEqual([
+    expect(rows.filter((r) => r.key.endsWith('-6')).map((r) => `${r.key}:${r.state}`)).toEqual([
       'unit-6:done',
       'checkpoint-6:available',
     ]);
   });
 
-  it('AC 59: Continue walks 1…5, review, 6, checkpoint', () => {
-    const order = [...UNITS_1_5, 'u05-review', 'u06-capture-go', 'u06-checkpoint'];
+  it('AC 59: Continue walks 1…5, review, 6, checkpoint (then Units 7–9 since M5 item 1)', () => {
+    const order = [
+      ...UNITS_1_5,
+      'u05-review',
+      'u06-capture-go',
+      'u06-checkpoint',
+      'u07-forbidden',
+      'u08-ko',
+      'u09-ladder',
+      'u09-review',
+    ];
     const progress: Record<string, number> = {};
     for (const id of order) {
       expect(nextNode(units, stars(progress))?.lesson.id).toBe(id);
@@ -276,7 +286,7 @@ describe('F. map, stars and flow (AC 58–61)', () => {
     expect(computeStars(outcomes)).toBe(expected);
   });
 
-  it('AC 61: Next after u05-review → u06-capture-go → u06-checkpoint → Back to map', () => {
+  it('AC 61: Next after u05-review → u06-capture-go → u06-checkpoint → (M5) u07-forbidden', () => {
     const all = stars(
       Object.fromEntries(
         [...UNITS_1_5, 'u05-review', 'u06-capture-go', 'u06-checkpoint'].map((id) => [id, 1]),
@@ -284,6 +294,6 @@ describe('F. map, stars and flow (AC 58–61)', () => {
     );
     expect(nodeAfter(units, all, 'u05-review')?.lesson.id).toBe('u06-capture-go');
     expect(nodeAfter(units, all, 'u06-capture-go')?.lesson.id).toBe('u06-checkpoint');
-    expect(nodeAfter(units, all, 'u06-checkpoint')).toBeNull();
+    expect(nodeAfter(units, all, 'u06-checkpoint')?.lesson.id).toBe('u07-forbidden');
   });
 });

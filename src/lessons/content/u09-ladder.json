@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "id": "u09-ladder",
+  "unit": 9,
+  "kind": "lesson",
+  "titleKey": "lesson.u09-ladder.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["b3", "c2", "d2"],
+          "W": ["c3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c4"
+        },
+        {
+          "color": "W",
+          "at": "d3"
+        },
+        {
+          "color": "B",
+          "at": "e3"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "liberty",
+          "points": ["c4", "d3"]
+        }
+      ],
+      "textKey": "lesson.u09-ladder.s1"
+    },
+    {
+      "moves": [
+        {
+          "color": "W",
+          "at": "d4"
+        },
+        {
+          "color": "B",
+          "at": "d5"
+        },
+        {
+          "color": "W",
+          "at": "e4"
+        },
+        {
+          "color": "B",
+          "at": "e5"
+        }
+      ],
+      "textKey": "lesson.u09-ladder.s2"
+    },
+    {
+      "board": {
+        "size": 7,
+        "setup": {
+          "B": ["b3", "c2", "d2", "c4", "e3", "d5"],
+          "W": ["c3", "d3", "d4", "e5"]
+        }
+      },
+      "moves": [
+        {
+          "color": "W",
+          "at": "e4"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "e5"
+        }
+      ],
+      "textKey": "lesson.u09-ladder.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "liberties-after",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "c2", "d2", "c4"],
+        "W": ["c3", "d3"]
+      },
+      "answer": {
+        "libertiesOf": "c3"
+      },
+      "promptKey": "lesson.u09-ladder.e1.prompt",
+      "hintKey": "lesson.u09-ladder.e1.hint",
+      "explainKey": "lesson.u09-ladder.e1.explain"
+    },
+    {
+      "id": "first-atari",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "c2", "d2"],
+        "W": ["c3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-ladder.e2.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u09-ladder.e2.o2",
+          "whyKey": "lesson.u09-ladder.e2.w2"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c4",
+          "text": "A"
+        },
+        {
+          "kind": "label",
+          "at": "d3",
+          "text": "B"
+        }
+      ],
+      "promptKey": "lesson.u09-ladder.e2.prompt",
+      "explainKey": "lesson.u09-ladder.e2.explain"
+    },
+    {
+      "id": "chase-on",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["d3", "c2", "b2", "c4"],
+        "W": ["c3", "b3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u09-ladder.e3.prompt",
+      "hintKey": "lesson.u09-ladder.e3.hint",
+      "hintPoints": ["a3", "b4"],
+      "explainKey": "lesson.u09-ladder.e3.explain"
+    },
+    {
+      "id": "finish",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "c2", "d2", "c4", "e3", "d5"],
+        "W": ["c3", "d3", "d4", "e4"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u09-ladder.e4.prompt",
+      "hintKey": "lesson.u09-ladder.e4.hint",
+      "hintPoints": ["e5"],
+      "explainKey": "lesson.u09-ladder.e4.explain"
+    },
+    {
+      "id": "ladder-breaker",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["b3", "c2", "d2"],
+        "W": ["c3", "e5"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-ladder.e5.o1",
+          "whyKey": "lesson.u09-ladder.e5.w1"
+        },
+        {
+          "textKey": "lesson.u09-ladder.e5.o2",
+          "correct": true
+        }
+      ],
+      "promptKey": "lesson.u09-ladder.e5.prompt",
+      "explainKey": "lesson.u09-ladder.e5.explain"
+    },
+    {
+      "id": "find-breaker",
+      "type": "tap-point",
+      "size": 7,
+      "setup": {
+        "B": ["b3", "c2", "d2"],
+        "W": ["c3", "f5", "b6"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["f5"]
+      },
+      "promptKey": "lesson.u09-ladder.e6.prompt",
+      "hintKey": "lesson.u09-ladder.e6.hint",
+      "hintPoints": ["f5"],
+      "explainKey": "lesson.u09-ladder.e6.explain"
+    },
+    {
+      "id": "corner-ladder",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["d5", "e4", "f4"],
+        "W": ["e5"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u09-ladder.e7.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u09-ladder.e7.o2",
+          "whyKey": "lesson.u09-ladder.e7.w2"
+        }
+      ],
+      "promptKey": "lesson.u09-ladder.e7.prompt",
+      "explainKey": "lesson.u09-ladder.e7.explain"
+    }
+  ]
+}

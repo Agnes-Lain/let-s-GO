@@ -73,7 +73,7 @@ describe('dev sample visibility (AC 26)', () => {
 });
 
 describe('getUnits (AC 27)', () => {
-  it('M4: units 1–6 carry their lessons (units 5 and 6 have a checkpoint); nothing is planned', () => {
+  it('M5: units 1–9 carry their lessons (units 5, 6 and 9 have a checkpoint); Unit 10 is planned', () => {
     const units = getUnits({ includeDev: false });
     expect(
       units.map((u) => [u.unit, u.titleKey, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
@@ -84,6 +84,10 @@ describe('getUnits (AC 27)', () => {
       [4, 'unit.4.title', 'u04-capture', null],
       [5, 'unit.5.title', 'u05-atari', 'u05-review'],
       [6, 'unit.6.title', 'u06-capture-go', 'u06-checkpoint'],
+      [7, 'unit.7.title', 'u07-forbidden', null],
+      [8, 'unit.8.title', 'u08-ko', null],
+      [9, 'unit.9.title', 'u09-ladder', 'u09-review'],
+      [10, 'unit.10.title', null, null],
     ]);
   });
 
@@ -99,7 +103,10 @@ describe('getUnits (AC 27)', () => {
     const units = loader.getUnits({ includeDev: false });
     expect(units[0].lesson?.id).toBe('u01-board');
     expect(units[0].titleKey).toBe('unit.1.title');
-    // No planned ("coming soon") units since M4 item 2 (PLANNED_UNITS = []).
-    expect(units).toHaveLength(1);
+    // Then the planned ("coming soon") units: Unit 10 since M5 item 1 (PLANNED_UNITS = [10]).
+    expect(units.map((u) => [u.unit, u.lesson])).toEqual([
+      [1, units[0].lesson],
+      [10, null],
+    ]);
   });
 });

@@ -32,7 +32,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] Beginner bot v1 (heuristic) + Capture Go mini-game
 
 ## M5 — Units 7–14
-- [ ] Ko, forbidden points, ladders/nets
+- [x] Ko, forbidden points, ladders (nets deferred)
 - [ ] SGF import for problem sets (moved from M1)
 - [ ] Eyes, life & death (`sequence` runner for tsumego)
 - [ ] Territory & counting exercises

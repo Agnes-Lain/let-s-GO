@@ -9,6 +9,7 @@ import {
   type GameState,
   type MoveFacts,
   type PlayResult,
+  type Point,
   type Vertex,
 } from '@/engine';
 
@@ -19,14 +20,33 @@ import type {
   Goal,
   PlayBotExercise,
   PlayMoveExercise,
-  PositionDef,
   Solution,
+  StartDef,
   TapPointExercise,
 } from './schema';
 
-/** The starting game of an exercise or step board. `toPlay` defaults to Black. */
-export function startState(position: PositionDef, toPlay: 'B' | 'W' = 'B'): GameState {
-  return createGame(position.size, { setup: position.setup, toPlay });
+/**
+ * The starting game of an exercise or step board. `toPlay` defaults to Black. With a `prelude`,
+ * its moves are played from the setup and the side to move (and ko ban) is the one after them;
+ * `toPlay` is then ignored (the validator checks it matches, code PRELUDE_TURN).
+ */
+export function startState(position: StartDef, toPlay: 'B' | 'W' = 'B'): GameState {
+  const prelude = position.prelude ?? [];
+  const first = prelude.length > 0 ? prelude[0].color : toPlay;
+  let state = createGame(position.size, { setup: position.setup, toPlay: first });
+  for (const move of prelude) {
+    const result = playAs(state, move.color, move.at);
+    // Validated lessons never get here (PRELUDE_ILLEGAL).
+    if (!result.ok) throw new Error(`prelude move ${move.color} ${move.at}: ${result.reason}`);
+    state = result.state;
+  }
+  return state;
+}
+
+/** The point of the last stone played (the prelude's last move), or null. */
+export function lastPlayedPoint(state: GameState): Point | null {
+  const last = state.moves[state.moves.length - 1];
+  return last?.type === 'play' ? last.point : null;
 }
 
 /** Total number of stones the move captured. */

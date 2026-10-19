@@ -16,6 +16,10 @@ export interface PositionDef {
   size: LessonSize;
   setup: Setup;
 }
+/** A starting position, optionally followed by prelude moves (exercises only). */
+export interface StartDef extends PositionDef {
+  prelude?: MoveDef[];
+}
 
 export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error';
 export type HighlightDef = { kind: HighlightKind; points: Vertex[] };
@@ -66,6 +70,11 @@ interface ExerciseBase extends PositionDef {
   /** Shown after a correct answer and when the answer is revealed. */
   explainKey?: TextKey;
   markers?: MarkerDef[];
+  /**
+   * Moves played with the engine from `setup` before the exercise appears (spec M5 §5): the
+   * board, the side to move and the ko ban are those after them. Not for play-bot games.
+   */
+  prelude?: MoveDef[];
 }
 
 export type LibertiesOf = { libertiesOf: Vertex };

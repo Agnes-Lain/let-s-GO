@@ -19,6 +19,7 @@
     "verify:web": "node scripts/verify-web.mjs",
     "verify:web:m3": "node scripts/verify-web-m3.mjs",
     "verify:web:m4": "node scripts/verify-web-m4.mjs",
+    "verify:web:m5": "node scripts/verify-web-m5.mjs",
     "tune:bot": "jest --config jest.tuning.config.js"
   },
   "dependencies": {
