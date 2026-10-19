@@ -676,7 +676,7 @@ Units 7+; new board features.
 The PO approved the spec and the mockup and accepted **every recommended default in §14** (Q1–Q15).
 Q15: the developer measures the five `blunder` values against AC 64; the PO approves the final numbers before merge.
 
-## 16. AC 64 tuning report (developer, 2026-10-19) — awaiting PO approval
+## 16. AC 64 tuning report (developer, 2026-10-19) — PO-approved
 Measured with `npm run tune:bot` (`scripts/bot-tuning.tune.ts`, own Jest config, not part of `npm test`):
 every Unit 6 game from its lesson JSON, seeds 1–200, learners *Sensible* and *Noob* (AC 64). No game threw
 or exceeded `maxMoves` (AC 65, hard check).
@@ -712,3 +712,7 @@ captures at once) and Sensible wins G2–G4 quickly. All other numbers are withi
 
 **PO decision needed:** approve B (or ask for a different trade-off, e.g. G4/G5 = 0.6: Sensible 97%,
 Noob 13.5% / 8%).
+
+**PO decision (2026-10-19):** approved B as proposed (G1 0.7, G2 0.75, G3 0.7, G4 0.75, G5 0.75) and the
+measured game lengths as the new estimates. These values become "Normal" if learner-selectable difficulty
+(Easy / Normal / Challenge) is added later — to be specced as its own roadmap item.
