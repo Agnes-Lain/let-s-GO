@@ -39,17 +39,14 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
   (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.
   - Done (committed): `src/bot` (seeded RNG, level-1 heuristic, Capture Go rules, analysis, tests).
-  - Work in progress (committed as WIP, not reviewed): `play-bot` schema + validator
-    (`validate.bot/runaway` tests), `src/exercises/botGame.ts` + `runners/PlayBotRunner.tsx`,
-    `ExerciseTopBar.tsx`, Unit 6 JSON (`u06-capture-go`, `u06-checkpoint`), i18n, map/result changes,
-    `__tests__/m4-unit-6.test.ts`. The developer stopped while writing content JSON + i18n strings.
-  - State at handover: lint ✓, jest 71 suites / 1846 tests ✓, **typecheck ✗** — 2 errors in
-    `src/exercises/runners/PlayBotRunner.test.tsx:160` (cast through `unknown`).
-  - `src/bot/__scratch__/` = the developer's win-rate measurement/profiling tests (AC 64); turn
-    into a proper script or delete before the PR.
-  - Still to do: finish/check content + i18n against spec §8/§11, fix typecheck, AC 64 blunder
-    tuning (report table to PO for approval), web check + screenshots (`docs/screenshots/M4/`),
-    QA pass, tick roadmap, PR.
+  - Developer pass done (2026-10-19, local): typecheck fixed, content + i18n checked against §8/§11,
+    route tests for AC 55/62, score halves show the colour only (mockup; `game.score` removed), lose
+    card with Skip fits 740 px. Bot tuning: `npm run tune:bot` (`scripts/bot-tuning.tune.ts`, own
+    Jest config, not in `npm test`); report in spec §16 — **blunder values await PO approval**.
+    Web check `npm run verify:web:m4` covers Unit 6 (screenshots `docs/screenshots/M4/10-*`…`17-*`).
+  - Still to do: PO approval of §16, QA pass, tick roadmap, PR.
+  - Local macOS: use Node 22 (`.nvmrc`); if watchman is broken run `npx jest --no-watchman`; web check
+    with `CHROMIUM_PATH` (local Chrome) and `PLAYWRIGHT_PATH` (a `playwright-core` install).
 
 ## Known follow-ups (minor, not scheduled)
 - M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is
