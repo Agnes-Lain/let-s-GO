@@ -365,8 +365,8 @@
   "game.skip": "Skip this game",
   "game.restart": "Restart",
   "game.a11y.botMoved": "Bot played {{at}}",
-  "game.a11y.captured": "{{n}} stones captured",
-  "game.a11y.score": "You have captured {{n}} of {{total}} stones",
+  "game.a11y.captured": "Stones captured: {{n}}",
+  "game.a11y.score": "Your captures: {{n}} of {{total}}",
   "complete.gamesFirstTry": "{{n}} of {{total}} games won on the first try",
-  "game.a11y.scoreBot": "The bot has captured {{n}} of {{total}} stones"
+  "game.a11y.scoreBot": "Bot's captures: {{n}} of {{total}}"
 }

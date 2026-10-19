@@ -365,8 +365,8 @@
   "game.skip": "Passer cette partie",
   "game.restart": "Recommencer",
   "game.a11y.botMoved": "Le robot a joué {{at}}",
-  "game.a11y.captured": "{{n}} pierres capturées",
-  "game.a11y.score": "Vous avez capturé {{n}} pierres sur {{total}}",
+  "game.a11y.captured": "Pierres capturées : {{n}}",
+  "game.a11y.score": "Vos captures : {{n}} sur {{total}}",
   "complete.gamesFirstTry": "{{n}} parties sur {{total}} gagnées du premier coup",
-  "game.a11y.scoreBot": "Le robot a capturé {{n}} pierres sur {{total}}"
+  "game.a11y.scoreBot": "Captures du robot : {{n}} sur {{total}}"
 }

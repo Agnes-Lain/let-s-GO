@@ -584,8 +584,8 @@ Ko and suicide are **not** named in Unit 6 text (they are Units 7–8): the note
 ## 10. Accessibility and i18n
 - Board interaction and labels: M2. Added: turn pill is a live region (polite): "Your turn" / "Bot is
   thinking"; bot move: `game.a11y.botMoved` ("Bot played {{at}}"); captures: `game.a11y.captured`
-  ("{{n}} stones captured"); score halves labelled with `game.a11y.score` ("You have captured {{n}} of
-  {{total}} stones"); result cards announce their title and fact line.
+  ("Stones captured: {{n}}"); score halves labelled with `game.a11y.score` ("Your captures: {{n}} of
+  {{total}}"); result cards announce their title and fact line.
 - Contrast and tap targets as M3; the *Skip this game* text button is 44 px high.
 - All text via i18n, all three languages, parity test.
 

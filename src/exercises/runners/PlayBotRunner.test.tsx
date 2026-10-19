@@ -191,7 +191,7 @@ describe('the end of a game (AC 46, 47, 52–54, 56)', () => {
     await tap('c4');
     expect(stones('white')).toBe(0);
     expect(screen.getByTestId('game-score-you').props.accessibilityLabel).toBe(
-      'You have captured 1 of 1 stones',
+      'Your captures: 1 of 1',
     );
     expect(screen.getAllByTestId('game-score-you-slot-filled')).toHaveLength(1);
     expect(screen.queryByTestId('game-win')).toBeNull();
@@ -287,7 +287,7 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
     expect(within(screen.getByTestId('game-score-bot')).getByText('Black')).toBeOnTheScreen();
     expect(screen.getAllByTestId('game-score-you-slot-empty')).toHaveLength(3);
     expect(screen.getByTestId('game-score-bot').props.accessibilityLabel).toBe(
-      'The bot has captured 0 of 3 stones',
+      "Bot's captures: 0 of 3",
     );
   });
 
@@ -393,7 +393,7 @@ describe('screen reader (AC 66)', () => {
     await show(LOSABLE);
     await tap('e1');
     await advance(BOT_DELAY_MS);
-    expect(announce).toHaveBeenCalledWith('Bot played c4. 1 stones captured');
+    expect(announce).toHaveBeenCalledWith('Bot played c4. Stones captured: 1');
     await advance(END_BEAT_MS);
     expect(announce).toHaveBeenCalledWith(
       expect.stringMatching(/^Not this time The bot captured 1 first\./),
