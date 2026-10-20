@@ -1,6 +1,6 @@
 // Lesson validator (spec §4.4). Pure: uses src/engine only. Reports every error (up to 50),
 // with English messages for authors and a JSON path such as 'exercises[2].goal'.
-import { referencePlayout } from '@/bot';
+import { FORCED_CAPTURE_MAX_NODES, judgeAttack, referencePlayout } from '@/bot';
 import {
   createGame,
   groupAt,
@@ -22,6 +22,7 @@ import {
 import {
   EXERCISE_TYPES,
   LESSON_SIZES,
+  SEARCH_MAX_MOVES,
   TEXT_LANGUAGES,
   type Goal,
   type Language,
@@ -553,7 +554,7 @@ class Validator {
       choice: ['prelude'],
       count: ['prelude'],
       'play-bot': ['player', 'first', 'maxMoves'],
-      sequence: ['prelude', 'wrong'],
+      sequence: ['prelude', 'wrong', 'judge'],
     };
     const setupState = this.position(
       ex,
@@ -947,6 +948,7 @@ class Validator {
       });
     }
 
+    let goodTarget: Vertex | null = null;
     if (wantsCapture && target !== undefined && start && side) {
       const targetPath = join(goalPath, 'target');
       const at = this.vertex(target, targetPath, start.board.size as LessonSize);
@@ -954,11 +956,143 @@ class Validator {
       const opponent = side === 'B' ? 'W' : 'B';
       if (at && group?.color !== opponent) {
         this.add('SEQ_BAD_TARGET', targetPath, `"${at}" must be a ${opponent} stone at the start`);
-      } else if (at && main?.end && !main.captured.has(at)) {
-        this.add('SEQ_GOAL_NOT_MET', goalPath, `the line does not capture the stones at "${at}"`);
+      } else if (at) {
+        goodTarget = at;
+        if (main?.end && !main.captured.has(at))
+          this.add('SEQ_GOAL_NOT_MET', goalPath, `the line does not capture the stones at "${at}"`);
+      }
+    }
+
+    if ('judge' in ex) {
+      const lineLength = Array.isArray(ex.line) ? ex.line.length : 0;
+      const maxMoves = this.sequenceJudge(ex, path, wantsCapture, lineLength);
+      if (maxMoves !== null && main?.end && goodTarget && start && side) {
+        this.searchProof(
+          ex.line as Json[],
+          join(path, 'line'),
+          path,
+          start,
+          side,
+          goodTarget,
+          maxMoves,
+        );
       }
     }
     return main?.first ? [main.first] : null;
+  }
+
+  /**
+   * `judge` (spec M5-sequence-v2 §3.6, AC 10). Returns the learner-move budget of a valid search
+   * judge, or null (line judge, or an error was reported).
+   */
+  private sequenceJudge(ex: Json, path: string, wantsCapture: boolean, lineLength: number) {
+    const judgePath = join(path, 'judge');
+    const judge = this.object(ex.judge, judgePath, 'judge');
+    if (!judge) return null;
+    const bad = (why: string) => {
+      this.add('SEQ_BAD_JUDGE', judgePath, why);
+      return null;
+    };
+    if (judge.kind === 'line') {
+      this.fields(judge, judgePath, ['kind'], []);
+      return null;
+    }
+    if (judge.kind !== 'search') return bad('judge "kind" must be "line" or "search"');
+    this.fields(judge, judgePath, ['kind'], ['opponent', 'maxMoves']);
+    if (judge.opponent !== 'run') return bad('a search judge needs "opponent": "run"');
+    const least = Math.ceil(lineLength / 2);
+    const maxMoves = 'maxMoves' in judge ? judge.maxMoves : least;
+    if (
+      typeof maxMoves !== 'number' ||
+      !Number.isInteger(maxMoves) ||
+      maxMoves < least ||
+      maxMoves > SEARCH_MAX_MOVES
+    ) {
+      return bad(`"maxMoves" must be an integer from ${least} to ${SEARCH_MAX_MOVES}`);
+    }
+    let ok = true;
+    if (!wantsCapture) {
+      this.add(
+        'SEQ_SEARCH_NEEDS_CAPTURE',
+        join(path, 'goal'),
+        'a search judge needs a capture goal',
+      );
+      ok = false;
+    }
+    if ('wrong' in ex) {
+      this.add(
+        'SEQ_SEARCH_NO_WRONG',
+        join(path, 'wrong'),
+        'a search judge finds wrong moves itself: remove "wrong"',
+      );
+      ok = false;
+    }
+    if (lineLength % 2 === 0) {
+      this.add(
+        'SEQ_SEARCH_LINE_END',
+        join(path, 'line'),
+        "a search-judged line must end with the learner's capturing move",
+      );
+      ok = false;
+    }
+    return ok ? maxMoves : null;
+  }
+
+  /**
+   * AC 11–12: every learner move of the line is accepted by the search from the replayed
+   * position and every scripted reply is the reply the search shows. The proof has a node budget.
+   */
+  private searchProof(
+    line: Json[],
+    linePath: string,
+    path: string,
+    start: GameState,
+    side: Color,
+    target: Vertex,
+    maxMoves: number,
+  ) {
+    const budget = this.ctx.searchNodes ?? FORCED_CAPTURE_MAX_NODES;
+    const overBudget = () =>
+      this.add(
+        'SEQ_NODE_BUDGET',
+        path,
+        `proving the line needs more than ${budget} search nodes: shorten or simplify the problem`,
+      );
+    let state = start;
+    let nodes = 0;
+    for (let k = 0; k < line.length; k += 2) {
+      const at = line[k].at as Vertex;
+      const left = maxMoves - k / 2;
+      const judged = judgeAttack(
+        state,
+        { attacker: side, target, maxMoves: left, maxNodes: budget - nodes },
+        at,
+      );
+      if (!judged.ok) return; // SEQ_ILLEGAL_MOVE is reported by sequenceLine.
+      nodes += judged.nodes;
+      if (judged.capped || nodes > budget) return overBudget();
+      if (!judged.forced) {
+        this.add(
+          'SEQ_NOT_FORCED',
+          join(linePath, k),
+          `${side} ${at} does not capture "${target}" within ${left} moves against every escape`,
+        );
+        return;
+      }
+      if (k + 1 >= line.length) return;
+      const expected = line[k + 1].at as Vertex;
+      const reply = judged.reply;
+      const shown = reply.kind === 'play' ? toVertex(reply.point, state.board.size) : reply.kind;
+      if (reply.kind !== 'play' || shown !== expected) {
+        this.add(
+          'SEQ_REPLY_MISMATCH',
+          join(linePath, k + 1),
+          `the search answers ${at} with ${shown}, not ${expected}`,
+        );
+        return;
+      }
+      state = reply.state;
+    }
   }
 
   /**

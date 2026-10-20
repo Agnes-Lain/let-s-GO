@@ -130,7 +130,15 @@ describe('A. files and validity (AC 1–8)', () => {
     const found = lessons.flatMap((l) =>
       l.exercises.filter((e) => e.type === 'sequence').map((e) => e.id),
     );
-    expect(found).toEqual(['kill-straight', 'kill-bent', 'r-kill']);
+    // + the three search-judged ladders of M5-sequence-v2.
+    expect(found).toEqual([
+      'ladder-play',
+      'ladder-play-corner',
+      'r-ladder-play',
+      'kill-straight',
+      'kill-bent',
+      'r-kill',
+    ]);
   });
 
   const choice = (i: number) => ({ index: i });
@@ -252,6 +260,12 @@ describe('A. texts (AC 5, 34)', () => {
         'sequence.replies.B',
         'sequence.replies.W',
         'sequence.undo',
+        // M5-sequence-v2 §5
+        'sequence.wrong.afterReply_one',
+        'sequence.wrong.afterReply_other',
+        'sequence.wrong.atariButEscapes',
+        'sequence.wrong.chaserCaptured_one',
+        'sequence.wrong.chaserCaptured_other',
         'sequence.wrong.liberties_one',
         'sequence.wrong.liberties_other',
         'sequence.wrong.notLine',

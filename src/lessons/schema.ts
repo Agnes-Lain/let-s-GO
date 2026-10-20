@@ -143,9 +143,26 @@ export interface SequenceBranch {
 }
 
 /**
+ * How learner moves are judged (spec docs/specs/M5-sequence-v2.md §3.6). `line` (default): only
+ * the move of the line is right. `search`: any move after which the target is captured within
+ * `maxMoves` learner moves against every escape (`opponent: 'run'`); needs a capture goal, no
+ * `wrong` branches, and a line that ends with the learner's capturing move.
+ */
+export type SequenceJudge =
+  | { kind: 'line' }
+  | {
+      kind: 'search';
+      opponent: 'run';
+      /** Default ceil(line.length / 2), at most 8. */ maxMoves?: number;
+    };
+
+/** The most learner moves a search-judged problem may allow (validator SEQ_BAD_JUDGE). */
+export const SEARCH_MAX_MOVES = 8;
+
+/**
  * A multi-move problem (spec docs/specs/M5-sgf-import.md §6), usually imported from SGF. Even
- * indexes of `line` are the learner's moves, odd indexes are scripted replies. No runner yet
- * (M5 item 3): no shipped lesson may contain one.
+ * indexes of `line` are the learner's moves, odd indexes are scripted replies (the replies the
+ * search shows, for `judge.kind: 'search'`). `line` is the canonical answer.
  */
 export interface SequenceExercise extends ExerciseBase {
   type: 'sequence';
@@ -153,6 +170,7 @@ export interface SequenceExercise extends ExerciseBase {
   goal: SequenceGoal;
   line: MoveDef[];
   wrong?: SequenceBranch[];
+  judge?: SequenceJudge;
 }
 
 export type Exercise =
@@ -180,6 +198,8 @@ export const TEXT_LANGUAGES: readonly Language[] = ['zh-CN', 'en', 'fr'];
 
 export interface ValidationContext {
   hasText?: (key: string, lang: Language) => boolean;
+  /** Node budget for proving search-judged sequences (tests only; default 3 000, §3.5). */
+  searchNodes?: number;
 }
 export interface LessonError {
   code: string;

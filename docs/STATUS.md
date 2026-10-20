@@ -58,9 +58,17 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `npm run verify:web:m5c`; screenshots `docs/screenshots/M5/20-*`–`22-*`. Unit 12 is "coming soon".
   Not verified: 9×9 layout only on `/dev/board`; screen reader may announce the opponent stone twice; no iPhone check.
 
+- **M5 item 3b** sequence v2 (branch `claude/m5-sequence-v2`, stacked on #16; PO-approved spec, QA READY, 2883 tests):
+  pure `src/bot/forcedCapture.ts` (bounded forced-capture search, defender policy `run`, node cap 3 000), additive
+  `judge: {kind:'search'}` on `sequence` exercises + validator codes (SEQ_NOT_FORCED, SEQ_NODE_BUDGET, …), runner shows
+  White's reply + facts on a wrong move, hint ring follows the position. Ladder play-along: `ladder-play`,
+  `ladder-play-corner` (u09, now 9 exercises), `r-ladder-play` (review, 9). Spec `docs/specs/M5-sequence-v2.md`
+  (§9a PO, §9b dev deviations). **Pending PO: the search also accepts the net 枷 at move 2 (e4/g6/e2) — correct Go,
+  AC 2/27 text to amend.** Web check `npm run verify:web:m5d`; screenshots `docs/screenshots/M5/23-*`.
+
 ## Next
-- M5 item 4: territory & counting (Unit 12). Follow-up item: "sequence v2" search-judged runner → ladder
-  play-along (ko spec §13), nets 枷, multi-answer tsumego.
+- M5 item 4: territory & counting (Unit 12). Later: nets 枷 and multi-answer tsumego on the
+  search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch

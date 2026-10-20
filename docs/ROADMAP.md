@@ -35,6 +35,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] Ko, forbidden points, ladders (nets deferred)
 - [x] SGF import for problem sets (moved from M1)
 - [x] Eyes, life & death (`sequence` runner for tsumego)
+- [x] Sequence v2: search-judged `sequence` runner (several correct moves) + ladder play-along
 - [ ] Territory & counting exercises
 
 ## M6 — Full games & release
