@@ -20,6 +20,7 @@ import type {
   Goal,
   PlayBotExercise,
   PlayMoveExercise,
+  SequenceExercise,
   Solution,
   StartDef,
   TapPointExercise,
@@ -95,7 +96,9 @@ export function libertyVertices(state: GameState, at: Vertex): Vertex[] | null {
   return group ? group.liberties.map((p) => toVertex(p, state.board.size)) : null;
 }
 
-export function getSolution(exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise): {
+export function getSolution(
+  exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise | SequenceExercise,
+): {
   points: Vertex[];
 };
 export function getSolution(exercise: ChoiceExercise): { index: number };
@@ -118,6 +121,9 @@ export function getSolution(exercise: Exercise): Solution {
     case 'play-bot':
       // A game has no fixed answer: the hint point is computed live by the bot (spec §5.5).
       return { points: [] };
+    case 'sequence':
+      // The learner's first move (spec M5-sgf-import §6); later moves belong to the runner.
+      return { points: [exercise.line[0].at] };
   }
 }
 
@@ -129,6 +135,7 @@ export function solutionPoints(exercise: Exercise): Vertex[] {
   switch (exercise.type) {
     case 'tap-point':
     case 'play-move':
+    case 'sequence':
       return getSolution(exercise).points;
     case 'count':
       return typeof exercise.answer === 'number'

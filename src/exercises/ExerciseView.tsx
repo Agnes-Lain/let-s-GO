@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Exercise, Lesson, Outcome, PlayBotExercise } from '@/lessons';
+import type { Exercise, Lesson, Outcome, PlayBotExercise, SequenceExercise } from '@/lessons';
 import { color, radius, spacing, typography } from '@/theme/tokens';
 
 import {
@@ -52,12 +52,14 @@ function feedbackFor(exercise: MoveExercise, attempts: AttemptState, t: T): Feed
   return lines;
 }
 
-type MoveExercise = Exclude<Exercise, PlayBotExercise>;
+type MoveExercise = Exclude<Exercise, PlayBotExercise | SequenceExercise>;
 
 /** One exercise: a Capture Go game (PlayBotRunner) or a move / answer exercise. */
 export function ExerciseView(props: Props) {
   const exercise = props.lesson.exercises[props.index];
   if (exercise.type === 'play-bot') return <PlayBotRunner exercise={exercise} {...props} />;
+  // No sequence runner until M5 item 3; no shipped lesson contains one (M5-sgf-import AC 29).
+  if (exercise.type === 'sequence') return null;
   return <MoveExerciseView exercise={exercise} {...props} />;
 }
 

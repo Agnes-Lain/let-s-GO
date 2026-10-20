@@ -42,9 +42,17 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   screenshots `docs/screenshots/M5/`. 7×7 boards with coordinates have 41 px cells (PO: keep).
   PO checked units 7–9 (2026-10-20): all good. PR #14.
 
+- **M5 item 2** SGF import (branch `claude/m5-sgf-import`, PO-approved spec, QA READY, 2337 tests):
+  pure `src/sgf/` (parse/convert/expand), `sequence` exercise type + validator rules (SEQ_*; no
+  runner, no shipped lesson — guarded by a test), `npm run import:sgf` (`scripts/import-sgf.ts`,
+  own Jest config like `tune:bot`) turns `content-src/*.src.json` + SGF into lesson JSON
+  (`generatedFrom`); drift test in `__tests__/sgf-pipeline.test.ts`. Spec `docs/specs/M5-sgf-import.md`.
+  QA nits (later): one bad SGF used by N exercises prints N identical errors; validator errors
+  point at `file:1:1` with the `exercises[i]` path in the message.
+
 ## Next
-- M5 item 2 (SGF import), then life & death with the `sequence` runner (spec §13 holds the
-  ladder play-along exercises to add once it exists); a net 枷 lesson needs a search helper.
+- M5 item 3: life & death with the `sequence` runner (author via `npm run import:sgf`;
+  spec M5-ko-forbidden-ladders §13 holds the ladder play-along exercises to add once it exists); a net 枷 lesson needs a search helper.
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch

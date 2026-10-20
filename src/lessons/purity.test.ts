@@ -36,3 +36,32 @@ describe('src/lessons purity (AC 29)', () => {
     }
   });
 });
+
+describe('src/sgf purity (M5-sgf-import AC 30)', () => {
+  const dir = join(__dirname, '..', 'sgf');
+  const files = sources(dir);
+
+  it('finds the sources', () => {
+    expect(files.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it.each(files.map((f) => relative(dir, f)))(
+    '%s imports no React / RN / Expo / fs / path, and the engine only as types',
+    (file) => {
+      const code = readFileSync(join(dir, file), 'utf8');
+      const imports = [
+        ...code.matchAll(
+          /^\s*(?:import|export)\s+(type\s+)?[^'"]*?from ['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\)/gm,
+        ),
+      ].map((m) => ({ type: Boolean(m[1]), from: m[2] ?? m[3] }));
+      const forbidden = imports.filter(
+        ({ from }) =>
+          /^(react|react-native|expo|@expo\/)/.test(from) || /^(node:)?(fs|path)(\/|$)/.test(from),
+      );
+      expect(forbidden).toEqual([]);
+      // Runtime imports only from inside src/sgf (so the importer has no runtime dependencies).
+      const runtime = imports.filter(({ type, from }) => !type && !from.startsWith('./'));
+      expect(runtime).toEqual([]);
+    },
+  );
+});

@@ -204,8 +204,11 @@ class Validator {
       obj,
       '',
       ['schema', 'id', 'unit', 'kind', 'titleKey', 'exercises'],
-      ['coordinates', 'explain'],
+      ['coordinates', 'explain', 'generatedFrom'],
     );
+    if ('generatedFrom' in obj && typeof obj.generatedFrom !== 'string') {
+      this.badType('generatedFrom', 'generatedFrom', 'a string');
+    }
 
     if ('schema' in obj && obj.schema !== 1) {
       this.add(
@@ -342,7 +345,8 @@ class Validator {
       return null;
     }
     const state = this.moves(ex.prelude, preludePath, start, 'PRELUDE_ILLEGAL', 'prelude');
-    if (state && ex.type === 'play-move' && (ex.toPlay === 'B' || ex.toPlay === 'W')) {
+    const hasToPlay = ex.type === 'play-move' || ex.type === 'sequence';
+    if (state && hasToPlay && (ex.toPlay === 'B' || ex.toPlay === 'W')) {
       if (ex.toPlay !== state.toPlay) {
         this.add(
           'PRELUDE_TURN',
@@ -540,6 +544,7 @@ class Validator {
       choice: ['options'],
       count: ['answer'],
       'play-bot': ['win', 'bot'],
+      sequence: ['toPlay', 'goal', 'line'],
     };
     const specificOptional: Record<string, string[]> = {
       'tap-point': ['prelude'],
@@ -547,6 +552,7 @@ class Validator {
       choice: ['prelude'],
       count: ['prelude'],
       'play-bot': ['player', 'first', 'maxMoves'],
+      sequence: ['prelude', 'wrong'],
     };
     const setupState = this.position(
       ex,
@@ -600,6 +606,9 @@ class Validator {
         break;
       case 'count':
         solution = this.count(ex, path, state);
+        break;
+      case 'sequence':
+        solution = this.sequence(ex, path, state);
         break;
     }
 
@@ -881,6 +890,149 @@ class Validator {
         `the reference learner won none of ${BOT_PLAYOUTS} playouts against this bot`,
       );
     }
+  }
+
+  /**
+   * Sequence rules (spec M5-sgf-import §6, AC 22–27): the line and every wrong line start with
+   * `toPlay`, alternate colours and are legal when replayed by the engine from the position after
+   * the prelude; a capture goal is met by the end of the line. Returns [line[0].at].
+   */
+  private sequence(ex: Json, path: string, state: GameState | null): Vertex[] | null {
+    const toPlay = ex.toPlay;
+    const colorOk = toPlay === 'B' || toPlay === 'W';
+    if ('toPlay' in ex && !colorOk) this.badType(join(path, 'toPlay'), 'toPlay', '"B" or "W"');
+    const start = state && colorOk ? withTurn(state, toPlay) : null;
+    const side = colorOk ? toPlay : null;
+
+    const goalPath = join(path, 'goal');
+    let target: unknown = undefined;
+    let wantsCapture = false;
+    if ('goal' in ex) {
+      const goal = this.object(ex.goal, goalPath, 'goal');
+      if (goal && (goal.kind === 'line' || goal.kind === 'capture')) {
+        wantsCapture = goal.kind === 'capture';
+        this.fields(goal, goalPath, wantsCapture ? ['kind', 'target'] : ['kind'], []);
+        target = goal.target;
+      } else if (goal && !('kind' in goal)) {
+        this.add('MISSING_FIELD', join(goalPath, 'kind'), '"kind" is required');
+      } else if (goal) {
+        this.badType(join(goalPath, 'kind'), 'kind', 'one of "line", "capture"');
+      }
+    }
+
+    const main = 'line' in ex ? this.sequenceLine(ex.line, join(path, 'line'), start, side) : null;
+
+    const firstMoves = new Set<string>();
+    if (main?.first) firstMoves.add(main.first);
+    if ('wrong' in ex) {
+      const wrongPath = join(path, 'wrong');
+      this.array(ex.wrong, wrongPath, 'wrong')?.forEach((item, i) => {
+        const branchPath = join(wrongPath, i);
+        const branch = this.object(item, branchPath, 'wrong branch');
+        if (!branch) return;
+        this.fields(branch, branchPath, ['line'], ['whyKey']);
+        this.optionalText(branch, 'whyKey', branchPath);
+        if (!('line' in branch)) return;
+        const line = this.sequenceLine(branch.line, join(branchPath, 'line'), start, side);
+        if (!line?.first) return;
+        if (firstMoves.has(line.first)) {
+          this.add(
+            'SEQ_DUPLICATE_BRANCH',
+            branchPath,
+            `another line already starts with ${line.first}: each branch needs its own first move`,
+          );
+        }
+        firstMoves.add(line.first);
+      });
+    }
+
+    if (wantsCapture && target !== undefined && start && side) {
+      const targetPath = join(goalPath, 'target');
+      const at = this.vertex(target, targetPath, start.board.size as LessonSize);
+      const group = at ? groupAt(start.board, at) : null;
+      const opponent = side === 'B' ? 'W' : 'B';
+      if (at && group?.color !== opponent) {
+        this.add('SEQ_BAD_TARGET', targetPath, `"${at}" must be a ${opponent} stone at the start`);
+      } else if (at && main?.end && !main.captured.has(at)) {
+        this.add('SEQ_GOAL_NOT_MET', goalPath, `the line does not capture the stones at "${at}"`);
+      }
+    }
+    return main?.first ? [main.first] : null;
+  }
+
+  /**
+   * Checks one line of a sequence. `first` is the raw first point (for duplicate checks), `end`
+   * the position after the line (null when it is not valid) and `captured` every captured point.
+   */
+  private sequenceLine(
+    value: unknown,
+    path: string,
+    start: GameState | null,
+    toPlay: Color | null,
+  ): { first: Vertex | null; end: GameState | null; captured: Set<Vertex> } | null {
+    const list = this.array(value, path, 'line');
+    if (!list) return null;
+    if (list.length === 0) {
+      this.badType(path, 'line', 'a non-empty array of moves');
+      return null;
+    }
+    const head = list[0];
+    const first = isObject(head) && typeof head.at === 'string' ? head.at : null;
+
+    let ordered = true;
+    if (toPlay) {
+      list.forEach((item, i) => {
+        if (!isObject(item) || (item.color !== 'B' && item.color !== 'W')) return;
+        const expected = i % 2 === 0 ? toPlay : toPlay === 'B' ? 'W' : 'B';
+        if (item.color !== expected) {
+          const who = i % 2 === 0 ? 'the learner' : 'the reply';
+          this.add(
+            'SEQ_BAD_ORDER',
+            join(path, i),
+            `move ${i} must be ${expected} (${who}): lines start with toPlay and alternate`,
+          );
+          ordered = false;
+        }
+      });
+    }
+
+    let state = ordered ? start : null;
+    const captured = new Set<Vertex>();
+    list.forEach((item, i) => {
+      const movePath = join(path, i);
+      const move = this.object(item, movePath, 'move');
+      if (!move) {
+        state = null;
+        return;
+      }
+      this.fields(move, movePath, ['color', 'at'], []);
+      const color = move.color;
+      if ('color' in move && color !== 'B' && color !== 'W')
+        this.badType(join(movePath, 'color'), 'color', '"B" or "W"');
+      if (!state || !('at' in move) || (color !== 'B' && color !== 'W')) {
+        state = null;
+        return;
+      }
+      const size = state.board.size as LessonSize;
+      const at = this.vertex(move.at, join(movePath, 'at'), size);
+      if (!at) {
+        state = null;
+        return;
+      }
+      const result = playAs(state, color, at);
+      if (!result.ok) {
+        this.add(
+          'SEQ_ILLEGAL_MOVE',
+          movePath,
+          `move ${color} ${at} is illegal here: ${result.reason}`,
+        );
+        state = null;
+        return;
+      }
+      for (const p of result.facts.captured.flat()) captured.add(toVertex(p, size));
+      state = result.state;
+    });
+    return { first, end: state, captured };
   }
 
   private choice(ex: Json, path: string) {
