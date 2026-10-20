@@ -17,7 +17,10 @@ import { LESSON_FILES } from '@/lessons/registry';
 
 const lessons = LESSON_FILES as readonly Lesson[];
 const byId = (id: string): Lesson => lessons.find((l) => l.id === id) as Lesson;
-const ex = (id: string, n: number): Exercise => byId(id).exercises[n - 1];
+/** Exercise #n in the M5 item 1 numbering (without the M5-sequence-v2 sequences). */
+const SEQUENCE_V2 = ['ladder-play', 'ladder-play-corner', 'r-ladder-play'];
+const ex = (id: string, n: number): Exercise =>
+  byId(id).exercises.filter((e) => !SEQUENCE_V2.includes(e.id))[n - 1];
 const pt = (v: Vertex, size: number) => parseVertex(v, size as 5);
 const chk = (s: GameState, v: Vertex) => checkMove(s, pt(v, s.board.size));
 const move = (s: GameState, color: 'B' | 'W', v: Vertex): GameState => {

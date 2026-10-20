@@ -21,6 +21,7 @@
     "verify:web:m4": "node scripts/verify-web-m4.mjs",
     "verify:web:m5": "node scripts/verify-web-m5.mjs",
     "verify:web:m5c": "node scripts/verify-web-m5c.mjs",
+    "verify:web:m5d": "node scripts/verify-web-m5d.mjs",
     "tune:bot": "jest --config jest.tuning.config.js",
     "import:sgf": "jest --config jest.import-sgf.config.js"
   },

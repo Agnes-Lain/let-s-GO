@@ -313,3 +313,104 @@ describe('sequence: prelude (AC 27)', () => {
     ]);
   });
 });
+
+describe('sequence v2: search judging (M5-sequence-v2 AC 9–12)', () => {
+  /** F2 judged by the search (no wrong branches). */
+  function search(extra: Record<string, unknown> = {}) {
+    const exercise: Record<string, unknown> = f2({
+      judge: { kind: 'search', opponent: 'run' },
+      ...extra,
+    });
+    if (!('wrong' in extra)) delete exercise.wrong;
+    return exercise;
+  }
+
+  it('AC 9: judge "line" is the same as no judge', () => {
+    expect(errorsOf(f2({ judge: { kind: 'line' } }))).toEqual([]);
+  });
+
+  it('AC 11: the ladder line is a proven answer', () => {
+    expect(errorsOf(search())).toEqual([]);
+    expect(errorsOf(search({ judge: { kind: 'search', opponent: 'run', maxMoves: 5 } }))).toEqual(
+      [],
+    );
+  });
+
+  it('AC 11: the other atari branch (d4) is a proven answer too', () => {
+    const line = [B('c4'), W('d3'), B('d4'), W('e3'), B('e2'), W('e4'), B('e5')];
+    expect(errorsOf(search({ line }))).toEqual([]);
+  });
+
+  it.each([
+    ['an unknown kind', { kind: 'net' }],
+    ['an unknown opponent', { kind: 'search', opponent: 'any' }],
+    ['no opponent', { kind: 'search' }],
+    ['maxMoves below the line', { kind: 'search', opponent: 'run', maxMoves: 3 }],
+    ['maxMoves above 8', { kind: 'search', opponent: 'run', maxMoves: 9 }],
+    ['maxMoves not an integer', { kind: 'search', opponent: 'run', maxMoves: 4.5 }],
+    ['maxMoves not a number', { kind: 'search', opponent: 'run', maxMoves: '4' }],
+  ])('AC 10: %s is SEQ_BAD_JUDGE', (_name, judge) => {
+    expect(errorsOf(search({ judge }))).toEqual([
+      expect.objectContaining({ code: 'SEQ_BAD_JUDGE', path: 'exercises[0].judge' }),
+    ]);
+  });
+
+  it('AC 10: judge must be an object', () => {
+    expect(codesOf(search({ judge: 'search' }))).toEqual(['BAD_TYPE']);
+  });
+
+  it('AC 10: an unknown judge field is UNKNOWN_FIELD', () => {
+    expect(codesOf(search({ judge: { kind: 'search', opponent: 'run', depth: 3 } }))).toEqual([
+      'UNKNOWN_FIELD',
+    ]);
+  });
+
+  it('AC 10: search judging needs a capture goal', () => {
+    expect(errorsOf(search({ goal: { kind: 'line' } }))).toEqual([
+      expect.objectContaining({ code: 'SEQ_SEARCH_NEEDS_CAPTURE', path: 'exercises[0].goal' }),
+    ]);
+  });
+
+  it('AC 10: search judging has no wrong branches', () => {
+    expect(errorsOf(search({ wrong: [{ line: [B('d3'), W('c4')] }] }))).toEqual([
+      expect.objectContaining({ code: 'SEQ_SEARCH_NO_WRONG', path: 'exercises[0].wrong' }),
+    ]);
+  });
+
+  it('AC 10: a line that ends with a reply is SEQ_SEARCH_LINE_END', () => {
+    const line = [B('c4'), W('d3'), B('e3'), W('d4'), B('d5'), W('e4')];
+    expect(errorsOf(search({ line }))).toContainEqual(
+      expect.objectContaining({ code: 'SEQ_SEARCH_LINE_END', path: 'exercises[0].line' }),
+    );
+  });
+
+  it('AC 11: a learner move the search rejects is SEQ_NOT_FORCED at that move', () => {
+    const line = [B('d3'), W('c4'), B('b4')];
+    expect(errorsOf(search({ line }))).toContainEqual(
+      expect.objectContaining({ code: 'SEQ_NOT_FORCED', path: 'exercises[0].line[0]' }),
+    );
+  });
+
+  it('AC 11: a slow move beyond maxMoves is SEQ_NOT_FORCED', () => {
+    // The e4 detour needs 5 moves: c4 d3 e3 d4 e4 d5 c5 (W passes) e5. Here the reply is wrong
+    // too, but the search stops at the first rejected move.
+    const line = [B('c4'), W('d3'), B('e3'), W('d4'), B('e4'), W('d5'), B('c5')];
+    expect(errorsOf(search({ line }))).toContainEqual(
+      expect.objectContaining({ code: 'SEQ_NOT_FORCED', path: 'exercises[0].line[4]' }),
+    );
+  });
+
+  it('AC 11: a scripted reply that is not the engine reply is SEQ_REPLY_MISMATCH', () => {
+    // After the net e4 the engine shows W d4 (longest resistance tie, lower column), not e3.
+    const line = [B('c4'), W('d3'), B('e4'), W('e3'), B('d4'), W('e2'), B('e1')];
+    expect(errorsOf(search({ line }))).toEqual([
+      expect.objectContaining({ code: 'SEQ_REPLY_MISMATCH', path: 'exercises[0].line[3]' }),
+    ]);
+  });
+
+  it('AC 12: a proof over the node budget is SEQ_NODE_BUDGET', () => {
+    expect(errorsOf(search(), { ...allTexts, searchNodes: 10 })).toEqual([
+      expect.objectContaining({ code: 'SEQ_NODE_BUDGET', path: 'exercises[0]' }),
+    ]);
+  });
+});

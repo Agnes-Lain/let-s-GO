@@ -1,4 +1,5 @@
-// Multi-move problem runner (spec docs/specs/M5-life-death.md §5, AC 14–33): the learner plays,
+// Multi-move problem runner (spec docs/specs/M5-life-death.md §5, AC 14–33; search-judged
+// problems: docs/specs/M5-sequence-v2.md AC 14–24): the learner plays,
 // the opponent answers by itself, until the line is complete. All judging is in ../sequence.ts;
 // this file only schedules the automatic stones and draws the screen.
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -30,7 +31,7 @@ import {
   advance,
   answerStones,
   capturedSince,
-  expectedPoint,
+  hintPoint,
   judgeSequence,
   learnerMoveCount,
   moveNumber,
@@ -87,6 +88,7 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
   const markers = useMemo(() => toStepMarkers(exercise.markers, size), [exercise, size]);
 
   const [progress, setProgress] = useState<SequenceProgress>(start);
+
   const [shown, setShown] = useState<Shown>({ state: start.state, lastMove: null, capture: null });
   const [phase, setPhase] = useState<Phase>('play');
   const [mistake, setMistake] = useState<Mistake | null>(null);
@@ -196,14 +198,24 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
           mistakeMade(judgement.lines);
         });
         return;
-      case 'wrong':
-        setPhase('wrong');
+      case 'wrong': {
         setMistake({
           point: judgement.move.point,
           recovery: recoveryOf(progress.ply, 'wrong'),
         });
-        mistakeMade(judgement.lines);
+        // Search judging shows the defender's escape first (M5-sequence-v2 AC 17).
+        if (judgement.replies.length === 0) {
+          setPhase('wrong');
+          mistakeMade(judgement.lines);
+          return;
+        }
+        setPhase('replying');
+        schedule(judgement.replies, replyMs, () => {
+          setPhase('wrong');
+          mistakeMade(judgement.lines);
+        });
         return;
+      }
     }
   };
 
@@ -257,7 +269,12 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
   if (attempts.status === 'correct' && shown.lastMove) {
     highlights.push({ kind: 'success', points: [shown.lastMove] });
   }
-  const next = expectedPoint(exercise, progress.ply);
+  // The hint ring follows the position (M5-sequence-v2 AC 20); searched only while the hint is open.
+  const hintOpen = attempts.hintOpen;
+  const next = useMemo(
+    () => (hintOpen ? hintPoint(exercise, progress) : null),
+    [hintOpen, exercise, progress],
+  );
   if (active && attempts.hintOpen && phase === 'play' && next) {
     highlights.push({ kind: 'hint', points: [parseVertex(next, size)] });
   }

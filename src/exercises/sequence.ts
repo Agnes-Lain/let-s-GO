@@ -1,5 +1,8 @@
 // Multi-move problems (spec docs/specs/M5-life-death.md §4 C–D, §9.1): the pure judge of the
 // `sequence` runner. No React, no timers: the runner schedules the replies this returns.
+// Search-judged problems (spec docs/specs/M5-sequence-v2.md §3, AC 14–24) ask src/bot's forced
+// capture search instead of the line; problems without `judge` are judged exactly as before.
+import { judgeAttack, winningMoves, type AttackJudgement, type CaptureProblem } from '@/bot';
 import {
   toVertex,
   type BoardSize,
@@ -37,7 +40,8 @@ interface Played<K extends string> {
   /**
    * `next`: on the line, more learner moves follow the replies. `solved`: the line is complete
    * once the replies are played. `refuted`: a listed wrong first move and its scripted answer.
-   * `wrong`: a legal move off the line (no reply).
+   * `wrong`: a legal move off the line (no reply), or a move the search rejects (with the
+   * reply the search shows, if the defender has one).
    */
   kind: K;
   /** The learner's stone. */
@@ -46,6 +50,8 @@ interface Played<K extends string> {
   replies: SequenceStone[];
   /** Why it is wrong (`refuted`, `wrong`); empty otherwise. */
   lines: FeedbackLine[];
+  /** Search judging only: the position after the defender passed (no reply stone). */
+  end?: GameState;
 }
 
 export type SequenceJudgement =
@@ -55,9 +61,15 @@ export type SequenceJudgement =
   | Played<'refuted'>
   | Played<'wrong'>;
 
-/** Learner moves in the problem: m = ceil(line.length / 2). */
+/** Whether the search judges the learner's moves (M5-sequence-v2 §3.6). */
+export function isSearchJudged(exercise: SequenceExercise): boolean {
+  return exercise.judge?.kind === 'search';
+}
+
+/** Learner moves in the problem: m = ceil(line.length / 2), or the search's `maxMoves`. */
 export function learnerMoveCount(exercise: SequenceExercise): number {
-  return Math.ceil(exercise.line.length / 2);
+  const least = Math.ceil(exercise.line.length / 2);
+  return exercise.judge?.kind === 'search' ? (exercise.judge.maxMoves ?? least) : least;
 }
 
 /** "Move n of m": the learner's move number at `ply` (1-based, never above m). */
@@ -125,6 +137,8 @@ export function judgeSequence(
     state: result.state,
   };
 
+  if (isSearchJudged(exercise)) return judgeBySearch(exercise, progress, at);
+
   const expected = exercise.line[ply];
   if (expected && expected.at === at) {
     const reply = exercise.line[ply + 1];
@@ -147,8 +161,98 @@ export function judgeSequence(
   return { kind: 'wrong', move, replies: [], lines: offLineFeedback(exercise, move.state) };
 }
 
+/** The search question at `progress`: capture the target with the learner moves left. */
+function captureProblem(exercise: SequenceExercise, progress: SequenceProgress): CaptureProblem {
+  const target = exercise.goal.kind === 'capture' ? exercise.goal.target : '';
+  return {
+    attacker: progress.state.toPlay,
+    target,
+    maxMoves: learnerMoveCount(exercise) - progress.ply / 2,
+  };
+}
+
+/** AC 15–19: any legal move the search accepts goes on; a rejected one shows the reply + facts. */
+function judgeBySearch(
+  exercise: SequenceExercise,
+  progress: SequenceProgress,
+  at: Vertex,
+): SequenceJudgement {
+  const judged = judgeAttack(progress.state, captureProblem(exercise, progress), at);
+  // The caller checked legality with the same engine.
+  if (!judged.ok) return { kind: 'illegal', reason: judged.reason };
+  const move: SequenceStone = {
+    color: judged.facts.color,
+    point: judged.facts.point,
+    facts: judged.facts,
+    state: judged.state,
+  };
+  if (judged.captured) return { kind: 'solved', move, replies: [], lines: [] };
+  const reply = judged.reply;
+  const replies: SequenceStone[] =
+    reply.kind === 'play'
+      ? [{ color: reply.facts.color, point: reply.point, facts: reply.facts, state: reply.state }]
+      : [];
+  const end = reply.kind === 'pass' ? { end: reply.state } : {};
+  if (judged.forced) return { kind: 'next', move, replies, lines: [], ...end };
+  return { kind: 'wrong', move, replies, lines: searchFeedback(exercise, judged), ...end };
+}
+
+/** AC 18: engine facts about a rejected move, in order (all that apply). */
+function searchFeedback(
+  exercise: SequenceExercise,
+  judged: Extract<AttackJudgement, { ok: true }>,
+): FeedbackLine[] {
+  const target = exercise.goal.kind === 'capture' ? exercise.goal.target : null;
+  if (!target) return [];
+  const lines: FeedbackLine[] = [];
+  const libsAfterMove = libertyVertices(judged.state, target)?.length ?? 0;
+  if (libsAfterMove === 1) lines.push({ key: 'sequence.wrong.atariButEscapes' });
+  const reply = judged.reply;
+  if (reply.kind === 'play') {
+    const chasers = reply.facts.captured.flat().length;
+    if (chasers > 0) {
+      lines.push({ key: 'sequence.wrong.chaserCaptured', params: { count: chasers } });
+    } else {
+      const libs = libertyVertices(reply.state, target)?.length ?? 0;
+      lines.push({ key: 'sequence.wrong.afterReply', params: { count: libs } });
+    }
+  } else {
+    lines.push({ key: 'sequence.wrong.liberties', params: { count: libsAfterMove } });
+  }
+  return lines;
+}
+
+/** Whether the moves played so far are the first `ply` moves of the line. */
+function onLine(exercise: SequenceExercise, progress: SequenceProgress): boolean {
+  const { ply, state } = progress;
+  if (ply === 0) return true;
+  const played = state.moves.slice(-ply);
+  if (played.length !== ply) return false;
+  const size = state.board.size as BoardSize;
+  return played.every((m, i) => {
+    const expected = exercise.line[i];
+    return (
+      m.type === 'play' && m.color === expected?.color && toVertex(m.point, size) === expected.at
+    );
+  });
+}
+
+/**
+ * The hint ring (AC 20): `line[ply]` while the position follows the line; for a search-judged
+ * problem that left the line, the first winning move of the search (fewest moves to capture,
+ * then lowest column, then lowest row).
+ */
+export function hintPoint(exercise: SequenceExercise, progress: SequenceProgress): Vertex | null {
+  if (!isSearchJudged(exercise) || onLine(exercise, progress)) {
+    return expectedPoint(exercise, progress.ply);
+  }
+  const best = winningMoves(progress.state, captureProblem(exercise, progress)).moves[0];
+  return best ? toVertex(best.point, progress.state.board.size as BoardSize) : null;
+}
+
 /** The position after a judged move and its replies (where the learner continues from). */
 export function positionAfter(judgement: Exclude<SequenceJudgement, { kind: 'illegal' }>) {
+  if (judgement.end) return judgement.end;
   const last = judgement.replies[judgement.replies.length - 1] ?? judgement.move;
   return last.state;
 }
