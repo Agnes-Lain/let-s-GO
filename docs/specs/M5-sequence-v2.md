@@ -80,7 +80,7 @@ Authors may raise `maxMoves` when a detour is a genuine teaching alternative. Fo
 **A. Search**
 1. Given 5×5 B b3 c2 d2, W c3, B to play, target c3, maxMoves 4, when `forcedCapture` runs, then it returns forced = true, and the winning first
    moves are exactly {c4}; d3 is not winning (after W c4 the group c3-c4 has liberties b4 c5 d4 = 3, and every further atari lets White extend again).
-2. Given the position after B c4 W d3 (4 → 3 moves left), then winning moves are exactly {e3, d4}.
+2. Given the position after B c4 W d3 (4 → 3 moves left), then winning moves are exactly {e3, d4, e4} (e4 = the net 枷, §9b.1; PO-approved 2026-10-20).
 3. Given the position after c4 d3 e3 d4 (2 left), then winning = {d5}; e4 is not winning (after W d5 the group has 2 liberties c5 e5, 1 move left).
 4. Given the position after c4 d3 d4 e3 (2 left), then winning = {e4, e2}.
 5. Given the position after c4 d3 e3 d4 e4 d5 (3 Black moves played, maxMoves 5, so 2 left), then B e5 is **not** winning (W e2 captures e3 e4 e5 and escapes) and B c5 is
@@ -130,9 +130,9 @@ Authors may raise `maxMoves` when a detour is a genuine teaching alternative. Fo
 26. Then each new exercise has `promptKey`, `hintKey`, `hintPoints` (the first move), `explainKey`; all text keys exist in zh-CN, en, fr within limits (zh ≤ 70, en/fr ≤ 160 characters);
     the five new `sequence.wrong.*` keys of §5 exist in all three files with the plural suffixes of `sequence.wrong.liberties`.
 27. Then the accepted-move sets are exactly (test pins them, per position reached along the line and along the d4/f6/e3-flip branches):
-    `ladder-play`: move 1 {c4}; move 2 {e3, d4}; move 3 after e3 {d5}, after d4 {e4, e2}; move 4 {e5} / {e1} / {e5}.
-    `ladder-play-corner`: move 1 {e6}; 2 {g5, f6}; 3 after g5 {f7}, after f6 {g6, g4}; 4 {g7} / {g3} / {g7}.
-    `r-ladder-play`: move 1 {c2}; 2 {e3, d2}; 3 after e3 {d1}, after d2 {e2, e4}; 4 {e1} / {e5} / {e1}.
+    `ladder-play`: move 1 {c4}; move 2 {e3, d4, e4 (net)}; move 3 after e3 {d5}, after d4 {e4, e2}; move 4 {e5} / {e1} / {e5}; after the net: reply d4, then {d5}, then {e2}.
+    `ladder-play-corner`: move 1 {e6}; 2 {g5, f6, g6 (net)}; 3 after g5 {f7}, after f6 {g6, g4}; 4 {g7} / {g3} / {g7}; after the net: reply f6, then {f7}, then {g4}.
+    `r-ladder-play`: move 1 {c2}; 2 {e3, d2, e2 (net)}; 3 after e3 {d1}, after d2 {e2, e4}; 4 {e1} / {e5} / {e1}; after the net: reply d2, then {d1}, then {e4}.
 28. Then every existing test that counts Unit 9 or review exercises (7 / 8) is updated; Unit 9 and the review still unlock and score by the unchanged M3 star rules (`STAR_RULES`).
 
 **E. Quality**
@@ -248,6 +248,7 @@ search in `src/bot/forcedCapture.ts`.
    Follow-ups pinned in `__tests__/m5-sequence-v2.test.ts`: after the net the displayed reply is d4 / f6 / d2 (equal
    resistance, lower column), then {d5} / {f7} / {d1}, then {e2} / {g4} / {e4}. No content change; the line, the hint
    (the line while on it) and the revealed answer never show the net. AC 1 and AC 3–5 hold exactly as written.
+   **PO (2026-10-20): accepted** — the net counts as correct; AC 2 and AC 27 amended.
 2. **zh-CN `sequence.wrong.atariButEscapes`** is 这是叫吃，但这块棋还能逃出。 (the §5 table had 白棋, which breaks the
    rule "White/Black is never named in these lines").
 3. **fr texts** use a non-breaking space before ":" (`e8.explain`, `review.e9.explain`, `chaserCaptured_*`), as the
