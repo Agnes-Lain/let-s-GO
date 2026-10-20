@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>M5 item 3 mockup - sequence runner (360x740)</title>
+    <style>
+      :root {
+        --background: #f4f1ea;
+        --sky: #dce6ea;
+        --surface: #fffdf8;
+        --border: #e3ddd0;
+        --text: #26292b;
+        --text2: #5e6a6e;
+        --accent: #3e6461;
+        --success: #56764a;
+        --error: #a8443f;
+        --hint: #9a5f22;
+        --hintSoft: #f3e3cc;
+        --bamboo: #e8d3a0;
+        --line: #33281b;
+        --black: #22252a;
+        --white: #f7f5ee;
+        --whiteEdge: #8f8c80;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #ddd;
+        font:
+          16px/24px system-ui,
+          sans-serif;
+        color: var(--text);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      p.note {
+        margin: 0 0 16px;
+        color: #444;
+        max-width: 900px;
+      }
+      .row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .phone {
+        width: 360px;
+        height: 740px;
+        background: linear-gradient(var(--sky), var(--background) 160px);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 8px #0003;
+      }
+      .cap {
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+        width: 360px;
+        margin-bottom: 4px;
+      }
+      .top {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .x {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: var(--text2);
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dots i {
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        background: var(--border);
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .card {
+        margin: 0 16px 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+      }
+      .move {
+        margin: 0 16px 8px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text2);
+      }
+      .move b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .move .d {
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        border: 1.5px solid var(--text2);
+      }
+      .move .d.on {
+        background: var(--text2);
+      }
+      .board {
+        margin: 0 16px;
+        width: 328px;
+        height: 328px;
+      }
+      .board svg {
+        display: block;
+      }
+      .fb {
+        margin: 8px 16px 0;
+        min-height: 72px;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 15px;
+        line-height: 22px;
+      }
+      .fb.err {
+        background: #fff;
+        border: 1px solid var(--error);
+        color: var(--text);
+      }
+      .fb.ok {
+        background: #fff;
+        border: 1px solid var(--success);
+      }
+      .fb.wait {
+        color: var(--text2);
+      }
+      .fb.empty {
+        visibility: hidden;
+      }
+      .btns {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 24px;
+        display: flex;
+        gap: 12px;
+      }
+      .btn {
+        flex: 1;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+      }
+      .btn.pri {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn.hint {
+        background: var(--hintSoft);
+        color: var(--hint);
+        border-color: var(--hint);
+      }
+      .btn.dis {
+        opacity: 0.45;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      M5 item 3 - sequence runner, 4 states (exercise u11-vital "kill-straight", White to play)
+    </h1>
+    <p class="note">
+      Positions are the hand-checked problem of spec section 7.3 (5x5, no coordinates). Colours are
+      the tokens of src/theme/tokens.ts. Board 328 px wide, 65.6 px cells; every button 48 px high.
+      The dashed rouge ring marks the learner's mistaken stone, the green ring the last correct
+      stone.
+    </p>
+    <div class="row" id="row"></div>
+    <script>
+      const COLS = 'abcde';
+      const pt = (v) => ({ x: COLS.indexOf(v[0]), y: 5 - Number(v[1]) });
+      function board(black, white, opts = {}) {
+        const W = 328,
+          c = W / 5,
+          s = [];
+        s.push(`<rect width="${W}" height="${W}" rx="8" fill="#e8d3a0"/>`);
+        // lighter bamboo grain (PO feedback): 8 strips, alternating #ebd8a8 / #e3cd98, faint nodes #d9c288
+        for (let i = 0; i < 8; i++)
+          s.push(
+            `<rect x="${(i * W) / 8}" width="${W / 8}" height="${W}" fill="${i % 2 ? '#e3cd98' : '#ebd8a8'}"/>`,
+          );
+        for (let i = 0; i < 8; i++)
+          s.push(
+            `<rect x="${(i * W) / 8}" y="${(0.15 + 0.1 * ((i * 3) % 7)) * W}" width="${W / 8}" height="2" fill="#d9c288"/>`,
+          );
+        for (let i = 0; i < 5; i++) {
+          const p = (i + 0.5) * c;
+          s.push(
+            `<line x1="${c / 2}" y1="${p}" x2="${W - c / 2}" y2="${p}" stroke="#33281b" stroke-width="1"/><line x1="${p}" y1="${c / 2}" x2="${p}" y2="${W - c / 2}" stroke="#33281b" stroke-width="1"/>`,
+          );
+        }
+        const stone = (v, col, extra = '') => {
+          const { x, y } = pt(v);
+          const fill = col === 'B' ? '#22252a' : '#f7f5ee';
+          return `<circle cx="${(x + 0.5) * c}" cy="${(y + 0.5) * c}" r="${c * 0.46}" fill="${fill}" stroke="${col === 'W' ? '#6b675c' : 'none'}" stroke-width="1.5" ${extra}/>`;
+        };
+        black.forEach((v) => s.push(stone(v, 'B', opts.dim ? 'opacity=".9"' : '')));
+        white.forEach((v) => s.push(stone(v, 'W')));
+        (opts.ring || []).forEach(([v, kind]) => {
+          const { x, y } = pt(v);
+          s.push(
+            `<circle cx="${(x + 0.5) * c}" cy="${(y + 0.5) * c}" r="${c * 0.5}" fill="none" stroke="${kind === 'err' ? '#a8443f' : kind === 'ok' ? '#56764a' : '#9a5f22'}" stroke-width="3" ${kind === 'err' ? 'stroke-dasharray="6 5"' : ''}/>`,
+          );
+        });
+        (opts.last || []).forEach((v) => {
+          const { x, y } = pt(v);
+          s.push(
+            `<circle cx="${(x + 0.5) * c}" cy="${(y + 0.5) * c}" r="${c * 0.14}" fill="none" stroke="#9a5f22" stroke-width="2"/>`,
+          );
+        });
+        return `<svg width="${W}" height="${W}" viewBox="0 0 ${W} ${W}">${s.join('')}</svg>`;
+      }
+      const baseB = ['a2', 'b2', 'c2', 'd2', 'd1'],
+        baseW = ['a3', 'b3', 'c3', 'd3', 'e3', 'e2', 'e1'];
+      const top = (n) =>
+        `<div class="top"><div class="x">&#x2715;</div><div class="dots">${[0, 1, 2, 3, 4, 5].map((i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div></div>`;
+      const prompt = `<div class="card">White to play and kill the black group.</div>`;
+      const move = (n, m, who) =>
+        `<div class="move"><b>Move ${n} of ${m}</b><span class="d ${n > 1 ? 'on' : ''}"></span><span class="d ${n > 2 ? 'on' : ''}"></span><span style="margin-left:auto">${who}</span></div>`;
+      const frames = [
+        [
+          'A. Learner to play (hint open: amber ring on the vital point)',
+          top(1) +
+            prompt +
+            move(1, 2, 'Your move') +
+            `<div class="board">${board(baseB, baseW, { ring: [['b1', 'hint']] })}</div><div class="fb wait">Play the middle of the three points.</div>` +
+            `<div class="btns"><div class="btn hint">Hint</div></div>`,
+        ],
+        [
+          'B. Learner played b1; Black replies after 500 ms (board locked, status text, aria-live)',
+          top(1) +
+            prompt +
+            move(1, 2, 'Black replies...') +
+            `<div class="board">${board(baseB, [...baseW, 'b1'], { last: ['b1'] })}</div><div class="fb empty">.</div>` +
+            `<div class="btns"><div class="btn hint dis">Hint</div></div>`,
+        ],
+        [
+          'C. Wrong first move a1: scripted refutation b1 (captures a1) was played; Try again rewinds to A (1 of 3 tries)',
+          top(1) +
+            prompt +
+            move(1, 2, '') +
+            `<div class="board">${board(baseB.concat('b1'), baseW, { ring: [['a1', 'err']], last: ['b1'] })}</div><div class="fb err">Black b1 captures your stone and makes two eyes: alive.</div>` +
+            `<div class="btns"><div class="btn hint">Hint</div><div class="btn pri">Try again</div></div>`,
+        ],
+        [
+          'D. Success: c1 captured the whole group (6 stones); green ring on the last stone; Next',
+          top(2) +
+            prompt +
+            move(2, 2, 'Done') +
+            `<div class="board">${board([], [...baseW, 'b1', 'c1'], { ring: [['c1', 'ok']] })}</div><div class="fb ok">You captured 6 stones. b1 is the vital point: Black cannot make two eyes.</div>` +
+            `<div class="btns"><div class="btn pri">Next</div></div>`,
+        ],
+      ];
+      // App-wide layout rule (spec 5.0): instructions on top, board in the middle, feedback + actions at the bottom.
+      const stepText = `<div class="card" style="min-height:96px">Black b1 splits the three empty points into two eyes (&#x4E24;&#x773C; li&#x01CE;ngy&#x01CE;n): a1 and c1.</div>`;
+      frames.push(
+        [
+          'E. Explanation step (CHANGED: text card moved ABOVE the board, Replay under it, Back/Next at the bottom)',
+          `<div class="top"><div class="x">&#x2715;</div><div class="dots">${[0, 1, 2].map((i) => `<i class="${i < 2 ? 'on' : ''}"></i>`).join('')}</div></div>` +
+            stepText +
+            `<div class="board">${board([...baseB, 'b1'], baseW, { last: ['b1'] })}</div><div class="move" style="margin-top:8px"><b style="color:var(--accent)">&#x21BB; Replay</b></div>` +
+            `<div class="btns"><div class="btn">Back</div><div class="btn pri">Next</div></div>`,
+        ],
+        [
+          'F. Capture Go 9x9 (CHANGED: goal prompt now ALWAYS on top, above score row; feedback card under the board). Board 328 px, cells 36 px',
+          top(0) +
+            `<div class="card" style="padding:8px 16px">Capture 3 stones first.</div>` +
+            `<div class="move" style="height:36px"><b>You 1 / 3</b><span style="margin-left:auto"><b>Bot 0 / 3</b></span></div>` +
+            `<div class="board" style="background:#e8d3a0;border-radius:8px"><svg width="328" height="328" viewBox="0 0 328 328">` +
+            [...Array(9).keys()]
+              .map(
+                (i) =>
+                  `<line x1="18" y1="${18 + i * 36.5}" x2="310" y2="${18 + i * 36.5}" stroke="#33281b"/><line x1="${18 + i * 36.5}" y1="18" x2="${18 + i * 36.5}" y2="310" stroke="#33281b"/>`,
+              )
+              .join('') +
+            `<circle cx="164" cy="164" r="16" fill="#22252a"/><circle cx="200" cy="164" r="16" fill="#f7f5ee" stroke="#6b675c" stroke-width="1.5"/></svg></div>` +
+            `<div class="fb wait">Your turn.</div><div class="btns"><div class="btn hint">Hint</div></div>`,
+        ],
+      );
+      document.getElementById('row').innerHTML = frames
+        .map(
+          ([cap, html]) =>
+            `<div><div class="cap">${cap}</div><div class="phone">${html}</div></div>`,
+        )
+        .join('');
+    </script>
+  </body>
+</html>

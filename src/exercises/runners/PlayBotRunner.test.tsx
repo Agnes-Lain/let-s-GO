@@ -67,6 +67,21 @@ const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 740 },
   insets: { top: 0, left: 0, right: 0, bottom: 0 },
 };
+/** Position of the element with `testID` in render (top-to-bottom) order. */
+function treeIndex(testID: string): number {
+  const ids: string[] = [];
+  const walk = (node: unknown) => {
+    if (!node || typeof node !== 'object') return;
+    const n = node as { props?: { testID?: string }; children?: unknown[] };
+    if (n.props?.testID) ids.push(n.props.testID);
+    (n.children ?? []).forEach(walk);
+  };
+  walk(screen.toJSON());
+  return ids.indexOf(testID);
+}
+const isAscending = (list: number[]) =>
+  list.every((v, i) => v >= 0 && (i === 0 || v > list[i - 1]));
+
 const onDone = jest.fn();
 const onClose = jest.fn();
 
@@ -340,9 +355,22 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
     expect(screen.getByText('Your turn')).toBeOnTheScreen();
   });
 
-  it('the goal sentence shows before the first move', async () => {
+  // Updated by M5 item 3 (M5-life-death AC 42): the goal is a card above the board for the whole
+  // game; the feedback card below no longer repeats it.
+  it('AC 42: the goal card is above the score row and the board, before and after a move', async () => {
     await show(game());
-    expect(feedbackText()).toBe(texts['lesson.u06-capture-go.e1.prompt']);
+    const goal = () => screen.getByTestId('game-goal');
+    expect(goal()).toHaveTextContent(texts['lesson.u06-capture-go.e1.prompt']);
+    expect(feedbackText()).toBe('');
+    const order = () =>
+      ['game-goal', 'game-score-you', 'practice-board', 'practice-feedback'].map((id) =>
+        treeIndex(id),
+      );
+    expect(isAscending(order())).toBe(true);
+    await tap('e5');
+    expect(goal()).toHaveTextContent(texts['lesson.u06-capture-go.e1.prompt']);
+    expect(feedbackText()).not.toContain(texts['lesson.u06-capture-go.e1.prompt']);
+    expect(isAscending(order())).toBe(true);
   });
 
   it('AC 51: Hint shows the tip, the engine sentence and pulses the point; it costs clean', async () => {

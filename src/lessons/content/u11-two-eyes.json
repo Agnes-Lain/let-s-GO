@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "id": "u11-two-eyes",
+  "unit": 11,
+  "kind": "lesson",
+  "titleKey": "lesson.u11-two-eyes.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": { "size": 5, "setup": { "B": ["a2", "b2", "b1"], "W": ["a3", "b3", "c2"] } },
+      "moves": [
+        { "color": "W", "at": "c1" },
+        { "color": "B", "at": "e5" },
+        { "color": "W", "at": "a1" }
+      ],
+      "textKey": "lesson.u11-two-eyes.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a2", "b2", "c2", "d2", "d1"],
+          "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+        }
+      },
+      "moves": [{ "color": "B", "at": "b1" }],
+      "textKey": "lesson.u11-two-eyes.s2"
+    },
+    {
+      "markers": [
+        { "kind": "triangle", "at": "a1" },
+        { "kind": "triangle", "at": "c1" }
+      ],
+      "textKey": "lesson.u11-two-eyes.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "count-eyes",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1", "b1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "answer": 2,
+      "markers": [{ "kind": "triangle", "at": "a2" }],
+      "promptKey": "lesson.u11-two-eyes.e1.prompt",
+      "hintKey": "lesson.u11-two-eyes.e1.hint",
+      "explainKey": "lesson.u11-two-eyes.e1.explain"
+    },
+    {
+      "id": "one-eye",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["a2", "b2", "b1"], "W": ["a3", "b3", "c2"] },
+      "options": [
+        { "textKey": "lesson.u11-two-eyes.e2.o1", "correct": true },
+        { "textKey": "lesson.u11-two-eyes.e2.o2", "whyKey": "lesson.u11-two-eyes.e2.w2" }
+      ],
+      "markers": [{ "kind": "triangle", "at": "a2" }],
+      "promptKey": "lesson.u11-two-eyes.e2.prompt",
+      "explainKey": "lesson.u11-two-eyes.e2.explain"
+    },
+    {
+      "id": "make-two",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "mode": "one",
+      "answer": { "points": ["b1"] },
+      "promptKey": "lesson.u11-two-eyes.e3.prompt",
+      "hintKey": "lesson.u11-two-eyes.e3.hint",
+      "hintPoints": ["b1"],
+      "explainKey": "lesson.u11-two-eyes.e3.explain"
+    },
+    {
+      "id": "cannot-play",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1", "b1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "mode": "all",
+      "answer": { "points": ["a1", "c1"] },
+      "promptKey": "lesson.u11-two-eyes.e4.prompt",
+      "hintKey": "lesson.u11-two-eyes.e4.hint",
+      "explainKey": "lesson.u11-two-eyes.e4.explain"
+    },
+    {
+      "id": "one-big-eye",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1", "a1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "answer": 1,
+      "markers": [{ "kind": "triangle", "at": "a2" }],
+      "promptKey": "lesson.u11-two-eyes.e5.prompt",
+      "hintKey": "lesson.u11-two-eyes.e5.hint",
+      "explainKey": "lesson.u11-two-eyes.e5.explain"
+    },
+    {
+      "id": "after-vital",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1", "b1"]
+      },
+      "options": [
+        { "textKey": "lesson.u11-two-eyes.e6.o1", "whyKey": "lesson.u11-two-eyes.e6.w1" },
+        { "textKey": "lesson.u11-two-eyes.e6.o2", "correct": true }
+      ],
+      "promptKey": "lesson.u11-two-eyes.e6.prompt",
+      "explainKey": "lesson.u11-two-eyes.e6.explain"
+    }
+  ]
+}

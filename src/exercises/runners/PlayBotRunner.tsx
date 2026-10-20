@@ -35,7 +35,7 @@ import {
 import { checkExerciseMove } from '../engineAdapter';
 import { FeedbackCard, type FeedbackText, type FeedbackTone } from '../ExerciseFrame';
 import { ExerciseTopBar } from '../ExerciseTopBar';
-import { gameBoardWidth } from '../layout';
+import { GAME_GOAL_HEIGHT, gameBoardWidth } from '../layout';
 
 type Props = {
   exercise: PlayBotExercise;
@@ -89,9 +89,8 @@ function feedbackFor(g: BotGame, exercise: PlayBotExercise, t: T): FeedbackText[
     return lines;
   }
   if (g.note) return [{ text: t(g.note.key, g.note.params), tone: toneOf(g.note) }];
-  // Before the learner's first move the card states the goal (the game screen has no prompt).
-  const learnerMoved = g.game.moves.some((m) => m.color === g.learner);
-  return learnerMoved ? [] : [{ text: t(exercise.promptKey), tone: 'hint' }];
+  // The goal is on the goal card above the board (M5-life-death AC 42), never repeated here.
+  return [];
 }
 
 export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Props) {
@@ -183,6 +182,15 @@ export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Prop
         }}
       />
       <View style={styles.body}>
+        {/* The goal card stays on top for the whole game (M5-life-death §5.6, AC 42); the end
+            card replaces it once the game is over, so the board never changes size. */}
+        {cardVisible ? null : (
+          <View style={styles.goal} testID="game-goal">
+            <Text style={styles.goalText} numberOfLines={2}>
+              {t(exercise.promptKey)}
+            </Text>
+          </View>
+        )}
         <View style={styles.score}>
           <ScoreHalf
             name={t('game.you')}
@@ -463,6 +471,17 @@ function EndCard({
 
 const styles = StyleSheet.create({
   body: { flex: 1, gap: spacing.sm },
+  goal: {
+    minHeight: GAME_GOAL_HEIGHT,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xs,
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.md,
+  },
+  goalText: { fontSize: 15, lineHeight: 20, color: color.textPrimary },
   score: { flexDirection: 'row', gap: spacing.sm },
   half: {
     flex: 1,

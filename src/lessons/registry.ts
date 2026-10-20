@@ -18,6 +18,10 @@ import u07Forbidden from './content/u07-forbidden.json';
 import u08Ko from './content/u08-ko.json';
 import u09Ladder from './content/u09-ladder.json';
 import u09Review from './content/u09-review.json';
+import u10Eyes from './content/u10-eyes.json';
+import u11Review from './content/u11-review.json';
+import u11TwoEyes from './content/u11-two-eyes.json';
+import u11Vital from './content/u11-vital.json';
 import type { Language } from './schema';
 
 export const LESSON_FILES: readonly unknown[] = [
@@ -34,6 +38,10 @@ export const LESSON_FILES: readonly unknown[] = [
   u08Ko,
   u09Ladder,
   u09Review,
+  u10Eyes,
+  u11TwoEyes,
+  u11Vital,
+  u11Review,
 ];
 
 export const LESSON_TEXTS: Readonly<Record<Language, Readonly<Record<string, string>>>> = {

@@ -3,7 +3,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { SAMPLE_UNIT, getUnits, mapRows, nextNode, type MapNode, type MapRow } from '@/lessons';
+import {
+  SAMPLE_UNIT,
+  getUnits,
+  mapRows,
+  nextNode,
+  nodeTitleKey,
+  type MapNode,
+  type MapRow,
+} from '@/lessons';
 import { useProgress } from '@/store';
 import { ChevronIcon, LockIcon, PlayIcon, StarIcon } from '@/theme/icons';
 import { color, radius, spacing, stone, typography } from '@/theme/tokens';
@@ -28,24 +36,29 @@ export function useHomeMap() {
   const hydrated = useProgress((s) => s.hydrated);
   const lessons = useProgress((s) => s.lessons);
   const units = useMemo(() => getUnits(), []);
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    const next = nextNode(units, lessons);
+    return {
       hydrated,
       rows: mapRows(units, lessons),
-      next: nextNode(units, lessons),
+      next,
+      /** The Continue card's title: the unit title, or a later lesson's / checkpoint's own. */
+      nextTitleKey: next ? nodeTitleKey(units, next) : null,
       started: Object.keys(lessons).length > 0,
       hasContent: units.some((u) => u.lesson !== null),
-    }),
-    [hydrated, units, lessons],
-  );
+    };
+  }, [hydrated, units, lessons]);
 }
 
 export function ContinueCard({
   node,
+  titleKey,
   started,
   onPress,
 }: {
   node: MapNode;
+  /** Default: the unit title for a lesson, the checkpoint's title for a checkpoint. */
+  titleKey?: string | null;
   started: boolean;
   onPress: () => void;
 }) {
@@ -55,7 +68,7 @@ export function ContinueCard({
     node.kind === 'lesson' && node.unit === SAMPLE_UNIT
       ? captionOf({ kind: 'unit', unit: node.unit }, t)
       : `${captionOf({ kind: node.kind === 'lesson' ? 'unit' : 'checkpoint', unit: node.unit }, t)} · ${t(
-          node.kind === 'lesson' ? `unit.${node.unit}.title` : node.lesson.titleKey,
+          titleKey ?? (node.kind === 'lesson' ? `unit.${node.unit}.title` : node.lesson.titleKey),
         )}`;
   return (
     <Pressable

@@ -57,7 +57,18 @@ export function practiceBoardWidth(
  */
 export const GAME_FIXED_HEIGHT = 52 + 64 + 44 + 8 + 132 + 8 + 48 + 16;
 
+/** The Capture Go goal card above the score row (M5-life-death §5.6, AC 42). */
+export const GAME_GOAL_HEIGHT = 48;
+
+/**
+ * Capture Go budget while playing (M5 §5.6): top bar 52, goal card 48 + 8, score 56 + 8, turn-pill
+ * slot 36 + 8, gap 8, feedback 72, gap 8, Restart 44, bottom padding 16. The end card replaces the
+ * goal card, so the end state keeps GAME_FIXED_HEIGHT.
+ */
+export const GAME_PLAYING_FIXED_HEIGHT = 52 + GAME_GOAL_HEIGHT + 8 + 64 + 44 + 8 + 72 + 8 + 44 + 16;
+
 /** Board width on the game screen: the M2 rule, limited by the free height (328 px at 360×740). */
 export function gameBoardWidth(window: { width: number; height: number }): number {
-  return Math.max(0, Math.min(boardWidthFor(window.width), window.height - GAME_FIXED_HEIGHT));
+  const fixed = Math.max(GAME_FIXED_HEIGHT, GAME_PLAYING_FIXED_HEIGHT);
+  return Math.max(0, Math.min(boardWidthFor(window.width), window.height - fixed));
 }

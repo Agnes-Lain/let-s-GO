@@ -176,6 +176,8 @@ describe('explanation player (sample)', () => {
     expect(router.getPathname()).toBe('/');
   });
 
+  // Updated by M5 item 3 (M5-life-death AC 40, §12b): the text card is above the board and stays
+  // 120 px (4 lines; 96 px would cut 4-line en/fr steps).
   it('AC 57: 328 px board at 360 px; the board area and the 120 px text card never change size', async () => {
     expect(boardWidthFor(360)).toBe(328);
     expect(boardWidthFor(1024)).toBe(480);

@@ -22,6 +22,7 @@ import { ChoiceRunner } from './runners/ChoiceRunner';
 import { CountRunner } from './runners/CountRunner';
 import { PlayBotRunner } from './runners/PlayBotRunner';
 import { PlayMoveRunner } from './runners/PlayMoveRunner';
+import { SequenceRunner } from './runners/SequenceRunner';
 import { TapPointRunner } from './runners/TapPointRunner';
 
 type Props = {
@@ -54,12 +55,11 @@ function feedbackFor(exercise: MoveExercise, attempts: AttemptState, t: T): Feed
 
 type MoveExercise = Exclude<Exercise, PlayBotExercise | SequenceExercise>;
 
-/** One exercise: a Capture Go game (PlayBotRunner) or a move / answer exercise. */
+/** One exercise: a Capture Go game, a multi-move problem (SequenceRunner) or a move / answer exercise. */
 export function ExerciseView(props: Props) {
   const exercise = props.lesson.exercises[props.index];
   if (exercise.type === 'play-bot') return <PlayBotRunner exercise={exercise} {...props} />;
-  // No sequence runner until M5 item 3; no shipped lesson contains one (M5-sgf-import AC 29).
-  if (exercise.type === 'sequence') return null;
+  if (exercise.type === 'sequence') return <SequenceRunner exercise={exercise} {...props} />;
   return <MoveExerciseView exercise={exercise} {...props} />;
 }
 

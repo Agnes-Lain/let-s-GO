@@ -195,7 +195,10 @@ export type Outcome = 'clean' | 'solved' | 'revealed';
 export interface UnitEntry {
   unit: number;
   titleKey: TextKey;
+  /** The unit's first lesson. */
   lesson: Lesson | null;
+  /** Further lessons of the unit, in order (M5-life-death: Unit 11 has two). Default none. */
+  laterLessons?: Lesson[];
   checkpoint: Lesson | null;
 }
 

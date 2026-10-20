@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "id": "u10-eyes",
+  "unit": 10,
+  "kind": "lesson",
+  "titleKey": "lesson.u10-eyes.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": { "size": 5, "setup": { "B": ["b1", "b2", "c2", "d2", "d1"], "W": ["c3"] } },
+      "markers": [{ "kind": "triangle", "at": "c1" }],
+      "textKey": "lesson.u10-eyes.s1"
+    },
+    {
+      "board": { "size": 5, "setup": { "B": ["b1", "c2", "d2", "d1"], "W": ["a1", "a2", "b2"] } },
+      "moves": [{ "color": "W", "at": "c1" }],
+      "markers": [{ "kind": "triangle", "at": "c1" }],
+      "textKey": "lesson.u10-eyes.s2"
+    },
+    {
+      "board": { "size": 5, "setup": { "B": ["a2", "b2", "b1"], "W": ["c1", "c2"] } },
+      "markers": [{ "kind": "triangle", "at": "b2" }],
+      "textKey": "lesson.u10-eyes.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "find-eye",
+      "type": "tap-point",
+      "size": 5,
+      "setup": { "B": ["b1", "b2", "c2", "d2", "d1"], "W": ["c3"] },
+      "mode": "one",
+      "answer": { "points": ["c1"] },
+      "promptKey": "lesson.u10-eyes.e1.prompt",
+      "hintKey": "lesson.u10-eyes.e1.hint",
+      "hintPoints": ["c1"],
+      "explainKey": "lesson.u10-eyes.e1.explain"
+    },
+    {
+      "id": "real-corner",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["a2", "b2", "b1"], "W": ["c2", "c3"] },
+      "options": [
+        { "textKey": "lesson.u10-eyes.o.real", "correct": true },
+        { "textKey": "lesson.u10-eyes.o.false", "whyKey": "lesson.u10-eyes.e2.w2" }
+      ],
+      "markers": [{ "kind": "triangle", "at": "a1" }],
+      "promptKey": "lesson.u10-eyes.e2.prompt",
+      "explainKey": "lesson.u10-eyes.e2.explain"
+    },
+    {
+      "id": "false-edge",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["b1", "c2", "d2", "d1"], "W": ["a1", "a2", "b2"] },
+      "options": [
+        { "textKey": "lesson.u10-eyes.o.real", "whyKey": "lesson.u10-eyes.e3.w1" },
+        { "textKey": "lesson.u10-eyes.o.false", "correct": true }
+      ],
+      "markers": [{ "kind": "triangle", "at": "c1" }],
+      "promptKey": "lesson.u10-eyes.e3.prompt",
+      "explainKey": "lesson.u10-eyes.e3.explain"
+    },
+    {
+      "id": "which-real",
+      "type": "choice",
+      "size": 7,
+      "setup": { "B": ["a2", "b2", "b1", "d1", "e2", "f1"], "W": ["c1", "c2", "d2"] },
+      "options": [
+        { "textKey": "lesson.u10-eyes.e4.o1", "correct": true },
+        { "textKey": "lesson.u10-eyes.e4.o2", "whyKey": "lesson.u10-eyes.e4.w2" }
+      ],
+      "markers": [
+        { "kind": "label", "at": "a1", "text": "A" },
+        { "kind": "label", "at": "e1", "text": "B" }
+      ],
+      "promptKey": "lesson.u10-eyes.e4.prompt",
+      "explainKey": "lesson.u10-eyes.e4.explain"
+    },
+    {
+      "id": "weak-stone",
+      "type": "tap-point",
+      "size": 5,
+      "setup": { "B": ["d1", "c2", "b2", "b1"], "W": ["e1", "e2", "d2"] },
+      "mode": "one",
+      "answer": { "points": ["d1"] },
+      "promptKey": "lesson.u10-eyes.e5.prompt",
+      "hintKey": "lesson.u10-eyes.e5.hint",
+      "hintPoints": ["d1"],
+      "explainKey": "lesson.u10-eyes.e5.explain"
+    },
+    {
+      "id": "capture-cutter",
+      "type": "play-move",
+      "size": 5,
+      "setup": { "B": ["a2", "b1", "c2", "d1", "d2"], "W": ["b2"] },
+      "toPlay": "B",
+      "goal": { "kind": "capture" },
+      "promptKey": "lesson.u10-eyes.e6.prompt",
+      "hintKey": "lesson.u10-eyes.e6.hint",
+      "hintPoints": ["b3"],
+      "explainKey": "lesson.u10-eyes.e6.explain"
+    }
+  ]
+}

@@ -653,7 +653,8 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
     expect(computeStars(run(spec))).toBe(expected);
   });
 
-  it('AC 32: 1★ on 6 → 7, on 7 → 8, on 8 → 9; u09-review after 9 and never gates; 10 is soon', () => {
+  // Updated by M5 item 3: Unit 10 opens after 1★ on Unit 9; Unit 12 is the planned unit.
+  it('AC 32: 1★ on 6 → 7, on 7 → 8, on 8 → 9; u09-review after 9 and never gates; 10 opens', () => {
     expect(isUnlocked(units, stars({ ...toSix, 'u06-capture-go': 0 }), 7)).toBe(false);
     expect(isUnlocked(units, stars(toSix), 7)).toBe(true);
     expect(isUnlocked(units, stars(toSix), 8)).toBe(false);
@@ -665,29 +666,37 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
     const nine = { ...eight, 'u09-ladder': 1 };
     expect(isCheckpointUnlocked(units, stars(nine), 9)).toBe(true);
     const rows = mapRows(units, stars(nine)).map((r) => `${r.key}:${r.state}`);
-    expect(rows.slice(-5)).toEqual([
+    expect(rows.slice(-9)).toEqual([
       'unit-7:done',
       'unit-8:done',
       'unit-9:done',
       'checkpoint-9:available',
-      'unit-10:soon',
+      'unit-10:available',
+      'unit-11:locked',
+      'lesson-u11-vital:locked',
+      'checkpoint-11:locked',
+      'unit-12:soon',
     ]);
   });
 
-  it('AC 33: production units 1–9 have a lesson, 9 a checkpoint, 10 planned, nothing after', () => {
-    expect(PLANNED_UNITS).toEqual([10]);
-    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  // Updated by M5 item 3: Units 10–11 ship, Unit 12 is planned.
+  it('AC 33: production units 1–9 have a lesson, 9 a checkpoint, then 10–11, 12 planned', () => {
+    expect(PLANNED_UNITS).toEqual([12]);
+    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     expect(
       units.slice(6).map((u) => [u.unit, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
     ).toEqual([
       [7, 'u07-forbidden', null],
       [8, 'u08-ko', null],
       [9, 'u09-ladder', 'u09-review'],
-      [10, null, null],
+      [10, 'u10-eyes', null],
+      [11, 'u11-two-eyes', 'u11-review'],
+      [12, null, null],
     ]);
   });
 
-  it('AC 34: Next after u08-ko → u09-ladder → u09-review → Back to map', () => {
+  // Updated by M5 item 3: after u09-review comes Unit 10.
+  it('AC 34: Next after u08-ko → u09-ladder → u09-review → u10-eyes', () => {
     const all = stars({
       ...toSix,
       'u05-review': 1,
@@ -699,12 +708,14 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
     expect(nodeAfter(units, all, 'u07-forbidden')?.lesson.id).toBe('u08-ko');
     expect(nodeAfter(units, all, 'u08-ko')?.lesson.id).toBe('u09-ladder');
     expect(nodeAfter(units, all, 'u09-ladder')?.lesson.id).toBe('u09-review');
-    expect(nodeAfter(units, all, 'u09-review')).toBeNull();
+    expect(nodeAfter(units, all, 'u09-review')?.lesson.id).toBe('u10-eyes');
   });
 
   it('AC 35: everything with ≥ 1★ → nothing left to continue', () => {
     const all = Object.fromEntries(
-      units.flatMap((u) => [u.lesson, u.checkpoint]).flatMap((l) => (l ? [[l.id, 1]] : [])),
+      units
+        .flatMap((u) => [u.lesson, ...(u.laterLessons ?? []), u.checkpoint])
+        .flatMap((l) => (l ? [[l.id, 1]] : [])),
     );
     expect(nextNode(units, stars(all))).toBeNull();
   });

@@ -1,4 +1,5 @@
-// Explanation player (spec §6.2, ACs 45–58): a few board "slides", one sentence each.
+// Explanation player (spec §6.2, ACs 45–58): a few board "slides", one sentence each. Since M5
+// (M5-life-death §5.6) the text card is on top, the board below it, Replay under the board.
 // The board is display-only; moves play by themselves ~500 ms apart (instantly with Reduce Motion).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,9 @@ import { Screen } from '@/theme/Screen';
 import { color, radius, spacing, typography } from '@/theme/tokens';
 
 import { useBoardWidth } from './layout';
+
+/** The explanation text slot above the board: 4 lines, the same in every step (AC 40, §12b: 120 px, not 96). */
+export const TEXT_CARD_HEIGHT = 120;
 
 /** Delay before the first move and between moves (ms). */
 export const MOVE_INTERVAL = 500;
@@ -115,6 +119,14 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
         </View>
       </View>
 
+      <View style={styles.textCard} testID="lesson-text-card">
+        <ScrollView>
+          <Text style={styles.text} testID="lesson-text">
+            {text}
+          </Text>
+        </ScrollView>
+      </View>
+
       <View style={{ width: boardWidth, height: boardWidth }} testID="lesson-board-area">
         <GoBoard
           key={view.run}
@@ -128,14 +140,6 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
           markers={step.markers}
           testID="lesson-board"
         />
-      </View>
-
-      <View style={styles.textCard} testID="lesson-text-card">
-        <ScrollView>
-          <Text style={styles.text} testID="lesson-text">
-            {text}
-          </Text>
-        </ScrollView>
       </View>
 
       <View style={styles.replayRow}>
@@ -203,9 +207,10 @@ const styles = StyleSheet.create({
   dotActive: { backgroundColor: color.accent },
   skipSlot: { minWidth: 44, alignItems: 'flex-end' },
   skip: { paddingHorizontal: 0 },
+  // M5-life-death §5.6 (AC 39–40): the text card sits above the board, in a fixed slot.
   textCard: {
-    height: 120,
-    marginTop: spacing.md,
+    height: TEXT_CARD_HEIGHT,
+    marginBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     backgroundColor: color.surface,

@@ -51,6 +51,7 @@ export default function HomeScreen() {
           ) : map.next ? (
             <ContinueCard
               node={map.next}
+              titleKey={map.nextTitleKey}
               started={map.started}
               onPress={() => map.next && open(map.next.lesson.id)}
             />

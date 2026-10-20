@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "generatedFrom": "content-src/u11-vital.src.json",
+  "id": "u11-vital",
+  "unit": 11,
+  "kind": "lesson",
+  "titleKey": "lesson.u11-vital.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a2", "b2", "c2", "d2", "d1"],
+          "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+        }
+      },
+      "markers": [{ "kind": "triangle", "at": "b1" }],
+      "textKey": "lesson.u11-vital.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a2", "b2", "c2", "d2", "d1"],
+          "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+        }
+      },
+      "moves": [
+        { "color": "W", "at": "b1" },
+        { "color": "B", "at": "a1" },
+        { "color": "W", "at": "c1" }
+      ],
+      "textKey": "lesson.u11-vital.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a3", "b3", "b2", "c2", "c1"],
+          "W": ["a4", "b4", "c4", "c3", "d3", "d2", "d1"]
+        }
+      },
+      "moves": [{ "color": "B", "at": "a1" }],
+      "markers": [{ "kind": "triangle", "at": "a1" }],
+      "textKey": "lesson.u11-vital.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "live-straight",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "mode": "one",
+      "answer": { "points": ["b1"] },
+      "promptKey": "lesson.u11-vital.v1.prompt",
+      "hintKey": "lesson.u11-vital.v1.hint",
+      "hintPoints": ["b1"],
+      "explainKey": "lesson.u11-vital.v1.explain"
+    },
+    {
+      "id": "kill-straight",
+      "type": "sequence",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d1", "d2"],
+        "W": ["a3", "b3", "c3", "d3", "e1", "e2", "e3"]
+      },
+      "toPlay": "W",
+      "goal": { "kind": "capture", "target": "a2" },
+      "promptKey": "lesson.u11-vital.v2.prompt",
+      "hintKey": "lesson.u11-vital.v1.hint",
+      "hintPoints": ["b1"],
+      "explainKey": "lesson.u11-vital.v2.explain",
+      "line": [
+        { "color": "W", "at": "b1" },
+        { "color": "B", "at": "a1" },
+        { "color": "W", "at": "c1" }
+      ],
+      "wrong": [
+        {
+          "line": [
+            { "color": "W", "at": "a1" },
+            { "color": "B", "at": "b1" }
+          ],
+          "whyKey": "lesson.u11-vital.v2.w1"
+        },
+        {
+          "line": [
+            { "color": "W", "at": "c1" },
+            { "color": "B", "at": "b1" }
+          ],
+          "whyKey": "lesson.u11-vital.v2.w1"
+        }
+      ]
+    },
+    {
+      "id": "live-bent",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "b2", "c2", "c1"],
+        "W": ["a4", "b4", "c4", "c3", "d3", "d2", "d1"]
+      },
+      "mode": "one",
+      "answer": { "points": ["a1"] },
+      "promptKey": "lesson.u11-vital.v1.prompt",
+      "hintKey": "lesson.u11-vital.v1.hint",
+      "hintPoints": ["a1"],
+      "explainKey": "lesson.u11-vital.v3.explain"
+    },
+    {
+      "id": "kill-bent-tap",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "b2", "c2", "c1"],
+        "W": ["a4", "b4", "c4", "c3", "d3", "d2", "d1"]
+      },
+      "mode": "one",
+      "answer": { "points": ["a1"] },
+      "promptKey": "lesson.u11-vital.v4.prompt",
+      "hintKey": "lesson.u11-vital.v1.hint",
+      "hintPoints": ["a1"],
+      "explainKey": "lesson.u11-vital.v4.explain"
+    },
+    {
+      "id": "kill-bent",
+      "type": "sequence",
+      "size": 5,
+      "setup": {
+        "B": ["c1", "c2", "d2", "d3", "e3"],
+        "W": ["b1", "b2", "b3", "c3", "c4", "d4", "e4"]
+      },
+      "toPlay": "W",
+      "goal": { "kind": "capture", "target": "e3" },
+      "promptKey": "lesson.u11-vital.v2.prompt",
+      "hintKey": "lesson.u11-vital.v1.hint",
+      "hintPoints": ["e1"],
+      "explainKey": "lesson.u11-vital.v5.explain",
+      "line": [
+        { "color": "W", "at": "e1" },
+        { "color": "B", "at": "e2" },
+        { "color": "W", "at": "d1" }
+      ],
+      "wrong": [
+        {
+          "line": [
+            { "color": "W", "at": "e2" },
+            { "color": "B", "at": "e1" }
+          ],
+          "whyKey": "lesson.u11-vital.v5.w1"
+        },
+        {
+          "line": [
+            { "color": "W", "at": "d1" },
+            { "color": "B", "at": "e1" }
+          ],
+          "whyKey": "lesson.u11-vital.v5.w1"
+        }
+      ]
+    },
+    {
+      "id": "straight-four",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["a2", "b2", "c2", "d2", "e2", "e1"], "W": ["a3", "b3", "c3", "d3", "e3"] },
+      "options": [
+        { "textKey": "lesson.u11-vital.v6.o1", "whyKey": "lesson.u11-vital.v6.w1" },
+        { "textKey": "lesson.u11-vital.v6.o2", "correct": true }
+      ],
+      "promptKey": "lesson.u11-vital.v6.prompt",
+      "explainKey": "lesson.u11-vital.v6.explain"
+    }
+  ]
+}

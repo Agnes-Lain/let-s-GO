@@ -11,7 +11,8 @@ type Props = {
   index: number;
   total: number;
   onClose: () => void;
-  hint: {
+  /** Omitted when the screen has its own Hint button (the sequence runner, M5 AC 30). */
+  hint?: {
     /** The exercise has a hint at all (otherwise the button is dimmed). */
     available: boolean;
     enabled: boolean;
@@ -46,24 +47,28 @@ export function ExerciseTopBar({ index, total, onClose, hint }: Props) {
           />
         ))}
       </View>
-      <Pressable
-        testID="practice-hint"
-        onPress={hint.onPress}
-        disabled={!hint.enabled}
-        accessibilityRole="button"
-        accessibilityLabel={t('practice.hint')}
-        accessibilityState={{ disabled: !hint.enabled, expanded: hint.open }}
-        style={({ pressed }) => [
-          styles.hint,
-          hint.open && styles.hintOpen,
-          !hint.available && styles.hintUnavailable,
-          pressed && styles.pressed,
-        ]}
-      >
-        <Text style={styles.hintLabel} numberOfLines={1}>
-          {t('practice.hint')}
-        </Text>
-      </Pressable>
+      {hint ? (
+        <Pressable
+          testID="practice-hint"
+          onPress={hint.onPress}
+          disabled={!hint.enabled}
+          accessibilityRole="button"
+          accessibilityLabel={t('practice.hint')}
+          accessibilityState={{ disabled: !hint.enabled, expanded: hint.open }}
+          style={({ pressed }) => [
+            styles.hint,
+            hint.open && styles.hintOpen,
+            !hint.available && styles.hintUnavailable,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Text style={styles.hintLabel} numberOfLines={1}>
+            {t('practice.hint')}
+          </Text>
+        </Pressable>
+      ) : (
+        <View style={styles.hintSlot} />
+      )}
     </View>
   );
 }
@@ -94,6 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  hintSlot: { width: tapTarget.min },
   hintOpen: { backgroundColor: color.hintSoft, borderColor: color.hint },
   hintUnavailable: { opacity: 0.4 },
   hintLabel: { ...typography.label, fontSize: 15, color: color.hint },

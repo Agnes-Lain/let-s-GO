@@ -78,7 +78,8 @@ describe('copy table §4 is implemented verbatim', () => {
       /^home\.(continue|start|unit\.label|checkpoint\.label|sample\.label|locked\.hint|node\.a11y\..+|allDone)$/;
     const m0Keys = Object.keys(zhCN).filter(
       (key) =>
-        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game)\./.test(key) &&
+        // sequence.*: the M5 sequence runner (docs/specs/M5-life-death.md §5.4).
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|sequence)\./.test(key) &&
         !m3Home.test(key),
     );
     // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
@@ -127,13 +128,19 @@ describe('every key used in code exists in all languages (and none are orphaned)
 
   it.each(Object.keys(files))('%s defines every key used in code', (language) => {
     for (const key of usedKeys) {
-      expect({ key, defined: key in files[language] }).toEqual({ key, defined: true });
+      const defined = key in files[language] || `${key}_other` in files[language];
+      expect({ key, defined }).toEqual({ key, defined: true });
     }
   });
 
   it('every translation key is used somewhere in code', () => {
     for (const key of Object.keys(zhCN)) {
-      const used = usedKeys.has(key) || dynamicPrefixes.some((prefix) => key.startsWith(prefix));
+      // i18next plural forms (`x_one`, `x_other`) are used through their base key `x` (M5 AC 34).
+      const base = key.replace(/_(one|other)$/, '');
+      const used =
+        usedKeys.has(key) ||
+        usedKeys.has(base) ||
+        dynamicPrefixes.some((prefix) => key.startsWith(prefix));
       expect({ key, used }).toEqual({ key, used: true });
     }
   });

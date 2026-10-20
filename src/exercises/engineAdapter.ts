@@ -12,15 +12,22 @@ import {
   type MoveFacts,
   type PlayResult,
   type Point,
+  type Vertex,
 } from '@/engine';
-import { goalMet, startState, type PlayMoveExercise } from '@/lessons';
+import { goalMet, startState, type PlayMoveExercise, type SequenceExercise } from '@/lessons';
+import { playAs } from '@/lessons/goals';
 
 import type { FeedbackLine } from './attempts';
 import { playMoveFeedback } from './feedback';
 
 /** The exercise's starting position with `toPlay` to move. */
-export function exerciseGame(exercise: PlayMoveExercise): GameState {
+export function exerciseGame(exercise: PlayMoveExercise | SequenceExercise): GameState {
   return startState(exercise, exercise.toPlay);
+}
+
+/** Plays `at` for `color` (sequence lines: the turn is set, a stale ko ban dropped). */
+export function playColor(state: GameState, color: 'B' | 'W', at: Vertex): PlayResult {
+  return playAs(state, color, at);
 }
 
 export function checkExerciseMove(state: GameState, point: Point): CheckResult {

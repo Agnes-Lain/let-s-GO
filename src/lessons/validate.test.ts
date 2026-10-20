@@ -615,15 +615,19 @@ describe('validateCatalog (AC 24)', () => {
     });
   });
 
-  it('reports duplicate ids, two lessons in a unit and an orphan checkpoint', () => {
+  // Updated by M5 item 3 (M5-life-death §3, PO decision 3): a unit may have several lessons
+  // (Unit 11 has two), still at most one checkpoint.
+  it('reports duplicate ids, two checkpoints in a unit and an orphan checkpoint', () => {
     const dup = validateCatalog([lesson('u01-a', 1), lesson('u01-a', 1)]);
-    expect(dup.ok ? [] : dup.errors.map((e) => e.code)).toEqual([
-      'DUPLICATE_LESSON',
-      'UNIT_LESSON_COUNT',
+    expect(dup.ok ? [] : dup.errors.map((e) => e.code)).toEqual(['DUPLICATE_LESSON']);
+    expect(validateCatalog([lesson('u01-a', 1), lesson('u01-b', 1)])).toEqual({ ok: true });
+    const two = validateCatalog([
+      lesson('u01-a', 1),
+      lesson('u01-b', 1, 'checkpoint'),
+      lesson('u01-c', 1, 'checkpoint'),
     ]);
-    const two = validateCatalog([lesson('u01-a', 1), lesson('u01-b', 1)]);
     expect(two.ok ? [] : two.errors.map((e) => e.message)).toEqual([
-      'unit 1 must have exactly one lesson and at most one checkpoint',
+      'unit 1 must have at most one checkpoint',
     ]);
     const orphan = validateCatalog([lesson('u02-c', 2, 'checkpoint')]);
     expect(orphan.ok ? [] : orphan.errors).toEqual([

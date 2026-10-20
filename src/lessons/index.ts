@@ -22,6 +22,7 @@ export {
   newlyUnlockedUnit,
   nextNode,
   starsOf,
+  unitLessons,
 } from './unlock';
 export {
   PLANNED_UNITS,
@@ -44,4 +45,4 @@ export {
   type StepHighlight,
   type StepMarker,
 } from './explain';
-export { mapRows, type MapRow, type NodeState } from './map';
+export { mapRows, nodeTitleKey, type MapRow, type NodeState } from './map';
