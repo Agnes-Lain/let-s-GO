@@ -255,8 +255,11 @@ describe('every shipped sequence is playable by the runner (AC 8)', () => {
       .map((e) => [`${lesson.id}/${e.id}`, e] as const),
   );
 
-  it('ships exactly kill-straight, kill-bent and r-kill (AC 3)', () => {
+  it('ships exactly kill-straight, kill-bent and r-kill (AC 3) + the M5-sequence-v2 ladders', () => {
     expect(all.map(([name]) => name)).toEqual([
+      'u09-ladder/ladder-play',
+      'u09-ladder/ladder-play-corner',
+      'u09-review/r-ladder-play',
       'u11-vital/kill-straight',
       'u11-vital/kill-bent',
       'u11-review/r-kill',

@@ -195,6 +195,58 @@
       ],
       "promptKey": "lesson.u09-review.e8.prompt",
       "explainKey": "lesson.u09-review.e8.explain"
+    },
+    {
+      "id": "r-ladder-play",
+      "type": "sequence",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "c4", "d4"],
+        "W": ["c3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "target": "c3"
+      },
+      "judge": {
+        "kind": "search",
+        "opponent": "run"
+      },
+      "line": [
+        {
+          "color": "B",
+          "at": "c2"
+        },
+        {
+          "color": "W",
+          "at": "d3"
+        },
+        {
+          "color": "B",
+          "at": "e3"
+        },
+        {
+          "color": "W",
+          "at": "d2"
+        },
+        {
+          "color": "B",
+          "at": "d1"
+        },
+        {
+          "color": "W",
+          "at": "e2"
+        },
+        {
+          "color": "B",
+          "at": "e1"
+        }
+      ],
+      "promptKey": "lesson.u09-review.e9.prompt",
+      "hintKey": "lesson.u09-review.e9.hint",
+      "hintPoints": ["c2"],
+      "explainKey": "lesson.u09-review.e9.explain"
     }
   ]
 }

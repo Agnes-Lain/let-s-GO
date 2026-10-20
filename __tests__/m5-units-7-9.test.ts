@@ -43,7 +43,11 @@ const byId = (id: string): Lesson => {
   return lesson;
 };
 const M5 = ['u07-forbidden', 'u08-ko', 'u09-ladder', 'u09-review'] as const;
-const exercise = (id: string, n: number): Exercise => byId(id).exercises[n - 1];
+/** Exercises added by M5-sequence-v2 (pinned in __tests__/m5-sequence-v2.test.ts). */
+const SEQUENCE_V2 = ['ladder-play', 'ladder-play-corner', 'r-ladder-play'];
+/** Exercise #n in the numbering of this spec (e1…e8, without the M5-sequence-v2 additions). */
+const exercise = (id: string, n: number): Exercise =>
+  byId(id).exercises.filter((e) => !SEQUENCE_V2.includes(e.id))[n - 1];
 const stars = (entries: Record<string, number>): StarsByLesson =>
   Object.fromEntries(
     Object.entries(entries).map(([id, n]) => [id, { stars: n }]),
@@ -163,9 +167,11 @@ describe('A. files (AC 1, 3, 4, 7, 8)', () => {
         'first-atari',
         'chase-on',
         'finish',
+        'ladder-play',
         'ladder-breaker',
         'find-breaker',
         'corner-ladder',
+        'ladder-play-corner',
       ],
     ],
     [
@@ -181,6 +187,7 @@ describe('A. files (AC 1, 3, 4, 7, 8)', () => {
         'r-capture',
         'r-ladder-first',
         'r-ladder-breaker',
+        'r-ladder-play',
       ],
     ],
   ];
@@ -223,9 +230,9 @@ describe('A. files (AC 1, 3, 4, 7, 8)', () => {
     ['u09-review', 7, { index: 0 }],
     ['u09-review', 8, { index: 1 }],
   ];
-  it('AC 4: the table covers all 29 exercises', () => {
+  it('AC 4: the table covers all 29 exercises (+3 sequences of M5-sequence-v2)', () => {
     expect(rows).toHaveLength(29);
-    expect(M5.reduce((n, id) => n + byId(id).exercises.length, 0)).toBe(29);
+    expect(M5.reduce((n, id) => n + byId(id).exercises.length, 0)).toBe(29 + SEQUENCE_V2.length);
   });
   it.each(rows)('AC 4: %s #%i', (id, n, expected) => {
     const solution = getSolution(exercise(id, n)) as {

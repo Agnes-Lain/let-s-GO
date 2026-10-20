@@ -5,6 +5,7 @@ import { act, fireEvent, screen } from 'expo-router/testing-library';
 import { boardGeometry, pointToLocation } from '@/board';
 import { parseVertex } from '@/engine';
 import {
+  advance,
   feedbackText,
   flat,
   has,
@@ -84,6 +85,13 @@ async function solve(lessonId: string, index: number) {
     case 'count':
       await press(`practice-chip-${getSolution(exercise).value}`);
       return press('practice-check');
+    case 'sequence':
+      // M5-sequence-v2: the learner's moves of the line, each answered after the reply delay.
+      for (let k = 0; k < exercise.line.length; k += 2) {
+        await tap(exercise.line[k].at);
+        await advance(1000);
+      }
+      return;
   }
 }
 

@@ -15,3 +15,15 @@ export {
   type Player,
   type PlayoutResult,
 } from './captureGo';
+export {
+  FORCED_CAPTURE_MAX_NODES,
+  defenderReplies,
+  forcedCapture,
+  judgeAttack,
+  winningMoves,
+  type AttackJudgement,
+  type AttackReply,
+  type CaptureProblem,
+  type CaptureSearch,
+  type WinningMoves,
+} from './forcedCapture';

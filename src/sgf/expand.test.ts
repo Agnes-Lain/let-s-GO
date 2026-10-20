@@ -168,4 +168,11 @@ describe('expandLessonSource (AC 19)', () => {
     };
     expect(expanded(source(exercise)).exercises[0]).toEqual(exercise);
   });
+
+  it('M5-sequence-v2 AC 13: a judge field is copied unchanged', () => {
+    const judge = { kind: 'search', opponent: 'run', maxMoves: 4 };
+    const lesson = expanded(source(sequence('e1', 'f2.sgf', { judge })));
+    expect(lesson.exercises[0].judge).toEqual(judge);
+    expect(lesson.exercises[1]).not.toHaveProperty('judge');
+  });
 });

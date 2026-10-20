@@ -164,6 +164,58 @@
       "explainKey": "lesson.u09-ladder.e4.explain"
     },
     {
+      "id": "ladder-play",
+      "type": "sequence",
+      "size": 5,
+      "setup": {
+        "B": ["b3", "c2", "d2"],
+        "W": ["c3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "target": "c3"
+      },
+      "judge": {
+        "kind": "search",
+        "opponent": "run"
+      },
+      "line": [
+        {
+          "color": "B",
+          "at": "c4"
+        },
+        {
+          "color": "W",
+          "at": "d3"
+        },
+        {
+          "color": "B",
+          "at": "e3"
+        },
+        {
+          "color": "W",
+          "at": "d4"
+        },
+        {
+          "color": "B",
+          "at": "d5"
+        },
+        {
+          "color": "W",
+          "at": "e4"
+        },
+        {
+          "color": "B",
+          "at": "e5"
+        }
+      ],
+      "promptKey": "lesson.u09-ladder.e8.prompt",
+      "hintKey": "lesson.u09-ladder.e8.hint",
+      "hintPoints": ["c4"],
+      "explainKey": "lesson.u09-ladder.e8.explain"
+    },
+    {
       "id": "ladder-breaker",
       "type": "choice",
       "size": 7,
@@ -221,6 +273,58 @@
       ],
       "promptKey": "lesson.u09-ladder.e7.prompt",
       "explainKey": "lesson.u09-ladder.e7.explain"
+    },
+    {
+      "id": "ladder-play-corner",
+      "type": "sequence",
+      "size": 7,
+      "setup": {
+        "B": ["d5", "e4", "f4"],
+        "W": ["e5"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "target": "e5"
+      },
+      "judge": {
+        "kind": "search",
+        "opponent": "run"
+      },
+      "line": [
+        {
+          "color": "B",
+          "at": "e6"
+        },
+        {
+          "color": "W",
+          "at": "f5"
+        },
+        {
+          "color": "B",
+          "at": "g5"
+        },
+        {
+          "color": "W",
+          "at": "f6"
+        },
+        {
+          "color": "B",
+          "at": "f7"
+        },
+        {
+          "color": "W",
+          "at": "g6"
+        },
+        {
+          "color": "B",
+          "at": "g7"
+        }
+      ],
+      "promptKey": "lesson.u09-ladder.e9.prompt",
+      "hintKey": "lesson.u09-ladder.e9.hint",
+      "hintPoints": ["e6"],
+      "explainKey": "lesson.u09-ladder.e9.explain"
     }
   ]
 }
