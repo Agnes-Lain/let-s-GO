@@ -40,7 +40,7 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   one-move exercises (Option B, no `sequence` runner yet); nets 枷 deferred. Spec
   `docs/specs/M5-ko-forbidden-ladders.md` (PO decisions §12a). Web check `npm run verify:web:m5`;
   screenshots `docs/screenshots/M5/`. 7×7 boards with coordinates have 41 px cells (PO: keep).
-  **Pending: the PO's iPhone play-through of units 7–9.**
+  PO checked units 7–9 (2026-10-20): all good. PR #14.
 
 ## Next
 - M5 item 2 (SGF import), then life & death with the `sequence` runner (spec §13 holds the
