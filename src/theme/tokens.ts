@@ -38,16 +38,16 @@ export const color = {
   mountainNear: '#9DB2AE',
 } as const;
 
-/** Laminated bamboo board (竹制棋盘), drawn in M2. */
+/** Laminated bamboo board (竹制棋盘), drawn in M2; grain lightened in M5 (M5-life-death §5.7). */
 export const board = {
   /** 竹板 bamboo — board base color */
   bamboo: '#E8D3A0',
   /** alternating light strip */
-  bambooStripLight: '#EEDCAE',
+  bambooStripLight: '#EBD8A8',
   /** alternating darker strip */
-  bambooStripDark: '#DEC68C',
+  bambooStripDark: '#E3CD98',
   /** 竹节 node — thin horizontal node marks on strips */
-  bambooNode: '#CDB277',
+  bambooNode: '#DDC690',
   /** grid lines, star points */
   line: '#33281B',
 } as const;
@@ -57,8 +57,8 @@ export const stone = {
   black: '#22252A',
   /** 贝 shell — white stone fill */
   white: '#F7F5EE',
-  /** 1px outline so white stones read on wood */
-  whiteEdge: '#8F8C80',
+  /** 1px outline so white stones read on wood (≥ 3:1 against the board since M5 §5.7) */
+  whiteEdge: '#6B675C',
 } as const;
 
 export const typography = {

@@ -1,7 +1,14 @@
 // The learning-path map as rows (spec §6.1): one row per unit, plus a row per checkpoint.
 // Pure: the home screen only draws these rows.
-import type { Lesson, StarsByLesson, TextKey, UnitEntry } from './schema';
-import { SAMPLE_UNIT, isCheckpointUnlocked, isUnlocked, starsOf } from './unlock';
+import type { Lesson, MapNode, StarsByLesson, TextKey, UnitEntry } from './schema';
+import {
+  SAMPLE_UNIT,
+  isCheckpointUnlocked,
+  isLessonUnlocked,
+  isUnlocked,
+  starsOf,
+  unitLessons,
+} from './unlock';
 
 export type NodeState = 'done' | 'available' | 'locked' | 'soon';
 
@@ -31,6 +38,19 @@ export function mapRows(units: readonly UnitEntry[], progress: StarsByLesson): M
       state: stateOf(u.lesson !== null, isUnlocked(units, progress, u.unit), stars),
       stars,
     });
+    // A unit's later lessons (Unit 11) get their own row, titled by the lesson.
+    for (const lesson of unitLessons(u).slice(1)) {
+      const lessonStars = starsOf(progress, lesson.id);
+      rows.push({
+        key: `lesson-${lesson.id}`,
+        kind: 'unit',
+        unit: u.unit,
+        lesson,
+        titleKey: lesson.titleKey,
+        state: stateOf(true, isLessonUnlocked(units, progress, lesson), lessonStars),
+        stars: lessonStars,
+      });
+    }
     if (u.checkpoint) {
       const checkpointStars = starsOf(progress, u.checkpoint.id);
       rows.push({
@@ -51,4 +71,11 @@ function stateOf(hasContent: boolean, unlocked: boolean, stars: number): NodeSta
   if (!hasContent) return 'soon';
   if (!unlocked) return 'locked';
   return stars >= 1 ? 'done' : 'available';
+}
+
+/** The title of a map node: the unit title for a unit's first lesson, else the lesson's own. */
+export function nodeTitleKey(units: readonly UnitEntry[], node: MapNode): TextKey {
+  const entry = units.find((u) => u.unit === node.unit);
+  const first = node.kind === 'lesson' && entry?.lesson?.id === node.lesson.id;
+  return first && node.unit !== SAMPLE_UNIT ? `unit.${node.unit}.title` : node.lesson.titleKey;
 }

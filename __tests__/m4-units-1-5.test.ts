@@ -40,6 +40,8 @@ const M4 = [
 const UNIT_6 = ['u06-capture-go', 'u06-checkpoint'] as const;
 /** Added by M5 item 1 (docs/specs/M5-ko-forbidden-ladders.md). */
 const UNITS_7_9 = ['u07-forbidden', 'u08-ko', 'u09-ladder', 'u09-review'] as const;
+/** Added by M5 item 3 (docs/specs/M5-life-death.md). */
+const UNITS_10_11 = ['u10-eyes', 'u11-two-eyes', 'u11-vital', 'u11-review'] as const;
 
 const stars = (entries: Record<string, number>): StarsByLesson =>
   Object.fromEntries(
@@ -47,8 +49,8 @@ const stars = (entries: Record<string, number>): StarsByLesson =>
   ) as unknown as StarsByLesson;
 
 describe('A. files (AC 1, 3)', () => {
-  it('AC 1: content has the sample plus the six M4 files (and Units 6–9 since), all registered', () => {
-    const all = [...M4, ...UNIT_6, ...UNITS_7_9];
+  it('AC 1: content has the sample plus the six M4 files (and Units 6–11 since), all registered', () => {
+    const all = [...M4, ...UNIT_6, ...UNITS_7_9, ...UNITS_10_11];
     const files = readdirSync(join(__dirname, '../src/lessons/content')).sort();
     expect(files).toEqual(['u00-sample.json', ...all.map((id) => `${id}.json`)].sort());
     expect(lessons.map((l) => l.id).sort()).toEqual(['u00-sample', ...all].sort());
@@ -383,8 +385,9 @@ describe('D. unit map (AC 13–18)', () => {
 
   // Updated by M4 item 2 (AC 58): Unit 6 has a lesson and a checkpoint, nothing is planned.
   // Updated by M5 item 1: Units 7–9 follow and Unit 10 is planned (M5 AC 33).
+  // Updated by M5 item 3: Units 10–11 follow and Unit 12 is planned (M5-life-death AC 7).
   it('AC 13: units 1–6 have lessons, units 5 and 6 a checkpoint', () => {
-    expect(PLANNED_UNITS).toEqual([10]);
+    expect(PLANNED_UNITS).toEqual([12]);
     expect(
       units.filter((u) => u.unit <= 6).map((u) => [u.unit, !!u.lesson, !!u.checkpoint]),
     ).toEqual([
@@ -411,7 +414,11 @@ describe('D. unit map (AC 13–18)', () => {
       'unit-8:locked',
       'unit-9:locked',
       'checkpoint-9:locked',
-      'unit-10:soon',
+      'unit-10:locked',
+      'unit-11:locked',
+      'lesson-u11-vital:locked',
+      'checkpoint-11:locked',
+      'unit-12:soon',
     ]);
     expect(nextNode(units, stars({}))?.lesson.id).toBe('u01-board');
   });
@@ -447,7 +454,11 @@ describe('D. unit map (AC 13–18)', () => {
     expect(nextNode(units, stars(units1to5))?.lesson.id).toBe('u06-capture-go'); // M4 item 2
     const toSix = Object.fromEntries([...M4, ...UNIT_6].map((id) => [id, 1]));
     expect(nextNode(units, stars(toSix))?.lesson.id).toBe('u07-forbidden'); // M5 item 1
-    const all = Object.fromEntries([...M4, ...UNIT_6, ...UNITS_7_9].map((id) => [id, 1]));
+    const toNine = Object.fromEntries([...M4, ...UNIT_6, ...UNITS_7_9].map((id) => [id, 1]));
+    expect(nextNode(units, stars(toNine))?.lesson.id).toBe('u10-eyes'); // M5 item 3
+    const all = Object.fromEntries(
+      [...M4, ...UNIT_6, ...UNITS_7_9, ...UNITS_10_11].map((id) => [id, 1]),
+    );
     expect(nextNode(units, stars(all))).toBeNull();
   });
 

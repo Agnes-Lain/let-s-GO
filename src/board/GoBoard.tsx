@@ -39,6 +39,8 @@ export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error';
 export interface Highlight {
   kind: HighlightKind;
   points: readonly Point[];
+  /** Dashed ring (the mistaken stone of a sequence, M5-life-death AC 32). Rings only. */
+  dashed?: boolean;
 }
 
 export type Marker =
@@ -853,6 +855,7 @@ const RingLayer = memo(function RingLayer({
                 fill="none"
                 stroke={stroke}
                 strokeWidth={RING_WIDTH}
+                strokeDasharray={h.dashed ? [0.18 * g.cell, 0.12 * g.cell] : undefined}
               />
             );
           }),

@@ -127,13 +127,13 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
   });
 
   it('AC 102: a coming-soon node is not a button', async () => {
-    // Since M5 item 1 the real catalog plans Unit 10 (eyes).
+    // Since M5 item 3 the real catalog plans Unit 12 (territory).
     await act(() => setLanguageChoice('en'));
     const units = getUnits({ includeDev: true });
     const planned = render(
       <UnitPath rows={mapRows(units, {})} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />,
     );
-    const soon = planned.getByTestId('home-node-unit-10');
+    const soon = planned.getByTestId('home-node-unit-12');
     expect(soon.props.accessibilityRole).toBeUndefined();
     expect(soon.props.onClick ?? soon.props.onPress).toBeUndefined();
     expect(planned.getByText('Coming soon')).toBeOnTheScreen();
@@ -156,6 +156,10 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
       'Unit 8, Ko · 打劫 dǎjié, locked',
       'Unit 9, Ladder · 征子 zhēngzi, locked',
       'Checkpoint, Review 2, locked',
+      'Unit 10, Eyes · 眼 yǎn, locked',
+      'Unit 11, Life and death · 死活 sǐhuó, locked',
+      'Unit 11, The vital point, locked',
+      'Checkpoint, Review 3, locked',
     ]);
   });
 

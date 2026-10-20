@@ -2,7 +2,7 @@
 // M5 item 1 web verification (spec docs/specs/M5-ko-forbidden-ladders.md ACs 38–41).
 //
 // Exports the release web build, serves it and drives it in Chromium at 360×740 in en, fr, zh-CN:
-//   - home map: Units 7–9 titles in full, Unit 10 "coming soon", no horizontal scroll;
+//   - home map: Units 7–10 titles in full, the planned unit (12 since M5 item 3) "coming soon";
 //   - every explanation step of Units 7–9 shows its text in full (AC 38; screenshots of step 1 and
 //     of the longest step);
 //   - one exercise of every lesson, the A/B labels of u09 #2 and u09-review #7 (AC 41);
@@ -183,17 +183,20 @@ async function main() {
   const { chromium } = loadPlaywright();
   const browser = await chromium.launch({ executablePath: CHROMIUM });
   fs.mkdirSync(SHOTS, { recursive: true });
-  for (const f of fs.readdirSync(SHOTS)) if (f.endsWith('.png')) fs.rmSync(path.join(SHOTS, f));
+  // Only this script's screenshots (01-* … 08-*); 2x-* belong to verify:web:m5c.
+  for (const f of fs.readdirSync(SHOTS)) {
+    if (/^0\d-.*\.png$/.test(f)) fs.rmSync(path.join(SHOTS, f));
+  }
 
   try {
     for (const locale of LOCALES) {
       const s = strings(locale);
       const { context, page } = await newPage(browser, locale);
 
-      // --- Home map: Units 7–9 and Unit 10 "coming soon" ---
+      // --- Home map: Units 7–9 (and, since M5 item 3, Unit 12 "coming soon") ---
       await page.goto(base);
       await page.getByTestId('home-continue').waitFor({ timeout: 30000 });
-      const soon = page.getByTestId('home-node-unit-10');
+      const soon = page.getByTestId('home-node-unit-12');
       await soon.scrollIntoViewIfNeeded();
       await page.waitForTimeout(400);
       for (const n of [7, 8, 9, 10]) {
@@ -205,7 +208,7 @@ async function main() {
         check(`[${locale}] unit ${n} title not cut`, fits);
       }
       check(
-        `[${locale}] Unit 10 shows "coming soon"`,
+        `[${locale}] Unit 12 shows "coming soon"`,
         (await soon.innerText()).includes(s['home.unit.comingSoon']),
       );
       await noHorizontalScroll(page, `[${locale}] home`);

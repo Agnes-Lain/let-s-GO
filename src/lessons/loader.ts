@@ -14,10 +14,10 @@ export interface ListOptions {
 }
 
 /**
- * Units shown as "coming soon" until their content exists (§4.6). Unit 10 (eyes) since M5 item 1
- * shipped Units 7–9 (docs/specs/M5-ko-forbidden-ladders.md §5).
+ * Units shown as "coming soon" until their content exists (§4.6). Unit 12 (territory) since M5
+ * item 3 shipped Units 10–11 (docs/specs/M5-life-death.md AC 7).
  */
-export const PLANNED_UNITS: readonly number[] = [10];
+export const PLANNED_UNITS: readonly number[] = [12];
 
 export interface LessonLoader {
   loadLesson(id: string, opts?: ListOptions): LoadResult;
@@ -97,15 +97,20 @@ export function createLessonLoader(
       (a, b) => a - b,
     );
     return numbers.map((unit) => {
-      const lesson = lessons.find((l) => l.unit === unit && l.kind === 'lesson') ?? null;
+      const [lesson = null, ...laterLessons] = lessons.filter(
+        (l) => l.unit === unit && l.kind === 'lesson',
+      );
       const checkpoint = lessons.find((l) => l.unit === unit && l.kind === 'checkpoint') ?? null;
-      return {
+      const entry: UnitEntry = {
         unit,
         // The sample has no unit title; curriculum units use `unit.N.title` (spec AC 100).
         titleKey: unit === SAMPLE_UNIT && lesson ? lesson.titleKey : `unit.${unit}.title`,
         lesson,
         checkpoint,
       };
+      // Registry order within a unit (M5-life-death: u11-two-eyes, then u11-vital).
+      if (laterLessons.length > 0) entry.laterLessons = laterLessons;
+      return entry;
     });
   }
 

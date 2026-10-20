@@ -8,9 +8,20 @@ export function starsOf(progress: StarsByLesson, lessonId: string): number {
   return progress[lessonId]?.stars ?? 0;
 }
 
+/** Every lesson (not the checkpoint) of a unit, in order. */
+export function unitLessons(entry: UnitEntry): Lesson[] {
+  return entry.lesson ? [entry.lesson, ...(entry.laterLessons ?? [])] : [];
+}
+
+/** The lesson whose 1★ opens what comes after the unit (its last lesson). */
+function lastLesson(entry: UnitEntry): Lesson | null {
+  return unitLessons(entry).pop() ?? null;
+}
+
 /**
  * A unit is unlocked if it has a lesson and either no earlier curriculum unit has a lesson, or
- * the closest earlier unit with a lesson has at least 1★ on it. Planned units never unlock.
+ * the last lesson of the closest earlier unit with a lesson has at least 1★. Planned units never
+ * unlock.
  */
 export function isUnlocked(
   units: readonly UnitEntry[],
@@ -21,36 +32,47 @@ export function isUnlocked(
   if (!entry?.lesson) return false;
   if (unit === SAMPLE_UNIT) return true;
   const previous = units.filter((u) => u.unit !== SAMPLE_UNIT && u.unit < unit && u.lesson).pop();
-  return !previous?.lesson || starsOf(progress, previous.lesson.id) >= 1;
+  const gate = previous ? lastLesson(previous) : null;
+  return !gate || starsOf(progress, gate.id) >= 1;
 }
 
-/** A checkpoint opens once its unit's lesson has at least 1★. It gates nothing (Q4). */
+/** A checkpoint opens once its unit's last lesson has at least 1★. It gates nothing (Q4). */
 export function isCheckpointUnlocked(
   units: readonly UnitEntry[],
   progress: StarsByLesson,
   unit: number,
 ): boolean {
   const entry = units.find((u) => u.unit === unit);
-  if (!entry?.lesson || !entry.checkpoint) return false;
-  return isUnlocked(units, progress, unit) && starsOf(progress, entry.lesson.id) >= 1;
+  const gate = entry ? lastLesson(entry) : null;
+  if (!gate || !entry?.checkpoint) return false;
+  return isUnlocked(units, progress, unit) && starsOf(progress, gate.id) >= 1;
 }
 
-/** Whether a lesson or checkpoint may be opened. */
+/**
+ * Whether a lesson or checkpoint may be opened. A unit's later lesson also needs 1★ on the
+ * lesson before it in the unit.
+ */
 export function isLessonUnlocked(
   units: readonly UnitEntry[],
   progress: StarsByLesson,
   lesson: Lesson,
 ): boolean {
-  return lesson.kind === 'lesson'
-    ? isUnlocked(units, progress, lesson.unit)
-    : isCheckpointUnlocked(units, progress, lesson.unit);
+  if (lesson.kind === 'checkpoint') return isCheckpointUnlocked(units, progress, lesson.unit);
+  if (!isUnlocked(units, progress, lesson.unit)) return false;
+  const entry = units.find((u) => u.unit === lesson.unit);
+  const list = entry ? unitLessons(entry) : [];
+  const index = list.findIndex((l) => l.id === lesson.id);
+  return index <= 0 || starsOf(progress, list[index - 1].id) >= 1;
 }
 
 /** Every lesson and checkpoint in map order. */
 export function mapNodes(units: readonly UnitEntry[]): MapNode[] {
   return units.flatMap((u) => {
-    const nodes: MapNode[] = [];
-    if (u.lesson) nodes.push({ unit: u.unit, kind: 'lesson', lesson: u.lesson });
+    const nodes: MapNode[] = unitLessons(u).map((lesson) => ({
+      unit: u.unit,
+      kind: 'lesson' as const,
+      lesson,
+    }));
     if (u.checkpoint) nodes.push({ unit: u.unit, kind: 'checkpoint', lesson: u.checkpoint });
     return nodes;
   });

@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "generatedFrom": "content-src/u11-review.src.json",
+  "id": "u11-review",
+  "unit": 11,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u11-review.title",
+  "coordinates": true,
+  "exercises": [
+    {
+      "id": "r-find-eye",
+      "type": "tap-point",
+      "size": 5,
+      "setup": { "B": ["e2", "d2", "d1"], "W": ["c2", "c3"] },
+      "mode": "one",
+      "answer": { "points": ["e1"] },
+      "promptKey": "lesson.u11-review.r1.prompt",
+      "hintKey": "lesson.u11-review.r1.hint",
+      "hintPoints": ["e1"],
+      "explainKey": "lesson.u11-review.r1.explain"
+    },
+    {
+      "id": "r-false",
+      "type": "choice",
+      "size": 5,
+      "setup": { "B": ["b5", "c4", "d4", "d5"], "W": ["a5", "a4", "b4"] },
+      "options": [
+        { "textKey": "lesson.u11-review.r2.o1", "whyKey": "lesson.u11-review.r2.w1" },
+        { "textKey": "lesson.u11-review.r2.o2", "correct": true }
+      ],
+      "markers": [{ "kind": "triangle", "at": "c5" }],
+      "promptKey": "lesson.u11-review.r2.prompt",
+      "explainKey": "lesson.u11-review.r2.explain"
+    },
+    {
+      "id": "r-count",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a4", "b4", "c4", "d4", "d5", "b5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e4", "e5"]
+      },
+      "answer": 2,
+      "markers": [{ "kind": "triangle", "at": "a4" }],
+      "promptKey": "lesson.u11-review.r3.prompt",
+      "hintKey": "lesson.u11-review.r3.hint",
+      "explainKey": "lesson.u11-review.r3.explain"
+    },
+    {
+      "id": "r-capture",
+      "type": "play-move",
+      "size": 5,
+      "setup": { "B": ["b3", "d3", "c4"], "W": ["c3"] },
+      "toPlay": "B",
+      "goal": { "kind": "capture" },
+      "promptKey": "lesson.u11-review.r4.prompt",
+      "hintKey": "lesson.u11-review.r4.hint",
+      "hintPoints": ["c2"],
+      "explainKey": "lesson.u11-review.r4.explain"
+    },
+    {
+      "id": "r-cannot",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "d1", "b1"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e2", "e1"]
+      },
+      "options": [
+        { "textKey": "lesson.u11-review.r5.o1", "whyKey": "lesson.u11-review.r5.w1" },
+        { "textKey": "lesson.u11-review.r5.o2", "correct": true }
+      ],
+      "markers": [{ "kind": "label", "at": "a1", "text": "A" }],
+      "promptKey": "lesson.u11-review.r5.prompt",
+      "explainKey": "lesson.u11-review.r5.explain"
+    },
+    {
+      "id": "r-atari",
+      "type": "play-move",
+      "size": 5,
+      "setup": { "B": ["b3", "d3"], "W": ["c3"] },
+      "toPlay": "B",
+      "goal": { "kind": "atari" },
+      "promptKey": "lesson.u11-review.r6.prompt",
+      "hintKey": "lesson.u11-review.r6.hint",
+      "hintPoints": ["c2", "c4"],
+      "explainKey": "lesson.u11-review.r6.explain"
+    },
+    {
+      "id": "r-kill",
+      "type": "sequence",
+      "size": 5,
+      "setup": {
+        "B": ["a4", "b4", "c4", "d4", "d5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "e4", "e5"]
+      },
+      "toPlay": "W",
+      "goal": { "kind": "capture", "target": "a4" },
+      "promptKey": "lesson.u11-review.r7.prompt",
+      "hintKey": "lesson.u11-review.r7.hint",
+      "hintPoints": ["b5"],
+      "explainKey": "lesson.u11-review.r7.explain",
+      "line": [
+        { "color": "W", "at": "b5" },
+        { "color": "B", "at": "a5" },
+        { "color": "W", "at": "c5" }
+      ],
+      "wrong": [
+        {
+          "line": [
+            { "color": "W", "at": "a5" },
+            { "color": "B", "at": "b5" }
+          ],
+          "whyKey": "lesson.u11-review.r7.w1"
+        },
+        {
+          "line": [
+            { "color": "W", "at": "c5" },
+            { "color": "B", "at": "b5" }
+          ],
+          "whyKey": "lesson.u11-review.r7.w1"
+        }
+      ]
+    }
+  ]
+}

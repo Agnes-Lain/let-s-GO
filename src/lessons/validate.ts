@@ -103,11 +103,12 @@ export function validateCatalog(
         );
       }
     }
-    if (lessonCount > 1 || checkpoints.length > 1) {
+    // Several lessons per unit since M5 item 3 (Unit 11), still at most one checkpoint.
+    if (checkpoints.length > 1) {
       report.add(
         'UNIT_LESSON_COUNT',
         `unit ${unit}`,
-        `unit ${unit} must have exactly one lesson and at most one checkpoint`,
+        `unit ${unit} must have at most one checkpoint`,
       );
     }
   }

@@ -50,9 +50,17 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   QA nits (later): one bad SGF used by N exercises prints N identical errors; validator errors
   point at `file:1:1` with the `exercises[i]` path in the message.
 
+- **M5 item 3** life & death (branch `claude/m5-life-death`, PO-approved spec, QA READY, 2748 tests):
+  `u10-eyes`, `u11-two-eyes`, `u11-vital`, `u11-review` (3 SGF kill problems via `import:sgf`), `sequence`
+  runner (`src/exercises/sequence.ts`, `runners/SequenceRunner.tsx`), `UnitEntry.laterLessons` (2 lessons per unit),
+  app-wide layout rule (instructions top / board / feedback bottom; explanation text card 120 px) and lighter bamboo
+  tokens with a WCAG contrast test. Spec `docs/specs/M5-life-death.md` (§12a PO, §12b dev deviations). Web check
+  `npm run verify:web:m5c`; screenshots `docs/screenshots/M5/20-*`–`22-*`. Unit 12 is "coming soon".
+  Not verified: 9×9 layout only on `/dev/board`; screen reader may announce the opponent stone twice; no iPhone check.
+
 ## Next
-- M5 item 3: life & death with the `sequence` runner (author via `npm run import:sgf`;
-  spec M5-ko-forbidden-ladders §13 holds the ladder play-along exercises to add once it exists); a net 枷 lesson needs a search helper.
+- M5 item 4: territory & counting (Unit 12). Follow-up item: "sequence v2" search-judged runner → ladder
+  play-along (ko spec §13), nets 枷, multi-answer tsumego.
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch
