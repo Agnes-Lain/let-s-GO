@@ -1,0 +1,297 @@
+{
+  "schema": 1,
+  "id": "u08-ko",
+  "unit": 8,
+  "kind": "lesson",
+  "titleKey": "lesson.u08-ko.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["b4", "d4", "c5"],
+          "W": ["c4", "c2", "b3", "d3"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c3"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "hint",
+          "points": ["c3"]
+        }
+      ],
+      "textKey": "lesson.u08-ko.s1"
+    },
+    {
+      "markers": [
+        {
+          "kind": "cross",
+          "at": "c4"
+        }
+      ],
+      "textKey": "lesson.u08-ko.s2"
+    },
+    {
+      "board": {
+        "size": 7,
+        "setup": {
+          "B": ["b4", "d4", "c5", "f6"],
+          "W": ["c4", "c2", "b3", "d3", "e6", "f5"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "c3"
+        },
+        {
+          "color": "W",
+          "at": "g6"
+        },
+        {
+          "color": "B",
+          "at": "f7"
+        },
+        {
+          "color": "W",
+          "at": "c4"
+        }
+      ],
+      "textKey": "lesson.u08-ko.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "tap-ko",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5"],
+        "W": ["c4", "c2", "b3", "d3"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "c3"
+        }
+      ],
+      "mode": "one",
+      "answer": {
+        "points": ["c4"]
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u08-ko.e1.prompt",
+      "hintKey": "lesson.u08-ko.e1.hint",
+      "hintPoints": ["c4"],
+      "explainKey": "lesson.u08-ko.e1.explain"
+    },
+    {
+      "id": "retake-edge",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "a4"],
+        "W": ["a3", "b2", "b4", "c3"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "b3"
+        }
+      ],
+      "options": [
+        {
+          "textKey": "lesson.u08-ko.e2.o1",
+          "whyKey": "lesson.u08-ko.e2.w1"
+        },
+        {
+          "textKey": "lesson.u08-ko.e2.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "b3"
+        },
+        {
+          "kind": "label",
+          "at": "a3",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u08-ko.e2.prompt",
+      "explainKey": "lesson.u08-ko.e2.explain"
+    },
+    {
+      "id": "start-ko",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5"],
+        "W": ["c4", "c2", "b3", "d3"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture"
+      },
+      "promptKey": "lesson.u08-ko.e3.prompt",
+      "hintKey": "lesson.u08-ko.e3.hint",
+      "hintPoints": ["c3"],
+      "explainKey": "lesson.u08-ko.e3.explain"
+    },
+    {
+      "id": "ko-or-forbidden",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5", "c2"],
+        "W": ["c4", "b3", "d3"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "c3"
+        }
+      ],
+      "options": [
+        {
+          "textKey": "lesson.u08-ko.e4.o1",
+          "whyKey": "lesson.u08-ko.e4.w1"
+        },
+        {
+          "textKey": "lesson.u08-ko.e4.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        },
+        {
+          "kind": "label",
+          "at": "c4",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u08-ko.e4.prompt",
+      "explainKey": "lesson.u08-ko.e4.explain"
+    },
+    {
+      "id": "elsewhere-first",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5"],
+        "W": ["c4", "c2", "b3", "d3"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "c3"
+        },
+        {
+          "color": "W",
+          "at": "e5"
+        },
+        {
+          "color": "B",
+          "at": "a5"
+        }
+      ],
+      "options": [
+        {
+          "textKey": "lesson.u08-ko.e5.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u08-ko.e5.o2",
+          "whyKey": "lesson.u08-ko.e5.w2"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c4",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u08-ko.e5.prompt",
+      "explainKey": "lesson.u08-ko.e5.explain"
+    },
+    {
+      "id": "find-threat",
+      "type": "play-move",
+      "size": 7,
+      "setup": {
+        "B": ["b4", "d4", "c5", "f6"],
+        "W": ["c4", "c2", "b3", "d3", "e6", "f5"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "c3"
+        }
+      ],
+      "toPlay": "W",
+      "goal": {
+        "kind": "atari"
+      },
+      "promptKey": "lesson.u08-ko.e6.prompt",
+      "hintKey": "lesson.u08-ko.e6.hint",
+      "hintPoints": ["g6", "f7"],
+      "explainKey": "lesson.u08-ko.e6.explain"
+    },
+    {
+      "id": "after-threat",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["b4", "d4", "c5", "f6"],
+        "W": ["c4", "c2", "b3", "d3", "e6", "f5"]
+      },
+      "prelude": [
+        {
+          "color": "B",
+          "at": "c3"
+        },
+        {
+          "color": "W",
+          "at": "g6"
+        },
+        {
+          "color": "B",
+          "at": "f7"
+        }
+      ],
+      "options": [
+        {
+          "textKey": "lesson.u08-ko.e7.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u08-ko.e7.o2",
+          "whyKey": "lesson.u08-ko.e7.w2"
+        },
+        {
+          "textKey": "lesson.u08-ko.e7.o3",
+          "whyKey": "lesson.u08-ko.e7.w3"
+        }
+      ],
+      "promptKey": "lesson.u08-ko.e7.prompt",
+      "explainKey": "lesson.u08-ko.e7.explain"
+    }
+  ]
+}

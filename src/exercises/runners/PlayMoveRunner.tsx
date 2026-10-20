@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { GoBoard, type CaptureEvent } from '@/board';
 import { type GameState, type IllegalReason, type Point } from '@/engine';
-import { getSolution, toStepMarkers, type PlayMoveExercise } from '@/lessons';
+import { getSolution, lastPlayedPoint, toStepMarkers, type PlayMoveExercise } from '@/lessons';
 
 import { checkExerciseMove, exerciseGame, judgePlayMove } from '../engineAdapter';
 import { ExerciseFrame } from '../ExerciseFrame';
@@ -29,6 +29,8 @@ export function PlayMoveRunner({
   const { t } = useTranslation();
   const { size } = exercise;
   const start = useMemo(() => exerciseGame(exercise), [exercise]);
+  // A prelude's last move keeps the normal last-move mark (spec M5 AC 12).
+  const preludeMove = useMemo(() => lastPlayedPoint(start), [start]);
   const markers = useMemo(() => toStepMarkers(exercise.markers, size), [exercise, size]);
   const active = attempts.status === 'active';
   const revealed = attempts.status === 'revealed';
@@ -103,7 +105,7 @@ export function PlayMoveRunner({
         checkPoint={(p) => checkExerciseMove(state, p)}
         onPlay={onPlay}
         onIllegal={onIllegal}
-        lastMove={shown?.move ?? null}
+        lastMove={shown?.move ?? preludeMove}
         lastCapture={shown?.capture ?? null}
         highlights={highlights}
         markers={markers}

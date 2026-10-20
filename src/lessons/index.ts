@@ -6,6 +6,7 @@ export {
   capturedCount,
   getSolution,
   goalMet,
+  lastPlayedPoint,
   libertyVertices,
   playMoveSolutions,
   solutionPoints,

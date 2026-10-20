@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>M5 item 1 Mockup (Ko, forbidden points, ladder)</title>
+    <style>
+      :root {
+        --background: #f4f1ea;
+        --sky: #dce6ea;
+        --surface: #fffdf8;
+        --border: #e3ddd0;
+        --text: #26292b;
+        --text2: #5e6a6e;
+        --accent: #3e6461;
+        --onAccent: #ffffff;
+        --success: #56764a;
+        --error: #a8443f;
+        --hint: #9a5f22;
+        --mFar: #c9d5d6;
+        --mNear: #9db2ae;
+        --bamboo: #e8d3a0;
+        --line: #33281b;
+        --black: #22252a;
+        --white: #f7f5ee;
+        --whiteEdge: #8f8c80;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        overflow-x: hidden;
+      }
+      body {
+        background: #e3ddd0;
+        color: var(--text);
+        padding: 24px 12px 48px;
+        overflow-x: hidden;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans SC',
+          sans-serif;
+      }
+      header.page {
+        max-width: 1240px;
+        margin: 0 auto 24px;
+      }
+      header.page h1 {
+        font-size: 22px;
+        line-height: 28px;
+      }
+      header.page p {
+        color: var(--text2);
+        font-size: 14px;
+        line-height: 20px;
+        margin-top: 6px;
+        max-width: 860px;
+      }
+      h2.group {
+        max-width: 1240px;
+        margin: 28px auto 4px;
+        font-size: 16px;
+        color: var(--text2);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 6px;
+      }
+      p.note {
+        max-width: 1240px;
+        margin: 0 auto 14px;
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+      }
+      ul.legend {
+        max-width: 1240px;
+        margin: 0 auto 8px;
+        padding-left: 20px;
+        font-size: 13px;
+        line-height: 19px;
+        color: var(--text2);
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        justify-content: center;
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+      figure {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+      }
+      figcaption {
+        font-size: 13px;
+        line-height: 18px;
+        color: var(--text2);
+        max-width: 360px;
+        text-align: center;
+      }
+      figcaption b {
+        color: var(--text);
+      }
+      .phone {
+        width: 376px;
+        height: 756px;
+        max-width: 100%;
+        background-color: var(--background);
+        background-image: linear-gradient(to bottom, var(--sky) 0, var(--background) 72px);
+        border-radius: 30px;
+        border: 8px solid var(--black);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 24px rgba(38, 41, 43, 0.15);
+      }
+      .landscape {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 130px;
+        z-index: 0;
+      }
+      .status,
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+      .status {
+        height: 28px;
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 16px;
+        flex: none;
+      }
+      .content {
+        padding: 0 16px 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .topbar {
+        height: 52px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .ibtn {
+        min-width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .hintbtn {
+        min-width: 56px;
+        height: 44px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--hint);
+        white-space: nowrap;
+      }
+      .segs {
+        flex: 1;
+        display: flex;
+        gap: 4px;
+      }
+      .segs i {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--border);
+      }
+      .segs i.d {
+        background: var(--accent);
+      }
+      .segs i.c {
+        background: var(--surface);
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .dots {
+        flex: 1;
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 16px;
+        line-height: 24px;
+        flex: none;
+      }
+      .prompt {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .text {
+        height: 120px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+      .fb {
+        min-height: 72px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        line-height: 19px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .fb.empty {
+        background: transparent;
+        border-color: transparent;
+      }
+      .fb i {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-top: 6px;
+      }
+      .fb i.err {
+        background: var(--error);
+      }
+      .fb i.ok {
+        background: var(--success);
+      }
+      .fb i.hint {
+        background: var(--hint);
+      }
+      .spacer {
+        flex: 1;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex: none;
+      }
+      .btn {
+        flex: 1;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--onAccent);
+      }
+      .btn.dis {
+        opacity: 0.45;
+      }
+      .replay {
+        align-self: flex-end;
+        height: 44px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 14px;
+        flex: none;
+      }
+      .boardwrap {
+        flex: none;
+        align-self: center;
+      }
+      .pips {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text2);
+      }
+      .pips i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid var(--accent);
+        background: transparent;
+      }
+      .pips i.d {
+        background: var(--accent);
+      }
+      .pips i.c {
+        background: var(--surface);
+        box-shadow: 0 0 0 3px rgba(62, 100, 97, 0.25);
+      }
+      .wait {
+        align-self: center;
+        margin-top: 6px;
+        font-size: 13px;
+        color: var(--text2);
+        height: 20px;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--hint);
+        border: 1px solid var(--hint);
+        border-radius: 6px;
+        padding: 0 6px;
+        margin-left: 6px;
+        vertical-align: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="page">
+      <h1>Let's GO — M5 item 1 mockup (Ko, forbidden points, ladder)</h1>
+      <p>
+        Spec: <code>docs/specs/M5-ko-forbidden-ladders.md</code>. Almost everything in this item
+        uses screens you already approved (M3/M4). This page shows the two things that are worth a
+        look: <b>A</b> how a ko "closed point" appears (existing screens, new content only), and
+        <b>B</b> the only genuinely new screen, the <b>"play the whole ladder" runner</b>, which
+        exists <b>only if you choose Option A</b> in decision 1. If you choose Option B (the
+        recommendation) section B is not built.
+      </p>
+    </header>
+    <ul class="legend">
+      <li>
+        <b>Rouge cross</b>: a point nobody may play right now (used in explanation steps only).
+        <b>Triangle</b>: the stone that was just played. <b>Teal rings</b>: liberties.
+      </li>
+      <li>
+        <b>Dashed rouge ring</b>: a mistake (soft, no sound). Calm 山水 · 茶 · 竹 colours from
+        <code>src/theme/tokens.ts</code>; no leaves, no confetti.
+      </li>
+      <li>
+        The boards on this page are drawn by a small script for convenience; the app draws the same
+        thing with react-native-svg.
+      </li>
+    </ul>
+
+    <h2 class="group">A · Ko on the existing screens (no new UI)</h2>
+    <p class="note">
+      Ko needs no new component. The explanation step marks the closed point with the existing
+      cross; in an exercise, tapping the closed point shows the engine's ko sentence in the feedback
+      card and costs nothing.
+    </p>
+    <div class="grid">
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="dots"><i></i><i class="on"></i><i></i></div>
+              <span class="ibtn"></span>
+            </div>
+            <div class="card text">
+              Retaking on c4 at once could repeat forever. This is ko (打劫 dǎjié): you may not
+              retake right away. Play elsewhere first.
+            </div>
+            <div class="replay">↻ Replay</div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows="..X..|.X.X.|.OXO.|..O..|....."
+                data-marks="c4:cross"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="spacer"></div>
+            <div class="row">
+              <div class="btn">Back</div>
+              <div class="btn primary">Next</div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>Unit 8, step 2.</b> After Black captured c4, the rouge cross shows the closed point.
+          Layout identical to M4 steps.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="segs">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i
+                ><i class="c"></i><i></i>
+              </div>
+              <div class="hintbtn">Hint</div>
+            </div>
+            <div class="card prompt">
+              White can't retake c4 yet. Play a move elsewhere that puts a black group in atari.
+            </div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows=".......|....OX.|..X..O.|.X.X...|.OXO...|..O....|......."
+                data-marks="c3:tri"
+                data-rings="c4:err"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="card fb">
+              <i class="hint"></i>
+              <div>Ko (打劫 dǎjié): you can't take back right away. Play elsewhere first.</div>
+            </div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>Unit 8, exercise 6 (ko threat).</b> The learner tapped c4. The existing engine sentence
+          appears in the amber "information" style, the board does not change, no try is used.
+        </figcaption>
+      </figure>
+    </div>
+
+    <h2 class="group">
+      B · "Play the whole ladder" runner <span class="tag">ONLY IF OPTION A</span>
+    </h2>
+    <p class="note">
+      A new exercise type <code>sequence</code> (the light version needed for ladders). The learner
+      plays Black's moves; White answers by itself after a short pause. Progress is shown as pips in
+      the top bar instead of the usual segments only while a sequence is running. Everything else
+      (prompt card, feedback card, hint, Try again) is the M3 frame.
+    </p>
+    <div class="grid">
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="pips">
+                <i class="d"></i><i class="c"></i><i></i><i></i><span>Move 2 of 4</span>
+              </div>
+              <div class="hintbtn">Hint</div>
+            </div>
+            <div class="card prompt">
+              Chase the white stones: put them in atari, again and again.
+            </div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows=".....|..X..|.XOO.|..XX.|....."
+                data-marks="c4:tri"
+                data-rings="e3:hint,d4:hint"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="wait"></div>
+            <div class="card fb empty"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>1 · Your move.</b> Move 1 is done (Black c4, White d3). Rings show the hint only after
+          the Hint button or two mistakes.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="pips">
+                <i class="d"></i><i class="d"></i><i class="c"></i><i></i><span>Move 3 of 4</span>
+              </div>
+              <div class="hintbtn">Hint</div>
+            </div>
+            <div class="card prompt">
+              Chase the white stones: put them in atari, again and again.
+            </div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows=".....|..XO.|.XOOX|..XX.|....."
+                data-marks="d4:tri"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="wait">White is answering…</div>
+            <div class="card fb empty"></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>2 · White answers.</b> The learner played e3; after about 0.6 s White extends to d4
+          (stone sound, new stone has the triangle). The board ignores taps while the line "White is
+          answering…" shows.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="pips"><i class="c"></i><i></i><i></i><i></i><span>Move 1 of 4</span></div>
+              <div class="hintbtn">Hint</div>
+            </div>
+            <div class="card prompt">Chase the white stone: start the ladder with an atari.</div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows=".....|..O..|.XOX.|..XX.|....."
+                data-marks="d3:tri"
+                data-rings="b4:lib,d4:lib,c5:lib,d3:err"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="wait"></div>
+            <div class="card fb">
+              <i class="err"></i>
+              <div>
+                White extended to c4 and now has 3 liberties (b4, d4, c5). Black can't atari it
+                again: the ladder broke.
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <div class="row"><div class="btn primary">Try again</div></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>3 · A mistake.</b> Black chose d3. The runner lets White answer, then states the engine
+          fact (3 liberties, teal rings). Board waits for <i>Try again</i>, which restarts the
+          sequence.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <div class="phone" lang="en">
+          <svg
+            class="landscape"
+            viewBox="0 0 360 150"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z"
+              fill="#C9D5D6"
+            />
+            <path
+              d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z"
+              fill="#9DB2AE"
+              opacity=".85"
+            />
+          </svg>
+          <div class="status"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="content">
+            <div class="topbar">
+              <span class="ibtn">✕</span>
+              <div class="pips">
+                <i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i
+                ><span>Done</span>
+              </div>
+              <div class="hintbtn">Hint</div>
+            </div>
+            <div class="card prompt">
+              Chase the white stones: put them in atari, again and again.
+            </div>
+            <div class="boardwrap">
+              <div
+                class="b"
+                data-size="320"
+                data-rows="...XX|..X..|.X..X|..XX.|....."
+                data-marks="e5:tri"
+                data-coords="1"
+              ></div>
+            </div>
+            <div class="wait"></div>
+            <div class="card fb">
+              <i class="ok"></i>
+              <div>
+                e5 captures four stones: the ladder works. White ran out of room at the edge.
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <div class="row"><div class="btn primary">Next</div></div>
+          </div>
+        </div>
+        <figcaption>
+          <b>4 · Success.</b> The four white stones fade away (M2 capture animation), green dot,
+          Next. After three mistakes the runner plays the correct line itself, slowly, and then
+          shows Next.
+        </figcaption>
+      </figure>
+    </div>
+
+    <script>
+      (function () {
+        var COLS = 'abcdefghjklmnopqrst';
+        var NS = 'http://www.w3.org/2000/svg';
+        function el(name, attrs) {
+          var e = document.createElementNS(NS, name);
+          for (var k in attrs) e.setAttribute(k, attrs[k]);
+          return e;
+        }
+        function parseMap(s) {
+          var m = {};
+          (s || '').split(',').forEach(function (p) {
+            if (!p) return;
+            var kv = p.split(':');
+            m[kv[0]] = kv[1];
+          });
+          return m;
+        }
+        document.querySelectorAll('.b').forEach(function (d) {
+          var rows = d.dataset.rows.split('|');
+          var n = rows.length;
+          var S = parseInt(d.dataset.size, 10);
+          var c = S / (n + 1);
+          var svg = el('svg', { width: S, height: S, viewBox: '0 0 ' + S + ' ' + S });
+          svg.appendChild(el('rect', { x: 0, y: 0, width: S, height: S, rx: 10, fill: '#E8D3A0' }));
+          function pt(v) {
+            var col = COLS.indexOf(v[0]);
+            var row = parseInt(v.slice(1), 10);
+            return { x: (col + 1) * c, y: (n - row + 1) * c };
+          }
+          for (var i = 1; i <= n; i++) {
+            svg.appendChild(
+              el('line', {
+                x1: c,
+                y1: i * c,
+                x2: n * c,
+                y2: i * c,
+                stroke: '#33281b',
+                'stroke-width': 1,
+              }),
+            );
+            svg.appendChild(
+              el('line', {
+                x1: i * c,
+                y1: c,
+                x2: i * c,
+                y2: n * c,
+                stroke: '#33281b',
+                'stroke-width': 1,
+              }),
+            );
+          }
+          if (d.dataset.coords) {
+            for (var k = 0; k < n; k++) {
+              var t1 = el('text', {
+                x: (k + 1) * c,
+                y: S - 4,
+                'text-anchor': 'middle',
+                'font-size': 11,
+                fill: '#5e6a6e',
+              });
+              t1.textContent = COLS[k];
+              svg.appendChild(t1);
+              var t2 = el('text', { x: 6, y: (n - k) * c + 4, 'font-size': 11, fill: '#5e6a6e' });
+              t2.textContent = String(k + 1);
+              svg.appendChild(t2);
+            }
+          }
+          var marks = parseMap(d.dataset.marks);
+          var rings = parseMap(d.dataset.rings);
+          var stones = {};
+          rows.forEach(function (r, j) {
+            for (var x = 0; x < n; x++) {
+              var ch = r[x];
+              if (ch !== 'X' && ch !== 'O') continue;
+              var v = COLS[x] + (n - j);
+              stones[v] = ch;
+              var p = pt(v);
+              svg.appendChild(
+                el('circle', {
+                  cx: p.x,
+                  cy: p.y,
+                  r: c * 0.44,
+                  fill: ch === 'X' ? '#22252a' : '#f7f5ee',
+                  stroke: ch === 'X' ? '#22252a' : '#8f8c80',
+                  'stroke-width': 1,
+                }),
+              );
+            }
+          });
+          Object.keys(rings).forEach(function (v) {
+            var p = pt(v);
+            var kind = rings[v];
+            var color = kind === 'err' ? '#a8443f' : kind === 'hint' ? '#9a5f22' : '#3e6461';
+            var a = {
+              cx: p.x,
+              cy: p.y,
+              r: c * 0.4,
+              fill: 'none',
+              stroke: color,
+              'stroke-width': 2.5,
+            };
+            if (kind === 'err') a['stroke-dasharray'] = '5 4';
+            svg.appendChild(el('circle', a));
+          });
+          Object.keys(marks).forEach(function (v) {
+            var p = pt(v);
+            var kind = marks[v];
+            if (kind === 'cross') {
+              var h = c * 0.22;
+              svg.appendChild(
+                el('line', {
+                  x1: p.x - h,
+                  y1: p.y - h,
+                  x2: p.x + h,
+                  y2: p.y + h,
+                  stroke: '#a8443f',
+                  'stroke-width': 2.5,
+                  'stroke-linecap': 'round',
+                }),
+              );
+              svg.appendChild(
+                el('line', {
+                  x1: p.x - h,
+                  y1: p.y + h,
+                  x2: p.x + h,
+                  y2: p.y - h,
+                  stroke: '#a8443f',
+                  'stroke-width': 2.5,
+                  'stroke-linecap': 'round',
+                }),
+              );
+            } else if (kind === 'tri') {
+              var s = c * 0.2;
+              var col = stones[v] === 'O' ? '#22252a' : '#f7f5ee';
+              svg.appendChild(
+                el('polygon', {
+                  points:
+                    p.x +
+                    ',' +
+                    (p.y - s) +
+                    ' ' +
+                    (p.x - s) +
+                    ',' +
+                    (p.y + s * 0.8) +
+                    ' ' +
+                    (p.x + s) +
+                    ',' +
+                    (p.y + s * 0.8),
+                  fill: 'none',
+                  stroke: col,
+                  'stroke-width': 2,
+                }),
+              );
+            }
+          });
+          d.appendChild(svg);
+        });
+      })();
+    </script>
+  </body>
+</html>

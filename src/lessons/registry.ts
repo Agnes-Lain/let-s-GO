@@ -14,6 +14,10 @@ import u05Atari from './content/u05-atari.json';
 import u05Review from './content/u05-review.json';
 import u06CaptureGo from './content/u06-capture-go.json';
 import u06Checkpoint from './content/u06-checkpoint.json';
+import u07Forbidden from './content/u07-forbidden.json';
+import u08Ko from './content/u08-ko.json';
+import u09Ladder from './content/u09-ladder.json';
+import u09Review from './content/u09-review.json';
 import type { Language } from './schema';
 
 export const LESSON_FILES: readonly unknown[] = [
@@ -26,6 +30,10 @@ export const LESSON_FILES: readonly unknown[] = [
   u05Review,
   u06CaptureGo,
   u06Checkpoint,
+  u07Forbidden,
+  u08Ko,
+  u09Ladder,
+  u09Review,
 ];
 
 export const LESSON_TEXTS: Readonly<Record<Language, Readonly<Record<string, string>>>> = {

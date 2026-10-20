@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "id": "u07-forbidden",
+  "unit": 7,
+  "kind": "lesson",
+  "titleKey": "lesson.u07-forbidden.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "W": ["c2", "b3", "d3", "c4"]
+        }
+      },
+      "markers": [
+        {
+          "kind": "cross",
+          "at": "c3"
+        }
+      ],
+      "textKey": "lesson.u07-forbidden.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a3", "b2", "c1"],
+          "W": ["a2", "b1"]
+        }
+      },
+      "moves": [
+        {
+          "color": "B",
+          "at": "a1"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "hint",
+          "points": ["a1"]
+        }
+      ],
+      "textKey": "lesson.u07-forbidden.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c1", "d1"],
+          "W": ["b1", "c2", "d2", "e2"]
+        }
+      },
+      "moves": [
+        {
+          "color": "W",
+          "at": "e1"
+        }
+      ],
+      "highlights": [
+        {
+          "kind": "hint",
+          "points": ["e1"]
+        }
+      ],
+      "textKey": "lesson.u07-forbidden.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "forbidden-center",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "W": ["c2", "b3", "d3", "c4"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["c3"]
+      },
+      "promptKey": "lesson.u07-forbidden.e1.prompt",
+      "hintKey": "lesson.u07-forbidden.e1.hint",
+      "hintPoints": ["c3"],
+      "explainKey": "lesson.u07-forbidden.e1.explain"
+    },
+    {
+      "id": "forbidden-corner",
+      "type": "tap-point",
+      "size": 5,
+      "setup": {
+        "W": ["a2", "b1"]
+      },
+      "mode": "one",
+      "answer": {
+        "points": ["a1"]
+      },
+      "promptKey": "lesson.u07-forbidden.e2.prompt",
+      "hintKey": "lesson.u07-forbidden.e2.hint",
+      "hintPoints": ["a1"],
+      "explainKey": "lesson.u07-forbidden.e2.explain"
+    },
+    {
+      "id": "capture-exception",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b4", "d4", "c5"],
+        "W": ["c2", "b3", "d3", "c4"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u07-forbidden.e3.o1",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u07-forbidden.e3.o2",
+          "whyKey": "lesson.u07-forbidden.e3.w2"
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "c3",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u07-forbidden.e3.prompt",
+      "explainKey": "lesson.u07-forbidden.e3.explain"
+    },
+    {
+      "id": "trap-corner",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["d2"],
+        "W": ["e2", "d1"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u07-forbidden.e4.o1",
+          "whyKey": "lesson.u07-forbidden.e4.w1"
+        },
+        {
+          "textKey": "lesson.u07-forbidden.e4.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "e1",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u07-forbidden.e4.prompt",
+      "explainKey": "lesson.u07-forbidden.e4.explain"
+    },
+    {
+      "id": "capture-corner",
+      "type": "play-move",
+      "size": 5,
+      "setup": {
+        "B": ["e3", "d4", "c5"],
+        "W": ["e4", "d5"]
+      },
+      "toPlay": "B",
+      "goal": {
+        "kind": "capture",
+        "min": 2
+      },
+      "promptKey": "lesson.u07-forbidden.e5.prompt",
+      "hintKey": "lesson.u07-forbidden.e5.hint",
+      "hintPoints": ["e5"],
+      "explainKey": "lesson.u07-forbidden.e5.explain"
+    },
+    {
+      "id": "tap-all-forbidden",
+      "type": "tap-point",
+      "size": 7,
+      "setup": {
+        "W": ["a2", "b1", "g6", "f7", "d3", "c4", "e4", "d5"]
+      },
+      "mode": "all",
+      "answer": {
+        "points": ["a1", "d4", "g7"]
+      },
+      "promptKey": "lesson.u07-forbidden.e6.prompt",
+      "hintKey": "lesson.u07-forbidden.e6.hint",
+      "explainKey": "lesson.u07-forbidden.e6.explain"
+    },
+    {
+      "id": "group-last-liberty",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "c1"],
+        "W": ["d1", "a2", "b2", "c2"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u07-forbidden.e7.o1",
+          "whyKey": "lesson.u07-forbidden.e7.w1"
+        },
+        {
+          "textKey": "lesson.u07-forbidden.e7.o2",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "label",
+          "at": "a1",
+          "text": "A"
+        }
+      ],
+      "promptKey": "lesson.u07-forbidden.e7.prompt",
+      "explainKey": "lesson.u07-forbidden.e7.explain"
+    }
+  ]
+}

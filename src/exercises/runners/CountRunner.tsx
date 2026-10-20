@@ -7,6 +7,7 @@ import { GoBoard } from '@/board';
 import {
   getSolution,
   solutionPoints,
+  lastPlayedPoint,
   startState,
   toStepMarkers,
   type CountExercise,
@@ -32,7 +33,10 @@ export function CountRunner({
 }: RunnerProps<CountExercise>) {
   const { t } = useTranslation();
   const { size } = exercise;
-  const stones = useMemo(() => startState(exercise).board.cells, [exercise]);
+  const start = useMemo(() => startState(exercise), [exercise]);
+  const stones = start.board.cells;
+  // A prelude's last move keeps the normal last-move mark (spec M5 AC 12).
+  const lastMove = useMemo(() => lastPlayedPoint(start), [start]);
   const markers = useMemo(() => toStepMarkers(exercise.markers, size), [exercise, size]);
   const value = useMemo(() => getSolution(exercise).value, [exercise]);
   const active = attempts.status === 'active';
@@ -71,6 +75,7 @@ export function CountRunner({
     >
       <View style={styles.boardRow}>
         <GoBoard
+          lastMove={lastMove}
           size={size}
           stones={stones}
           width={boardWidth}

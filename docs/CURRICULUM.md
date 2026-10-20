@@ -15,7 +15,7 @@ Board sizes grow with the learner: 5×5 → 7×7 → 9×9 (13×13 / 19×19 intro
 | 6 | **吃子棋 Capture Go** (checkpoint) | First to capture N stones wins | Mini-games vs bot on 5×5 / 7×7 |
 | 7 | 禁入点 Forbidden points | No suicide — unless the move captures | Is this move legal? |
 | 8 | 打劫 Ko | Can't immediately recapture a single stone | Spot the ko; find a ko threat (simple) |
-| 9 | 征子 & 枪 Ladder & net | Basic capturing techniques | Does the ladder work? Capture with a net |
+| 9 | 征子 Ladder (net 枷 jiā deferred to a later lesson) | Basic capturing techniques | Does the ladder work? Find the ladder breaker |
 | 10 | 眼 Eyes | Real vs false eye | Identify real eyes |
 | 11 | 死活 Life & death | Two eyes = alive | Make two eyes / prevent two eyes (1-move tsumego) |
 | 12 | 地 Territory | Surrounding empty points | Mark the territory of each side |

@@ -14,10 +14,10 @@ export interface ListOptions {
 }
 
 /**
- * Units shown as "coming soon" until their content exists (§4.6). Empty since Unit 6 shipped
- * (M4 item 2): the map ends with the "More units coming soon" footer until M5 content exists.
+ * Units shown as "coming soon" until their content exists (§4.6). Unit 10 (eyes) since M5 item 1
+ * shipped Units 7–9 (docs/specs/M5-ko-forbidden-ladders.md §5).
  */
-export const PLANNED_UNITS: readonly number[] = [];
+export const PLANNED_UNITS: readonly number[] = [10];
 
 export interface LessonLoader {
   loadLesson(id: string, opts?: ListOptions): LoadResult;

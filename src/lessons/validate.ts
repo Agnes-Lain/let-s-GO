@@ -334,8 +334,35 @@ class Validator {
     });
   }
 
-  private moves(value: unknown, path: string, start: GameState | null): GameState | null {
-    const list = this.array(value, path, 'moves');
+  /** Plays an exercise's `prelude` (AC 9–11); null when it is not valid. */
+  private prelude(ex: Json, path: string, start: GameState | null): GameState | null {
+    const preludePath = join(path, 'prelude');
+    if (Array.isArray(ex.prelude) && ex.prelude.length === 0) {
+      this.badType(preludePath, 'prelude', 'a non-empty array of moves');
+      return null;
+    }
+    const state = this.moves(ex.prelude, preludePath, start, 'PRELUDE_ILLEGAL', 'prelude');
+    if (state && ex.type === 'play-move' && (ex.toPlay === 'B' || ex.toPlay === 'W')) {
+      if (ex.toPlay !== state.toPlay) {
+        this.add(
+          'PRELUDE_TURN',
+          join(path, 'toPlay'),
+          `toPlay is "${ex.toPlay}" but "${state.toPlay}" is to move after the prelude`,
+        );
+        return null;
+      }
+    }
+    return state;
+  }
+
+  private moves(
+    value: unknown,
+    path: string,
+    start: GameState | null,
+    illegalCode = 'MOVE_ILLEGAL',
+    name = 'moves',
+  ): GameState | null {
+    const list = this.array(value, path, name);
     if (!list) return null;
     let state = start;
     list.forEach((item, i) => {
@@ -360,7 +387,7 @@ class Validator {
       }
       const result = playAs(state, color, at);
       if (!result.ok) {
-        this.add('MOVE_ILLEGAL', movePath, `move ${color} ${at} is illegal here: ${result.reason}`);
+        this.add(illegalCode, movePath, `move ${color} ${at} is illegal here: ${result.reason}`);
         state = null;
         return;
       }
@@ -515,14 +542,21 @@ class Validator {
       'play-bot': ['win', 'bot'],
     };
     const specificOptional: Record<string, string[]> = {
+      'tap-point': ['prelude'],
+      'play-move': ['prelude'],
+      choice: ['prelude'],
+      count: ['prelude'],
       'play-bot': ['player', 'first', 'maxMoves'],
     };
-    const state = this.position(
+    const setupState = this.position(
       ex,
       path,
       [...base, ...specific[type as string]],
       [...baseOptional, ...(specificOptional[type as string] ?? [])],
     );
+    // Every check below reads the position after the prelude (spec M5 §5).
+    const state =
+      'prelude' in ex && type !== 'play-bot' ? this.prelude(ex, path, setupState) : setupState;
 
     if ('id' in ex && (typeof ex.id !== 'string' || !EXERCISE_ID.test(ex.id))) {
       this.add(
