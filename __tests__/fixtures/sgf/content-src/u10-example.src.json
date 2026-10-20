@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "id": "u10-example",
+  "unit": 10,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u10-example.title",
+  "coordinates": true,
+  "exercises": [
+    {
+      "id": "e1",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "capture", "target": "c3" },
+      "promptKey": "lesson.u10-example.e1.prompt",
+      "hintKey": "lesson.u10-example.e1.hint",
+      "hintPoints": ["c2"],
+      "whyKeys": { "a1": "lesson.u10-example.e1.why-a1" }
+    },
+    {
+      "id": "e2",
+      "type": "sequence",
+      "sgf": "e2.sgf",
+      "goal": { "kind": "capture", "target": "c3" },
+      "promptKey": "lesson.u10-example.e2.prompt",
+      "explainKey": "lesson.u10-example.e2.explain"
+    },
+    {
+      "id": "e3",
+      "type": "sequence",
+      "sgf": "e2.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "lesson.u10-example.e3.prompt"
+    },
+    {
+      "id": "e4",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "lesson.u10-example.e4.prompt"
+    },
+    {
+      "id": "e5",
+      "type": "tap-point",
+      "size": 5,
+      "setup": { "W": ["c3"] },
+      "mode": "all",
+      "answer": { "libertiesOf": "c3" },
+      "promptKey": "lesson.u10-example.e5.prompt"
+    }
+  ]
+}

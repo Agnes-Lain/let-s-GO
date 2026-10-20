@@ -6,7 +6,7 @@ const prettierConfig = require('eslint-config-prettier');
 // The rules engine, the bot and the lesson model must stay pure TypeScript (CLAUDE.md rule 2,
 // M3 spec §4.1).
 const pureModuleRestrictions = {
-  files: ['src/engine/**', 'src/bot/**', 'src/lessons/**'],
+  files: ['src/engine/**', 'src/bot/**', 'src/lessons/**', 'src/sgf/**'],
   rules: {
     'no-restricted-imports': [
       'error',

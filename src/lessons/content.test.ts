@@ -63,3 +63,12 @@ describe('lesson content (AC 28)', () => {
     }
   });
 });
+
+describe('no sequence exercise ships before its runner (M5-sgf-import AC 29)', () => {
+  it('no registered lesson contains a sequence exercise', () => {
+    const found = (LESSON_FILES as Lesson[]).flatMap((lesson) =>
+      lesson.exercises.filter((e) => e.type === 'sequence').map((e) => `${lesson.id}/${e.id}`),
+    );
+    expect(found).toEqual([]);
+  });
+});

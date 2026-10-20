@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "id": "u11-broken",
+  "unit": 11,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u11-broken.title",
+  "exercises": [
+    {
+      "id": "e1",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "p"
+    },
+    {
+      "id": "e2",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "p"
+    },
+    {
+      "id": "e3",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "p"
+    },
+    {
+      "id": "e4",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "p"
+    },
+    {
+      "id": "e5",
+      "type": "sequence",
+      "sgf": "e1.sgf",
+      "goal": { "kind": "line" },
+      "promptKey": "p"
+    }
+  ]
+}

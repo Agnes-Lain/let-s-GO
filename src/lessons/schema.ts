@@ -40,6 +40,8 @@ export interface Lesson {
   /** 'lesson' = explain + practice set; 'checkpoint' = practice set only. */
   kind: 'lesson' | 'checkpoint';
   titleKey: TextKey;
+  /** Set by `npm run import:sgf` on generated files: the `.src.json` it came from. */
+  generatedFrom?: string;
   /** Show coordinates on every board of this lesson. Default false. */
   coordinates?: boolean;
   /** 'lesson': 2–4 steps. 'checkpoint': omitted or []. */
@@ -131,8 +133,35 @@ export interface PlayBotExercise extends ExerciseBase {
   maxMoves?: number;
 }
 
+/** `line`: the authored line is the truth (legal only). `capture`: the line captures `target`. */
+export type SequenceGoal = { kind: 'line' } | { kind: 'capture'; target: Vertex };
+
+/** A learner mistake (`line[0]`) and its scripted refutation (the rest). */
+export interface SequenceBranch {
+  line: MoveDef[];
+  whyKey?: TextKey;
+}
+
+/**
+ * A multi-move problem (spec docs/specs/M5-sgf-import.md §6), usually imported from SGF. Even
+ * indexes of `line` are the learner's moves, odd indexes are scripted replies. No runner yet
+ * (M5 item 3): no shipped lesson may contain one.
+ */
+export interface SequenceExercise extends ExerciseBase {
+  type: 'sequence';
+  toPlay: Color;
+  goal: SequenceGoal;
+  line: MoveDef[];
+  wrong?: SequenceBranch[];
+}
+
 export type Exercise =
-  TapPointExercise | PlayMoveExercise | ChoiceExercise | CountExercise | PlayBotExercise;
+  | TapPointExercise
+  | PlayMoveExercise
+  | ChoiceExercise
+  | CountExercise
+  | PlayBotExercise
+  | SequenceExercise;
 export type ExerciseType = Exercise['type'];
 export const EXERCISE_TYPES: readonly ExerciseType[] = [
   'tap-point',
@@ -140,6 +169,7 @@ export const EXERCISE_TYPES: readonly ExerciseType[] = [
   'choice',
   'count',
   'play-bot',
+  'sequence',
 ];
 
 /** What the runner needs to check an answer and to show it (§4.3). */

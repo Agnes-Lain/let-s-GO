@@ -567,12 +567,12 @@ describe('choice and count (AC 19–22)', () => {
 
   it('AC 22: unknown exercise type', () => {
     const lesson = sampleLesson();
-    lesson.exercises[0].type = 'sequence';
+    lesson.exercises[0].type = 'tsumego';
     expect(errorsOf(lesson)).toEqual([
       {
         code: 'UNKNOWN_TYPE',
         path: 'exercises[0].type',
-        message: 'unknown exercise type "sequence"',
+        message: 'unknown exercise type "tsumego"',
       },
     ]);
   });
