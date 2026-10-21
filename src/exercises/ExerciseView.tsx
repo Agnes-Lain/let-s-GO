@@ -5,7 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Exercise, Lesson, Outcome, PlayBotExercise, SequenceExercise } from '@/lessons';
+import {
+  startState,
+  type Exercise,
+  type Lesson,
+  type Outcome,
+  type PlayBotExercise,
+  type SequenceExercise,
+} from '@/lessons';
 import { color, radius, spacing, typography } from '@/theme/tokens';
 
 import {
@@ -19,11 +26,14 @@ import type { FeedbackText, FrameAction } from './ExerciseFrame';
 import { ExerciseTopBar } from './ExerciseTopBar';
 import { practiceBoardWidth } from './layout';
 import { ChoiceRunner } from './runners/ChoiceRunner';
+import { CountEntryRunner, scoreAnswerOf } from './runners/CountEntryRunner';
 import { CountRunner } from './runners/CountRunner';
+import { MarkRunner } from './runners/MarkRunner';
 import { PlayBotRunner } from './runners/PlayBotRunner';
 import { PlayMoveRunner } from './runners/PlayMoveRunner';
 import { SequenceRunner } from './runners/SequenceRunner';
 import { TapPointRunner } from './runners/TapPointRunner';
+import { scoreRevealLine } from './scoreAnswer';
 
 type Props = {
   lesson: Lesson;
@@ -42,7 +52,16 @@ function feedbackFor(exercise: MoveExercise, attempts: AttemptState, t: T): Feed
   if (attempts.status === 'correct')
     return [{ text: t('fb.correct'), tone: 'success' }, ...explain];
   if (attempts.status === 'revealed') {
-    return [{ text: t('fb.revealed'), tone: 'success' }, ...explain];
+    // A score count says how the number is made (M5-territory-counting AC 43).
+    const score = exercise.type === 'count' ? scoreAnswerOf(exercise) : null;
+    const line = score
+      ? scoreRevealLine(startState(exercise).board, score)
+      : { key: 'fb.revealed' };
+    const why = (exercise.type === 'choice' ? (attempts.message ?? []) : []).map((l) => ({
+      text: t(l.key, l.params),
+      tone: 'error' as const,
+    }));
+    return [...why, { text: t(line.key, line.params), tone: 'success' }, ...explain];
   }
   const lines: FeedbackText[] = (attempts.message ?? []).map((line) => ({
     text: t(line.key, line.params),
@@ -89,8 +108,9 @@ function MoveExerciseView({
     onPress: () => onDone(outcomeOf(attempts)),
     testID: isLast ? 'practice-finish' : 'practice-next',
   };
+  const entry = exercise.type === 'count' && scoreAnswerOf(exercise) !== null;
   const boardWidth = practiceBoardWidth(
-    exercise.type,
+    entry ? 'count-entry' : exercise.type,
     { width: window.width, height: window.height - insets.top - insets.bottom },
     exercise.type === 'choice' ? exercise.options.length : 3,
   );
@@ -128,6 +148,10 @@ function MoveExerciseView({
         <PlayMoveRunner exercise={exercise} {...common} />
       ) : exercise.type === 'choice' ? (
         <ChoiceRunner exercise={exercise} {...common} />
+      ) : exercise.type === 'mark' ? (
+        <MarkRunner exercise={exercise} {...common} />
+      ) : entry ? (
+        <CountEntryRunner exercise={exercise} {...common} />
       ) : (
         <CountRunner exercise={exercise} {...common} />
       )}

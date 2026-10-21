@@ -120,6 +120,10 @@ describe('every key used in code exists in all languages (and none are orphaned)
   for (const file of readdirSync(lessonDir).filter((f) => f.endsWith('.json'))) {
     const json = readFileSync(join(lessonDir, file), 'utf8');
     for (const m of json.matchAll(/"\w+Key":\s*"([^"]+)"/g)) usedKeys.add(m[1]);
+    // `whyKeys` maps (mark exercises, M5-territory-counting §5.6): vertex -> key.
+    for (const map of json.matchAll(/"whyKeys":\s*\{([^}]*)\}/g)) {
+      for (const m of map[1].matchAll(/"[a-z]\d+":\s*"([^"]+)"/g)) usedKeys.add(m[1]);
+    }
   }
 
   it('finds the keys used by the screens', () => {

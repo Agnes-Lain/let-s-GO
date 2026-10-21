@@ -35,7 +35,12 @@ import { playStoneSound } from './sound';
 import { useReduceMotion } from './useReduceMotion';
 import { useScreenReader } from './useScreenReader';
 
-export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error';
+/**
+ * `territoryB` / `territoryW`: territory squares (M5-territory-counting §5.5), `scratch`: the
+ * learner's counting dots (AC 45). All three are drawn under the stones, never as rings.
+ */
+export type HighlightKind =
+  'liberty' | 'hint' | 'success' | 'error' | 'territoryB' | 'territoryW' | 'scratch';
 export interface Highlight {
   kind: HighlightKind;
   points: readonly Point[];
@@ -45,7 +50,15 @@ export interface Highlight {
 
 export type Marker =
   | { kind: 'circle' | 'triangle' | 'square' | 'cross'; point: Point }
-  | { kind: 'label'; point: Point; text: string };
+  | { kind: 'label'; point: Point; text: string }
+  /** A dead stone 死子: the stone is dimmed and crossed (M5-territory-counting §5.5). */
+  | { kind: 'dead'; point: Point };
+
+/** Highlight kinds drawn below the stones instead of as rings. */
+const BELOW_STONES: readonly HighlightKind[] = ['liberty', 'territoryB', 'territoryW', 'scratch'];
+const TERRITORY_SIZE = 0.36;
+const TERRITORY_WHITE_EDGE = 1.5;
+const SCRATCH_RADIUS = 0.2;
 
 export interface CaptureEvent {
   /** Changes once per move (e.g. the move number); the same id is never announced twice. */
@@ -402,8 +415,15 @@ function BoardDrawing({
             activeRow={crosshairOn ? preview.point.y : null}
           />
           <LibertyLayer g={g} highlights={highlights} />
+          <TerritoryLayer g={g} highlights={highlights} />
           {crosshairOn ? <Crosshair g={g} point={preview.point} /> : null}
-          <StoneLayer g={g} stones={stones} placed={placed} onPlacedDone={placedDone} />
+          <StoneLayer
+            g={g}
+            stones={stones}
+            placed={placed}
+            onPlacedDone={placedDone}
+            dead={deadKey(markers, size)}
+          />
           {capture ? (
             <CaptureLayer key={capture.id} g={g} capture={capture} onDone={captureDone} />
           ) : null}
@@ -619,6 +639,65 @@ const LibertyLayer = memo(function LibertyLayer({
   );
 });
 
+/** Dead-stone indexes as a stable string, so the memoised stone layer redraws only on change. */
+function deadKey(markers: readonly Marker[], size: number): string {
+  return markers
+    .filter((m) => m.kind === 'dead')
+    .map((m) => m.point.y * size + m.point.x)
+    .sort((a, b) => a - b)
+    .join(',');
+}
+
+/** 5b. Territory squares (black / white) and scratch dots, below the stones. */
+const TerritoryLayer = memo(function TerritoryLayer({
+  g,
+  highlights,
+}: {
+  g: BoardGeometry;
+  highlights: readonly Highlight[];
+}) {
+  const s = TERRITORY_SIZE * g.cell;
+  return (
+    <>
+      {highlights.flatMap((h) =>
+        h.points.map((p) => {
+          const c = pointToLocation(g, p);
+          const v = toVertex(p, g.size);
+          if (h.kind === 'scratch') {
+            return (
+              <Circle
+                key={`scratch-${v}`}
+                testID={`board-scratch-${v}`}
+                cx={c.x}
+                cy={c.y}
+                r={SCRATCH_RADIUS * g.cell}
+                fill="none"
+                stroke={color.textSecondary}
+                strokeWidth={1.5}
+              />
+            );
+          }
+          if (h.kind !== 'territoryB' && h.kind !== 'territoryW') return null;
+          const black = h.kind === 'territoryB';
+          return (
+            <Rect
+              key={`${h.kind}-${v}`}
+              testID={`board-territory-${black ? 'B' : 'W'}-${v}`}
+              x={c.x - s / 2}
+              y={c.y - s / 2}
+              width={s}
+              height={s}
+              fill={black ? stone.black : stone.white}
+              stroke={black ? undefined : stone.whiteEdge}
+              strokeWidth={black ? undefined : TERRITORY_WHITE_EDGE}
+            />
+          );
+        }),
+      )}
+    </>
+  );
+});
+
 /** 6. Crosshair (preview, cell < 44 px): row and column lines through the previewed point. */
 function Crosshair({ g, point }: { g: BoardGeometry; point: Point }) {
   const c = pointToLocation(g, point);
@@ -642,14 +721,18 @@ const StoneLayer = memo(function StoneLayer({
   stones,
   placed,
   onPlacedDone,
+  dead,
 }: {
   g: BoardGeometry;
   stones: readonly (Color | null)[];
   /** Index (y*size+x) of the stone that plays the placement animation, if any. */
   placed: number | null;
   onPlacedDone: () => void;
+  /** Comma-separated indexes of dead stones (drawn at `opacity.dead`). */
+  dead: string;
 }) {
   const { size } = g;
+  const deadSet = new Set(dead === '' ? [] : dead.split(',').map(Number));
   const list: { point: Point; color: Color }[] = [];
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -671,6 +754,9 @@ const StoneLayer = memo(function StoneLayer({
           strokeWidth: c === 'W' ? 1 : undefined,
         };
         const key = `stone-${toVertex(point, size)}`;
+        if (deadSet.has(point.y * size + point.x)) {
+          return <Circle key={key} {...common} opacity={opacity.dead} />;
+        }
         return point.y * size + point.x === placed ? (
           <PlacedStone key={key} {...common} onDone={onPlacedDone} />
         ) : (
@@ -836,7 +922,7 @@ const RingLayer = memo(function RingLayer({
   return (
     <>
       {highlights
-        .filter((h) => h.kind !== 'liberty')
+        .filter((h) => !BELOW_STONES.includes(h.kind))
         .flatMap((h) =>
           h.points.map((p) => {
             const c = pointToLocation(g, p);
@@ -1101,12 +1187,18 @@ function MarkerShape({ marker, g, on }: { marker: Marker; g: BoardGeometry; on: 
       ].join(' ');
       return <Polygon testID={id} points={points} {...common} />;
     }
-    case 'cross': {
+    case 'cross':
+    case 'dead': {
       const d = 0.2 * cell;
+      // Dead stone: a cross in the stone's contrast colour (white on black, dark on white).
+      const lines =
+        marker.kind === 'dead'
+          ? { ...common, stroke: on === 'B' ? stone.white : stone.black }
+          : common;
       return (
         <G testID={id}>
-          <Line x1={c.x - d} y1={c.y - d} x2={c.x + d} y2={c.y + d} {...common} />
-          <Line x1={c.x - d} y1={c.y + d} x2={c.x + d} y2={c.y - d} {...common} />
+          <Line x1={c.x - d} y1={c.y - d} x2={c.x + d} y2={c.y + d} {...lines} />
+          <Line x1={c.x - d} y1={c.y + d} x2={c.x + d} y2={c.y - d} {...lines} />
         </G>
       );
     }

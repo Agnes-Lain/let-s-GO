@@ -99,13 +99,14 @@ describe('A. files and validity (AC 1–8)', () => {
     expect(result.ok ? [] : result.errors).toEqual([]);
   });
 
-  it('AC 2: the catalog is consistent; Units 1–11 have a lesson, Unit 12 is planned', () => {
+  // Updated by M5 item 4: Units 12–14 ship, nothing is planned (M5-territory-counting AC 2).
+  it('AC 2: the catalog is consistent; Units 1–14 have a lesson, nothing is planned', () => {
     expect(validateCatalog([...lessons])).toEqual({ ok: true });
     const units = getUnits({ includeDev: false });
     expect(units.filter((u) => u.lesson).map((u) => u.unit)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     ]);
-    expect(units.filter((u) => !u.lesson).map((u) => u.unit)).toEqual([12]);
+    expect(units.filter((u) => !u.lesson).map((u) => u.unit)).toEqual([]);
   });
 
   it('AC 3: steps 3/3/3/0, exercises 6/6/6/7 with the ids of §7', () => {
@@ -196,15 +197,17 @@ describe('A. files and validity (AC 1–8)', () => {
     }
   });
 
-  it('AC 7: PLANNED_UNITS = [12]; the map shows Unit 12 as coming soon', () => {
-    expect(PLANNED_UNITS).toEqual([12]);
+  // Updated by M5 item 4: Units 12–14 ship and PLANNED_UNITS is [] (M5-territory-counting AC 2).
+  it('AC 7: Units 10–11 rows are unchanged; Unit 12 now follows as a real unit', () => {
+    expect(PLANNED_UNITS).toEqual([]);
     const rows = mapRows(getUnits({ includeDev: false }), {});
-    expect(rows.slice(-5).map((r) => `${r.key}:${r.state}`)).toEqual([
+    const at = rows.findIndex((r) => r.key === 'unit-10');
+    expect(rows.slice(at, at + 5).map((r) => `${r.key}:${r.state}`)).toEqual([
       'unit-10:locked',
       'unit-11:locked',
       'lesson-u11-vital:locked',
       'checkpoint-11:locked',
-      'unit-12:soon',
+      'unit-12:locked',
     ]);
   });
 });

@@ -105,6 +105,8 @@ export const opacity = {
   label: 0.8,
   crosshair: 0.55,
   illegalFill: 0.1,
+  /** Dead stones 死子 (M5-territory-counting §5.5). */
+  dead: 0.45,
 } as const;
 
 export const tokens = {

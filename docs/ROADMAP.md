@@ -36,10 +36,15 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] SGF import for problem sets (moved from M1)
 - [x] Eyes, life & death (`sequence` runner for tsumego)
 - [x] Sequence v2: search-judged `sequence` runner (several correct moves) + ladder play-along
-- [ ] Territory & counting exercises
+- [x] Territory & counting exercises (Units 12–14: territory, counting, end of game)
 
 ## M6 — Full games & release
 - [ ] Bot levels 1–3 for 9×9 (Monte-Carlo playouts for level 3)
+  - End-of-game count (PO, 2026-10-21): after two passes 弃权, the learner marks dead stones (reuse the
+    `mark` dead runner from Unit 14), the bot agrees or disputes, then a count screen like Unit 13
+    (stones + territory, komi, winner) via `score()`.
+  - Learner can end the game (PO, 2026-10-21): "Count now" (asks the bot to pass, then the same count
+    screen) and Resign 认输 (other side wins, no count; optionally show the would-be score as a learning aid).
 - [ ] Settings, onboarding, accessibility pass
 - [ ] EAS Build, TestFlight / Play internal testing
 

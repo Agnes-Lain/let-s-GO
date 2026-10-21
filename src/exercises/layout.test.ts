@@ -32,3 +32,15 @@ describe('practice board sizes (AC 84, 88)', () => {
     expect(practiceBoardWidth('play-move', { width: 1200, height: 1600 })).toBe(480);
   });
 });
+
+describe('M5-territory-counting layouts (AC 52–53)', () => {
+  it('mark screens keep the 328 px board with the status row', () => {
+    expect(practiceBoardWidth('mark', phone)).toBe(328);
+  });
+
+  it('count-entry screens keep the 328 px board with the pad (no scroll at 740)', () => {
+    expect(practiceBoardWidth('count-entry', phone)).toBe(328);
+    // Budget: everything but the board fits in 740 − 16 − 328.
+    expect(PRACTICE_FIXED_HEIGHT + 3 * 44 + 3 * 8 - 48 + 328).toBeLessThanOrEqual(740);
+  });
+});

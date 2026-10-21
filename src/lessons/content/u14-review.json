@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "id": "u14-review",
+  "unit": 14,
+  "kind": "checkpoint",
+  "titleKey": "lesson.u14-review.title",
+  "coordinates": true,
+  "exercises": [
+    {
+      "id": "r-terr-w",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "mark": "territory",
+      "side": "W",
+      "promptKey": "lesson.u14-review.r1.prompt",
+      "hintKey": "lesson.u14-review.r1.hint",
+      "explainKey": "lesson.u14-review.r1.explain",
+      "hintPoints": ["a5"]
+    },
+    {
+      "id": "r-owner",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "prove": {
+        "kind": "owner",
+        "at": "d3"
+      },
+      "options": [
+        {
+          "textKey": "lesson.u14-review.o.black",
+          "outcome": "B",
+          "whyKey": "lesson.u14-review.r2.w.black"
+        },
+        {
+          "textKey": "lesson.u14-review.o.white",
+          "outcome": "W",
+          "whyKey": "lesson.u14-review.r2.w.white"
+        },
+        {
+          "textKey": "lesson.u14-review.o.none",
+          "outcome": "none",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "d3"
+        }
+      ],
+      "promptKey": "lesson.u14-review.r2.prompt",
+      "explainKey": "lesson.u14-review.r2.explain"
+    },
+    {
+      "id": "r-area-w",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "W"
+        }
+      },
+      "promptKey": "lesson.u14-review.r3.prompt",
+      "hintKey": "lesson.u14-review.r3.hint",
+      "explainKey": "lesson.u14-review.r3.explain"
+    },
+    {
+      "id": "r-area-9",
+      "type": "count",
+      "size": 9,
+      "setup": {
+        "B": ["a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "j5"],
+        "W": ["a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "j6"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u14-review.r4.prompt",
+      "hintKey": "lesson.u14-review.r4.hint",
+      "explainKey": "lesson.u14-review.r4.explain"
+    },
+    {
+      "id": "r-winner-9",
+      "type": "choice",
+      "size": 9,
+      "setup": {
+        "B": ["a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "j5"],
+        "W": ["a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "j6"]
+      },
+      "prove": {
+        "kind": "winner",
+        "komi": 7.5
+      },
+      "options": [
+        {
+          "textKey": "lesson.u14-review.o.winB",
+          "outcome": "B",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u14-review.o.winW",
+          "outcome": "W",
+          "whyKey": "lesson.u14-review.r5.w.white"
+        }
+      ],
+      "promptKey": "lesson.u14-review.r5.prompt",
+      "hintKey": "lesson.u14-review.r5.hint",
+      "explainKey": "lesson.u14-review.r5.explain"
+    },
+    {
+      "id": "r-dead",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2", "c5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "mark": "dead",
+      "dead": ["c1", "c5"],
+      "whyKeys": {
+        "a2": "lesson.u14-end.e5.w.black",
+        "a3": "lesson.u14-end.e5.w.white"
+      },
+      "promptKey": "lesson.u14-review.r6.prompt",
+      "hintKey": "lesson.u14-review.r6.hint",
+      "explainKey": "lesson.u14-review.r6.explain",
+      "hintPoints": ["c1"]
+    },
+    {
+      "id": "r-winner-n",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2", "c5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "prove": {
+        "kind": "winner",
+        "komi": 0.5,
+        "dead": ["c1", "c5"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u14-review.o.winB",
+          "outcome": "B",
+          "whyKey": "lesson.u14-review.r7.w.black"
+        },
+        {
+          "textKey": "lesson.u14-review.o.winW",
+          "outcome": "W",
+          "correct": true
+        }
+      ],
+      "promptKey": "lesson.u14-review.r7.prompt",
+      "hintKey": "lesson.u14-review.r7.hint",
+      "explainKey": "lesson.u14-review.r7.explain"
+    }
+  ]
+}

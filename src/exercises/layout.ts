@@ -25,7 +25,15 @@ export const OPTION_HEIGHT = 48;
 export const OPTION_GAP = 8;
 export const CHOICE_BOARD = { min: 220, max: 240 } as const;
 
-export type PracticeKind = 'tap-point' | 'play-move' | 'choice' | 'count';
+/** Mark screens add the status row "Marked: n" (36) and its gap (M5-territory-counting §5.2). */
+export const MARK_STATUS_ROW = 36 + 8;
+/**
+ * Count-entry screens (M5-territory-counting §5.2): the entry row and two key rows (44 each, 8 px
+ * gaps) replace the bottom button (48), so they need 3 × 44 + 3 × 8 − 48 more than the default.
+ */
+export const COUNT_ENTRY_HEIGHT = 3 * 44 + 3 * 8 - 48;
+
+export type PracticeKind = 'tap-point' | 'play-move' | 'choice' | 'count' | 'count-entry' | 'mark';
 
 /**
  * Board width on the practice screen (spec §6.3–6.4): the M2 rule (window width − 32, ≤ 480),
@@ -41,6 +49,10 @@ export function practiceBoardWidth(
   switch (kind) {
     case 'count':
       return Math.max(0, Math.min(base, free - COUNT_CHIPS_HEIGHT));
+    case 'count-entry':
+      return Math.max(0, Math.min(base, free - COUNT_ENTRY_HEIGHT));
+    case 'mark':
+      return Math.max(0, Math.min(base, free - MARK_STATUS_ROW));
     case 'choice': {
       const optionsHeight = options * OPTION_HEIGHT + (options - 1) * OPTION_GAP + OPTION_GAP;
       const fit = Math.min(CHOICE_BOARD.max, free - optionsHeight);

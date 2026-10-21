@@ -12,6 +12,18 @@ export {
   solutionPoints,
   startState,
 } from './goals';
+export {
+  groupStones,
+  markAnswer,
+  otherColor,
+  ownerOf,
+  proofOutcome,
+  scoreFacts,
+  scoreValue,
+  winnerOf,
+  type ScoreFacts,
+  type SideFacts,
+} from './scoring';
 export { STAR_RULES, computeStars, countOutcomes, type Stars } from './stars';
 export {
   SAMPLE_UNIT,

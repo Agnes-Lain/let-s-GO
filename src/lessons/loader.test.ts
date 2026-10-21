@@ -74,7 +74,8 @@ describe('dev sample visibility (AC 26)', () => {
 
 describe('getUnits (AC 27)', () => {
   // Updated by M5 item 3: Units 10–11 ship (Unit 11 has two lessons), Unit 12 is planned.
-  it('M5: units 1–11 carry their lessons (units 5, 6, 9 and 11 have a checkpoint); Unit 12 is planned', () => {
+  // Updated by M5 item 4: Units 12–14 ship (Unit 14 has a checkpoint); nothing is planned.
+  it('M5: units 1–14 carry their lessons (units 5, 6, 9, 11 and 14 have a checkpoint)', () => {
     const units = getUnits({ includeDev: false });
     expect(
       units.map((u) => [u.unit, u.titleKey, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
@@ -90,7 +91,9 @@ describe('getUnits (AC 27)', () => {
       [9, 'unit.9.title', 'u09-ladder', 'u09-review'],
       [10, 'unit.10.title', 'u10-eyes', null],
       [11, 'unit.11.title', 'u11-two-eyes', 'u11-review'],
-      [12, 'unit.12.title', null, null],
+      [12, 'unit.12.title', 'u12-territory', null],
+      [13, 'unit.13.title', 'u13-counting', null],
+      [14, 'unit.14.title', 'u14-end', 'u14-review'],
     ]);
     expect(units.find((u) => u.unit === 11)?.laterLessons?.map((l) => l.id)).toEqual(['u11-vital']);
   });
@@ -107,10 +110,7 @@ describe('getUnits (AC 27)', () => {
     const units = loader.getUnits({ includeDev: false });
     expect(units[0].lesson?.id).toBe('u01-board');
     expect(units[0].titleKey).toBe('unit.1.title');
-    // Then the planned ("coming soon") units: Unit 12 since M5 item 3 (PLANNED_UNITS = [12]).
-    expect(units.map((u) => [u.unit, u.lesson])).toEqual([
-      [1, units[0].lesson],
-      [12, null],
-    ]);
+    // No planned ("coming soon") unit follows since M5 item 4 (PLANNED_UNITS = []).
+    expect(units.map((u) => [u.unit, u.lesson])).toEqual([[1, units[0].lesson]]);
   });
 });

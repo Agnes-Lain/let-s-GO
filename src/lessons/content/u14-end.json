@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "id": "u14-end",
+  "unit": 14,
+  "kind": "lesson",
+  "titleKey": "lesson.u14-end.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a2", "b2", "c2", "d2", "e2"],
+          "W": ["a3", "b3", "c3", "d3", "e3"]
+        }
+      },
+      "textKey": "lesson.u14-end.s1"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a2", "b2", "c2", "d2", "e2"],
+          "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+        }
+      },
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c1"
+        }
+      ],
+      "textKey": "lesson.u14-end.s2"
+    },
+    {
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "b1", "d1", "e1"]
+        },
+        {
+          "kind": "territoryW",
+          "points": ["a4", "b4", "c4", "d4", "e4", "a5", "b5", "c5", "d5", "e5"]
+        }
+      ],
+      "markers": [
+        {
+          "kind": "dead",
+          "at": "c1"
+        }
+      ],
+      "textKey": "lesson.u14-end.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "two-passes",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2"],
+        "W": ["a3", "b3", "c3", "d3", "e3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u14-end.e1.o.end",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u14-end.e1.o.again",
+          "whyKey": "lesson.u14-end.e1.w.again"
+        }
+      ],
+      "promptKey": "lesson.u14-end.e1.prompt",
+      "explainKey": "lesson.u14-end.e1.explain"
+    },
+    {
+      "id": "one-pass",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2"],
+        "W": ["a3", "b3", "c3", "d3", "e3"]
+      },
+      "options": [
+        {
+          "textKey": "lesson.u14-end.e2.o.no",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u14-end.e2.o.yes",
+          "whyKey": "lesson.u14-end.e2.w.yes"
+        }
+      ],
+      "promptKey": "lesson.u14-end.e2.prompt",
+      "explainKey": "lesson.u14-end.e2.explain"
+    },
+    {
+      "id": "dead-1",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "mark": "dead",
+      "dead": ["c1"],
+      "promptKey": "lesson.u14-end.e3.prompt",
+      "hintKey": "lesson.u14-end.e3.hint",
+      "explainKey": "lesson.u14-end.e3.explain",
+      "hintPoints": ["c1"]
+    },
+    {
+      "id": "dead-2",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "d3", "e3", "c5"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "mark": "dead",
+      "dead": ["c5"],
+      "promptKey": "lesson.u14-end.e4.prompt",
+      "hintKey": "lesson.u14-end.e4.hint",
+      "explainKey": "lesson.u14-end.e4.explain",
+      "hintPoints": ["c5"]
+    },
+    {
+      "id": "dead-both",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2", "c5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "mark": "dead",
+      "dead": ["c1", "c5"],
+      "whyKeys": {
+        "a2": "lesson.u14-end.e5.w.black",
+        "a3": "lesson.u14-end.e5.w.white"
+      },
+      "promptKey": "lesson.u14-end.e5.prompt",
+      "hintKey": "lesson.u14-end.e5.hint",
+      "explainKey": "lesson.u14-end.e5.explain",
+      "hintPoints": ["c1"]
+    },
+    {
+      "id": "area-dead-b",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "B",
+          "dead": ["c1"]
+        }
+      },
+      "promptKey": "lesson.u14-end.e6.prompt",
+      "hintKey": "lesson.u14-end.e6.hint",
+      "explainKey": "lesson.u14-end.e6.explain"
+    },
+    {
+      "id": "area-dead-w",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a2", "b2", "c2", "d2", "e2", "c5"],
+        "W": ["a3", "b3", "c3", "d3", "e3", "c1"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "W",
+          "dead": ["c1", "c5"]
+        }
+      },
+      "promptKey": "lesson.u14-end.e7.prompt",
+      "hintKey": "lesson.u14-end.e7.hint",
+      "explainKey": "lesson.u14-end.e7.explain"
+    }
+  ]
+}

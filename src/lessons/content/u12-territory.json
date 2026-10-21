@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "id": "u12-territory",
+  "unit": 12,
+  "kind": "lesson",
+  "titleKey": "lesson.u12-territory.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["c1", "c2", "c3", "c4", "c5"],
+          "W": ["d1", "d2", "d3", "d4", "d5"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "a3", "a4", "a5", "b1", "b2", "b3", "b4", "b5"]
+        }
+      ],
+      "textKey": "lesson.u12-territory.s1"
+    },
+    {
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "a3", "a4", "a5", "b1", "b2", "b3", "b4", "b5"]
+        },
+        {
+          "kind": "territoryW",
+          "points": ["e1", "e2", "e3", "e4", "e5"]
+        }
+      ],
+      "textKey": "lesson.u12-territory.s2"
+    },
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["b1", "b2", "b3", "b4", "b5"],
+          "W": ["d1", "d2", "d3", "d4", "d5"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "a3", "a4", "a5"]
+        },
+        {
+          "kind": "territoryW",
+          "points": ["e1", "e2", "e3", "e4", "e5"]
+        }
+      ],
+      "markers": [
+        {
+          "kind": "circle",
+          "at": "c1"
+        },
+        {
+          "kind": "circle",
+          "at": "c2"
+        },
+        {
+          "kind": "circle",
+          "at": "c3"
+        },
+        {
+          "kind": "circle",
+          "at": "c4"
+        },
+        {
+          "kind": "circle",
+          "at": "c5"
+        }
+      ],
+      "textKey": "lesson.u12-territory.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "mark-b-edge",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "b2", "b3", "b4", "b5"],
+        "W": ["c1", "c2", "c3", "c4", "c5"]
+      },
+      "mark": "territory",
+      "side": "B",
+      "promptKey": "lesson.u12-territory.e1.prompt",
+      "hintKey": "lesson.u12-territory.e1.hint",
+      "explainKey": "lesson.u12-territory.e1.explain",
+      "hintPoints": ["a3"]
+    },
+    {
+      "id": "mark-b-corner",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "d3", "e3"]
+      },
+      "mark": "territory",
+      "side": "B",
+      "promptKey": "lesson.u12-territory.e2.prompt",
+      "hintKey": "lesson.u12-territory.e2.hint",
+      "explainKey": "lesson.u12-territory.e2.explain",
+      "hintPoints": ["a1"]
+    },
+    {
+      "id": "mark-w-corner",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "b2", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "c3", "d3", "e3"]
+      },
+      "mark": "territory",
+      "side": "W",
+      "promptKey": "lesson.u12-territory.e3.prompt",
+      "hintKey": "lesson.u12-territory.e3.hint",
+      "explainKey": "lesson.u12-territory.e3.explain",
+      "hintPoints": ["e5"]
+    },
+    {
+      "id": "who-owns",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "b2", "b3", "b4", "b5"],
+        "W": ["d1", "d2", "d3", "d4", "d5"]
+      },
+      "prove": {
+        "kind": "owner",
+        "at": "c3"
+      },
+      "options": [
+        {
+          "textKey": "lesson.u12-territory.o.black",
+          "outcome": "B",
+          "whyKey": "lesson.u12-territory.e4.w.black"
+        },
+        {
+          "textKey": "lesson.u12-territory.o.white",
+          "outcome": "W",
+          "whyKey": "lesson.u12-territory.e4.w.white"
+        },
+        {
+          "textKey": "lesson.u12-territory.o.none",
+          "outcome": "none",
+          "correct": true
+        }
+      ],
+      "markers": [
+        {
+          "kind": "triangle",
+          "at": "c3"
+        }
+      ],
+      "promptKey": "lesson.u12-territory.e4.prompt",
+      "explainKey": "lesson.u12-territory.e4.explain"
+    },
+    {
+      "id": "mark-b-dame",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "b2", "b3", "b4", "b5"],
+        "W": ["d1", "d2", "d3", "d4", "d5"]
+      },
+      "mark": "territory",
+      "side": "B",
+      "promptKey": "lesson.u12-territory.e5.prompt",
+      "hintKey": "lesson.u12-territory.e5.hint",
+      "explainKey": "lesson.u12-territory.e5.explain",
+      "hintPoints": ["a1"]
+    },
+    {
+      "id": "mark-b-contact",
+      "type": "mark",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "mark": "territory",
+      "side": "B",
+      "promptKey": "lesson.u12-territory.e6.prompt",
+      "hintKey": "lesson.u12-territory.e6.hint",
+      "explainKey": "lesson.u12-territory.e6.explain",
+      "hintPoints": ["a1"]
+    },
+    {
+      "id": "count-terr",
+      "type": "count",
+      "size": 7,
+      "setup": {
+        "B": ["a5", "b5", "c5", "c4", "d4", "d3", "d2", "d1"],
+        "W": ["a6", "b6", "c6", "d6", "d5", "e5", "e4", "e3", "e2", "e1"]
+      },
+      "answer": {
+        "score": {
+          "of": "territory",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u12-territory.e7.prompt",
+      "hintKey": "lesson.u12-territory.e7.hint",
+      "explainKey": "lesson.u12-territory.e7.explain"
+    }
+  ]
+}
