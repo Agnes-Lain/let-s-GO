@@ -807,6 +807,7 @@
   "game9.btn.pass": "弃权",
   "game9.btn.count": "现在数子",
   "game9.btn.resign": "认输",
+  "game9.pass.title": "弃权",
   "game9.passExplain": "觉得没有有用的点了，就弃权。双方连续弃权，对局结束。",
   "game9.passExplain.ok": "知道了",
   "game9.countNow.ask": "请机器人也弃权并数子？",

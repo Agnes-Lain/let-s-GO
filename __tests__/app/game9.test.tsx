@@ -10,6 +10,8 @@ import { BOT_DELAY_MS } from '@/game9/session';
 import { GAME9_FIXED_HEIGHT } from '@/game9/ui/GameScreen';
 import { setLanguageChoice } from '@/i18n';
 import en from '@/i18n/en.json';
+import fr from '@/i18n/fr.json';
+import zhCN from '@/i18n/zh-CN.json';
 import { progressStore, type LessonProgress } from '@/store';
 
 jest.mock('expo-localization', () => ({
@@ -120,6 +122,15 @@ describe('Level picker (AC 15, 34, 36, 37)', () => {
     }
     expect(screen.getByTestId('game9-level-1').props.accessibilityState.selected).toBe(true);
     expect(screen.getByText('You play Black. Komi 5.5.')).toBeOnTheScreen();
+  });
+
+  it('QA: the title and the level descriptions wrap instead of being cut (fr at 360 px)', async () => {
+    await act(() => setLanguageChoice('fr'));
+    await openAt('/game');
+    expect(screen.getByTestId('game9-picker-title').props.numberOfLines).toBeUndefined();
+    for (const level of [1, 2, 3]) {
+      expect(screen.getByTestId(`game9-level-${level}-desc`).props.numberOfLines).toBeUndefined();
+    }
   });
 
   it('after a win Normal is pre-selected; beaten ticks and the Challenge badge show', async () => {
@@ -236,6 +247,44 @@ describe('Game screen (AC 16–24, 38)', () => {
     expect(screen.getByTestId('game9-result-resigned')).toBeOnTheScreen();
     expect(progressStore.getState().bots['2']?.games).toBe(1);
   });
+
+  it('QA: after Resign the "You resigned" sentence shows once; the card says the outcome', async () => {
+    await openAt('/game/play?level=2');
+    await press('game9-resign');
+    await press('game9-resign-confirm');
+    expect(screen.getAllByText(texts['game9.result.resigned'])).toHaveLength(1);
+    expect(status()).toHaveTextContent(texts['game9.result.resigned']);
+    expect(screen.getByTestId('game9-result-resigned')).toHaveTextContent(
+      texts['game9.result.lose'],
+    );
+  });
+
+  it.each(['zh-CN', 'en', 'fr'] as const)(
+    'QA (%s): Pass / Resign buttons are short; the sheets carry the term + pinyin',
+    async (lang) => {
+      await act(() => setLanguageChoice(lang));
+      const dict = { 'zh-CN': zhCN, en, fr }[lang] as Record<string, string>;
+      // Short enough for three buttons in one row at 360 px (≤ 12 characters, no pinyin).
+      for (const key of ['game9.btn.pass', 'game9.btn.resign']) {
+        expect(dict[key].length).toBeLessThanOrEqual(12);
+        expect(dict[key]).not.toMatch(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/);
+      }
+      await openAt('/game/play?level=2');
+      await press('game9-pass');
+      expect(screen.getByTestId('game9-pass-sheet')).toHaveTextContent(dict['game9.pass.title'], {
+        exact: false,
+      });
+      await press('game9-pass-keep');
+      await press('game9-resign');
+      expect(screen.getByTestId('game9-resign-sheet')).toHaveTextContent(dict['game9.resign.ask'], {
+        exact: false,
+      });
+      if (lang !== 'zh-CN') {
+        expect(dict['game9.pass.title']).toContain('弃权 qìquán');
+        expect(dict['game9.resign.ask']).toContain('认输 rènshū');
+      }
+    },
+  );
 
   it('AC 24: ✕ opens the leave sheet; Keep playing stays; nothing is recorded', async () => {
     const router = await openAt('/game/play?level=2');

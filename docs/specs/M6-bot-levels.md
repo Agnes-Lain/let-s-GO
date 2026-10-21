@@ -333,13 +333,14 @@ Optional follow-up (not now): lesson `u15-first-game` as a thin wrapper node on 
 | game.turn.bot | 机器人在思考… | Bot is thinking… | Le robot réfléchit… |
 | game.bot.passed | 机器人弃权。你也弃权，对局就结束。 | Bot passed. If you also pass, the game ends. | Le robot passe. Si vous passez aussi, la partie se termine. |
 | game.you.passed | 你弃权了。 | You passed. | Vous avez passé. |
-| game.btn.pass | 弃权 | Pass · 弃权 qìquán | Passer · 弃权 qìquán |
+| game.btn.pass | 弃权 | Pass | Passer |
+| game.pass.title (pass explainer sheet title; first use of the term) | 弃权 | Pass · 弃权 qìquán | Passer · 弃权 qìquán |
 | game.btn.count | 现在数子 | Count now | Compter maintenant |
-| game.btn.resign | 认输 | Resign · 认输 rènshū | Abandonner · 认输 rènshū |
+| game.btn.resign | 认输 | Resign | Abandonner |
 | game.passExplain | 觉得没有有用的点了，就弃权。双方连续弃权，对局结束。 | Pass when you think nothing useful is left. Two passes in a row end the game. | Passez quand il ne reste rien d'utile. Deux passes de suite terminent la partie. |
 | game.countNow.ask | 请机器人也弃权并数子？ | Ask the bot to pass and count the board? | Demander au robot de passer et compter le plateau ? |
 | game.countNow.atari | 有些棋子被叫吃；只有确定救不活才标为死子。 | Some stones are in atari; mark them dead only if they cannot be saved. | Certaines pierres sont en atari ; ne les marquez mortes que si on ne peut pas les sauver. |
-| game.resign.ask | 确定认输吗？ | Resign this game? | Abandonner cette partie ? |
+| game.resign.ask | 确定认输吗？ | Resign · 认输 rènshū: end this game? | Abandonner · 认输 rènshū : arrêter cette partie ? |
 | game.keepPlaying | 继续下 | Keep playing | Continuer |
 | game.mark.prompt | 点出双方的死子，然后点“完成”。 | Tap the dead stones of both sides. Then tap Done. | Touchez les pierres mortes des deux camps, puis « Terminé ». |
 | game.mark.done | 完成 | Done | Terminé |

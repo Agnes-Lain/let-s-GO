@@ -217,7 +217,7 @@ export function GameScreen({
 
       <Sheet
         visible={sheet === 'pass'}
-        title={t('game9.btn.pass')}
+        title={t('game9.pass.title')}
         lines={[t('game9.passExplain')]}
         onDismiss={() => setSheet('none')}
         testID="game9-pass-sheet"
@@ -530,6 +530,9 @@ function Bottom({
   const margin =
     s.result?.kind === 'count' ? say(winnerNote(s.result.winner, s.result.margin)) : null;
   const level = t(`game9.level.${s.level}.short`);
+  // After a resign the status line already says "You resigned. White wins." — the card says it
+  // once more only as the outcome, so the sentence is not shown twice.
+  const title: Note = outcome === 'resigned' ? { key: 'game9.result.lose' } : statusOf(s);
   return (
     <>
       <View style={styles.resultCard} testID={`game9-result-${outcome ?? 'none'}`}>
@@ -541,7 +544,7 @@ function Bottom({
         />
         <View style={styles.resultText}>
           <Text style={styles.resultTitle} accessibilityRole="header">
-            {say(statusOf(s))}
+            {say(title)}
           </Text>
           {margin ? <Text style={styles.resultBody}>{`${margin} · ${level}`}</Text> : null}
           {fact ? <Text style={styles.resultDetail}>{say(fact)}</Text> : null}

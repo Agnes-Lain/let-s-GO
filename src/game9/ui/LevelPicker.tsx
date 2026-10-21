@@ -29,10 +29,13 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
 
   return (
     <View style={styles.root}>
-      <TopBar showBack title={t('game9.entry.title')} />
-      <Text style={styles.prompt} accessibilityRole="header">
-        {t('game9.picker.title')}
+      {/* The title carries the term + pinyin (fr/en are long), so it gets its own wrapping line
+          under the back button instead of the one-line top-bar slot. */}
+      <TopBar showBack />
+      <Text style={styles.title} accessibilityRole="header" testID="game9-picker-title">
+        {t('game9.entry.title')}
       </Text>
+      <Text style={styles.prompt}>{t('game9.picker.title')}</Text>
       {tip ? (
         <Text style={styles.tip} testID="game9-tip">
           {t('game9.tip.easier')}
@@ -67,7 +70,7 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
               <Text style={styles.name} numberOfLines={1}>
                 {name}
               </Text>
-              <Text style={styles.desc} numberOfLines={1}>
+              <Text style={styles.desc} testID={`game9-level-${level}-desc`}>
                 {desc}
               </Text>
             </View>
@@ -94,10 +97,12 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, gap: spacing.sm },
-  prompt: { ...typography.title, fontSize: 20, color: color.textPrimary, marginBottom: spacing.xs },
+  title: { ...typography.title, fontSize: 20, color: color.textPrimary },
+  prompt: { ...typography.label, color: color.textSecondary, marginBottom: spacing.xs },
   tip: { ...typography.body, color: color.hint },
   row: {
     minHeight: LEVEL_ROW_HEIGHT,
+    paddingVertical: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
