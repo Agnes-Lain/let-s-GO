@@ -76,8 +76,18 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   **Pending: PO iPhone check** — `docs/specs/M5-territory-iphone-checklist.md`. Note: web a11y labels per point
   aren't exposed on web (covered by Jest only).
 
+- **M6 item 1** bot levels 1–3 for 9×9 + end-of-game count (branch `claude/m6-bot-levels`, PO-approved spec, QA READY, 3651 tests):
+  `src/bot` level 1 (`board9` option, Capture Go unchanged), level 2 (one-ply scoring), level 3 (flat Monte-Carlo, 1 200 seeded
+  playouts on a mutable `playout.ts` board, softmax `MC_TEMPERATURE = 0.21`; ~170 ms/move desktop), `eyes.ts`, `board9.ts` (passing),
+  `deadStones.ts` (forcedCapture + playouts). Pure `src/game9` (session reducer: play / pass / Count now / Resign / mark dead /
+  dispute / Play on / count; `GAME_KOMI_9 = 5.5`), UI `src/game9/ui`, routes `app/game/`, Home card (≥1★ Unit 14) + Unit 14 result
+  button, progress `bots`/`flags`, `game9.*` keys. Names 入门 Easy / 普通 Normal / 挑战 Challenge. Tuning `npm run tune:bot9`.
+  Spec `docs/specs/M6-bot-levels.md` (§12a PO, §12b dev deviations + win rates). Web check `npm run verify:web:m6`; screenshots
+  `docs/screenshots/M6/`. **Pending PO:** Normal is stronger than §7 says (Sensible wins 20 %, target 50–60 %); Challenge 24 %
+  (target 25–35 %). Not covered by tests: AC 40 (screen-reader announcements), AC 41 (reduced-motion delay). No game save in v1.
+
 ## Next
-- M5 done. Next: M6 (bot levels for 9×9). Later: nets 枷 and multi-answer tsumego on the
+- M6 item 1 done. Next: M6 "Settings, onboarding, accessibility pass". Later: nets 枷 and multi-answer tsumego on the
   search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
