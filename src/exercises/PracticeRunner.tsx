@@ -2,6 +2,7 @@
 import { usePreventRemove } from 'expo-router/react-navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { UNLOCK_LESSON as GAME9_UNLOCK_LESSON } from '@/game9/picker';
 import { getUnits, type Lesson, type MapNode, type Outcome } from '@/lessons';
 import { progressStore, type RecordResult } from '@/store';
 
@@ -15,6 +16,8 @@ type Props = {
   onExit: () => void;
   onOpenLesson: (lessonId: string) => void;
   onReview: () => void;
+  /** Opens the 9×9 game (offered on Unit 14's result, M6 AC 14). */
+  onPlayGame9?: () => void;
 };
 
 interface Finished {
@@ -23,7 +26,7 @@ interface Finished {
   next: MapNode | null;
 }
 
-export function PracticeRunner({ lesson, onExit, onOpenLesson, onReview }: Props) {
+export function PracticeRunner({ lesson, onExit, onOpenLesson, onReview, onPlayGame9 }: Props) {
   const [run, setRun] = useState(0);
   const [index, setIndex] = useState(0);
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
@@ -96,6 +99,9 @@ export function PracticeRunner({ lesson, onExit, onOpenLesson, onReview }: Props
         onAgain={restart}
         onReview={() => exit(onReview)}
         onMap={() => exit(onExit)}
+        onPlayGame9={
+          lesson.id === GAME9_UNLOCK_LESSON && onPlayGame9 ? () => exit(onPlayGame9) : undefined
+        }
       />
     );
   }

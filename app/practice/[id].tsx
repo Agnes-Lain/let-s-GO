@@ -23,6 +23,7 @@ export default function PracticeScreen() {
         onExit={goHome}
         onOpenLesson={(next) => router.replace(`/lesson/${next}`)}
         onReview={() => router.replace(`/lesson/${lesson.id}`)}
+        onPlayGame9={() => router.replace('/game')}
       />
     </Screen>
   );
