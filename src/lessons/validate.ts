@@ -1,10 +1,11 @@
 // Lesson validator (spec §4.4). Pure: uses src/engine only. Reports every error (up to 50),
 // with English messages for authors and a JSON path such as 'exercises[2].goal'.
-import { FORCED_CAPTURE_MAX_NODES, judgeAttack, referencePlayout } from '@/bot';
+import { FORCED_CAPTURE_MAX_NODES, forcedCapture, judgeAttack, referencePlayout } from '@/bot';
 import {
   createGame,
   groupAt,
   parseVertex,
+  score,
   toVertex,
   type Color,
   type GameState,
@@ -21,6 +22,7 @@ import {
 } from './goals';
 import {
   EXERCISE_TYPES,
+  HIGHLIGHT_KINDS,
   LESSON_SIZES,
   SEARCH_MAX_MOVES,
   TEXT_LANGUAGES,
@@ -33,6 +35,7 @@ import {
   type ValidationContext,
   type ValidationResult,
 } from './schema';
+import { groupStones, otherColor, proofOutcome, scoreFacts, scoreValue } from './scoring';
 
 export const MAX_ERRORS = 50;
 
@@ -42,6 +45,9 @@ const VERTEX = /^[a-z][1-9][0-9]?$/;
 const COLUMNS = 'abcdefghjklmnopqrst';
 /** Smoke playouts per play-bot exercise (spec §7.2). */
 export const BOT_PLAYOUTS = 10;
+/** Node cap for proving a dead group (MARK_DEAD_NOT_PROVEN, M5-territory-counting AC 18). */
+export const DEAD_PROOF_MAX_NODES = 20000;
+const MARKER_KINDS = ['circle', 'triangle', 'square', 'cross', 'label', 'dead'];
 
 type Json = Record<string, unknown>;
 
@@ -409,8 +415,12 @@ class Validator {
       const h = this.object(item, p, 'highlight');
       if (!h) return;
       this.fields(h, p, ['kind', 'points'], []);
-      if ('kind' in h && !['liberty', 'hint', 'success', 'error'].includes(h.kind as string)) {
-        this.badType(join(p, 'kind'), 'kind', 'one of "liberty", "hint", "success", "error"');
+      if ('kind' in h && !HIGHLIGHT_KINDS.includes(h.kind as never)) {
+        this.badType(
+          join(p, 'kind'),
+          'kind',
+          `one of ${HIGHLIGHT_KINDS.map((k) => `"${k}"`).join(', ')}`,
+        );
       }
       if ('points' in h) this.vertices(h.points, join(p, 'points'), 'points', size);
     });
@@ -424,14 +434,11 @@ class Validator {
       if (!m) return;
       const isLabel = m.kind === 'label';
       this.fields(m, p, isLabel ? ['kind', 'at', 'text'] : ['kind', 'at'], []);
-      if (
-        'kind' in m &&
-        !['circle', 'triangle', 'square', 'cross', 'label'].includes(m.kind as string)
-      ) {
+      if ('kind' in m && !MARKER_KINDS.includes(m.kind as string)) {
         this.badType(
           join(p, 'kind'),
           'kind',
-          'one of "circle", "triangle", "square", "cross", "label"',
+          `one of ${MARKER_KINDS.map((k) => `"${k}"`).join(', ')}`,
         );
       }
       if ('at' in m) this.vertex(m.at, join(p, 'at'), size);
@@ -547,14 +554,16 @@ class Validator {
       count: ['answer'],
       'play-bot': ['win', 'bot'],
       sequence: ['toPlay', 'goal', 'line'],
+      mark: ['mark'],
     };
     const specificOptional: Record<string, string[]> = {
       'tap-point': ['prelude'],
       'play-move': ['prelude'],
-      choice: ['prelude'],
+      choice: ['prelude', 'prove'],
       count: ['prelude'],
       'play-bot': ['player', 'first', 'maxMoves'],
       sequence: ['prelude', 'wrong', 'judge'],
+      mark: ['side', 'dead', 'whyKeys'],
     };
     const setupState = this.position(
       ex,
@@ -604,13 +613,16 @@ class Validator {
         solution = this.playMove(ex, path, state);
         break;
       case 'choice':
-        this.choice(ex, path);
+        this.choice(ex, path, state);
         break;
       case 'count':
         solution = this.count(ex, path, state);
         break;
       case 'sequence':
         solution = this.sequence(ex, path, state);
+        break;
+      case 'mark':
+        solution = this.mark(ex, path, state);
         break;
     }
 
@@ -1170,7 +1182,7 @@ class Validator {
     return { first, end: state, captured };
   }
 
-  private choice(ex: Json, path: string) {
+  private choice(ex: Json, path: string, state: GameState | null) {
     if (!('options' in ex)) return;
     const optionsPath = join(path, 'options');
     const options = this.array(ex.options, optionsPath, 'options');
@@ -1187,7 +1199,7 @@ class Validator {
       const p = join(optionsPath, i);
       const option = this.object(item, p, 'option');
       if (!option) return;
-      this.fields(option, p, ['textKey'], ['correct', 'whyKey']);
+      this.fields(option, p, ['textKey'], ['correct', 'whyKey', 'outcome']);
       if ('textKey' in option) this.text(option.textKey, join(p, 'textKey'), 'textKey');
       this.optionalText(option, 'whyKey', p);
       if ('correct' in option && typeof option.correct !== 'boolean')
@@ -1200,6 +1212,233 @@ class Validator {
         optionsPath,
         `exactly one option must have "correct": true, found ${correct}`,
       );
+    }
+    this.choiceProof(ex, path, options, state);
+  }
+
+  /**
+   * `prove` (M5-territory-counting AC 11, 20): every option claims a distinct outcome and the only
+   * `correct` option is the one whose outcome the engine computes (owner of a point, or winner).
+   */
+  private choiceProof(ex: Json, path: string, options: unknown[], state: GameState | null) {
+    const optionsPath = join(path, 'options');
+    const outcomes = options.map((o) => (isObject(o) ? o.outcome : undefined));
+    if (!('prove' in ex)) {
+      outcomes.forEach((outcome, i) => {
+        if (outcome !== undefined) {
+          this.add(
+            'CHOICE_PROVE_OPTIONS',
+            join(join(optionsPath, i), 'outcome'),
+            '"outcome" is only used with "prove"',
+          );
+        }
+      });
+      return;
+    }
+    const provePath = join(path, 'prove');
+    const prove = this.object(ex.prove, provePath, 'prove');
+    if (!prove) return;
+    const size = state?.board.size as LessonSize | undefined;
+    let ok = true;
+    if (prove.kind === 'owner') {
+      this.fields(prove, provePath, ['kind', 'at'], []);
+      if (!('at' in prove) || !size || !this.vertex(prove.at, join(provePath, 'at'), size))
+        ok = false;
+    } else if (prove.kind === 'winner') {
+      this.fields(prove, provePath, ['kind', 'komi'], ['dead']);
+      const komi = prove.komi;
+      if (typeof komi !== 'number' || !Number.isFinite(komi) || !Number.isInteger(komi * 2)) {
+        this.add(
+          'CHOICE_PROVE_KOMI',
+          join(provePath, 'komi'),
+          `komi must be a multiple of 0.5, got ${String(komi)}`,
+        );
+        ok = false;
+      }
+      if ('dead' in prove && state) {
+        if (!this.deadStones(prove.dead, join(provePath, 'dead'), state)) ok = false;
+      }
+    } else {
+      this.badType(join(provePath, 'kind'), 'kind', 'one of "owner", "winner"');
+      return;
+    }
+
+    const allowed = prove.kind === 'owner' ? ['B', 'W', 'none'] : ['B', 'W'];
+    const seen = new Set<unknown>();
+    outcomes.forEach((outcome, i) => {
+      const p = join(join(optionsPath, i), 'outcome');
+      if (outcome === undefined || !allowed.includes(outcome as string)) {
+        this.add(
+          'CHOICE_PROVE_OPTIONS',
+          p,
+          `every option needs an "outcome" (one of ${allowed.map((a) => `"${a}"`).join(', ')})`,
+        );
+        ok = false;
+      } else if (seen.has(outcome)) {
+        this.add('CHOICE_PROVE_OPTIONS', p, `outcome "${String(outcome)}" is used twice`);
+        ok = false;
+      }
+      seen.add(outcome);
+    });
+    if (!ok || !state) return;
+
+    const engine = proofOutcome(state.board, prove as never);
+    if (prove.kind === 'winner' && engine === 'none') {
+      this.add('CHOICE_PROVE_DRAW', provePath, 'the position is a draw with this komi');
+      return;
+    }
+    const mismatch = options.some(
+      (o) => isObject(o) && (o.correct === true) !== (o.outcome === engine),
+    );
+    if (mismatch) {
+      this.add(
+        'CHOICE_PROVE_MISMATCH',
+        optionsPath,
+        `the engine's answer is "${engine}": only the option with that outcome may be correct`,
+      );
+    }
+  }
+
+  /**
+   * A list of dead-stone vertices (one per group); every vertex must hold a stone. Returns the
+   * vertices, or null (errors reported with SCORE_BAD_DEAD / MARK_DEAD_NOT_STONE).
+   */
+  private deadStones(
+    value: unknown,
+    path: string,
+    state: GameState,
+    code = 'SCORE_BAD_DEAD',
+  ): Vertex[] | null {
+    const size = state.board.size as LessonSize;
+    const list = this.vertices(value, path, 'dead', size);
+    if (!list) return null;
+    let ok = true;
+    list.forEach((at, i) => {
+      if (!groupAt(state.board, at)) {
+        this.add(code, join(path, i), `dead stone "${at}" is not a stone`);
+        ok = false;
+      }
+    });
+    return ok ? list : null;
+  }
+
+  /** `mark` exercises (M5-territory-counting AC 16–18). Returns the answer points. */
+  private mark(ex: Json, path: string, state: GameState | null): Vertex[] | null {
+    const kind = ex.mark;
+    if (kind !== 'territory' && kind !== 'dead') {
+      if ('mark' in ex)
+        this.add('MARK_BAD_KIND', join(path, 'mark'), 'mark must be "territory" or "dead"');
+      return null;
+    }
+    if (kind === 'territory') {
+      for (const key of ['dead', 'whyKeys']) {
+        if (key in ex)
+          this.add('MARK_FIELD', join(path, key), `"${key}" is only used by "mark": "dead"`);
+      }
+      if (ex.side !== 'B' && ex.side !== 'W') {
+        this.add(
+          'MARK_NO_SIDE',
+          join(path, 'side'),
+          'a territory exercise needs "side": "B" or "W"',
+        );
+        return null;
+      }
+      if (!state) return null;
+      return this.territory(state, path, ex.side);
+    }
+
+    if ('side' in ex)
+      this.add('MARK_FIELD', join(path, 'side'), '"side" is only used by "mark": "territory"');
+    if (!('dead' in ex)) {
+      this.add('MARK_EMPTY_ANSWER', join(path, 'dead'), 'a dead-stone exercise needs "dead"');
+      return null;
+    }
+    if (!state) return null;
+    const deadPath = join(path, 'dead');
+    const dead = this.deadStones(ex.dead, deadPath, state, 'MARK_DEAD_NOT_STONE');
+    if (!dead) return null;
+    if (dead.length === 0) {
+      this.add('MARK_EMPTY_ANSWER', deadPath, 'answer has no stones');
+      return null;
+    }
+    dead.forEach((at, i) => this.deadProof(state, at, join(deadPath, i)));
+    const answer = groupStones(state.board, dead);
+    if ('whyKeys' in ex) this.whyKeys(ex.whyKeys, join(path, 'whyKeys'), state, answer);
+    return answer;
+  }
+
+  private territory(state: GameState, path: string, side: Color): Vertex[] | null {
+    const colors = new Set(state.board.cells.filter((c) => c !== null));
+    if (colors.size < 2) {
+      this.add(
+        'MARK_ONE_COLOR',
+        join(path, 'setup'),
+        'a territory position needs stones of both colours (else the whole board is territory)',
+      );
+      return null;
+    }
+    // The territory is computed with no dead stones: a group that owns no territory point of its
+    // own (no eye space at all) would have to be removed first.
+    const { ownership } = score(state.board, { komi: 0.5 });
+    const size = state.board.size;
+    const reported = new Set<string>();
+    state.board.cells.forEach((stone, index) => {
+      if (stone === null) return;
+      const at = toVertex({ x: index % size, y: Math.floor(index / size) }, size);
+      if (reported.has(at)) return;
+      const group = groupAt(state.board, at);
+      if (!group) return;
+      group.stones.forEach((p) => reported.add(toVertex(p, size)));
+      const ownsSpace = group.liberties.some((p) => ownership[p.y * size + p.x] === group.color);
+      if (!ownsSpace) {
+        this.add(
+          'MARK_TERRITORY_DEAD',
+          join(path, 'setup'),
+          `the ${group.color} stones at "${at}" surround no territory: dead stones would have to be removed first`,
+        );
+      }
+    });
+    const points = scoreFacts(state.board)[side].points;
+    if (points.length === 0) {
+      this.add('MARK_EMPTY_ANSWER', join(path, 'side'), `${side} has no territory here`);
+      return null;
+    }
+    return points;
+  }
+
+  /** The owner of the surrounding walls captures the group on `at` (bounded search, AC 13a). */
+  private deadProof(state: GameState, at: Vertex, path: string) {
+    const group = groupAt(state.board, at);
+    if (!group) return;
+    const result = forcedCapture(state, {
+      attacker: otherColor(group.color),
+      target: at,
+      maxMoves: SEARCH_MAX_MOVES,
+      maxNodes: DEAD_PROOF_MAX_NODES,
+    });
+    if (!result.forced) {
+      this.add(
+        'MARK_DEAD_NOT_PROVEN',
+        path,
+        result.capped
+          ? `proving "${at}" dead needs more than ${DEAD_PROOF_MAX_NODES} search nodes`
+          : `"${at}" cannot be captured within ${SEARCH_MAX_MOVES} moves: it is not proven dead`,
+      );
+    }
+  }
+
+  /** `whyKeys`: each key is a stone of a group that is NOT marked dead; each value a text. */
+  private whyKeys(value: unknown, path: string, state: GameState, dead: readonly Vertex[]) {
+    const keys = this.object(value, path, 'whyKeys');
+    if (!keys) return;
+    const size = state.board.size as LessonSize;
+    for (const [at, text] of Object.entries(keys)) {
+      const p = join(path, at);
+      this.text(text, p, at);
+      const ok = VERTEX.test(at) && isOnBoard(at, size) && groupAt(state.board, at) !== null;
+      if (!ok || dead.includes(at)) {
+        this.add('MARK_WHYKEY', p, `"${at}" must be a stone of a group that is not dead`);
+      }
     }
   }
 
@@ -1219,6 +1458,11 @@ class Validator {
     }
     const obj = this.object(answer, answerPath, 'answer');
     if (!obj) return null;
+    if ('score' in obj) {
+      this.fields(obj, answerPath, ['score'], []);
+      this.score(obj.score, join(answerPath, 'score'), state);
+      return null;
+    }
     this.fields(obj, answerPath, ['libertiesOf'], []);
     if (!state || !('libertiesOf' in obj)) return null;
     const at = this.target(obj.libertiesOf, join(answerPath, 'libertiesOf'), state);
@@ -1226,6 +1470,41 @@ class Validator {
     const libs = libertyVertices(state, at) ?? [];
     if (libs.length > 9) badCount(libs.length);
     return libs;
+  }
+
+  /** A `score` count answer (M5-territory-counting AC 19): computed by `score()`, 1–99. */
+  private score(value: unknown, path: string, state: GameState | null) {
+    const obj = this.object(value, path, 'score');
+    if (!obj) return;
+    this.fields(obj, path, ['of', 'side'], ['dead']);
+    let ok = true;
+    if (obj.of !== 'stones' && obj.of !== 'territory' && obj.of !== 'area') {
+      this.add('SCORE_BAD', join(path, 'of'), '"of" must be "stones", "territory" or "area"');
+      ok = false;
+    }
+    if (obj.side !== 'B' && obj.side !== 'W') {
+      this.add('SCORE_BAD', join(path, 'side'), '"side" must be "B" or "W"');
+      ok = false;
+    }
+    let dead: Vertex[] | undefined;
+    if ('dead' in obj && state) {
+      const list = this.deadStones(obj.dead, join(path, 'dead'), state);
+      if (!list) ok = false;
+      else dead = list;
+    }
+    if (!ok || !state) return;
+    const n = scoreValue(state.board, {
+      of: obj.of as 'stones',
+      side: obj.side as Color,
+      dead,
+    });
+    if (n < 1 || n > 99) {
+      this.add(
+        'SCORE_RANGE',
+        path,
+        `the counted value must be from 1 to 99, the engine gives ${n}`,
+      );
+    }
   }
 }
 
@@ -1244,4 +1523,13 @@ function boardWith(size: LessonSize, stones: Record<Color, Vertex[]>) {
     }
   }
   return { size, cells } as const;
+}
+
+function isOnBoard(at: Vertex, size: LessonSize): boolean {
+  try {
+    parseVertex(at, size);
+    return true;
+  } catch {
+    return false;
+  }
 }

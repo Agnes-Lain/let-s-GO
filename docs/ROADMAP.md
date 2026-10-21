@@ -36,7 +36,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] SGF import for problem sets (moved from M1)
 - [x] Eyes, life & death (`sequence` runner for tsumego)
 - [x] Sequence v2: search-judged `sequence` runner (several correct moves) + ladder play-along
-- [ ] Territory & counting exercises
+- [x] Territory & counting exercises (Units 12–14: territory, counting, end of game)
 
 ## M6 — Full games & release
 - [ ] Bot levels 1–3 for 9×9 (Monte-Carlo playouts for level 3)

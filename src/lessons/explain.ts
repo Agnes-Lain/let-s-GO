@@ -23,7 +23,8 @@ export interface StepHighlight {
 
 export type StepMarker =
   | { kind: 'circle' | 'triangle' | 'square' | 'cross'; point: Point }
-  | { kind: 'label'; point: Point; text: string };
+  | { kind: 'label'; point: Point; text: string }
+  | { kind: 'dead'; point: Point };
 
 export interface StepFrames {
   size: BoardSize;

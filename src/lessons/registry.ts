@@ -22,6 +22,10 @@ import u10Eyes from './content/u10-eyes.json';
 import u11Review from './content/u11-review.json';
 import u11TwoEyes from './content/u11-two-eyes.json';
 import u11Vital from './content/u11-vital.json';
+import u12Territory from './content/u12-territory.json';
+import u13Counting from './content/u13-counting.json';
+import u14End from './content/u14-end.json';
+import u14Review from './content/u14-review.json';
 import type { Language } from './schema';
 
 export const LESSON_FILES: readonly unknown[] = [
@@ -42,6 +46,10 @@ export const LESSON_FILES: readonly unknown[] = [
   u11TwoEyes,
   u11Vital,
   u11Review,
+  u12Territory,
+  u13Counting,
+  u14End,
+  u14Review,
 ];
 
 export const LESSON_TEXTS: Readonly<Record<Language, Readonly<Record<string, string>>>> = {

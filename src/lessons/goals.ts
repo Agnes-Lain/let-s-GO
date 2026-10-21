@@ -18,6 +18,7 @@ import type {
   CountExercise,
   Exercise,
   Goal,
+  MarkExercise,
   PlayBotExercise,
   PlayMoveExercise,
   SequenceExercise,
@@ -25,6 +26,7 @@ import type {
   StartDef,
   TapPointExercise,
 } from './schema';
+import { markAnswer, scoreValue } from './scoring';
 
 /**
  * The starting game of an exercise or step board. `toPlay` defaults to Black. With a `prelude`,
@@ -97,7 +99,7 @@ export function libertyVertices(state: GameState, at: Vertex): Vertex[] | null {
 }
 
 export function getSolution(
-  exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise | SequenceExercise,
+  exercise: TapPointExercise | PlayMoveExercise | PlayBotExercise | SequenceExercise | MarkExercise,
 ): {
   points: Vertex[];
 };
@@ -116,6 +118,7 @@ export function getSolution(exercise: Exercise): Solution {
     case 'count': {
       const { answer } = exercise;
       if (typeof answer === 'number') return { value: answer };
+      if ('score' in answer) return { value: scoreValue(startState(exercise).board, answer.score) };
       return { value: libertyVertices(startState(exercise), answer.libertiesOf)?.length ?? 0 };
     }
     case 'play-bot':
@@ -124,6 +127,9 @@ export function getSolution(exercise: Exercise): Solution {
     case 'sequence':
       // The learner's first move (spec M5-sgf-import §6); later moves belong to the runner.
       return { points: [exercise.line[0].at] };
+    case 'mark':
+      // Territory: the empty points `score()` gives to `side`; dead: every stone of the groups.
+      return { points: markAnswer(startState(exercise).board, exercise) };
   }
 }
 
@@ -136,9 +142,11 @@ export function solutionPoints(exercise: Exercise): Vertex[] {
     case 'tap-point':
     case 'play-move':
     case 'sequence':
+    case 'mark':
       return getSolution(exercise).points;
     case 'count':
-      return typeof exercise.answer === 'number'
+      // A score count shows the territory squares instead (M5-territory-counting AC 41).
+      return typeof exercise.answer === 'number' || 'score' in exercise.answer
         ? []
         : (libertyVertices(startState(exercise), exercise.answer.libertiesOf) ?? []);
     case 'choice':

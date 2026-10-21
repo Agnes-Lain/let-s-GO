@@ -231,12 +231,13 @@ describe('D. content (AC 34, 37–42)', () => {
 describe('F. map, stars and flow (AC 58–61)', () => {
   const units = getUnits({ includeDev: false });
 
-  // Updated by M5 item 1: Units 7–9 follow; by M5 item 3: Units 10–11 follow, Unit 12 is planned.
-  it('AC 58: units 1–6 all have a lesson, Unit 6 a checkpoint (Units 7–11 and planned 12 follow)', () => {
-    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    expect(units.slice(0, 11).every((u) => u.lesson !== null)).toBe(true);
+  // Updated by M5 item 1: Units 7–9 follow; by M5 item 3: Units 10–11 follow, Unit 12 is planned;
+  // by M5 item 4: Units 12–14 follow and nothing is planned.
+  it('AC 58: units 1–6 all have a lesson, Unit 6 a checkpoint (Units 7–14 follow)', () => {
+    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+    expect(units.every((u) => u.lesson !== null)).toBe(true);
     expect(units[5].checkpoint?.id).toBe('u06-checkpoint');
-    expect(PLANNED_UNITS).toEqual([12]);
+    expect(PLANNED_UNITS).toEqual([]);
   });
 
   it('AC 59: Unit 6 opens with 1★ on Unit 5; its checkpoint after 1★ on Unit 6', () => {
@@ -253,7 +254,7 @@ describe('F. map, stars and flow (AC 58–61)', () => {
     ]);
   });
 
-  it('AC 59: Continue walks 1…5, review, 6, checkpoint (then Units 7–11 since M5 items 1 and 3)', () => {
+  it('AC 59: Continue walks 1…5, review, 6, checkpoint (then Units 7–14 since M5 items 1, 3, 4)', () => {
     const order = [
       ...UNITS_1_5,
       'u05-review',
@@ -267,6 +268,10 @@ describe('F. map, stars and flow (AC 58–61)', () => {
       'u11-two-eyes',
       'u11-vital',
       'u11-review',
+      'u12-territory',
+      'u13-counting',
+      'u14-end',
+      'u14-review',
     ];
     const progress: Record<string, number> = {};
     for (const id of order) {

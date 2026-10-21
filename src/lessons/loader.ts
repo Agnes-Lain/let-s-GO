@@ -14,10 +14,10 @@ export interface ListOptions {
 }
 
 /**
- * Units shown as "coming soon" until their content exists (§4.6). Unit 12 (territory) since M5
- * item 3 shipped Units 10–11 (docs/specs/M5-life-death.md AC 7).
+ * Units shown as "coming soon" until their content exists (§4.6). Empty since M5 item 4 shipped
+ * Units 12–14 (docs/specs/M5-territory-counting.md AC 2); the map footer still says more are coming.
  */
-export const PLANNED_UNITS: readonly number[] = [12];
+export const PLANNED_UNITS: readonly number[] = [];
 
 export interface LessonLoader {
   loadLesson(id: string, opts?: ListOptions): LoadResult;

@@ -55,7 +55,10 @@ export function attemptsReducer(exercise: Exercise) {
       case 'wrong': {
         const wrong = state.wrong + 1;
         if (wrong >= maxWrongAttempts(exercise)) {
-          return { ...state, wrong, status: 'revealed', message: null, hintOpen: false };
+          // A choice keeps the reason for its last wrong option: with two options the first wrong
+          // tap reveals the answer, and its whyKey would otherwise never be seen (M5-territory §12b).
+          const message = exercise.type === 'choice' ? action.lines : null;
+          return { ...state, wrong, status: 'revealed', message, hintOpen: false };
         }
         const hintOpen = state.hintOpen || (wrong >= 2 && hasHint(exercise));
         return { ...state, wrong, hintOpen, message: action.lines };

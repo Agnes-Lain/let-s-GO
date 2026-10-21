@@ -39,7 +39,8 @@ describe('Home screen (M0 copy)', () => {
     expect(screen.getByText('第 1 单元')).toBeOnTheScreen();
     expect(screen.getByText('棋盘与棋子')).toBeOnTheScreen();
     // M5 item 1: Units 7–9 have content; only Unit 10 is "coming soon" (plus the footer).
-    expect(screen.queryAllByText('即将开放')).toHaveLength(1);
+    // M5 item 4: Units 12–14 ship; no unit is "coming soon", only the footer stays.
+    expect(screen.queryAllByText('即将开放')).toHaveLength(0);
     expect(screen.getAllByText('眼').length).toBeGreaterThan(0);
     expect(screen.getAllByText('吃子棋').length).toBeGreaterThan(0);
     expect(screen.getByText('更多单元即将上线')).toBeOnTheScreen();
@@ -55,7 +56,7 @@ describe('Home screen (M0 copy)', () => {
     await act(() => setLanguageChoice('fr'));
     expect(screen.getByText("Parcours d'apprentissage")).toBeOnTheScreen();
     expect(screen.getByText('Plateau et pierres · 棋盘 qípán')).toBeOnTheScreen();
-    expect(screen.queryAllByText('Bientôt disponible')).toHaveLength(1);
+    expect(screen.queryAllByText('Bientôt disponible')).toHaveLength(0);
     expect(screen.getByText('Les yeux · 眼 yǎn')).toBeOnTheScreen();
     expect(screen.getByText('Jeu de capture · 吃子棋 chīzǐqí')).toBeOnTheScreen();
   });
@@ -127,13 +128,16 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
   });
 
   it('AC 102: a coming-soon node is not a button', async () => {
-    // Since M5 item 3 the real catalog plans Unit 12 (territory).
+    // Since M5 item 4 the real catalog plans nothing: add a planned unit by hand.
     await act(() => setLanguageChoice('en'));
-    const units = getUnits({ includeDev: true });
+    const units = [
+      ...getUnits({ includeDev: true }),
+      { unit: 15, titleKey: 'unit.14.title', lesson: null, checkpoint: null },
+    ];
     const planned = render(
       <UnitPath rows={mapRows(units, {})} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />,
     );
-    const soon = planned.getByTestId('home-node-unit-12');
+    const soon = planned.getByTestId('home-node-unit-15');
     expect(soon.props.accessibilityRole).toBeUndefined();
     expect(soon.props.onClick ?? soon.props.onPress).toBeUndefined();
     expect(planned.getByText('Coming soon')).toBeOnTheScreen();
@@ -160,6 +164,10 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
       'Unit 11, Life and death · 死活 sǐhuó, locked',
       'Unit 11, The vital point, locked',
       'Checkpoint, Review 3, locked',
+      'Unit 12, Territory · 地 dì, locked',
+      'Unit 13, Counting · 数子 shùzǐ, locked',
+      'Unit 14, End of game · 终局 zhōngjú, locked',
+      'Checkpoint, Review 4, locked',
     ]);
   });
 
@@ -179,14 +187,15 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
 });
 
 describe('release build (AC 98)', () => {
-  it('no sample node; Start learning → Unit 1 (M4 AC 14); only Unit 10 coming soon (M5 AC 33)', async () => {
+  // Updated by M5 item 4: no unit is "coming soon" any more (M5-territory-counting AC 2).
+  it('no sample node; Start learning → Unit 1 (M4 AC 14); no unit coming soon', async () => {
     const original = (globalThis as { __DEV__?: boolean }).__DEV__;
     (globalThis as { __DEV__?: boolean }).__DEV__ = false;
     try {
       const router = await renderHome('en');
       expect(screen.queryByTestId('home-node-unit-0')).toBeNull();
       expect(screen.queryByTestId('home-all-done')).toBeNull();
-      expect(screen.queryAllByText('Coming soon')).toHaveLength(1);
+      expect(screen.queryAllByText('Coming soon')).toHaveLength(0);
       expect(screen.getByTestId('home-node-unit-10')).toBeOnTheScreen();
       expect(screen.getByText('More units coming soon')).toBeOnTheScreen();
       const card = screen.getByTestId('home-continue');

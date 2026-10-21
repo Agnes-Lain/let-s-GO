@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "id": "u13-counting",
+  "unit": 13,
+  "kind": "lesson",
+  "titleKey": "lesson.u13-counting.title",
+  "coordinates": true,
+  "explain": [
+    {
+      "board": {
+        "size": 5,
+        "setup": {
+          "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+          "W": ["a4", "b4", "c4", "d4", "e4"]
+        }
+      },
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "b1", "b2", "c1", "d1", "e1"]
+        }
+      ],
+      "textKey": "lesson.u13-counting.s1"
+    },
+    {
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "b1", "b2", "c1", "d1", "e1"]
+        },
+        {
+          "kind": "territoryW",
+          "points": ["a5", "b5", "c5", "d5", "e5"]
+        }
+      ],
+      "markers": [
+        {
+          "kind": "circle",
+          "at": "d3"
+        },
+        {
+          "kind": "circle",
+          "at": "e3"
+        }
+      ],
+      "textKey": "lesson.u13-counting.s2"
+    },
+    {
+      "highlights": [
+        {
+          "kind": "territoryB",
+          "points": ["a1", "a2", "b1", "b2", "c1", "d1", "e1"]
+        },
+        {
+          "kind": "territoryW",
+          "points": ["a5", "b5", "c5", "d5", "e5"]
+        }
+      ],
+      "markers": [
+        {
+          "kind": "circle",
+          "at": "d3"
+        },
+        {
+          "kind": "circle",
+          "at": "e3"
+        }
+      ],
+      "textKey": "lesson.u13-counting.s3"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "stones-b",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "answer": {
+        "score": {
+          "of": "stones",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u13-counting.e1.prompt",
+      "hintKey": "lesson.u13-counting.e1.hint",
+      "explainKey": "lesson.u13-counting.e1.explain"
+    },
+    {
+      "id": "terr-b",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "answer": {
+        "score": {
+          "of": "territory",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u13-counting.e2.prompt",
+      "hintKey": "lesson.u13-counting.e2.hint",
+      "explainKey": "lesson.u13-counting.e2.explain"
+    },
+    {
+      "id": "area-b",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "e4"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u13-counting.e3.prompt",
+      "hintKey": "lesson.u13-counting.e3.hint",
+      "explainKey": "lesson.u13-counting.e3.explain"
+    },
+    {
+      "id": "area-w",
+      "type": "count",
+      "size": 5,
+      "setup": {
+        "B": ["a3", "b3", "c3", "c2", "d2", "e2"],
+        "W": ["a4", "b4", "c4", "d4", "d3", "e3"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "W"
+        }
+      },
+      "promptKey": "lesson.u13-counting.e4.prompt",
+      "hintKey": "lesson.u13-counting.e4.hint",
+      "explainKey": "lesson.u13-counting.e4.explain"
+    },
+    {
+      "id": "komi-tie",
+      "type": "choice",
+      "size": 5,
+      "setup": {
+        "B": ["b1", "b2", "b3", "b4", "b5"],
+        "W": ["d1", "d2", "d3", "d4", "d5"]
+      },
+      "prove": {
+        "kind": "winner",
+        "komi": 0.5
+      },
+      "options": [
+        {
+          "textKey": "lesson.u13-counting.o.black",
+          "outcome": "B",
+          "whyKey": "lesson.u13-counting.e5.w.black"
+        },
+        {
+          "textKey": "lesson.u13-counting.o.white",
+          "outcome": "W",
+          "correct": true
+        }
+      ],
+      "promptKey": "lesson.u13-counting.e5.prompt",
+      "hintKey": "lesson.u13-counting.e5.hint",
+      "explainKey": "lesson.u13-counting.e5.explain"
+    },
+    {
+      "id": "area-b-7",
+      "type": "count",
+      "size": 7,
+      "setup": {
+        "B": ["a4", "b4", "c4", "d4", "d3", "e3", "f3", "g3"],
+        "W": ["a5", "b5", "c5", "d5", "e5", "e4", "f4", "g4"]
+      },
+      "answer": {
+        "score": {
+          "of": "area",
+          "side": "B"
+        }
+      },
+      "promptKey": "lesson.u13-counting.e6.prompt",
+      "hintKey": "lesson.u13-counting.e6.hint",
+      "explainKey": "lesson.u13-counting.e6.explain"
+    },
+    {
+      "id": "winner-7",
+      "type": "choice",
+      "size": 7,
+      "setup": {
+        "B": ["a4", "b4", "c4", "d4", "d3", "e3", "f3", "g3"],
+        "W": ["a5", "b5", "c5", "d5", "e5", "e4", "f4", "g4"]
+      },
+      "prove": {
+        "kind": "winner",
+        "komi": 0.5
+      },
+      "options": [
+        {
+          "textKey": "lesson.u13-counting.o.black",
+          "outcome": "B",
+          "correct": true
+        },
+        {
+          "textKey": "lesson.u13-counting.o.white",
+          "outcome": "W",
+          "whyKey": "lesson.u13-counting.e7.w.white"
+        }
+      ],
+      "promptKey": "lesson.u13-counting.e7.prompt",
+      "hintKey": "lesson.u13-counting.e7.hint",
+      "explainKey": "lesson.u13-counting.e7.explain"
+    }
+  ]
+}

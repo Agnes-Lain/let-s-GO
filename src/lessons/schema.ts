@@ -21,11 +21,22 @@ export interface StartDef extends PositionDef {
   prelude?: MoveDef[];
 }
 
-export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error';
+/** `territoryB` / `territoryW`: the traditional territory squares (M5-territory-counting §5.5). */
+export type HighlightKind = 'liberty' | 'hint' | 'success' | 'error' | 'territoryB' | 'territoryW';
+export const HIGHLIGHT_KINDS: readonly HighlightKind[] = [
+  'liberty',
+  'hint',
+  'success',
+  'error',
+  'territoryB',
+  'territoryW',
+];
 export type HighlightDef = { kind: HighlightKind; points: Vertex[] };
 export type MarkerDef =
   | { kind: 'circle' | 'triangle' | 'square' | 'cross'; at: Vertex }
-  | { kind: 'label'; at: Vertex; text: string };
+  | { kind: 'label'; at: Vertex; text: string }
+  /** A dead stone 死子: drawn dimmed with a cross (M5-territory-counting AC 48). */
+  | { kind: 'dead'; at: Vertex };
 export interface MoveDef {
   color: Color;
   at: Vertex;
@@ -100,19 +111,56 @@ export interface PlayMoveExercise extends ExerciseBase {
   goal: Goal;
 }
 
+/** What a `prove` choice option claims (M5-territory-counting §5.6): an owner or a winner. */
+export type ProofOutcome = 'B' | 'W' | 'none';
+
+/** An engine proof of a choice: the owner of one point, or the winner with komi (and dead stones). */
+export type ChoiceProof =
+  { kind: 'owner'; at: Vertex } | { kind: 'winner'; komi: number; dead?: Vertex[] };
+
 export interface ChoiceOption {
   textKey: TextKey;
   correct?: boolean;
   whyKey?: TextKey;
+  /** Only with `prove`: the outcome this option claims. Never shown to the learner. */
+  outcome?: ProofOutcome;
 }
 export interface ChoiceExercise extends ExerciseBase {
   type: 'choice';
   options: ChoiceOption[];
+  /** The validator checks that the `correct` option is the engine's outcome (CHOICE_PROVE_*). */
+  prove?: ChoiceProof;
 }
+
+/** A Chinese-rules count (数子): `area` = stones + territory; komi is never included. */
+export interface ScoreAnswer {
+  of: 'stones' | 'territory' | 'area';
+  side: Color;
+  /** One vertex per group removed before counting (dead stones 死子). */
+  dead?: Vertex[];
+}
+export type ScoreOf = ScoreAnswer['of'];
 
 export interface CountExercise extends ExerciseBase {
   type: 'count';
-  answer: number | LibertiesOf;
+  /** A number or `libertiesOf`: 0–9 chips. `score`: the two-digit entry pad (M5-territory-counting). */
+  answer: number | LibertiesOf | { score: ScoreAnswer };
+}
+
+/**
+ * Mark the territory of one side, or the dead stones (M5-territory-counting §5.6). The answer is
+ * computed by the engine: the empty points `score()` gives to `side`, or every stone of the
+ * groups in `dead`.
+ */
+export interface MarkExercise extends ExerciseBase {
+  type: 'mark';
+  mark: 'territory' | 'dead';
+  /** territory only: whose territory the learner marks. */
+  side?: Color;
+  /** dead only: one vertex per dead group (any stone of it). */
+  dead?: Vertex[];
+  /** dead only: stone vertex of an ALIVE group -> text shown when the learner marks it. */
+  whyKeys?: Record<Vertex, TextKey>;
 }
 
 export type BotLevel = 1 | 2 | 3;
@@ -179,7 +227,8 @@ export type Exercise =
   | ChoiceExercise
   | CountExercise
   | PlayBotExercise
-  | SequenceExercise;
+  | SequenceExercise
+  | MarkExercise;
 export type ExerciseType = Exercise['type'];
 export const EXERCISE_TYPES: readonly ExerciseType[] = [
   'tap-point',
@@ -188,6 +237,7 @@ export const EXERCISE_TYPES: readonly ExerciseType[] = [
   'count',
   'play-bot',
   'sequence',
+  'mark',
 ];
 
 /** What the runner needs to check an answer and to show it (§4.3). */

@@ -661,6 +661,7 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
   });
 
   // Updated by M5 item 3: Unit 10 opens after 1★ on Unit 9; Unit 12 is the planned unit.
+  // Updated by M5 item 4: Unit 12 is a real (locked) unit, followed by Units 13–14.
   it('AC 32: 1★ on 6 → 7, on 7 → 8, on 8 → 9; u09-review after 9 and never gates; 10 opens', () => {
     expect(isUnlocked(units, stars({ ...toSix, 'u06-capture-go': 0 }), 7)).toBe(false);
     expect(isUnlocked(units, stars(toSix), 7)).toBe(true);
@@ -673,7 +674,8 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
     const nine = { ...eight, 'u09-ladder': 1 };
     expect(isCheckpointUnlocked(units, stars(nine), 9)).toBe(true);
     const rows = mapRows(units, stars(nine)).map((r) => `${r.key}:${r.state}`);
-    expect(rows.slice(-9)).toEqual([
+    const from = rows.indexOf('unit-7:done');
+    expect(rows.slice(from, from + 9)).toEqual([
       'unit-7:done',
       'unit-8:done',
       'unit-9:done',
@@ -682,14 +684,15 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
       'unit-11:locked',
       'lesson-u11-vital:locked',
       'checkpoint-11:locked',
-      'unit-12:soon',
+      'unit-12:locked',
     ]);
   });
 
   // Updated by M5 item 3: Units 10–11 ship, Unit 12 is planned.
-  it('AC 33: production units 1–9 have a lesson, 9 a checkpoint, then 10–11, 12 planned', () => {
-    expect(PLANNED_UNITS).toEqual([12]);
-    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  // Updated by M5 item 4: Units 12–14 ship, nothing is planned.
+  it('AC 33: production units 1–9 have a lesson, 9 a checkpoint, then 10–14', () => {
+    expect(PLANNED_UNITS).toEqual([]);
+    expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
     expect(
       units.slice(6).map((u) => [u.unit, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
     ).toEqual([
@@ -698,7 +701,9 @@ describe('E. stars, unlocks and flow (AC 31–35)', () => {
       [9, 'u09-ladder', 'u09-review'],
       [10, 'u10-eyes', null],
       [11, 'u11-two-eyes', 'u11-review'],
-      [12, null, null],
+      [12, 'u12-territory', null],
+      [13, 'u13-counting', null],
+      [14, 'u14-end', 'u14-review'],
     ]);
   });
 

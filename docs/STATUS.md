@@ -66,8 +66,18 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   (§9a PO, §9b dev deviations). **Pending PO: the search also accepts the net 枷 at move 2 (e4/g6/e2) — correct Go,
   AC 2/27 text to amend.** Web check `npm run verify:web:m5d`; screenshots `docs/screenshots/M5/23-*`.
 
+- **M5 item 4** territory & counting (branch `claude/m5-territory-counting`, PO-approved spec, QA READY, 3430 tests):
+  `u12-territory`, `u13-counting`, `u14-end`, `u14-review` (28 exercises, zh-CN/en/fr). New `mark` exercise type
+  (`mark: 'territory' | 'dead'`, validator MARK_*, dead groups proved by `forcedCapture`), `MarkRunner`, `count`
+  `score` answer + two-digit entry pad (`CountEntryRunner`, typed wrong-count lines), `choice` `prove` (engine-proved
+  owner / winner with komi). Revealed two-option choices now keep the wrong option's reason (all lessons).
+  `PLANNED_UNITS = []`. Spec `docs/specs/M5-territory-counting.md` (§12a PO, §12b dev deviations). Web check
+  `npm run verify:web:m5e` (needs Node 22); screenshots `docs/screenshots/M5/24-*`–`39-*`.
+  **Pending: PO iPhone check** — `docs/specs/M5-territory-iphone-checklist.md`. Note: web a11y labels per point
+  aren't exposed on web (covered by Jest only).
+
 ## Next
-- M5 item 4: territory & counting (Unit 12). Later: nets 枷 and multi-answer tsumego on the
+- M5 done. Next: M6 (bot levels for 9×9). Later: nets 枷 and multi-answer tsumego on the
   search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
