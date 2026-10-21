@@ -40,6 +40,11 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 
 ## M6 — Full games & release
 - [ ] Bot levels 1–3 for 9×9 (Monte-Carlo playouts for level 3)
+  - End-of-game count (PO, 2026-10-21): after two passes 弃权, the learner marks dead stones (reuse the
+    `mark` dead runner from Unit 14), the bot agrees or disputes, then a count screen like Unit 13
+    (stones + territory, komi, winner) via `score()`.
+  - Learner can end the game (PO, 2026-10-21): "Count now" (asks the bot to pass, then the same count
+    screen) and Resign 认输 (other side wins, no count; optionally show the would-be score as a learning aid).
 - [ ] Settings, onboarding, accessibility pass
 - [ ] EAS Build, TestFlight / Play internal testing
 
