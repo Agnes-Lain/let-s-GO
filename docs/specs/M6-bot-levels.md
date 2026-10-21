@@ -46,8 +46,9 @@ engine-driven opponent. All bot ACs use a fixed seed.
    module imports no clock (`Date`, `performance`), timers or `Math.random` (existing purity test extended).
 3. Given a position where one move captures stones and the capture is safe, When level 1/2/3 play it, Then level 2 and 3 always
    capture (level 3 over 20 seeds); level 1 captures unless its blunder roll fires (existing `blunder` semantic).
-4. Given Black stones `e5 e6` with White to move and a single liberty each side (atari on a White group at `d5`), When level 2 or 3
-   to move, Then it saves the group (extends to a point with ≥ 2 liberties) rather than playing elsewhere. (ASCII fixture in tests.)
+4. Given the §10 fixture (White `d5 d6` in atari, only liberty `d7`; Black `c5 c6 e5 e6 d4`) with White to move, When level 2 or 3
+   to move, Then it saves the group (extends to a point with ≥ 2 liberties: `d7`, 3 liberties) rather than playing elsewhere. (ASCII
+   fixture in tests; the first wording "Black stones e5 e6 … a single liberty each side" was muddled, §12b.)
 5. Given a White single-point eye (`.` at `a1` surrounded by `a2 b1 b2` White stones and the group has a second eye), When any
    level chooses a move for White, Then it never plays `a1` (no self-eye filling) unless it is the only legal move (then pass is
    preferred: bot passes instead of filling).
@@ -380,10 +381,12 @@ Eye test used by every level (9×9, `.` empty):
              b2 is an interior point: needs >= 3 of 4 diagonals own -> 3 of 4 (a1,c1,a3) -> real eye. OK
 ```
 ```
- a b c d      Edge eye at b1: neighbours a1 O, c1 O, b2 O; edge rule needs both on-board diagonals (a2, c2) own.
+ a b c        Edge eye at b1: neighbours a1 O, c1 O, b2 O; edge rule needs both on-board diagonals (a2, c2) own.
 2 O O O       a2 O, c2 O -> real eye.  If c2 were empty -> false-ish eye (opponent can play c2 if it is not suicide) -> not an eye.
 1 O . O
 ```
+(Dev check, §12b: both diagrams verified with `parseBoard` + `isOwnEye` in `src/bot/eyes.test.ts`; the only error was the
+column header "a b c d" over three columns in the second diagram, now "a b c".)
 Atari-save fixture for AC 4: White `d5`,`d6`; Black `c5 c6 e5 e6 d4`; White's group has one liberty `d7`; White to move. Extending to `d7` gives
 the group {d5 d6 d7} liberties c7, e7, d8 = 3 (>= 2, not self-atari) -> saves. Ladder caution: if d8/c7/e7 were Black, the extend would be atari again.
 Komi: Black total − White total (without komi) = `x`; Black wins when `x > 5.5`, so margin is always x.5 (no draws).
@@ -418,6 +421,64 @@ h. (extra) **Resign counts as a loss, quitting counts as nothing; no game save i
 
 ## 12a. PO decisions (2026-10-21)
 The PO approved the spec as written: all defaults a–h accepted.
+
+## 12b. Dev deviations and measurements (developer, 2026-10-21)
+**Level 3 speed (AC 7).** Measured first with the immutable engine: 1 200 random 9×9 playouts with `legalMoves` + `play` took
+**≈ 8.6 s** per move on desktop Node 22 (Apple M3 Pro). So the playouts run on a new **mutable playout board**
+(`src/bot/playout.ts`, pure, no I/O; `playout.test.ts` checks legality, captures, ko, eyes, capture lists and the area score
+against the engine on thousands of random positions). Result with the full budget (`MC_PLAYOUTS = 1200`, 12 × 100, 110 plies),
+`TUNE_SEEDS=10 TUNE_PAIRS=L3-L2 npm run tune:bot9`, one process: **level 3 mean 170 ms, p95 238 ms, max 270 ms per move**
+(< 400 ms → budget kept, no reduction). Under 5 parallel tuning processes: mean 133–179 ms, p95 ≤ 248 ms, max 636 ms (the
+max includes the after-pass dead-stone check). Levels 1–2: < 1 ms mean, ≤ 40 ms max.
+
+**Tuning (AC 8–9)**, `npm run tune:bot9`, seeds 1–100 × both colours (200 games per row), komi 5.5, L1 blunder 0.5:
+
+| Pairing (A vs B) | A wins | A as Black | A as White | Plies mean / max | Target | OK |
+|---|---|---|---|---|---|---|
+| L2 vs L1 | 98.0 % | 97/100 | 99/100 | 90 / 127 | ≥ 80 % | yes |
+| L3 vs L2 | 99.0 % | 99/100 | 99/100 | 69 / 89 | ≥ 65 % | yes |
+| L3 vs L1 | 100.0 % | 100/100 | 100/100 | 94 / 131 | ≥ 90 % | yes |
+| Sensible vs L1 | 88.0 % | 84/100 | 92/100 | 99 / 142 | ≥ 70 % | yes |
+| Sensible vs L3 | 0.5 % | 0/100 | 1/100 | 86 / 122 | Sensible loses ≥ 60 % | yes |
+
+No game threw, none passed 142 plies, all ended by two passes (the hard cap 200 never triggered). **For the PO:** all AC 8
+targets hold, but Challenge is much stronger than §7's "Sensible wins 25–35 %" (0.5 %), and Normal → Challenge is a big step
+(99 %). Easy matches §7 (Sensible wins 88 % ≈ 85 %). Possible later knobs: fewer playouts or a weaker prior for level 3, or a
+learner model closer to a real beginner than "Sensible". Constants left as in the spec until the PO decides.
+
+**Deviations**
+1. `§10` / AC 4: both eye diagrams verified with the engine (`eyes.test.ts`); only the header of diagram 2 was wrong ("a b c d"
+   over three columns). AC 4's first wording was muddled; it now points to the §10 fixture (verified: `d7` gives 3 liberties).
+2. Level 3 candidates: when a safe capture or a save exists, **only** those are candidates (else 100 random playouts cannot see a
+   2-stone save and AC 3–4 failed for some seeds); at most 12 candidates (not 14) so AC 6's 1 200 stays exact. Candidate value
+   adds a prior `MC_PRIOR_WEIGHT = 0.01 ×` level-2 score. No "pass" candidate: passing is the AC 10 rule (ahead after the bot's
+   own dead-stone proposal, max 3 play-on answers), shared with level 2.
+3. Dead-stone playouts run to the end of the game (two passes, cap `DEAD_PLAYOUT_PLIES = 150`) instead of 60 plies: with 60,
+   lone invaders were only ≈ 55 % captured (undecided). ≤ 2-liberty groups that `forcedCapture` cannot capture take their
+   playout status (alive / undecided) instead of always "undecided" (gives the AC 28 "two eyes" fact). A seki fixture is
+   `undecided` (learner's marks stand). Note: a 2-stone inner group sharing 2 liberties with a ring is *not* seki (after the
+   capture the attacker kills the bent three) — the engine proof found that; the test uses a 4-stone inner group.
+4. Level 2 (§6.2) concrete rules: quiet moves inside a *settled* region (empty region bordered by one colour, ≤ 12 points) are
+   not candidates (own territory is useless under area scoring, opponent's is a hopeless invasion); captures, saves and ataris
+   still are. The bot passes when nothing is left or the best score is below −6 (only self-atari left, AC 12). Ladder check for
+   a 2-liberty save: `forcedCapture`, 8 moves, 800 nodes.
+5. Level 1 `board9` (§6.1): passes when every non-eye move is a non-capturing self-atari (AC 12); the AC 11 check (after an
+   opponent pass, play only capture / save / atari) ignores the blunder roll; still exactly 3 rng draws; Capture Go unchanged.
+   The M4 test "levels 2 and 3 fall back to level 1" (M4 AC 15) was replaced by M6 AC 1 (levels registered).
+6. i18n keys use the namespace `game9.*` (not `game.*`): `game.turn.you`, `game.turn.bot` already exist for Capture Go. Extra
+   keys: `game9.entry.beaten`, `game9.level.{1,2,3}.short`, `game9.picker.challengeBeaten`, `game9.passExplain.ok`,
+   `game9.btn.home`, `game9.leave.body`, `game9.leave.confirm`, `game9.a11y.*`, `game9.black`, `game9.white`; the count rows
+   show "= total". zh-CN margin unit is 点 (Unit 13 wording: "黑胜 2.5 点"), not 目. Illegal-move and capture lines reuse the
+   Capture Go keys `game.fb.illegal.*`, `game.fb.captured`, `game.fb.botCaptured`.
+7. "Shown once, stored in settings" (AC 19, 37): there is no settings store, so the flags `passExplained` / `easierTipShown`
+   live in the progress store (`flags`, additive like `bots`). The easier tip is shown once ever. The explainer sheet has
+   [Got it] (passes) and [Keep playing].
+8. *Play on* when the **bot** passed first: replaying the moves minus the passes would give the bot the move, so its pass is
+   kept and the learner is to move (AC 31 "learner to move").
+9. Pre-selection: any win at any level → Normal (AC 15/36 literally); nothing locked.
+10. Unit 14 result: a secondary button "Play 9×9" on `u14-end`'s result (the *Next* button still opens the next lesson).
+11. Not done: a win/loss sound or fade beyond the existing stone sound (no new asset; AC 34 "existing success feedback" is the
+    result card's green dot); a thrown bot error falls back to a random legal move but is not logged (no `console` in pure code).
 
 ## 13. Risks
 - Level 3 speed on a phone: the engine is immutable (array copies per move). 1 200 × ~80 plies ≈ 100 k plays; if `play()` costs ~5 µs on

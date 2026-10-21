@@ -283,7 +283,8 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
           game,
           thinking: false,
           last: lastOf(s, s.bot, null, []),
-          note: { key: 'game9.bot.passed' },
+          // The status line says "Bot passed. If you also pass, the game ends." (AC 20).
+          note: null,
         };
       }
       const result = play(s.game, move.point);
