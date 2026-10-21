@@ -26,6 +26,7 @@ const PAIRS: { a: PlayerId; b: PlayerId; target: string; min: number; max?: numb
   { a: 'L3', b: 'L2', target: 'L3 beats L2 ≥ 65 %', min: 65 },
   { a: 'L3', b: 'L1', target: 'L3 beats L1 ≥ 90 %', min: 90 },
   { a: 'Sensible', b: 'L1', target: 'Sensible beats L1 ≥ 70 %', min: 70 },
+  { a: 'Sensible', b: 'L2', target: 'report only (§7: Sensible wins 50–60 %)', min: 0 },
   { a: 'Sensible', b: 'L3', target: 'Sensible loses to L3 ≥ 60 % (wins ≤ 40 %)', min: 0, max: 40 },
 ];
 

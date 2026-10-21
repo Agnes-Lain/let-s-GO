@@ -4,12 +4,15 @@ import { checkMove, createGame, legalMoves, pass, play, type GameState, type Mov
 import {
   MAX_PLIES_9,
   MC_PLAYOUTS,
+  MC_TEMPERATURE,
   botRng,
   chooseMove,
   createRng,
   level3Search,
   playOnStreak,
+  softmaxPick,
   type BotLevel,
+  type CandidateValue,
 } from './index';
 import { position, vertexOf } from './__fixtures__/board';
 
@@ -221,6 +224,44 @@ describe('AC 6: level 3 budget', () => {
       expect(search.candidates.every((c) => c.playouts === 100)).toBe(true);
       expect(level3Search(state, 42)).toEqual(search);
     }
+  });
+});
+
+describe('level 3 pick: seeded softmax over the values (§12b, PO 2026-10-21)', () => {
+  const candidate = (value: number): CandidateValue => ({
+    point: { x: 0, y: 0 },
+    prior: 0,
+    wins: 0,
+    playouts: 100,
+    meanMargin: 0,
+    value,
+  });
+  const counts = (values: number[], draws = 2000) => {
+    const rng = createRng(7);
+    const n = values.map(() => 0);
+    for (let i = 0; i < draws; i++) n[softmaxPick(values.map(candidate), rng)]++;
+    return n;
+  };
+
+  it('has a positive temperature and returns -1 without candidates', () => {
+    expect(MC_TEMPERATURE).toBeGreaterThan(0);
+    expect(softmaxPick([], createRng(1))).toBe(-1);
+  });
+
+  it('almost always plays a clearly better move (it still reads ahead)', () => {
+    const [best, worse] = counts([0.9, 0.2]);
+    expect(best / (best + worse)).toBeGreaterThan(0.95);
+  });
+
+  it('mixes near-equal moves, the better one more often', () => {
+    const [better, close] = counts([0.55, 0.5]);
+    expect(close).toBeGreaterThan(400);
+    expect(better).toBeGreaterThan(close);
+  });
+
+  it('is deterministic for a seed', () => {
+    const values = [0.4, 0.5, 0.45].map(candidate);
+    expect(softmaxPick(values, createRng(3))).toBe(softmaxPick(values, createRng(3)));
   });
 });
 

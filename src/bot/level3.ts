@@ -6,7 +6,7 @@ import type { Color, GameState, Point } from '@/engine';
 
 import { playableMoves, type ScoredMove } from './level2';
 import { PlayoutBoard } from './playout';
-import { createRng, deriveSeed } from './rng';
+import { createRng, deriveSeed, type Rng } from './rng';
 
 /** Candidate points per move (AC 6). */
 export const MC_CANDIDATES = 12;
@@ -23,6 +23,13 @@ export const MC_MARGIN_WEIGHT = 0.002;
  * or capturing two stones matters, so the rule of thumb tips close calls.
  */
 export const MC_PRIOR_WEIGHT = 0.01;
+/**
+ * Softmax temperature of the final pick (PO 2026-10-21, §12b): the bot plays candidate i with
+ * probability ∝ exp((value_i − best) / MC_TEMPERATURE), drawn from the move's seed. Clearly
+ * better moves still win most draws (it "reads ahead"); near-equal ones are mixed, so Challenge
+ * is beatable. 0 = always the best value.
+ */
+export const MC_TEMPERATURE = 0.21;
 
 export interface CandidateValue {
   point: Point;
@@ -89,13 +96,24 @@ export function level3Search(state: GameState, seed: number): Level3Search {
         MC_PRIOR_WEIGHT * move.score,
     };
   });
-  let best = -1;
-  candidates.forEach((c, i) => {
-    if (best < 0 || c.value > candidates[best].value) best = i;
-  });
+  const best = softmaxPick(candidates, createRng(deriveSeed(plySeed, 0x5eed)));
   return {
     candidates,
     playouts,
     best: best < 0 ? null : { ...candidates[best], kind: moves[best].kind },
   };
+}
+
+/** Index of the chosen candidate (−1 when none): a seeded softmax over the values (§12b). */
+export function softmaxPick(candidates: readonly CandidateValue[], rng: Rng): number {
+  if (candidates.length === 0) return -1;
+  const top = Math.max(...candidates.map((c) => c.value));
+  if (MC_TEMPERATURE <= 0) return candidates.findIndex((c) => c.value === top);
+  const weights = candidates.map((c) => Math.exp((c.value - top) / MC_TEMPERATURE));
+  let r = rng() * weights.reduce((n, w) => n + w, 0);
+  for (let i = 0; i < weights.length; i++) {
+    r -= weights[i];
+    if (r < 0) return i;
+  }
+  return weights.length - 1;
 }

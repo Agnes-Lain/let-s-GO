@@ -31,7 +31,9 @@ export {
   MC_PLAYOUTS,
   MC_PLAYOUTS_PER_CANDIDATE,
   MC_PRIOR_WEIGHT,
+  MC_TEMPERATURE,
   level3Search,
+  softmaxPick,
   type CandidateValue,
   type Level3Search,
 } from './level3';

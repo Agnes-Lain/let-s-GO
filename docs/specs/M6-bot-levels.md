@@ -263,7 +263,9 @@ Passes per AC 10/12. Level 2 never blunders on purpose; expected skill: avoids l
   end on two passes (when no non-eye move) or 110 plies. Playout rng = `deriveSeed(seed, ply, candidateIndex, playoutIndex)`.
 - Evaluate each playout with `score(board, {komi})` and no dead removal (playouts fill dame, leaving few dead stones); win for the bot colour if
   `winner === botColor`. Candidate value = wins / 100 + 0.002 × mean margin (breaks ties toward bigger wins).
-- Choose the max value; if all candidates < 0.12 win probability it still plays the best (never resigns; the learner decides).
+- Choose by a seeded softmax over the values (PO 2026-10-21, §12b): candidate i with probability ∝ exp((value_i − max) / `MC_TEMPERATURE`),
+  `MC_TEMPERATURE = 0.21`, one draw from the move's seed. A clearly better move still wins almost every draw; near-equal ones are mixed.
+  Even if all candidates < 0.12 win probability it still plays (never resigns; the learner decides).
 - Budget: 1200 playouts × ≤ 110 plies. Measured by AC 7; **target < 1 s per move on a mid-range phone, < 400 ms on desktop Node.** If too slow,
   lower playouts to 800 or cap to 90 plies (the developer reports). The UI runs level 3 inside one `setTimeout(…, 0)` after the delay so the
   "thinking" text is painted first; an optional later improvement is a chunked search generator.
@@ -421,6 +423,7 @@ h. (extra) **Resign counts as a loss, quitting counts as nothing; no game save i
 
 ## 12a. PO decisions (2026-10-21)
 The PO approved the spec as written: all defaults a–h accepted.
+- PO 2026-10-21: weaken Challenge to ~25–35 % Sensible wins (keep L3 vs L2 ≥ 65 %, L3 vs L1 ≥ 90 %). Done with a seeded softmax pick, §6.3 / §12b.
 
 ## 12b. Dev deviations and measurements (developer, 2026-10-21)
 **Level 3 speed (AC 7).** Measured first with the immutable engine: 1 200 random 9×9 playouts with `legalMoves` + `play` took
@@ -431,20 +434,33 @@ against the engine on thousands of random positions). Result with the full budge
 (< 400 ms → budget kept, no reduction). Under 5 parallel tuning processes: mean 133–179 ms, p95 ≤ 248 ms, max 636 ms (the
 max includes the after-pass dead-stone check). Levels 1–2: < 1 ms mean, ≤ 40 ms max.
 
-**Tuning (AC 8–9)**, `npm run tune:bot9`, seeds 1–100 × both colours (200 games per row), komi 5.5, L1 blunder 0.5:
+**Tuning (AC 8–9)**, `npm run tune:bot9`, seeds 1–100 × both colours (200 games per row), komi 5.5, L1 blunder 0.5.
+First run (level 3 always played its best value): L3 vs L2 99.0 %, L3 vs L1 100.0 %, Sensible vs L3 **0.5 %**.
+
+**Weakened Challenge (PO 2026-10-21).** The budget is unchanged (`MC_PLAYOUTS = 1200`, 12 × 100, 110 plies, prior 0.01). Only the
+final pick changed: a seeded softmax over the candidate values with `MC_TEMPERATURE = 0.21` (`softmaxPick`, one draw from
+`deriveSeed(plySeed, 0x5eed)`, so a move still replays from its seed). Urgent captures / saves remain the only candidates when they
+exist, so AC 3–4 hold. Temperature sweep (Sensible vs L3 / L3 vs L2): 0.03 → 0 / 95 % and 0.10 → 10 / 90 % (20 seeds);
+0.17 → 20 / 82 %, 0.22 → 21 / 64 % (50 seeds); 0.20 → 22 / 70 %, **0.21 → 24 / 68 %** (100 seeds). Higher temperatures push
+L3 vs L2 under 65 %, so 0.21 is the closest to §7 that keeps AC 8.
 
 | Pairing (A vs B) | A wins | A as Black | A as White | Plies mean / max | Target | OK |
 |---|---|---|---|---|---|---|
 | L2 vs L1 | 98.0 % | 97/100 | 99/100 | 90 / 127 | ≥ 80 % | yes |
-| L3 vs L2 | 99.0 % | 99/100 | 99/100 | 69 / 89 | ≥ 65 % | yes |
-| L3 vs L1 | 100.0 % | 100/100 | 100/100 | 94 / 131 | ≥ 90 % | yes |
+| L3 vs L2 | 68.0 % | 61/100 | 75/100 | 71 / 100 | ≥ 65 % | yes |
+| L3 vs L1 | 96.0 % | 95/100 | 97/100 | 88 / 133 | ≥ 90 % | yes |
 | Sensible vs L1 | 88.0 % | 84/100 | 92/100 | 99 / 142 | ≥ 70 % | yes |
-| Sensible vs L3 | 0.5 % | 0/100 | 1/100 | 86 / 122 | Sensible loses ≥ 60 % | yes |
+| Sensible vs L2 | 20.0 % | 12/100 | 28/100 | 81 / 107 | report only (§7: 50–60 %) | far off |
+| Sensible vs L3 | 24.0 % | 23/100 | 25/100 | 84 / 114 | Sensible loses ≥ 60 %; §7 25–35 % | yes / ≈ |
 
-No game threw, none passed 142 plies, all ended by two passes (the hard cap 200 never triggered). **For the PO:** all AC 8
-targets hold, but Challenge is much stronger than §7's "Sensible wins 25–35 %" (0.5 %), and Normal → Challenge is a big step
-(99 %). Easy matches §7 (Sensible wins 88 % ≈ 85 %). Possible later knobs: fewer playouts or a weaker prior for level 3, or a
-learner model closer to a real beginner than "Sensible". Constants left as in the spec until the PO decides.
+(L2 vs L1 and Sensible vs L1 do not involve level 3: unchanged.) Level 3 time per move with the softmax, 6 tuning processes in
+parallel: mean 147–178 ms, p95 ≤ 258 ms, max 445 ms (the max includes the after-pass dead-stone check under load); one process
+earlier: mean 170 ms, p95 238 ms → AC 7 holds, the pick itself costs nothing measurable.
+
+No game threw, none passed 142 plies, all ended by two passes (the hard cap 200 never triggered). **For the PO:** Easy matches §7
+(88 % ≈ 85 %). Challenge is now 24 %, one point under the 25–35 % band: the band and AC 8's L3 vs L2 ≥ 65 % pull against each other
+because **Normal is already harder for Sensible (20 %) than §7's 50–60 %** — Sensible beats Normal less often than the band asks of
+Challenge. Normal was not changed (PO instruction); retuning Normal or a learner model closer to a real beginner is a later decision.
 
 **Deviations**
 1. `§10` / AC 4: both eye diagrams verified with the engine (`eyes.test.ts`); only the header of diagram 2 was wrong ("a b c d"
