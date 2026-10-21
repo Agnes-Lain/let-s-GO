@@ -191,3 +191,51 @@ describe('the adapter (AC 44)', () => {
     progressStore.getState().reset();
   });
 });
+
+describe('9×9 bot games (M6 AC 34–37)', () => {
+  it('AC 34: a win counts a game and a win; losses and resignations only games', () => {
+    const store = make();
+    store.getState().recordGame(2, 'loss');
+    store.getState().recordGame(2, 'resigned');
+    expect(store.getState().bots['2']).toEqual({ games: 2, wins: 0, lossStreak: 2 });
+    store.getState().recordGame(2, 'win');
+    expect(store.getState().bots['2']).toEqual({
+      games: 3,
+      wins: 1,
+      lossStreak: 0,
+      firstWinAt: '2026-10-16T08:00:00.000Z',
+    });
+    expect(store.getState().botWins(2)).toBe(1);
+    expect(store.getState().botWins(3)).toBe(0);
+  });
+
+  it('AC 35: bots and flags survive a restart; old saves load with bots empty', () => {
+    const storage = createMemoryStorage();
+    const store = make(storage);
+    store.getState().recordGame(1, 'win');
+    store.getState().setFlag('passExplained');
+    const restarted = make(storage);
+    expect(restarted.getState().bots['1']).toMatchObject({ games: 1, wins: 1 });
+    expect(restarted.getState().flags).toEqual({ passExplained: true });
+
+    const old = make(
+      createMemoryStorage({ [PROGRESS_KEY]: JSON.stringify({ v: 1, lessons: {} }) }),
+    );
+    expect(old.getState().bots).toEqual({});
+    expect(old.getState().flags).toEqual({});
+  });
+
+  it('a broken bots entry is dropped, the lessons still load', () => {
+    const raw = JSON.stringify({ v: 1, lessons: {}, bots: { '1': { games: -1 } }, flags: 3 });
+    const store = make(createMemoryStorage({ [PROGRESS_KEY]: raw }));
+    expect(store.getState().bots).toEqual({});
+    expect(store.getState().hydrated).toBe(true);
+  });
+
+  it('reset forgets the bot games too', () => {
+    const store = make();
+    store.getState().recordGame(3, 'win');
+    store.getState().reset();
+    expect(store.getState().bots).toEqual({});
+  });
+});
