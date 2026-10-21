@@ -3,7 +3,12 @@
 import { legalMoves, type GameState, type Point } from '@/engine';
 
 import { analyzeMoves, exposedStones, type MoveAnalysis } from './analysis';
+import { MAX_PLIES_9, opponentJustPassed } from './board9';
+import { isOwnEye } from './eyes';
 import type { BotChoice, BotOptions } from './types';
+
+/** 9×9 opening (M6 §6.1): while more points than this are empty, level 1 avoids the first line. */
+export const OPENING_EMPTY_POINTS = 40;
 
 export { exposedStones };
 
@@ -24,7 +29,9 @@ function isFirstLine(p: Point, size: number): boolean {
 
 /**
  * Level 1. Draws exactly three numbers first (r1, r2, r3), so a change in the number of draws is
- * a conscious break of recorded games (AC 4).
+ * a conscious break of recorded games (AC 4). With `board9` (M6 §6.1) it also never fills its own
+ * eye, passes when only self-atari is left (AC 12) or after an opponent pass with no capture,
+ * save or atari to play (AC 11), and opens away from the first line.
  */
 export function level1(state: GameState, opts: BotOptions): BotChoice {
   const r1 = opts.rng();
@@ -33,11 +40,24 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
   const blunder = opts.blunder ?? 0;
   const color = state.toPlay;
 
-  const points = legalMoves(state);
-  if (points.length === 0) return { move: { type: 'pass', color }, reason: 'pass' };
+  const board9 = opts.board9 ?? false;
+  const passMove: BotChoice = { move: { type: 'pass', color }, reason: 'pass' };
+
+  let points = legalMoves(state);
+  if (board9) {
+    if (state.moves.length >= MAX_PLIES_9) return passMove;
+    points = points.filter((p) => !isOwnEye(state.board, p, color));
+  }
+  if (points.length === 0) return passMove;
 
   const exposedBefore = exposedStones(state.board, color);
   const candidates = analyzeMoves(state.board, color, points);
+  if (board9) {
+    // AC 12: only self-atari left (that is not a capture) → pass instead of killing own stones.
+    if (candidates.every((c) => c.selfAtari && c.captured === 0)) return passMove;
+    // AC 11: after an opponent pass, play only a capture, save or atari.
+    if (opponentJustPassed(state) && !hasTacticalMove(candidates, exposedBefore)) return passMove;
+  }
   const choice = (c: MoveAnalysis, reason: BotChoice['reason']): BotChoice => ({
     move: { type: 'play', color, point: c.point },
     reason,
@@ -95,6 +115,14 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
   if (pool.length === 0) pool = candidates.filter((c) => !c.selfAtari);
   if (pool.length === 0) pool = candidates;
   const size = state.board.size;
+  if (board9) {
+    const empty = state.board.cells.filter((s) => s === null).length;
+    const inner = pool.filter((c) => !isFirstLine(c.point, size));
+    if (empty > OPENING_EMPTY_POINTS && inner.length > 0) {
+      const picked = pick(inner, r3);
+      return choice(picked, picked.touched > 0 ? 'pressure' : 'random');
+    }
+  }
   const scored = pool.map((c) => {
     const edge = isFirstLine(c.point, size) && c.touched === 0 ? 2 : 0;
     return { c, score: 2 * c.touched + Math.min(c.liberties, 4) - edge };
@@ -106,4 +134,14 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
     r3,
   ).c;
   return choice(picked, picked.touched > 0 ? 'pressure' : 'random');
+}
+
+/** A capture, a save or an atari exists (the rules 1–3 of level 1, without the blunder roll). */
+function hasTacticalMove(candidates: readonly MoveAnalysis[], exposedBefore: number): boolean {
+  return candidates.some(
+    (c) =>
+      c.captured > 0 ||
+      (exposedBefore > 0 && c.exposed < exposedBefore && !c.selfAtari) ||
+      (c.opponentAtari.length > 0 && !c.selfAtari && c.exposed <= exposedBefore),
+  );
 }

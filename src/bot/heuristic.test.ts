@@ -107,10 +107,16 @@ describe('chooseMove: API (AC 2, 3, 4, 15)', () => {
     }
   });
 
-  it('AC 15: levels 2 and 3 fall back to level 1', () => {
-    for (const seed of seeds(10)) {
-      expect(choose(SAVE, 0.3, seed, 2)).toEqual(choose(SAVE, 0.3, seed, 1));
-      expect(choose(SAVE, 0.3, seed, 3)).toEqual(choose(SAVE, 0.3, seed, 1));
+  // M4 AC 15 ("levels 2 and 3 fall back to level 1") was replaced by M6 AC 1: every level is
+  // registered. Level 1 itself is unchanged; levels 2–3 have their own tests (level2/3.test.ts).
+  it('M6 AC 1: levels 2 and 3 are registered and are not level 1', () => {
+    const differs = seeds(10).some(
+      (seed) =>
+        JSON.stringify(choose(SAVE, 0.3, seed, 2)) !== JSON.stringify(choose(SAVE, 0.3, seed, 1)),
+    );
+    expect(differs).toBe(true);
+    for (const seed of seeds(3)) {
+      expect(choose(SAVE, 0, seed, 3).move.type).toBe('play');
     }
   });
 

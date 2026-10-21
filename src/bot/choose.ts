@@ -1,13 +1,54 @@
-import type { GameState } from '@/engine';
+import { type GameState } from '@/engine';
 
+import { MAX_PLIES_9, opponentJustPassed, passAfterOpponentPass } from './board9';
 import { level1 } from './heuristic';
+import { playableMoves } from './level2';
+import { level3Search } from './level3';
 import type { BotChoice, BotLevel, BotOptions, Strategy } from './types';
 
-/** Registered strategies. Levels 2 and 3 (M6) are not registered yet and fall back to level 1. */
-const strategies: Partial<Record<BotLevel, Strategy>> = { 1: level1 };
+function passFor(state: GameState): BotChoice {
+  return { move: { type: 'pass', color: state.toPlay }, reason: 'pass' };
+}
 
-/** The bot's move for `state.toPlay`: always legal; a pass only when no legal point exists. */
+/**
+ * The common start of levels 2 and 3 (spec M6 §4.2): pass at the ply cap, when no move is worth
+ * playing (only own eyes or self-atari left, AC 12), or after an opponent pass when ahead (AC 10).
+ * Returns null when the bot should choose a stone.
+ */
+function passCheck(state: GameState, opts: BotOptions, hasMoves: boolean): BotChoice | null {
+  if (state.moves.length >= MAX_PLIES_9 || !hasMoves) return passFor(state);
+  if (opponentJustPassed(state) && passAfterOpponentPass(state, opts.rng)) return passFor(state);
+  return null;
+}
+
+/** Level 2 — 普通 Normal (§6.2): the best-scored point; ties by one rng draw. */
+export function level2(state: GameState, opts: BotOptions): BotChoice {
+  const r = opts.rng();
+  const moves = playableMoves(state);
+  const passed = passCheck(state, opts, moves.length > 0);
+  if (passed) return passed;
+  const top = moves.filter((m) => m.score === moves[0].score);
+  const pick = top[Math.min(top.length - 1, Math.floor(r * top.length))];
+  return { move: { type: 'play', color: state.toPlay, point: pick.point }, reason: pick.kind };
+}
+
+/** Level 3 — 挑战 Challenge (§6.3): flat Monte-Carlo over the best level-2 points. */
+export function level3(state: GameState, opts: BotOptions): BotChoice {
+  const seed = Math.floor(opts.rng() * 0x100000000);
+  const passed = passCheck(state, opts, playableMoves(state).length > 0);
+  if (passed) return passed;
+  const { best } = level3Search(state, seed);
+  if (!best) return passFor(state);
+  return { move: { type: 'play', color: state.toPlay, point: best.point }, reason: best.kind };
+}
+
+/** Registered strategies (M6 AC 1: every level is registered, no fallback). */
+const strategies: Record<BotLevel, Strategy> = { 1: level1, 2: level2, 3: level3 };
+
+/**
+ * The bot's move for `state.toPlay`: always legal or a pass. Capture Go (level 1 without
+ * `board9`) passes only when no legal point exists.
+ */
 export function chooseMove(state: GameState, opts: BotOptions): BotChoice {
-  const strategy = strategies[opts.level] ?? level1;
-  return strategy(state, opts);
+  return strategies[opts.level](state, opts);
 }
