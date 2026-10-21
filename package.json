@@ -23,6 +23,7 @@
     "verify:web:m5c": "node scripts/verify-web-m5c.mjs",
     "verify:web:m5d": "node scripts/verify-web-m5d.mjs",
     "verify:web:m5e": "node scripts/verify-web-m5e.mjs",
+    "verify:web:m6": "node scripts/verify-web-m6.mjs",
     "tune:bot": "jest --config jest.tuning.config.js",
     "import:sgf": "jest --config jest.import-sgf.config.js",
     "tune:bot9": "jest --config jest.tuning9.config.js"
