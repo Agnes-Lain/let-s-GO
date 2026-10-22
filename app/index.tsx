@@ -9,6 +9,7 @@ import {
   useHomeMap,
   useLockedSnackbar,
 } from '@/exercises/UnitMap';
+import { Game9Card } from '@/game9/ui/Game9Card';
 import { GearIcon } from '@/theme/icons';
 import { Screen, TopBar } from '@/theme/Screen';
 import { color, radius, spacing, stone, tapTarget, typography } from '@/theme/tokens';
@@ -62,6 +63,11 @@ export default function HomeScreen() {
           {t('home.path.title')}
         </Text>
         <UnitPath rows={map.rows} hydrated={map.hydrated} onOpen={open} onLocked={snackbar.show} />
+        {map.hydrated && map.hasContent ? (
+          <View style={styles.game9}>
+            <Game9Card onOpen={() => router.push('/game')} onLocked={snackbar.show} />
+          </View>
+        ) : null}
         {map.hydrated && map.hasContent && !map.next ? (
           <Text style={styles.caption} testID="home-all-done">
             {t('home.allDone')}
@@ -122,6 +128,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
+  game9: { marginTop: spacing.lg },
   caption: {
     ...typography.caption,
     color: color.textSecondary,

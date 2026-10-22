@@ -79,8 +79,10 @@ describe('copy table §4 is implemented verbatim', () => {
     const m0Keys = Object.keys(zhCN).filter(
       (key) =>
         // sequence.*: the M5 sequence runner (docs/specs/M5-life-death.md §5.4).
-        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|sequence)\./.test(key) &&
-        !m3Home.test(key),
+        // game9.*: the M6 9×9 games (docs/specs/M6-bot-levels.md §9), checked by src/game9 tests.
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|game9|sequence)\./.test(
+          key,
+        ) && !m3Home.test(key),
     );
     // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
     const removedByM3 = [

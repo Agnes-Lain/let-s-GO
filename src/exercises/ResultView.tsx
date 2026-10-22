@@ -25,6 +25,8 @@ type Props = {
   onAgain: () => void;
   onReview: () => void;
   onMap: () => void;
+  /** Unit 14's result offers the 9×9 game (M6 §3, AC 14); shown when the run earned a star. */
+  onPlayGame9?: () => void;
 };
 
 export function ResultView({
@@ -36,6 +38,7 @@ export function ResultView({
   onAgain,
   onReview,
   onMap,
+  onPlayGame9,
 }: Props) {
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
@@ -134,6 +137,14 @@ export function ResultView({
             ) : (
               <Button label={t('complete.map')} onPress={onMap} testID="result-map" />
             )}
+            {onPlayGame9 ? (
+              <Button
+                variant="secondary"
+                label={t('game9.entry.title')}
+                onPress={onPlayGame9}
+                testID="result-game9"
+              />
+            ) : null}
             <Button
               variant="secondary"
               label={t('complete.again')}
