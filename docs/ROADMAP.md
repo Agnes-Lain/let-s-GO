@@ -46,6 +46,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
   - Learner can end the game (PO, 2026-10-21): "Count now" (asks the bot to pass, then the same count
     screen) and Resign 认输 (other side wins, no count; optionally show the would-be score as a learning aid).
 - [x] Game coaching for 9×9: move notes from engine facts, 提示 hint button, post-game review of key moments
+- [ ] Beginner-friendly 9×9: handicap 让子, take-back 悔棋, danger rings (atari 叫吃), softer Easy
 - [ ] Settings, onboarding, accessibility pass
 - [ ] EAS Build, TestFlight / Play internal testing
 
