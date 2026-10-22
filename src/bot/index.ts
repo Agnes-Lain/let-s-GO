@@ -24,7 +24,14 @@ export {
 } from './deadStones';
 export { isOwnEye } from './eyes';
 export { OPENING_EMPTY_POINTS } from './heuristic';
-export { playableMoves, scoreMoves, settledOwners, type ScoredMove } from './level2';
+export {
+  PASS_BELOW,
+  playableMoves,
+  scoreMoves,
+  settledOwners,
+  type MoveKind,
+  type ScoredMove,
+} from './level2';
 export {
   MC_CANDIDATES,
   MC_MAX_PLIES,
@@ -38,6 +45,7 @@ export {
   type Level3Search,
 } from './level3';
 export { createRng, deriveSeed, type Rng } from './rng';
+export { winRate } from './playout';
 export { exposedStones } from './analysis';
 export type { BotChoice, BotLevel, BotOptions, BotReason } from './types';
 export {

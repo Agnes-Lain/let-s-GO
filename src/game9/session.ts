@@ -10,6 +10,7 @@ import {
   type BotLevel,
   type GroupJudgement,
 } from '@/bot';
+import { HINTS_PER_GAME, hintFor, hintNote, moveNote, pickNote } from '@/coach';
 import {
   createGame,
   groupAt,
@@ -21,6 +22,7 @@ import {
   type Color,
   type GameState,
   type Move,
+  type MoveFacts,
   type Point,
   type ScoreResult,
   type Vertex,
@@ -64,6 +66,22 @@ export interface CountView {
   hypothetical: boolean;
 }
 
+/** The 提示 hint on the board (M6-game-coaching AC 17): a marker (none: nothing urgent) and a reason. */
+export interface HintView {
+  point: Point | null;
+  note: Note;
+}
+
+/** Coaching (M6-game-coaching §3): the notes of the last two plies and the hints. */
+export interface CoachState {
+  /** At most two lines: the learner's move, then the bot's reply (AC 10–12). */
+  notes: Note[];
+  hint: HintView | null;
+  hintsLeft: number;
+  /** For the review header (AC 24). */
+  hintsUsed: number;
+}
+
 export type GameResult =
   | { kind: 'count'; winner: Color | null; margin: number; score: ScoreResult }
   | { kind: 'resigned' };
@@ -90,6 +108,7 @@ export interface GameSession {
   playOnRounds: number;
   count: CountView | null;
   result: GameResult | null;
+  coach: CoachState;
 }
 
 export type GameEvent =
@@ -105,6 +124,10 @@ export type GameEvent =
   | { type: 'playOn' }
   | { type: 'showCount' }
   | { type: 'countDone' }
+  /** Hint 提示 (AC 17). */
+  | { type: 'hint' }
+  /** The learner touches the board: the next turn starts and the notes clear (AC 12). */
+  | { type: 'touch' }
   | { type: 'new'; seed: number };
 
 export function startSession(level: BotLevel, seed: number): GameSession {
@@ -125,7 +148,25 @@ export function startSession(level: BotLevel, seed: number): GameSession {
     playOnRounds: 0,
     count: null,
     result: null,
+    coach: { notes: [], hint: null, hintsLeft: HINTS_PER_GAME[level], hintsUsed: 0 },
   };
+}
+
+/** The coaching after a ply: notes replaced or extended, the hint marker gone. */
+function coachAfter(s: GameSession, notes: Note[]): CoachState {
+  return { ...s.coach, notes, hint: null };
+}
+
+/** The note line of a played move for the learner (AC 10–14), or none. */
+function noteLines(
+  s: GameSession,
+  before: GameState,
+  move: Move,
+  after: GameState,
+  facts: MoveFacts,
+): Note[] {
+  const note = pickNote(moveNote(before, move, after, facts), s.learner, move.color);
+  return note ? [note] : [];
 }
 
 function apply(state: GameState, move: Move): GameState {
@@ -150,6 +191,7 @@ function enterMark(s: GameSession, game: GameState): GameSession {
     dispute: null,
     flash: [],
     note: null,
+    coach: coachAfter(s, []),
   };
 }
 
@@ -249,13 +291,14 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
       const result = play(s.game, event.point);
       if (!result.ok) return { ...s, note: { key: `game.fb.illegal.${result.reason}` } };
       const captured = result.facts.captured.flat();
+      const move: Move = { type: 'play', color: s.learner, point: event.point };
       return {
         ...s,
         game: result.state,
         thinking: true,
         last: lastOf(s, s.learner, event.point, captured),
-        note:
-          captured.length > 0 ? { key: 'game.fb.captured', params: { n: captured.length } } : null,
+        note: null,
+        coach: coachAfter(s, noteLines(s, s.game, move, result.state, result.facts)),
       };
     }
 
@@ -269,6 +312,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         thinking: true,
         last: lastOf(s, s.learner, null, []),
         note: { key: 'game9.you.passed' },
+        coach: coachAfter(s, []),
       };
     }
 
@@ -285,6 +329,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
           last: lastOf(s, s.bot, null, []),
           // The status line says "Bot passed. If you also pass, the game ends." (AC 20).
           note: null,
+          coach: coachAfter(s, []),
         };
       }
       const result = play(s.game, move.point);
@@ -295,10 +340,11 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         game: result.state,
         thinking: false,
         last: lastOf(s, s.bot, move.point, captured),
-        note:
-          captured.length > 0
-            ? { key: 'game.fb.botCaptured', params: { n: captured.length } }
-            : null,
+        note: null,
+        coach: coachAfter(s, [
+          ...s.coach.notes,
+          ...noteLines(s, s.game, move, result.state, result.facts),
+        ]),
       };
     }
 
@@ -312,7 +358,13 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
 
     case 'resign': {
       if (s.phase !== 'playing' || s.thinking) return s;
-      return { ...s, phase: 'result', result: { kind: 'resigned' }, note: null };
+      return {
+        ...s,
+        phase: 'result',
+        result: { kind: 'resigned' },
+        note: null,
+        coach: coachAfter(s, []),
+      };
     }
 
     case 'mark': {
@@ -346,6 +398,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         flash: [],
         last: null,
         playOnRounds: rounds,
+        coach: coachAfter(s, []),
         note:
           rounds >= 2
             ? { key: 'game9.dispute.captureHint' }
@@ -357,6 +410,27 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
       if (s.phase !== 'result' || s.result?.kind !== 'resigned') return s;
       const judgements = judgeGroups(s.game, botRng(s.seed, 0x72657369 + s.game.moves.length));
       return { ...s, phase: 'count', count: countOf(s.game, deadStonesOf(judgements), true) };
+    }
+
+    case 'hint': {
+      if (s.phase !== 'playing' || s.thinking || s.coach.hint || s.coach.hintsLeft <= 0) return s;
+      const hint = hintFor(s.game);
+      // "Nothing urgent" costs no hint (AC 22).
+      const used = hint.point ? 1 : 0;
+      return {
+        ...s,
+        coach: {
+          notes: [],
+          hint: { point: hint.point, note: hintNote(hint) },
+          hintsLeft: s.coach.hintsLeft - used,
+          hintsUsed: s.coach.hintsUsed + used,
+        },
+      };
+    }
+
+    case 'touch': {
+      if (s.phase !== 'playing' || s.thinking || s.coach.notes.length === 0) return s;
+      return { ...s, coach: { ...s.coach, notes: [] } };
     }
 
     case 'countDone': {

@@ -5,6 +5,8 @@
 // injected), and playout.test.ts checks every rule against the engine on thousands of positions.
 import type { Color, GameState } from '@/engine';
 
+import { createRng, deriveSeed } from './rng';
+
 /** Cells hold 0 = empty, 1 = black, 2 = white. */
 type Stone = 1 | 2;
 
@@ -358,4 +360,29 @@ export class PlayoutBoard {
 function contains(list: Int16Array, length: number, value: number): boolean {
   for (let i = 0; i < length; i++) if (list[i] === value) return true;
   return false;
+}
+
+/**
+ * The share of `playouts` random games from `state` (each at most `maxPlies` plies) that `color`
+ * wins by area score with the state's komi (spec docs/specs/M6-game-coaching.md AC 27–28: the
+ * review's win chance). Seeded: the same state, numbers and seed give the same share.
+ */
+export function winRate(
+  state: GameState,
+  color: Color,
+  playouts: number,
+  maxPlies: number,
+  seed: number,
+): number {
+  if (playouts <= 0) return 0;
+  const base = PlayoutBoard.fromState(state);
+  const work = new PlayoutBoard(base.size);
+  let wins = 0;
+  for (let i = 0; i < playouts; i++) {
+    work.copyFrom(base);
+    work.playout(createRng(deriveSeed(seed, i)), maxPlies);
+    const diff = work.areaDifference(state.komi);
+    if (color === 'B' ? diff > 0 : diff < 0) wins++;
+  }
+  return wins / playouts;
 }

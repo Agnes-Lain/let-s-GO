@@ -253,3 +253,27 @@ non-9×9 boards; sounds for notes.
 - D, escape: Black `d5` with White `c5 e5 d4`, liberty `d6`; Black `d6` joins and gets `c6 e6 d7` = 3 liberties.
 - E, exposed: Black `c3 c4` with White `b3 b4 d3`, liberties `c2 d4 c5`; White `c5` leaves `c2 d4`; White `d4` next leaves `c2` (one). The
   fact fires on the move that leaves exactly 1.
+
+## 12b. Dev deviations (developer, 2026-10-22)
+1. **`exposed` vs `atari` (§4.1).** On a 9×9 board a move can only take a liberty of a group it touches, so "a group of the mover,
+   other than the played group, that lost liberties" cannot happen. Implemented as AC 6 describes it: `exposed` = an **opponent**
+   group the move left with 1 liberty after ≥ 2 before (`color` = the group's owner). It is the same group as the mover's `atari`
+   fact seen from the other side, so the note uses it only for the learner's groups (bot ply → "Your group at e4 has one liberty
+   left."; learner ply → the `atari` line). `coach.bot.atari` is therefore only a fallback.
+2. **Note slot.** The notes and the hint reason use the existing feedback card under the board (fixed 96 px, two lines; status line
+   unchanged) instead of sharing the 56 px status slot — same "between board and buttons", the board never moves. The hint
+   button is its own full-width row above Pass / Count now / Resign. Touching the board clears the notes via `onTouchStart` on the
+   board wrapper (native touch; with a mouse on web they clear at the next commit). Using a hint also clears the notes.
+3. **Copy.** App wording kept: zh 叫吃 / 提 / 机器人, fr « robot » (spec excerpt had 打吃 / 吃掉 / 对手 / bot); plurals use
+   `{{count}}` (`_one/_other`). Points are lowercase (`e4`) like the dispute messages (AC 15). fr self-atari reads « n'a qu'une
+   liberté » to stay ≤ 60 characters.
+4. **Signatures.** `hintFor(state)` (the level only sets the count, `HINTS_PER_GAME`); `pickNote(facts, learner, mover)`;
+   `buildReview(moves, komi, seed, learner = 'B')`, plus `planReview` / `evaluatePosition` / `reviewMoments` so the UI can run 4
+   positions per tick. Win chance: new `winRate()` in `src/bot/playout.ts`.
+5. **Swing sampling.** Learner moves after ply 6 are evaluated (all of them when ≤ 24, else 24 evenly sampled); the baseline is the
+   position just before the first one. `lostGroup` "liberties one move before" is read from the position just before the
+   capturing move, so it is normally 1 (the group was in atari).
+6. **Not built (small):** the hint marker's single pulse and the hint line's [x]; the 150 ms note fade (no animation at all); the
+   `npm run tune:coach` script (§8 risk note, no AC). Result screen with a review: [Review 复盘][Play again] then text buttons
+   [Change level][Home], so the result fits 740 px.
+7. **Web check:** manual at 360×740 (dev server), screenshots `docs/screenshots/M6/40-*`–`42-*` (en). No Playwright script.

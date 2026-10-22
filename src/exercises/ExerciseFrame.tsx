@@ -23,11 +23,20 @@ const DOT: Record<FeedbackTone, string> = {
   hint: color.hint,
 };
 
-/** The 72 px feedback card: the slot is always there, so nothing jumps (AC 67). */
-export function FeedbackCard({ lines }: { lines: readonly FeedbackText[] }) {
+/**
+ * The 72 px feedback card: the slot is always there, so nothing jumps (AC 67). `height` makes the
+ * fixed slot taller (the 9×9 game's two note lines, M6-game-coaching §5.1).
+ */
+export function FeedbackCard({
+  lines,
+  height,
+}: {
+  lines: readonly FeedbackText[];
+  height?: number;
+}) {
   return (
     <View
-      style={styles.feedback}
+      style={height === undefined ? styles.feedback : [styles.feedback, { height }]}
       testID="practice-feedback"
       accessible={lines.length > 0}
       accessibilityLiveRegion="polite"
