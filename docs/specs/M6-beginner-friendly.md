@@ -187,7 +187,7 @@ Final constants: `L1_BLUNDER_9 =`, `L1_SKIP_SAVE_9 =`, `L1_SKIP_ATARI_9 =`, `L2_
 - Atari line is the only coaching in this item: it states what the board shows. It never suggests a move. (Move notes / hints belong to the sibling spec.)
 - Feedback: take-back plays the soft stone-off sound already in the app, no new asset; rings appear without animation; no sound for rings. After 3 losses in a row the existing easier-tip applies (bot-levels spec AC 37); the next suggestion also gets one stone more, so the tip and the ladder agree.
 
-## 8. Coordination with `claude/gallant-poincare-70ccd9` (move notes, hint button, game review)
+## 8. Coordination with `claude/m6-game-coaching` (move notes, hint button, game review)
 Both specs use **one shared feedback slot under the board** (the existing 72 px card). Slot priority, highest first: illegal-move reason > **atari line (this spec)** > the sibling's move note / hint text > capture and pass notes. Both specs must state this order; the atari line is only ever the sentence of §4.3 (facts, no advice). Rings and the line are computed by `dangerOf` (new file `src/game9/danger.ts`); the sibling reuses it rather than recomputing. Button row: this spec uses two rows (Take back, Pass / Count now, Resign); a Hint button from the sibling goes into the empty Count-now cell before move 6 or a third row if the sibling needs it — whoever merges second rebases and re-checks the 740 px height (≤ 740 − safe area). Conflict-prone files: `GameScreen.tsx`, `session.ts`, `en/fr/zh-CN.json` (append keys at the end of the `game9.*` block).
 
 ## 9. i18n keys (zh-CN / en / fr; first use = Chinese term + pinyin)
