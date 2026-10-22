@@ -28,6 +28,7 @@ export {
   SWING_PLAYOUTS,
   SWING_POSITIONS,
   SWING_THRESHOLD,
+  atariSince,
   buildReview,
   evaluatePosition,
   planReview,

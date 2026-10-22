@@ -147,7 +147,7 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
             {t('coach.review.button')}
           </Text>
           {s.result?.kind === 'resigned' ? (
-            <Text style={styles.caption} numberOfLines={1} testID="review-resigned">
+            <Text style={styles.caption} testID="review-resigned">
               {t('coach.review.resigned')}
             </Text>
           ) : null}
@@ -239,7 +239,7 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
 
 const styles = StyleSheet.create({
   root: { flex: 1, gap: spacing.sm },
-  topBar: { height: 52, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  topBar: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   titleBox: { flex: 1 },
   title: { ...typography.label, color: color.textPrimary },
   caption: { ...typography.caption, color: color.textSecondary },

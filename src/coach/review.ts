@@ -145,6 +145,31 @@ function bigParams(ply: number, k: number, point: Point) {
   return { n: ply, k, point: toVertex(point, 9) };
 }
 
+/** True when `stones` are exactly one group with one liberty in `state`. */
+function inAtariAsIs(state: GameState, stones: readonly Point[]): boolean {
+  const group = groupAt(state.board, stones[0]);
+  return (
+    group !== null &&
+    group.liberties.length === 1 &&
+    group.stones.length === stones.length &&
+    stones.every((p) => group.stones.some((q) => q.x === p.x && q.y === p.y))
+  );
+}
+
+/**
+ * The move since which a group captured at `ply` was in atari with the same stones: walk back
+ * from the position before the capture while the group is unchanged and has one liberty.
+ */
+export function atariSince(
+  states: readonly GameState[],
+  ply: number,
+  stones: readonly Point[],
+): number {
+  let since = ply - 1;
+  while (since > 1 && inAtariAsIs(states[since - 1], stones)) since--;
+  return since;
+}
+
 function captureMoments(plan: ReviewPlan): ReviewMoment[] {
   const { moves, states, facts, learner } = plan;
   let big: ReviewMoment | null = null;
@@ -174,15 +199,18 @@ function captureMoments(plan: ReviewPlan): ReviewMoment[] {
       if (group.length <= lostSize) continue;
       lostSize = group.length;
       const point = firstPoint(group);
-      const liberties = groupAt(states[ply - 1].board, point)?.liberties.length ?? 1;
+      const since = atariSince(states, ply, group);
       lost = {
         kind: 'lostGroup',
         ply,
         point,
-        note: {
-          key: 'coach.review.lostGroup',
-          params: { n: ply, k: group.length, count: liberties },
-        },
+        note:
+          since === ply - 1
+            ? { key: 'coach.review.lostGroup.oneMove', params: { n: ply, k: group.length } }
+            : {
+                key: 'coach.review.lostGroup.since',
+                params: { n: ply, k: group.length, m: since },
+              },
       };
     }
   }

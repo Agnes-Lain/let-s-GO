@@ -271,9 +271,14 @@ non-9×9 boards; sounds for notes.
    `buildReview(moves, komi, seed, learner = 'B')`, plus `planReview` / `evaluatePosition` / `reviewMoments` so the UI can run 4
    positions per tick. Win chance: new `winRate()` in `src/bot/playout.ts`.
 5. **Swing sampling.** Learner moves after ply 6 are evaluated (all of them when ≤ 24, else 24 evenly sampled); the baseline is the
-   position just before the first one. `lostGroup` "liberties one move before" is read from the position just before the
-   capturing move, so it is normally 1 (the group was in atari).
+   position just before the first one.
 6. **Not built (small):** the hint marker's single pulse and the hint line's [x]; the 150 ms note fade (no animation at all); the
    `npm run tune:coach` script (§8 risk note, no AC). Result screen with a review: [Review 复盘][Play again] then text buttons
    [Change level][Home], so the result fits 740 px.
-7. **Web check:** manual at 360×740 (dev server), screenshots `docs/screenshots/M6/40-*`–`42-*` (en). No Playwright script.
+7. **Web check:** `npm run verify:web:m6c` (QA script, Node 22); first manual screenshots `docs/screenshots/M6/40-*`–`42-*` (en).
+8. **Lost-group line (QA round 1).** "It had {m} liberties one move before" was always 1, so the line now says when the group
+   became weak: walking back from the move before the capture while the same stones are one group with one liberty →
+   "It was in atari since move {m}." (`coach.review.lostGroup.since`), or "It was in atari one move before."
+   (`coach.review.lostGroup.oneMove`) when m = n − 1 (`atariSince` in `src/coach/review.ts`).
+9. **QA round 1 fixes.** Integer note params stay numbers (`formatParams`), so i18next picks `_one/_other` (plural coach texts
+   showed raw keys). fr review caption shortened to « Partie abandonnée » and allowed to wrap.

@@ -6,12 +6,19 @@ export function formatNumber(n: number, language: string): string {
   return language.startsWith('fr') ? text.replace('.', ',') : text;
 }
 
-/** A note's params with every number formatted for the language. */
-export function formatParams(note: Note, language: string): Record<string, string> | undefined {
+/**
+ * A note's params with every decimal number formatted for the language. Integers stay numbers:
+ * i18next picks the `_one/_other` plural only for a numeric `count` (M6-game-coaching QA).
+ */
+export function formatParams(
+  note: Note,
+  language: string,
+): Record<string, string | number> | undefined {
   if (!note.params) return undefined;
-  const out: Record<string, string> = {};
+  const out: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(note.params)) {
-    out[key] = typeof value === 'number' ? formatNumber(value, language) : value;
+    out[key] =
+      typeof value === 'number' && !Number.isInteger(value) ? formatNumber(value, language) : value;
   }
   return out;
 }

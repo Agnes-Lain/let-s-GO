@@ -10,6 +10,8 @@ import {
 } from '@/engine';
 
 import { position, playAt } from '@/bot/__fixtures__/board';
+import { formatParams } from '@/game9/format';
+import i18n from '@/i18n';
 
 import { moveNote, pickNote, type CoachFact } from './facts';
 import { hintFor } from './hint';
@@ -233,19 +235,12 @@ describe('QA: review', () => {
 });
 
 describe('QA: notes are rendered through the app i18n (formatParams)', () => {
-  // BUG (blocker): GameScreen/ReviewView format `count` to a string; i18next ignores plurals for
-  // string counts, so every `_one/_other` coach text shows its raw key on screen. Remove `.failing`
-  // once the UI passes numeric `count` (or the keys stop using plurals).
-  it.failing.each(['zh-CN', 'en', 'fr'])(
-    '%s: the capture note resolves to real text',
-    async (lng) => {
-      const i18n = (await import('@/i18n')).default;
-      const { formatParams } = await import('@/game9/format');
-      await i18n.changeLanguage(lng);
-      const note = { key: 'coach.you.capture', params: { count: 2 } };
-      const text = i18n.t(note.key, formatParams(note, lng));
-      expect(text).not.toBe(note.key);
-      expect(text).toContain('2');
-    },
-  );
+  // Was a blocker: a string `count` made i18next skip `_one/_other` (raw keys on screen).
+  it.each(['zh-CN', 'en', 'fr'])('%s: the capture note resolves to real text', async (lng) => {
+    await i18n.changeLanguage(lng);
+    const note = { key: 'coach.you.capture', params: { count: 2 } };
+    const text = i18n.t(note.key, formatParams(note, lng));
+    expect(text).not.toBe(note.key);
+    expect(text).toContain('2');
+  });
 });

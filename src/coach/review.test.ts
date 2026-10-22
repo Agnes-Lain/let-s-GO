@@ -18,6 +18,7 @@ import {
   SWING_PLAYOUTS,
   SWING_POSITIONS,
   SWING_THRESHOLD,
+  atariSince,
   buildReview,
   evaluatePosition,
   planReview,
@@ -115,7 +116,7 @@ describe('reviewMoments: capture moments (AC 26, 31)', () => {
         kind: 'lostGroup',
         ply: 32,
         point: parseVertex('b1', 9),
-        note: { key: 'coach.review.lostGroup', params: { n: 32, k: 4, count: 1 } },
+        note: { key: 'coach.review.lostGroup.since', params: { n: 32, k: 4, m: 30 } },
       },
     ]);
   });
@@ -138,6 +139,31 @@ describe('reviewMoments: capture moments (AC 26, 31)', () => {
   it('single-stone captures are not moments', () => {
     const moves = movesOf([...QUIET, 'b1', 'a1', 'a2']);
     expect(reviewMoments(planReview(moves, KOMI, 1), null)).toEqual([]);
+  });
+});
+
+describe('lostGroup: in atari since (QA)', () => {
+  it('the four stones were in atari since move 30 (White a1); unchanged at 31', () => {
+    const plan = planReview(LOST_FOUR, KOMI, 1);
+    const stones = ['b1', 'c1', 'd1', 'e1'].map((v) => parseVertex(v, 9));
+    expect(atariSince(plan.states, 32, stones)).toBe(30);
+  });
+
+  it('a group that became this group in atari on the move before: "one move before"', () => {
+    // 2 . O O O O . . . .     Black b1 c1 d1 (in atari since White a1, move 30) extends to e1
+    // 1 O X X X * . . . .     (move 31): a new 4-stone group in atari; White f1 takes it (32).
+    const moves = movesOf([
+      ...QUIET,
+      ...['b1', 'b2', 'c1', 'c2', 'd1', 'd2', 'b8', 'e2', 'd8', 'a1', 'e1', 'f1'],
+    ]);
+    expect(reviewMoments(planReview(moves, KOMI, 1), null)).toEqual([
+      {
+        kind: 'lostGroup',
+        ply: 32,
+        point: parseVertex('b1', 9),
+        note: { key: 'coach.review.lostGroup.oneMove', params: { n: 32, k: 4 } },
+      },
+    ]);
   });
 });
 

@@ -102,6 +102,21 @@ describe('Hint 提示 (AC 17–20)', () => {
     expect(diamonds()).toHaveLength(0);
   });
 
+  it('QA blocker: plural notes and hints render their text, not the raw key', async () => {
+    // Math.random is mocked, so the seed and the Easy bot's replies are fixed: after these moves
+    // the hint is an atari (plural key coach.hint.atari), and playing it gives coach.you.atari.
+    await openGame(1);
+    for (const v of ['c3', 'e3', 'd3', 'g3', 'f3', 'g5']) {
+      await tapBoard(v);
+      await advance(BOT_DELAY_MS + 50);
+    }
+    await press('game9-hint');
+    expect(label('practice-feedback')).toBe('This puts 1 white stone in atari.');
+    await tapBoard('f4');
+    expect(label('practice-feedback')).toMatch(/^You put 1 stone at [a-j]\d in atari\.$/);
+    expect(label('practice-feedback')).not.toMatch(/coach\./);
+  });
+
   it('AC 20: Challenge has 1; then "· 0", disabled, "No hints left", still ≥ 44 px', async () => {
     await openGame(3);
     await press('game9-hint');
