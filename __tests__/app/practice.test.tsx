@@ -38,6 +38,8 @@ beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(true);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
   (playStoneSound as jest.Mock).mockClear();
   await act(() => setLanguageChoice('en'));
 });

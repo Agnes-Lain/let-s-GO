@@ -24,6 +24,8 @@ async function renderHome(language: Language) {
 
 beforeEach(() => {
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
 });
 afterEach(async () => {
   await act(() => setLanguageChoice('system'));
@@ -38,6 +40,9 @@ describe('Home screen (M0 copy)', () => {
     expect(screen.getByText('学习路线')).toBeOnTheScreen();
     expect(screen.getByText('第 1 单元')).toBeOnTheScreen();
     expect(screen.getByText('棋盘与棋子')).toBeOnTheScreen();
+    // M6-settings §4.8: open modules 2 and 3 (collapsed for a new learner).
+    await fireEvent.press(screen.getByTestId('home-module-2'));
+    await fireEvent.press(screen.getByTestId('home-module-3'));
     // M5 item 1: Units 7–9 have content; only Unit 10 is "coming soon" (plus the footer).
     // M5 item 4: Units 12–14 ship; no unit is "coming soon", only the footer stays.
     expect(screen.queryAllByText('即将开放')).toHaveLength(0);
@@ -53,6 +58,9 @@ describe('Home screen (M0 copy)', () => {
     ).toBeOnTheScreen();
     expect(screen.getByText('Learning path')).toBeOnTheScreen();
     expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
+    // M6-settings §4.8: open modules 2 and 3 (collapsed for a new learner).
+    await fireEvent.press(screen.getByTestId('home-module-2'));
+    await fireEvent.press(screen.getByTestId('home-module-3'));
     await act(() => setLanguageChoice('fr'));
     expect(screen.getByText("Parcours d'apprentissage")).toBeOnTheScreen();
     expect(screen.getByText('Plateau et pierres · 棋盘 qípán')).toBeOnTheScreen();

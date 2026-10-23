@@ -1,26 +1,36 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
   ContinueCard,
   LockedSnackbar,
-  UnitPath,
+  ModulePath,
   useHomeMap,
   useLockedSnackbar,
 } from '@/exercises/UnitMap';
 import { Game9Card } from '@/game9/ui/Game9Card';
+import { shouldShowOnboarding, useProgress } from '@/store';
 import { GearIcon } from '@/theme/icons';
 import { Screen, TopBar } from '@/theme/Screen';
 import { color, radius, spacing, stone, tapTarget, typography } from '@/theme/tokens';
 
-/** Home = the learning-path map (spec §6.1). The map rows come from src/lessons. */
+/** Home text may grow up to 200 % (M6-settings AC 42). */
+const TEXT_SCALE = 2;
+
+/**
+ * Home = the learning-path map (spec §6.1), grouped in three modules (M6-settings §4.8). The map
+ * rows come from src/lessons. A fresh install goes to the intro first (M6-settings AC 25).
+ */
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const map = useHomeMap();
   const snackbar = useLockedSnackbar();
+  const firstLaunch = useProgress(shouldShowOnboarding);
   const open = (lessonId: string) => router.push(`/lesson/${lessonId}`);
+
+  if (firstLaunch) return <Redirect href="/onboarding" />;
 
   return (
     <Screen backdrop="home">
@@ -41,10 +51,12 @@ export default function HomeScreen() {
           <View style={[styles.stone, styles.blackStone]} />
           <View style={[styles.stone, styles.whiteStone]} />
         </View>
-        <Text style={styles.display} accessibilityRole="header">
+        <Text style={styles.display} accessibilityRole="header" maxFontSizeMultiplier={TEXT_SCALE}>
           {t('app.name')}
         </Text>
-        <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+        <Text style={styles.subtitle} maxFontSizeMultiplier={TEXT_SCALE}>
+          {t('home.subtitle')}
+        </Text>
 
         <View style={styles.continueSlot}>
           {!map.hydrated && map.hasContent ? (
@@ -59,21 +71,28 @@ export default function HomeScreen() {
           ) : null}
         </View>
 
-        <Text style={styles.sectionTitle} accessibilityRole="header">
+        {/* One header per screen (AC 36): the section title is plain text. */}
+        <Text style={styles.sectionTitle} maxFontSizeMultiplier={TEXT_SCALE}>
           {t('home.path.title')}
         </Text>
-        <UnitPath rows={map.rows} hydrated={map.hydrated} onOpen={open} onLocked={snackbar.show} />
-        {map.hydrated && map.hasContent ? (
-          <View style={styles.game9}>
-            <Game9Card onOpen={() => router.push('/game')} onLocked={snackbar.show} />
-          </View>
-        ) : null}
+        <ModulePath
+          rows={map.rows}
+          hydrated={map.hydrated}
+          onOpen={open}
+          onLocked={snackbar.show}
+        />
+        {/* Outside the modules, always visible and open from the start (AC 61). */}
+        <View style={styles.game9}>
+          <Game9Card onOpen={() => router.push('/game')} />
+        </View>
         {map.hydrated && map.hasContent && !map.next ? (
-          <Text style={styles.caption} testID="home-all-done">
+          <Text style={styles.caption} testID="home-all-done" maxFontSizeMultiplier={TEXT_SCALE}>
             {t('home.allDone')}
           </Text>
         ) : null}
-        <Text style={styles.caption}>{t('home.moreSoon')}</Text>
+        <Text style={styles.caption} maxFontSizeMultiplier={TEXT_SCALE}>
+          {t('home.moreSoon')}
+        </Text>
       </ScrollView>
       <LockedSnackbar visible={snackbar.visible} />
     </Screen>

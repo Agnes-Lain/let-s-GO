@@ -21,5 +21,8 @@ export function showEasierTip(bots: BotProgress, flags: ProgressFlags): boolean 
   return (['2', '3'] as const).some((key) => (bots[key]?.lossStreak ?? 0) >= LOSSES_BEFORE_TIP);
 }
 
-/** The Home card unlocks with ≥ 1 star on Unit 14's lesson (AC 14). */
+/**
+ * Unit 14's lesson: its result screen offers "Play 9×9". The Home card no longer waits for it
+ * (open from the start since M6-settings AC 61).
+ */
 export const UNLOCK_LESSON = 'u14-end';

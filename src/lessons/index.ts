@@ -56,3 +56,12 @@ export {
   type StepMarker,
 } from './explain';
 export { mapRows, nodeTitleKey, type MapRow, type NodeState } from './map';
+export {
+  MODULES,
+  defaultExpandedModules,
+  moduleOf,
+  moduleSummaries,
+  type ModuleDef,
+  type ModuleId,
+  type ModuleSummary,
+} from './modules';

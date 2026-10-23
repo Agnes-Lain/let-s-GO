@@ -38,6 +38,8 @@ const label = (testID: string) => screen.getByTestId(testID).props.accessibility
 beforeEach(async () => {
   jest.useFakeTimers();
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(() => {

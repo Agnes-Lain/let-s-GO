@@ -29,6 +29,8 @@ beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(true);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
   // Unit 6 opens after 1★ on Unit 5 (AC 59).
   for (const id of ['u01-board', 'u02-liberties', 'u03-connection', 'u04-capture', 'u05-atari']) {
     progressStore.getState().record(id, ['clean']);

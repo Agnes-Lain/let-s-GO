@@ -1,16 +1,35 @@
-// Home learning path (spec §6.1): Continue card, unit nodes on a vertical path, snackbar.
+// Home learning path (spec §6.1): Continue card, unit nodes on a vertical path, snackbar; since
+// M6-settings §4.8 the path is grouped in three collapsible modules.
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { getUnits, mapRows, nextNode, nodeTitleKey, type MapNode, type MapRow } from '@/lessons';
+import { useReduceMotion } from '@/board/useReduceMotion';
+import {
+  defaultExpandedModules,
+  getUnits,
+  mapRows,
+  moduleSummaries,
+  nextNode,
+  nodeTitleKey,
+  type MapNode,
+  type MapRow,
+  type ModuleId,
+  type ModuleSummary,
+} from '@/lessons';
 import { useProgress } from '@/store';
-import { ChevronIcon, LockIcon, PlayIcon, StarIcon } from '@/theme/icons';
+import { CheckIcon, ChevronIcon, LockIcon, PlayIcon, StarIcon } from '@/theme/icons';
 import { color, radius, spacing, stone, typography } from '@/theme/tokens';
 
 /** How long the "locked" snackbar stays (ms). */
 export const SNACKBAR_MS = 2500;
 const CARD_HEIGHT = 72;
+/** Module header height (AC 63). */
+export const MODULE_HEADER_HEIGHT = 64;
+/** Chevron turn when a module opens or closes (AC 64). */
+export const CHEVRON_TURN_MS = 120;
+/** Home text may grow up to 200 % (AC 42). */
+const TEXT_SCALE = 2;
 const DOT = 44;
 const SMALL_DOT = 28;
 
@@ -68,8 +87,10 @@ export function ContinueCard({
     >
       <PlayIcon color={color.onAccent} size={22} />
       <View style={styles.continueBody}>
-        <Text style={styles.continueLabel}>{label}</Text>
-        <Text style={styles.continueCaption} numberOfLines={1}>
+        <Text style={styles.continueLabel} maxFontSizeMultiplier={TEXT_SCALE}>
+          {label}
+        </Text>
+        <Text style={styles.continueCaption} numberOfLines={1} maxFontSizeMultiplier={TEXT_SCALE}>
           {caption}
         </Text>
       </View>
@@ -125,17 +146,27 @@ function NodeCard({
   const body = (
     <>
       <View style={styles.cardBody}>
-        <Text style={[styles.caption, dimmed && styles.dimText]} numberOfLines={1}>
+        <Text
+          style={[styles.caption, dimmed && styles.dimText]}
+          numberOfLines={1}
+          maxFontSizeMultiplier={TEXT_SCALE}
+        >
           {caption}
         </Text>
-        <Text style={[styles.title, dimmed && styles.dimText]} numberOfLines={2}>
+        <Text
+          style={[styles.title, dimmed && styles.dimText]}
+          numberOfLines={2}
+          maxFontSizeMultiplier={TEXT_SCALE}
+        >
           {title}
         </Text>
         {row.state === 'done' ? <Stars stars={row.stars} /> : null}
         {row.state === 'soon' ? (
           // M4 decision 1: the badge sits on its own line under the title (long fr/zh titles).
           <View style={styles.badge} testID={`home-badge-${row.key}`}>
-            <Text style={styles.badgeLabel}>{t('home.unit.comingSoon')}</Text>
+            <Text style={styles.badgeLabel} maxFontSizeMultiplier={TEXT_SCALE}>
+              {t('home.unit.comingSoon')}
+            </Text>
           </View>
         ) : null}
       </View>
@@ -223,6 +254,168 @@ export function UnitPath({
   );
 }
 
+/**
+ * Which modules are open (AC 57, 58): until progress is read, module 1 (as a skeleton); then the
+ * default once (the Continue target's module). Toggles live in the screen only and are kept while
+ * Home stays mounted; the default never moves what the learner toggled.
+ */
+export function useModuleToggles(rows: readonly MapRow[], hydrated: boolean) {
+  const [defaults, setDefaults] = useState<readonly ModuleId[] | null>(null);
+  const [toggled, setToggled] = useState<Partial<Record<ModuleId, boolean>>>({});
+  if (hydrated && defaults === null) setDefaults(defaultExpandedModules(rows));
+  const base = defaults ?? [1];
+  const isExpanded = (id: ModuleId) => toggled[id] ?? base.includes(id);
+  return {
+    isExpanded,
+    toggle: (id: ModuleId) => setToggled((t) => ({ ...t, [id]: !isExpanded(id) })),
+  };
+}
+
+function ModuleChevron({ expanded, reduceMotion }: { expanded: boolean; reduceMotion: boolean }) {
+  const [turn] = useState(() => new Animated.Value(expanded ? 1 : 0));
+  useEffect(() => {
+    if (reduceMotion) {
+      turn.setValue(expanded ? 1 : 0);
+      return;
+    }
+    const animation = Animated.timing(turn, {
+      toValue: expanded ? 1 : 0,
+      duration: CHEVRON_TURN_MS,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [expanded, reduceMotion, turn]);
+  const rotate = turn.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] });
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }} testID="home-module-chevron">
+      <ChevronIcon color={color.textSecondary} size={20} />
+    </Animated.View>
+  );
+}
+
+export function ModuleHeader({
+  summary,
+  expanded,
+  onToggle,
+  reduceMotion = true,
+}: {
+  summary: ModuleSummary;
+  expanded: boolean;
+  onToggle: () => void;
+  /** Turn the chevron at once (AC 64). */
+  reduceMotion?: boolean;
+}) {
+  const { t } = useTranslation();
+  const { module, done, total, locked } = summary;
+  const label = t('home.module.label', { n: module.id });
+  const title = t(module.titleKey);
+  const units = t('home.module.units', { from: module.from, to: module.to });
+  const progress = t('home.module.progress', { done, total });
+  const a11y = [
+    t('home.module.a11y', { label, title, units, progress }),
+    locked ? t('home.module.a11y.locked') : '',
+  ]
+    .filter(Boolean)
+    .join(t('board.a11y.separator'));
+  const finished = total > 0 && done === total;
+  return (
+    <Pressable
+      testID={`home-module-${module.id}`}
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityLabel={a11y}
+      accessibilityState={{ expanded }}
+      style={({ pressed }) => [styles.moduleHeader, pressed && styles.pressed]}
+    >
+      <View style={styles.moduleIcons} aria-hidden>
+        <ModuleChevron expanded={expanded} reduceMotion={reduceMotion} />
+      </View>
+      <View style={styles.moduleBody}>
+        <View style={styles.moduleTitleRow}>
+          <Text
+            style={[styles.moduleLabel, locked && styles.dimText]}
+            maxFontSizeMultiplier={TEXT_SCALE}
+          >
+            {label}
+          </Text>
+          {locked ? (
+            <View style={styles.moduleLock} aria-hidden testID={`home-module-${module.id}-lock`}>
+              <LockIcon color={color.textSecondary} size={16} />
+              <Text style={styles.moduleLockText} maxFontSizeMultiplier={TEXT_SCALE}>
+                {t('home.module.locked')}
+              </Text>
+            </View>
+          ) : finished ? (
+            <View aria-hidden testID={`home-module-${module.id}-check`}>
+              <CheckIcon color={color.success} size={16} />
+            </View>
+          ) : null}
+        </View>
+        <Text
+          style={[styles.moduleTitle, locked && styles.dimText]}
+          numberOfLines={2}
+          maxFontSizeMultiplier={TEXT_SCALE}
+        >
+          {title}
+        </Text>
+        <Text style={styles.moduleMeta} maxFontSizeMultiplier={TEXT_SCALE}>
+          {`${units} · ${progress}`}
+        </Text>
+        <View style={styles.moduleBar} aria-hidden testID={`home-module-${module.id}-bar`}>
+          <View
+            style={[styles.moduleBarFill, { width: `${total > 0 ? (done / total) * 100 : 0}%` }]}
+          />
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+/** The three modules, each a header plus (when open) its rows (AC 56–64). */
+export function ModulePath({
+  rows,
+  hydrated,
+  onOpen,
+  onLocked,
+}: {
+  rows: readonly MapRow[];
+  hydrated: boolean;
+  onOpen: (lessonId: string) => void;
+  onLocked: () => void;
+}) {
+  const summaries = useMemo(() => moduleSummaries(rows), [rows]);
+  const { isExpanded, toggle } = useModuleToggles(rows, hydrated);
+  const reduceMotion = useReduceMotion();
+  return (
+    <View style={styles.modules}>
+      {summaries.map((summary) => {
+        const expanded = isExpanded(summary.module.id);
+        return (
+          <View key={summary.module.id} style={styles.module}>
+            <ModuleHeader
+              summary={summary}
+              expanded={expanded}
+              onToggle={() => toggle(summary.module.id)}
+              reduceMotion={reduceMotion}
+            />
+            {expanded && summary.rows.length > 0 ? (
+              <View style={styles.moduleRows} testID={`home-module-${summary.module.id}-rows`}>
+                <UnitPath
+                  rows={summary.rows}
+                  hydrated={hydrated}
+                  onOpen={onOpen}
+                  onLocked={onLocked}
+                />
+              </View>
+            ) : null}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 /** `show()` opens the "finish the previous unit" snackbar for ~2.5 s and announces it. */
 export function useLockedSnackbar() {
   const { t } = useTranslation();
@@ -247,7 +440,9 @@ export function LockedSnackbar({ visible }: { visible: boolean }) {
   if (!visible) return null;
   return (
     <View style={styles.snackbar} testID="home-snackbar" accessibilityLiveRegion="polite">
-      <Text style={styles.snackbarText}>{t('home.locked.hint')}</Text>
+      <Text style={styles.snackbarText} maxFontSizeMultiplier={TEXT_SCALE}>
+        {t('home.locked.hint')}
+      </Text>
     </View>
   );
 }
@@ -324,6 +519,46 @@ const styles = StyleSheet.create({
     borderRadius: DOT / 2,
     backgroundColor: color.border,
     opacity: 0.35,
+  },
+  modules: { gap: spacing.md },
+  module: {
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+  },
+  moduleHeader: {
+    minHeight: MODULE_HEADER_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  moduleIcons: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
+  moduleBody: { flex: 1, minWidth: 0, gap: 2 },
+  moduleTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  moduleLabel: { ...typography.caption, color: color.textSecondary },
+  moduleLock: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  moduleLockText: { ...typography.caption, color: color.textSecondary },
+  moduleTitle: { ...typography.label, color: color.textPrimary },
+  moduleMeta: { ...typography.caption, color: color.textSecondary },
+  moduleBar: {
+    height: 4,
+    marginTop: spacing.xs,
+    borderRadius: 2,
+    backgroundColor: color.border,
+    overflow: 'hidden',
+  },
+  moduleBarFill: { height: 4, backgroundColor: color.accent },
+  moduleRows: {
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: color.border,
+    paddingTop: spacing.sm,
+    backgroundColor: color.background,
   },
   snackbar: {
     position: 'absolute',

@@ -2,6 +2,7 @@
 // rule-free; runners ask here whether a move is legal and what it did.
 import {
   checkMove,
+  createGame,
   legalMoves,
   pass,
   play,
@@ -79,4 +80,14 @@ export function applyGameMove(
 /** Whether `state.toPlay` has a legal point to play. */
 export function hasLegalPoint(state: GameState): boolean {
   return legalMoves(state).length > 0;
+}
+
+/** The intro's empty 5×5 practice board, Black to play (M6-settings AC 29–30). */
+export function touchDemoGame(): GameState {
+  return createGame(5);
+}
+
+/** Plays on the practice board; colours alternate, legality comes from the engine (AC 30). */
+export function playTouchDemo(state: GameState, point: Point): PlayResult {
+  return play(state, point);
 }

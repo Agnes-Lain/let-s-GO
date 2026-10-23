@@ -115,6 +115,13 @@ export interface GoBoardProps {
   lastCapture?: CaptureEvent | null;
   /** Stone sound on/off. Default true; plays only when a stone appears. */
   sound?: boolean;
+  /**
+   * Announce each new stone to the screen reader (`board.a11y.played`). Default true; screens that
+   * announce moves themselves pass false, so a move is heard once (M6-settings AC 38).
+   */
+  announce?: boolean;
+  /** Overrides the board's own screen-reader label (stone counts), e.g. a practice-board label. */
+  accessibilityLabel?: string;
   highlights?: readonly Highlight[];
   markers?: readonly Marker[];
   testID?: string;
@@ -174,6 +181,8 @@ export function GoBoard({
   lastMove = null,
   lastCapture = null,
   sound = true,
+  announce = true,
+  accessibilityLabel,
   highlights = NO_HIGHLIGHTS,
   markers = NO_MARKERS,
   testID = 'go-board',
@@ -196,11 +205,13 @@ export function GoBoard({
 
   const rootStyle = side === null ? styles.rootUnmeasured : { width: side, height: side };
   const validStones = stonesValid ? stones : NO_STONES;
-  const label = t('board.a11y.label', {
-    size,
-    black: validStones.filter((c) => c === 'B').length,
-    white: validStones.filter((c) => c === 'W').length,
-  });
+  const label =
+    accessibilityLabel ??
+    t('board.a11y.label', {
+      size,
+      black: validStones.filter((c) => c === 'B').length,
+      white: validStones.filter((c) => c === 'W').length,
+    });
 
   return (
     <View
@@ -229,6 +240,7 @@ export function GoBoard({
           lastCapture={lastCapture}
           sound={sound}
           screenReader={screenReader}
+          announce={announce}
         />
       ) : null}
     </View>
@@ -260,6 +272,7 @@ interface DrawingProps {
   lastCapture: CaptureEvent | null;
   sound: boolean;
   screenReader: boolean;
+  announce: boolean;
 }
 
 const sameCells = (a: readonly (Color | null)[], b: readonly (Color | null)[]) =>
@@ -286,6 +299,7 @@ function BoardDrawing({
   lastCapture,
   sound,
   screenReader,
+  announce,
 }: DrawingProps) {
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
@@ -394,7 +408,7 @@ function BoardDrawing({
   useEffect(() => {
     const before = previous.current;
     previous.current = { stones, captureId: lastCapture?.id ?? null };
-    if (!screenReader || !lastMove) return;
+    if (!screenReader || !announce || !lastMove) return;
     const index = lastMove.y * size + lastMove.x;
     const placed = stones[index];
     if (!placed || before.stones[index] != null) return; // not a new stone (e.g. undo)
@@ -403,7 +417,7 @@ function BoardDrawing({
       parts.push(t('board.a11y.captured', { count: lastCapture.points.length }));
     }
     AccessibilityInfo.announceForAccessibility(parts.join(t('board.a11y.separator')));
-  }, [stones, lastMove, lastCapture, screenReader, size, t]);
+  }, [stones, lastMove, lastCapture, screenReader, announce, size, t]);
 
   // ---- Sound: only when a stone actually appears (not mount, undo, reset, illegal move) ----
   const soundBefore = useRef(stones);

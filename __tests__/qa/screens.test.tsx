@@ -7,6 +7,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { StyleSheet } from 'react-native';
 
+import { progressStore } from '@/store';
 import i18n, { setLanguageChoice, type Language } from '@/i18n';
 
 // Device locale: Canadian French, so "use device language" is distinguishable from zh-CN and en.
@@ -15,6 +16,8 @@ jest.mock('expo-localization', () => ({
 }));
 
 beforeEach(async () => {
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('system'));
 });
 
@@ -89,6 +92,8 @@ describe('Settings language round trip (AC23–AC25)', () => {
     await fireEvent.press(screen.getByRole('button', { name: '中文（简体）' }));
     await fireEvent.press(screen.getByRole('button', { name: '返回' }));
     expect(router.getPathname()).toBe('/');
+    // M6-settings §4.8: Unit 6 lives in module 2, collapsed for a new learner.
+    await fireEvent.press(screen.getByTestId('home-module-2'));
     for (const text of [
       "Let's GO",
       '从零开始，一步一步学会下围棋',
@@ -105,6 +110,8 @@ describe('Settings language round trip (AC23–AC25)', () => {
 
   it('Home in French shows every French text', async () => {
     await renderRouter('./app', { initialUrl: '/' });
+    // M6-settings §4.8: Unit 6 lives in module 2, collapsed for a new learner.
+    await fireEvent.press(screen.getByTestId('home-module-2'));
     for (const text of [
       "Let's GO",
       'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois',
