@@ -29,7 +29,7 @@ const GEAR_PATH = gearPath();
 
 export function GearIcon({ size = 24, color }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path d={GEAR_PATH} fill={color} fillRule="evenodd" />
     </Svg>
   );
@@ -42,7 +42,7 @@ export function ChevronIcon({
 }: IconProps & { direction?: 'left' | 'right' }) {
   const d = direction === 'right' ? 'M9 5 L16 12 L9 19' : 'M15 5 L8 12 L15 19';
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path
         d={d}
         stroke={color}
@@ -57,7 +57,7 @@ export function ChevronIcon({
 
 export function CheckIcon({ size = 20, color }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path
         d="M5 12.5 L10 17.5 L19 7"
         stroke={color}
@@ -77,7 +77,7 @@ function StrokeIcon({
   width = 2.2,
 }: IconProps & { d: string; width?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path
         d={d}
         stroke={color}
@@ -101,7 +101,7 @@ export function ReplayIcon(props: IconProps) {
 
 export function LockIcon({ size = 20, color }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path
         d="M8 10 V7.5 A4 4 0 0 1 16 7.5 V10"
         stroke={color}
@@ -120,7 +120,7 @@ const STAR_PATH =
 /** Filled star, or an outline when `filled` is false. */
 export function StarIcon({ size = 20, color, filled = true }: IconProps & { filled?: boolean }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path
         d={STAR_PATH}
         fill={filled ? color : 'none'}
@@ -134,7 +134,7 @@ export function StarIcon({ size = 20, color, filled = true }: IconProps & { fill
 
 export function PlayIcon({ size = 20, color }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    <Svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <Path d="M7 4.5 L19.5 12 L7 19.5 Z" fill={color} />
     </Svg>
   );

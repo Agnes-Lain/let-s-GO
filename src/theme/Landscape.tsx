@@ -25,8 +25,10 @@ export function Landscape({ variant = 'home' }: LandscapeProps) {
       testID={`landscape-${variant}`}
       style={StyleSheet.absoluteFill}
       pointerEvents="none"
-      accessible={false}
+      // Decorative: hidden from screen readers without the `accessible` false prop, which
+      // react-native-web would pass to the DOM (M6-beginner-friendly AC 43).
       aria-hidden
+      accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >
       <Svg width="100%" height={MIST_HEIGHT[variant]} style={styles.mist}>
