@@ -32,13 +32,18 @@ describe('coach copy (AC 11, 36)', () => {
     }
   });
 
+  // PO 2026-10-23: Chinese + pinyin only for Weiqi terms (气 qì); everyday labels (Hint, Review) stay plain.
   it.each(Object.keys(files))(
-    '%s: 提示 tíshì, 复盘 fùpán and 气 qì come with pinyin',
+    '%s: 气 qì keeps its pinyin; Hint and Review are plain words',
     (language) => {
       const file = files[language];
-      expect(file['coach.hint.button']).toContain('提示 tíshì');
-      expect(file['coach.review.button']).toContain('复盘 fùpán');
       expect(file['coach.you.selfAtari_one']).toContain('气 qì');
+      for (const key of ['coach.hint.button', 'coach.hint.buttonFree', 'coach.review.button']) {
+        const text = file[key].replace(/\{\{\w+\}\}/g, '');
+        if (language === 'zh-CN')
+          expect({ key, text }).toEqual({ key, text: text.replace(/[a-zà-ü]/gi, '') });
+        else expect({ key, text }).toEqual({ key, text: text.replace(/[\u4e00-\u9fff]/g, '') });
+      }
     },
   );
 

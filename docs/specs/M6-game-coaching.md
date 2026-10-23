@@ -82,7 +82,7 @@ shows only the **single highest-priority fact** of that ply. Priority (high to l
 
 ### 4.3 Hint 提示 tíshì
 Hint count per game by level (PO 2026-10-23): **Easy and Normal: no limit; Challenge: 3.** Without a limit the button shows
-no count ("Hint 提示 tíshì"); on Challenge it shows the count left ("Hint 提示 tíshì · 3").
+no count ("Hint"); on Challenge it shows the count left ("Hint · 3").
 17. Given the learner's turn in `playing`, When they tap *Hint 提示*, Then the engine computes `scoreMoves(state)` (level-2 scorer,
     deterministic, no randomness) and the best-scored move is shown: a marker on that point and one reason line. `hintsLeft` drops by 1.
 18. Given the hint is showing, When the learner taps Hint again, Then nothing changes and no use is consumed (the hint stays).
@@ -200,12 +200,12 @@ no error shown). Result screen shows primary *Review 复盘*, secondary *New gam
 | `coach.you.selfAtari` | 小心:{{pt}}只剩一口气 | Careful: your stone at {{pt}} has one liberty (气 qì) left. | Attention : votre pierre en {{pt}} n'a plus qu'une liberté (气 qì). |
 | `coach.you.escape` | 你的子逃出了叫吃 | Your group escaped the atari. | Votre groupe a échappé à l'atari. |
 | `coach.you.exposed` | 你{{pt}}处的子只剩一口气 | Your group at {{pt}} has one liberty left. | Votre groupe en {{pt}} n'a plus qu'une liberté. |
-| `coach.hint.button` | 提示 tíshì · {{n}} | Hint 提示 tíshì · {{n}} | Indice 提示 tíshì · {{n}} |
-| `coach.hint.buttonFree` | 提示 tíshì | Hint 提示 tíshì | Indice 提示 tíshì |
+| `coach.hint.button` | 提示 · {{n}} | Hint · {{n}} | Indice · {{n}} |
+| `coach.hint.buttonFree` | 提示 | Hint | Indice |
 | `coach.hint.capture` | 这手能吃{{n}}子 | This captures {{n}} stone(s). | Ce coup capture {{n}} pierre(s). |
 | `coach.hint.save` | 这手救出被叫吃的棋 | This saves your group in atari. | Ce coup sauve votre groupe en atari. |
 | `coach.hint.territory` | 这手占地盘 | This claims space (territory). | Ce coup prend du terrain. |
-| `coach.review.button` | 复盘 fùpán | Review 复盘 fùpán | Revue 复盘 fùpán |
+| `coach.review.button` | 复盘 | Review | Revue |
 | `coach.review.quiet` | 这盘很平静,没有大事件 | A quiet game. No big moments. | Une partie calme. Pas de grand moment. |
 | `coach.review.swing` | 第{{n}}手:你在{{pt}}落子后,{{reply}} | Move {{n}}: after your move at {{pt}}, {{reply}} | Coup {{n}} : après votre coup en {{pt}}, {{reply}} |
 Plurals via i18next `_one/_other` (fr/en); zh has none.
@@ -284,3 +284,9 @@ non-9×9 boards; sounds for notes.
    (`coach.review.lostGroup.oneMove`) when m = n − 1 (`atariSince` in `src/coach/review.ts`).
 9. **QA round 1 fixes.** Integer note params stay numbers (`formatParams`), so i18next picks `_one/_other` (plural coach texts
    showed raw keys). fr review caption shortened to « Partie abandonnée » and allowed to wrap.
+
+## 12c. PO changes after review (2026-10-23)
+- Hints: Easy and Normal unlimited (button shows no count), Challenge 3.
+- Chinese + pinyin in en/fr only for Weiqi terms that the lessons teach (气 qì, 弃权 qìquán, 数子 shùzǐ, 单官 dānguān).
+  Everyday words are plain: Play 9×9, Easy / Normal / Challenge, Hint, Review, Resign. zh-CN buttons have no pinyin
+  (提示, 复盘). This replaces the "提示 tíshì / 复盘 fùpán with pinyin" copy rule above (AC 36 parity unchanged).

@@ -315,12 +315,12 @@ Optional follow-up (not now): lesson `u15-first-game` as a thin wrapper node on 
 ## 9. i18n keys (all three languages; first use = Chinese term + pinyin)
 | Key | zh-CN | en | fr |
 |---|---|---|---|
-| game.entry.title | 九路对弈 | Play 9×9 · 九路对弈 jiǔlù duìyì | Jouer en 9×9 · 九路对弈 jiǔlù duìyì |
+| game.entry.title | 九路对弈 | Play 9×9 | Jouer en 9×9 |
 | game.entry.locked | 先完成第 14 课 | Finish Unit 14 first | Terminez d'abord l'unité 14 |
 | game.picker.title | 选择对手 | Choose your opponent | Choisissez votre adversaire |
-| game.level.1 | 入门 | Easy · 入门 rùmén | Facile · 入门 rùmén |
-| game.level.2 | 普通 | Normal · 普通 pǔtōng | Normal · 普通 pǔtōng |
-| game.level.3 | 挑战 | Challenge · 挑战 tiǎozhàn | Défi · 挑战 tiǎozhàn |
+| game.level.1 | 入门 | Easy | Facile |
+| game.level.2 | 普通 | Normal | Normal |
+| game.level.3 | 挑战 | Challenge | Défi |
 | game.level.1.desc | 下得简单，会原谅你的错 | Plays simply and forgives mistakes | Joue simplement et pardonne les erreurs |
 | game.level.2.desc | 会救自己的子，也会吃你的子 | Saves its stones and captures yours | Sauve ses pierres et capture les vôtres |
 | game.level.3.desc | 会在脑中试下许多局 | Tries many games in its head | Essaie beaucoup de parties dans sa tête |
@@ -340,7 +340,7 @@ Optional follow-up (not now): lesson `u15-first-game` as a thin wrapper node on 
 | game.passExplain | 觉得没有有用的点了，就弃权。双方连续弃权，对局结束。 | Pass when you think nothing useful is left. Two passes in a row end the game. | Passez quand il ne reste rien d'utile. Deux passes de suite terminent la partie. |
 | game.countNow.ask | 请机器人也弃权并数子？ | Ask the bot to pass and count the board? | Demander au robot de passer et compter le plateau ? |
 | game.countNow.atari | 有些棋子被叫吃；只有确定救不活才标为死子。 | Some stones are in atari; mark them dead only if they cannot be saved. | Certaines pierres sont en atari ; ne les marquez mortes que si on ne peut pas les sauver. |
-| game.resign.ask | 确定认输吗？ | Resign · 认输 rènshū: end this game? | Abandonner · 认输 rènshū : arrêter cette partie ? |
+| game.resign.ask | 确定认输吗？ | Resign: end this game? | Abandonner : arrêter cette partie ? |
 | game.keepPlaying | 继续下 | Keep playing | Continuer |
 | game.mark.prompt | 点出双方的死子，然后点“完成”。 | Tap the dead stones of both sides. Then tap Done. | Touchez les pierres mortes des deux camps, puis « Terminé ». |
 | game.mark.done | 完成 | Done | Terminé |

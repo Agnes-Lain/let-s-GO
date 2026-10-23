@@ -280,8 +280,19 @@ describe('Game screen (AC 16–24, 38)', () => {
         exact: false,
       });
       if (lang !== 'zh-CN') {
+        // PO 2026-10-23: pass 弃权 is a Weiqi term (keeps Chinese); resign and the levels are plain words.
         expect(dict['game9.pass.title']).toContain('弃权 qìquán');
-        expect(dict['game9.resign.ask']).toContain('认输 rènshū');
+        for (const key of [
+          'game9.resign.ask',
+          'game9.level.1',
+          'game9.level.2',
+          'game9.level.3',
+          'game9.entry.title',
+        ])
+          expect({ key, text: dict[key] }).toEqual({
+            key,
+            text: dict[key].replace(/[\u4e00-\u9fff]/g, ''),
+          });
       }
     },
   );
