@@ -1,6 +1,6 @@
 # M6 — Beginner-friendly 9×9 (handicap, take-back, atari rings, softer Easy)
 
-Status: DRAFT for PO approval. Builds on `docs/specs/M6-bot-levels.md` (called "bot-levels spec" below; its §12b has the
+Status: PO-approved 2026-10-23 (all §13 defaults accepted). Builds on `docs/specs/M6-bot-levels.md` (called "bot-levels spec" below; its §12b has the
 measured win rates). Chinese rules (area scoring), simple ko. Pure logic stays in `src/game9` / `src/bot` (no React in them).
 
 ## 0. In plain words
@@ -98,7 +98,6 @@ Facts come only from `groupAt` / engine group data: a group is "in atari" iff `g
    The coordinates are the engine's formatted points (uppercase letter + row number from the bottom, same as the board labels).
 34. Given an illegal-move reason is active (the learner just tapped an illegal point), Then it replaces the atari line until the next tap or move; otherwise the atari line beats the capture note ("You captured 2" / "The bot captured 1") and the "bot passed" note. (This is the slot priority both specs must agree on, §8.)
 35. Given a screen reader, Then the atari line is announced politely (live region) when it appears, and the stone point labels of stones in a danger group end with "in atari" (`game9.a11y.atari`).
-44. Given the atari line is shown for a learner group G and the coach would also show a fact of kind `exposed` or `selfAtari` about G, or the bot's `atari` fact whose `point` is a stone of G, Then that coach fact is not shown (only the atari line); coach facts about other groups or of other kinds (`capture`, `escape`) still show below it. Test with the §5.3 diagram A position after White's D5.
 36. Given the 3 ring colours and mood, Then no new colour token is added; rings use only `src/theme/tokens.ts`; no leaf/petal motif; reduced motion has no effect (rings are static).
 
 ### 4.4 Softer Easy (tuning, `src/bot`, `src/game9/config.ts`)
@@ -115,6 +114,9 @@ Level 1 on 9×9 (option `board9`) gets two new mistakes, both only when `board9`
 
 ### 4.5 Console warning
 43. Given the app running on web in development, When the home screen, any lesson screen with the leave sheet, a 9×9 game with any sheet and a themed screen with the landscape backdrop are opened, Then the console shows no warning "Received `false` for a non-boolean attribute `accessible`". Fix at `src/theme/Landscape.tsx:28`, `src/game9/ui/Sheet.tsx:46`, `src/exercises/LeaveSheet.tsx:32`: do not pass `accessible={false}` to elements that react-native-web renders as DOM nodes; hide the decorative backdrop / the dismiss area from the screen reader with `importantForAccessibility="no-hide-descendants"` / `accessibilityElementsHidden` / `aria-hidden` (or drop the prop where the element is a pure `View` with no handler). Native screen-reader behaviour stays as before (backdrop not announced; the dismiss area not a button stop). `npm run verify:web:m6` records console messages and fails on this text.
+
+### 4.6 Coaching dedupe (shared feedback slot, §8)
+44. Given the atari line is shown for a learner group G and the coach would also show a fact of kind `exposed` or `selfAtari` about G, or the bot's `atari` fact whose `point` is a stone of G, Then that coach fact is not shown (only the atari line); coach facts about other groups or of other kinds (`capture`, `escape`) still show below it. Test with the §5.3 diagram A position after White's D5.
 
 ## 5. Screen flow & UI (360×740)
 Home → Picker → Game → (Mark → Count →) Result. The only new screens are changes to the Picker, the button area and the feedback slot.
