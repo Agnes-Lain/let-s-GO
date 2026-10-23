@@ -86,8 +86,18 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `docs/screenshots/M6/`. **Pending PO:** Normal is stronger than §7 says (Sensible wins 20 %, target 50–60 %); Challenge 24 %
   (target 25–35 %). Not covered by tests: AC 40 (screen-reader announcements), AC 41 (reduced-motion delay). No game save in v1.
 
+- **M6 item 2** settings, onboarding, accessibility pass (branch `claude/m6-settings-onboarding-a11y-a32e0e`, PO-approved spec, QA READY, 4194 tests):
+  settings store `src/store/settings.ts` (language persisted, sound gate, reduce motion = OS OR app switch), Settings screen (Atari warnings
+  switch shared with the picker, erase progress with confirm sheet, `reset({keepFlags})`), 2-step intro `app/onboarding.tsx` (Welcome page +
+  touch demo, `onboardingSeen`, skipped for learners with progress, replay from Settings), developer sample `u00-sample` removed (fixture copy
+  in `src/lessons/__fixtures__/`), Home grouped in 3 collapsible modules (`src/lessons/modules.ts`), 9×9 card unlocked from the start (PO).
+  A11y: each move/feedback announced once (`GoBoard announce={false}` where the screen speaks), `expectAccessible` audit helper, `textScale`
+  caps, contrast tests, web `aria-*` on SwitchRow/module headers. Spec `docs/specs/M6-settings-onboarding-a11y.md` (§12a PO, §12b dev
+  deviations). Web check `npm run verify:web:m6s`; screenshots `docs/screenshots/M6/60-*`–`82-*`. **Pending PO:** iPhone checklist
+  `docs/specs/M6-a11y-device-checklist.md` (VoiceOver/TalkBack, Larger Text, OS Reduce Motion, sound).
+
 ## Next
-- M6 item 1 done. Next: M6 "Settings, onboarding, accessibility pass". Later: nets 枷 and multi-answer tsumego on the
+- M6 items 1, 1b, 1c, 2 done. Next: M6 "EAS Build, TestFlight / Play internal testing" (incl. the MMKV swap). Later: nets 枷 and multi-answer tsumego on the
   search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
