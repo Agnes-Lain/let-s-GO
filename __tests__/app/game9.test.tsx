@@ -123,7 +123,7 @@ describe('Level picker (AC 15, 34, 36, 37)', () => {
     expect(screen.getByTestId('game9-level-1').props.accessibilityState.selected).toBe(true);
     // M6-beginner-friendly §5.1: the handicap explanation replaced the "You play Black" caption.
     expect(screen.getByTestId('game9-handicap-explain')).toHaveTextContent(
-      'You play Black with 3 stones already placed. White moves first. Komi 0.5.',
+      'You play Black with 2 stones already placed. White moves first. Komi 0.5.',
     );
   });
 

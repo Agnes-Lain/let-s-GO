@@ -797,7 +797,6 @@
   "game9.level.beaten": "Beaten",
   "game9.picker.challengeBeaten": "Challenge beaten",
   "game9.tip.easier": "Try Easy for a warm-up?",
-  "game9.youBlack": "You play Black. Komi {{komi}}.",
   "game9.header": "{{level}} · Komi {{komi}}",
   "game9.move": "Move {{n}}",
   "game9.turn.you": "Your turn (Black).",

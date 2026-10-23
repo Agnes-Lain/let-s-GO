@@ -19,7 +19,7 @@ export const HANDICAP_KOMI = 0.5;
  * The first suggestion per level when nothing is stored (AC 9). From the tuning of §6: the
  * smallest n where the weak reference player Noob wins ≥ 60 % (5 when never reached).
  */
-export const STARTING_HANDICAP: Readonly<Record<BotLevel, Handicap>> = { 1: 3, 2: 4, 3: 5 };
+export const STARTING_HANDICAP: Readonly<Record<BotLevel, Handicap>> = { 1: 2, 2: 5, 3: 5 };
 
 export function isHandicap(value: unknown): value is Handicap {
   return HANDICAP_CHOICES.includes(value as Handicap);

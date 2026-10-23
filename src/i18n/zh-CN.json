@@ -797,7 +797,6 @@
   "game9.level.beaten": "已战胜",
   "game9.picker.challengeBeaten": "已战胜挑战",
   "game9.tip.easier": "先和入门热热身？",
-  "game9.youBlack": "你执黑，贴目 {{komi}}",
   "game9.header": "{{level}} · 贴目 {{komi}}",
   "game9.move": "第 {{n}} 手",
   "game9.turn.you": "轮到你（黑）",

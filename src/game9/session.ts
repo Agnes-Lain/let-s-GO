@@ -366,7 +366,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         thinking: false,
         // A fresh id and no captures: the board does not replay the old capture fade.
         last: snap.last ? { ...snap.last, id, captured: [], restored: true } : null,
-        note: { key: event.first ? 'game9.takeback.first' : 'game9.takeback.done' },
+        note: event.first ? { key: 'game9.takeback.first' } : { key: 'game9.takeback.done' },
         history: s.history.slice(0, -1),
         takebacksLeft: s.takebacksLeft === null ? null : s.takebacksLeft - 1,
         coach: coachAfter(s, []),

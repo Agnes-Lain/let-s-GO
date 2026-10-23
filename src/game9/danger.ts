@@ -59,13 +59,20 @@ export interface AtariLine {
 export function atariLine(groups: readonly DangerGroup[], learner: Color): AtariLine | null {
   if (groups.length === 0) return null;
   const [first] = groups;
-  const who = first.color === learner ? 'you' : 'bot';
-  const count = first.stones.length === 1 ? 'one' : 'many';
+  const own = first.color === learner;
+  const one = first.stones.length === 1;
+  const { key } = own
+    ? one
+      ? { key: 'game9.atari.you.one' }
+      : { key: 'game9.atari.you.many' }
+    : one
+      ? { key: 'game9.atari.bot.one' }
+      : { key: 'game9.atari.bot.many' };
   const listed = first.stones.slice(0, ATARI_LINE_MAX_POINTS).map(label);
   if (first.stones.length > ATARI_LINE_MAX_POINTS) listed.push('…');
   return {
     note: {
-      key: `game9.atari.${who}.${count}`,
+      key,
       params: { where: listed.join(', '), lib: label(first.liberty) },
     },
     more: groups.length - 1,

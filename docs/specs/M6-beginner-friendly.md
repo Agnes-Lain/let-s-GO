@@ -174,15 +174,17 @@ A: ring on D4, diamond on D3          B: dashed ring on G7, diamond on G6
 Adds one line under the margin: "Next time: 3 stones." and the button [Play again] stays first.
 
 ## 6. Tuning results (developer fills; keep rows short)
-`npm run tune:bot9`, seeds 1–100 × both colours, komi 5.5 (even) / 0.5 (handicap).
+`npm run tune:bot9`, komi 5.5 (even) / 0.5 (handicap). L1/L2 rows: seeds 1–100 (even: × both colours = 200 games; handicap: learner Black, 100 games). **L3 rows: seeds 1–25 only (noisy, ±10 %).**
 | Player vs bot | handicap | Sensible wins | Noob wins | target | OK |
 |---|---|---|---|---|---|
-| vs Easy | 0 | _ | _ | 90–95 % / Noob ≥ 50 % | |
-| vs Easy | 2,3,4,5 | _ | _ | Noob(4) ≥ 85 % | |
-| vs Normal | 0 | _ | _ | 50–60 % (≥ 40 % minimum) | |
-| vs Normal | 2,3,4,5 | _ | _ | report | |
-| vs Challenge | 0 / 4,5 | _ | _ | Sensible ≤ 40 % at 0 | |
-Final constants: `L1_BLUNDER_9 =`, `L1_SKIP_SAVE_9 =`, `L1_SKIP_ATARI_9 =`, `L2_SLIP_9 =`; first-time handicap table: Easy _, Normal _, Challenge _. Noob definition: _. Time per move: _ (unchanged expected).
+| vs Easy | 0 | 92.5 % | 80 % (as Black 72 %) | 90–95 % / Noob ≥ 50 % | yes |
+| vs Easy | 2 / 3 / 4 / 5 | 97 / 95 / 99 / 97 % | 87 / 92 / 93 / 96 % | Noob(4) ≥ 85 % | yes |
+| vs Normal | 0 | 57 % | 28 % | 50–60 % (≥ 40 % minimum) | yes |
+| vs Normal | 2 / 3 / 4 / 5 | 71 / 81 / 83 / 90 % | 38 / 47 / 51 / 64 % | report | — |
+| vs Challenge | 0 | 26 % (25 seeds) | 4 % (25 seeds) | Sensible ≤ 40 % | yes |
+| vs Challenge | 2 / 3 / 4 / 5 | 40 / 64 / 32 / 56 % (25 seeds) | 16 / 28 / 24 / 48 % (25 seeds) | report | — |
+Bot vs bot: L2 vs L1 90 % (≥ 80 %), L3 vs L2 82 % (≥ 65 %, 25 seeds), L3 vs L1 98 % (≥ 90 %, 25 seeds).
+Final constants: `L1_BLUNDER_9 = 0.6`, `L1_SKIP_SAVE_9 = 0.5`, `L1_SKIP_ATARI_9 = 0.5`, `L2_SLIP_9 = 0.7` (0.15 → Sensible 22 %, 0.5 → 37.5 %, 0.6 → 46 %, 0.7 → 57 %); first-time handicap table (smallest n ∈ {2…5} with Noob ≥ 60 %): **Easy 2, Normal 5, Challenge 5** (Challenge never reaches 60 %). Noob definition: level-1 rules of thumb, `blunder 0.25` (capture missed 12.5 %, any move 25 %), `skipSave 0.25`, `skipAtari 0`, never fills own eyes. Time per move: Easy 0.4 ms, Normal 0.6 ms mean (measured with 13 tuning processes in parallel; level 3 unchanged code).
 
 ## 7. Game design notes
 - Curve: handicap is the main difficulty dial, the bot level the second. A real first game should be ~80 % winnable with the suggested stones; each win removes one rung (5→4→3→2→even), each loss adds one. Beating Easy even is the "I can play Go" moment; Normal and Challenge follow the same ladder.
@@ -242,3 +244,18 @@ Move notes, hint button, game review (sibling spec); free handicap placement by 
 8. **Which line wins when several groups are in atari.** Default: your own stones first (safety), then the bigger group; every ring is still drawn, the line adds "+2 more in atari".
 9. **Softer Easy / Normal.** Default: Easy ignores a danger to its own stones 35 % of the time and misses a chance to attack 35 % of the time; goal "a competent beginner beats Easy 90–95 % of even games". Normal gets a 15 % "slip" to move from 20 % toward your original 50–60 % goal (success = at least 40 %). Alternative: leave Normal as it is.
 10. **Wins with take-backs.** Default: they count as wins and lower the handicap like any win.
+
+## 14. Dev deviations (developer, 2026-10-23)
+1. AC 43: the web warning came from `<Svg accessible={false}>` in `src/theme/icons.tsx` (react-native-svg passes it to `<svg>`); fixed there (`aria-hidden`) as well as in the three named files (`aria-hidden` + `accessibilityElementsHidden` + `importantForAccessibility`). Not yet checked in a dev web build (QA).
+2. Take-back plays no sound: the app has no stone-off sound and no new asset is allowed.
+3. zh-CN `game9.picker.handicap` is "让子" without pinyin (copy rule: zh-CN has no pinyin; the §9 table showed it).
+4. Extra key `game9.picker.stonesA11y` ("3 stones") for the chips' screen-reader labels.
+5. The card shows the atari line plus at most one more line (hint, else the latest coach note, else other notes) to fit the 96 px card; an illegal-move reason replaces everything.
+6. AC 44 dedupe drops facts about every learner group in atari (all ringed groups, §8 wording), not only the group of the line.
+7. Picker: the "You play Black. Komi 5.5." caption is removed (the explanation replaces it); the picker scrolls; level rows stay 72 px. Two existing tests changed accordingly (tap selects + Start, AC 7; caption → explanation).
+8. Progress: `recordGame(level, outcome, nextHandicap?)` stores the next suggestion computed by `nextHandicap` in src/game9 (a store test allows only zustand/@/lessons imports); invalid stored values fall back in `suggestedHandicap`.
+9. Level-1 skips use an rng derived from a 4th draw of the ply rng (board9 only); the first three draws are unchanged.
+10. `L2_SLIP_9 = 0.7` instead of the proposed 0.15 (tuning, §6).
+11. After a take-back the restored last move gets a new id, no capture fade, and is not re-announced.
+12. "Next time: …" sits under the result card, not inside it.
+13. Starting table rule taken over n ∈ {2…5}; Noob as Black even vs Easy (72 %) would also pass 60 %.
