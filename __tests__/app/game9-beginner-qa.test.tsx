@@ -127,3 +127,20 @@ describe('QA: the one feedback slot and take-back on the game screen', () => {
     expect(selected('game9-handicap-5')).toBe(true);
   });
 });
+
+describe('Atari hints switch (PO 2026-10-23)', () => {
+  it('is on by default; switched off on the picker, the game shows no rings and no atari line', async () => {
+    await openAt('/game');
+    expect(screen.getByTestId('game9-atari-hints').props.value).toBe(true);
+    await act(async () => {
+      fireEvent(screen.getByTestId('game9-atari-hints'), 'valueChange', false);
+    });
+    expect(progressStore.getState().flags.atariHintsOff).toBe(true);
+    await act(() => appRouter.push('/game/play?level=1'));
+    await settle();
+    // Same fixed seed as above: White d8 ends up in atari.
+    for (const v of ['e5', 'c8', 'e8', 'd9']) await playAndReply(v);
+    expect(ringIds()).toEqual([]);
+    expect(feedback()).not.toContain('can be captured');
+  });
+});

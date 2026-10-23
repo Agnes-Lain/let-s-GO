@@ -110,6 +110,8 @@ export interface GameSession {
   seed: number;
   /** Black stones placed before the game (让子 ràngzǐ, 0 = even game). */
   handicap: Handicap;
+  /** Danger rings + atari line on (the learner can switch them off on the picker). */
+  atariHints: boolean;
   learner: Color;
   bot: Color;
   game: GameState;
@@ -168,11 +170,17 @@ function newGame(handicap: Handicap): GameState {
   });
 }
 
-export function startSession(level: BotLevel, seed: number, handicap: Handicap = 0): GameSession {
+export function startSession(
+  level: BotLevel,
+  seed: number,
+  handicap: Handicap = 0,
+  atariHints = true,
+): GameSession {
   return {
     level,
     seed,
     handicap,
+    atariHints,
     learner: 'B',
     bot: 'W',
     game: newGame(handicap),
@@ -222,7 +230,8 @@ function noteLines(
  * learner's move is re-read from the last snapshot, the bot's from its own move.
  */
 function notesAfterReply(s: GameSession, move: Move, after: GameState, facts: MoveFacts): Note[] {
-  const danger = dangerOf(after, s.learner);
+  // With the atari hints off nothing else says the atari, so the coach keeps those facts.
+  const danger = s.atariHints ? dangerOf(after, s.learner) : [];
   const keep = (f: CoachFact[]) => withoutDangerFacts(f, danger, s.learner);
   const mine: Note[] = [];
   const learnerMove = s.game.moves[s.game.moves.length - 1];
@@ -354,7 +363,7 @@ function onMarkDone(s: GameSession): GameSession {
 export function gameReducer(s: GameSession, event: GameEvent): GameSession {
   switch (event.type) {
     case 'new':
-      return startSession(s.level, event.seed, event.handicap ?? s.handicap);
+      return startSession(s.level, event.seed, event.handicap ?? s.handicap, s.atariHints);
 
     case 'takeback': {
       if (!canTakeBack(s)) return s;

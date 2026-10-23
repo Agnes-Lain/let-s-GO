@@ -861,6 +861,8 @@
   "game9.picker.explain": "你执黑，棋盘上先有 {{n}} 个黑子，白先走。贴目 0.5。",
   "game9.picker.explainEven": "你执黑先走。贴目 5.5。",
   "game9.picker.start": "开始",
+  "game9.picker.atariHints": "叫吃提示",
+  "game9.picker.atariHintsDesc": "棋子只剩一口气时显示圆圈和提示",
   "game9.header.handicap": "{{level}} · 让 {{n}} 子 · 贴目 {{komi}}",
   "game9.btn.takeback": "悔棋",
   "game9.btn.takebackN": "悔棋 ({{n}})",

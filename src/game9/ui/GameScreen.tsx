@@ -67,9 +67,9 @@ function toneOf(note: Note): FeedbackTone {
   return 'hint';
 }
 
-/** Groups in atari while the learner is to move (AC 30, 32): none while the bot thinks. */
+/** Groups in atari while the learner is to move (AC 30, 32): none while the bot thinks or with the hints off. */
 function visibleDanger(s: GameSession): DangerGroup[] {
-  return s.phase === 'playing' && !s.thinking ? dangerOf(s.game, s.learner) : [];
+  return s.atariHints && s.phase === 'playing' && !s.thinking ? dangerOf(s.game, s.learner) : [];
 }
 
 export function GameScreen({
@@ -92,7 +92,9 @@ export function GameScreen({
   const reduceMotion = useReduceMotion();
   const flags = useProgress((p) => p.flags);
 
-  const [s, setS] = useState<GameSession>(() => startSession(level, newSeed(), handicap));
+  const [s, setS] = useState<GameSession>(() =>
+    startSession(level, newSeed(), handicap, !flags.atariHintsOff),
+  );
   const current = useRef(s);
   const send = useCallback(
     (event: GameEvent) => {

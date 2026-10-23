@@ -76,4 +76,17 @@ describe('AC 44: coaching dedupe against the atari line', () => {
     expect(s.coach.notes).toEqual([{ key: 'coach.you.capture', params: { count: 1 } }]);
     expect(dangerOf(s.game).map((g) => g.color)).toEqual(['B']);
   });
+
+  it('with atari hints off, the coach keeps its atari notes (nothing else says it)', () => {
+    mockBotPoint = 'd5';
+    const off: GameSession = { ...startSession(2, 1, 0, false), game: BEFORE_D5 };
+    expect(off.atariHints).toBe(false);
+    let s = gameReducer(off, { type: 'play', point: parseVertex('j9', 9) });
+    s = gameReducer(s, { type: 'bot' });
+    expect(s.coach.notes.map((n) => n.key)).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^coach\.(you\.exposed|bot\.atari)$/)]),
+    );
+    // Play again keeps the choice.
+    expect(gameReducer(s, { type: 'new', seed: 2 }).atariHints).toBe(false);
+  });
 });

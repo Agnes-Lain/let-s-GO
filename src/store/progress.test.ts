@@ -270,4 +270,12 @@ describe('handicap suggestion per level (M6-beginner-friendly AC 10, 11)', () =>
     make(storage).getState().setFlag('takebackExplained');
     expect(make(storage).getState().flags).toEqual({ takebackExplained: true });
   });
+
+  it('atari hints can be switched off and on again; the choice is saved', () => {
+    const storage = createMemoryStorage();
+    make(storage).getState().setFlag('atariHintsOff');
+    expect(make(storage).getState().flags).toEqual({ atariHintsOff: true });
+    make(storage).getState().setFlag('atariHintsOff', false);
+    expect(make(storage).getState().flags).toEqual({});
+  });
 });

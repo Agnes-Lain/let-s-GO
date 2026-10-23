@@ -861,6 +861,8 @@
   "game9.picker.explain": "You play Black with {{n}} stones already placed. White moves first. Komi 0.5.",
   "game9.picker.explainEven": "You play Black and move first. Komi 5.5.",
   "game9.picker.start": "Start",
+  "game9.picker.atariHints": "Atari hints",
+  "game9.picker.atariHintsDesc": "Rings and a note when stones have one liberty left",
   "game9.header.handicap": "{{level}} · {{n}} stones · Komi {{komi}}",
   "game9.btn.takeback": "Take back",
   "game9.btn.takebackN": "Take back ({{n}})",

@@ -58,6 +58,8 @@ export interface ProgressFlags {
   easierTipShown?: boolean;
   /** The first take-back 悔棋 showed the longer note (M6-beginner-friendly AC 15). */
   takebackExplained?: boolean;
+  /** The learner switched the danger rings and atari line off (setting, can be undone). */
+  atariHintsOff?: boolean;
 }
 
 export type GameOutcome = 'win' | 'loss' | 'resigned';
@@ -86,7 +88,8 @@ export interface ProgressState {
   /** Wins against a bot level, 0 when never played. */
   botWins(level: 1 | 2 | 3): number;
   /** Remembers that a one-time tip was shown. */
-  setFlag(flag: keyof ProgressFlags): void;
+  /** Sets a flag (or clears it with `false`). */
+  setFlag(flag: keyof ProgressFlags, value?: boolean): void;
   /** Saves a finished practice set. */
   record(lessonId: string, outcomes: readonly Outcome[]): RecordResult;
   /** Best stars of a lesson, 0 when never played. */
@@ -174,6 +177,7 @@ export function parseSaved(raw: string | null): SavedProgress | null {
     if (f.passExplained === true) out.flags.passExplained = true;
     if (f.easierTipShown === true) out.flags.easierTipShown = true;
     if (f.takebackExplained === true) out.flags.takebackExplained = true;
+    if (f.atariHintsOff === true) out.flags.atariHintsOff = true;
   }
   return out;
 }
@@ -267,9 +271,12 @@ export function createProgressStore({
       return get().bots[String(level) as BotLevelKey]?.wins ?? 0;
     },
 
-    setFlag(flag) {
-      if (get().flags[flag]) return;
-      set({ flags: { ...get().flags, [flag]: true } });
+    setFlag(flag, value = true) {
+      if (Boolean(get().flags[flag]) === value) return;
+      const flags = { ...get().flags };
+      if (value) flags[flag] = true;
+      else delete flags[flag];
+      set({ flags });
       save();
     },
 

@@ -263,3 +263,11 @@ Move notes, hint button, game review (sibling spec); free handicap placement by 
 15. (QA fix) Coach notes write points uppercase (`D8`) like the board labels and the atari line.
 16. (QA fix) The animated stone circle drops `collapsable` (Animated forces it; react-native-svg passed it to `<circle>` on web); the web checks now fail on any non-boolean attribute warning.
 17. (QA fix) An illegal-move reason clears on the next touch-down, not only on the next commit (AC 34).
+
+## 15. PO change after play-testing (2026-10-23)
+
+- **Atari hints switch.** The danger rings, liberty diamonds and atari line are helpful at first but take the challenge away
+  later. The picker gets a switch "Atari hints / Aide atari / 叫吃提示" under the handicap row: on by default, saved in
+  progress (`flags.atariHintsOff`), read when a game starts and kept by Play again. Off hides the rings, diamonds and atari
+  line; the AC 44 dedupe is then skipped, so the coach's own atari notes still show. Coach notes and Hint are unchanged.
+  Tests: `src/store/progress.test.ts`, `src/game9/session.dedupe.test.ts`, `__tests__/app/game9-beginner-qa.test.tsx`.

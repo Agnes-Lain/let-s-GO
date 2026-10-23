@@ -861,6 +861,8 @@
   "game9.picker.explain": "Vous jouez Noir avec {{n}} pierres déjà posées. Blanc joue en premier. Komi 0,5.",
   "game9.picker.explainEven": "Vous jouez Noir et commencez. Komi 5,5.",
   "game9.picker.start": "Commencer",
+  "game9.picker.atariHints": "Aide atari",
+  "game9.picker.atariHintsDesc": "Cercles et une note quand des pierres n’ont plus qu’une liberté",
   "game9.header.handicap": "{{level}} · {{n}} pierres · Komi {{komi}}",
   "game9.btn.takeback": "Reprendre",
   "game9.btn.takebackN": "Reprendre ({{n}})",
