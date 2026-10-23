@@ -6,7 +6,7 @@ measured win rates). Chinese rules (area scoring), simple ko. Pure logic stays i
 ## 0. In plain words
 The PO played 9×9 and even Easy was too hard, and nothing told them why a move was bad. This item makes the first games
 winnable and teaches while playing: (1) the learner starts with extra black stones (让子 ràngzǐ, handicap), (2) they can take
-back a move (悔棋 huǐqí), (3) groups with one breath left get a ring and one sentence, (4) Easy plays softer, (5) one
+back a move (悔棋), (3) groups with one breath left get a ring and one sentence, (4) Easy plays softer, (5) one
 web-console warning is removed.
 
 ## 1. Goal
@@ -66,10 +66,10 @@ are legal and nothing is captured. Order of adding stones is fixed as above (n=3
 13. Given the game screen, Then the header shows level, handicap and komi (`Easy · 3 stones · Komi 0.5`; even: `Easy · Komi 5.5`), and nothing else about the screen changes.
 14. Given the route `app/game/play?level=1&handicap=3`, When `handicap` is missing, malformed or not in {0,2,3,4,5}, Then it falls back to 0 (no crash); `levelParam` has tests.
 
-### 4.2 Take-back 悔棋 huǐqí (pure, in the session reducer)
+### 4.2 Take-back 悔棋 (pure, in the session reducer)
 Model: before every learner action (`play` or `pass`) the reducer pushes a snapshot of `{game, last, note}` onto `history`. A take-back pops one snapshot, so the learner's last move **and** the bot's reply (or the bot's pass) disappear and it is the learner's turn again. Ko is restored with the snapshot (`game.koPoint`).
 Limits per game: **Easy unlimited; Normal 3; Challenge 1** (`takebacksLeft: number | null`; null = unlimited). Handicap does not change the limits. A take-back is not refunded by Play on or by anything else.
-15. Given a learner move at e5 and the bot's reply at f5, When the learner presses Take back, Then the board is exactly the position before e5 (same stones, captures, `koPoint`, `toPlay`), `thinking === false`, the last-move marker is the previous one, and the feedback slot shows "Taken back." (first time ever: with 悔棋 huǐqí, see keys).
+15. Given a learner move at e5 and the bot's reply at f5, When the learner presses Take back, Then the board is exactly the position before e5 (same stones, captures, `koPoint`, `toPlay`), `thinking === false`, the last-move marker is the previous one, and the feedback slot shows "Taken back. Your turn." (the very first time ever: the longer `game9.takeback.first`).
 16. Given a learner move that captured, When taken back, Then the captured stones are back and the capture counters are restored.
 17. Given a ko: Black captured at e5 and White's reply was forbidden at that point, When Black's move is taken back, Then the position before the ko capture is restored with its own `koPoint` (null if none).
 18. Given the learner passed and the bot replied (move or pass), When Take back, Then both are undone and the learner has the move.
@@ -98,6 +98,7 @@ Facts come only from `groupAt` / engine group data: a group is "in atari" iff `g
    The coordinates are the engine's formatted points (uppercase letter + row number from the bottom, same as the board labels).
 34. Given an illegal-move reason is active (the learner just tapped an illegal point), Then it replaces the atari line until the next tap or move; otherwise the atari line beats the capture note ("You captured 2" / "The bot captured 1") and the "bot passed" note. (This is the slot priority both specs must agree on, §8.)
 35. Given a screen reader, Then the atari line is announced politely (live region) when it appears, and the stone point labels of stones in a danger group end with "in atari" (`game9.a11y.atari`).
+44. Given the atari line is shown for a learner group G and the coach would also show a fact of kind `exposed` or `selfAtari` about G, or the bot's `atari` fact whose `point` is a stone of G, Then that coach fact is not shown (only the atari line); coach facts about other groups or of other kinds (`capture`, `escape`) still show below it. Test with the §5.3 diagram A position after White's D5.
 36. Given the 3 ring colours and mood, Then no new colour token is added; rings use only `src/theme/tokens.ts`; no leaf/petal motif; reduced motion has no effect (rings are static).
 
 ### 4.4 Softer Easy (tuning, `src/bot`, `src/game9/config.ts`)
@@ -138,16 +139,16 @@ Height ≈ 56+32+3×64+8×3+24+48+8+96+8+52+16 = 548. The suggested chip carries
 ### 5.2 Game screen
 ```
 ┌──────────────────────────────┐
-│ ✕  Easy · 3 stones · Komi 0.5│ 56   header (ellipsis if long)
-│ [ Your turn (Black).      ]  │ 56
+│ ✕  Easy · 3 stones · Komi 0.5│ 52   header (ellipsis if long)
+│ [ Your turn (Black).      ]  │ 48 + 8
 │ ┌ 9×9 board 328, rings ────┐ │ 328
-│ └──────────────────────────┘ │
-│ [ feedback slot (atari line) ] 72  (one slot, shared, §8)
-│ [ Take back (2) ][  Pass    ]│ 48
-│ [ Count now     ][ Resign   ]│ 48
+│ └──────────────────────────┘ │ 8 gap
+│ [ feedback card (atari line)] │ 100 + 8  (one slot, shared, §8)
+│ [ Hint ][ Take back (2) ]    │ 48   two half-width buttons (was: Hint full width)
+│ [ Pass ][ Count now ][ Resign]│ 48   unchanged row (8 px gap above)
 └──────────────────────────────┘
 ```
-Height ≈ 56+56+8+328+8+72+8+48+8+48+16 = 656 ≤ 740 minus safe area. Count now is hidden before 6 moves (its cell stays empty). All buttons ≥ 44 px high, secondary style; Take back first in reading order (left), because it is the "I made a slip" reflex. State table:
+Layout decision (against the merged `GameScreen.tsx`, `GAME9_FIXED_HEIGHT = 52+56+8+108+48+8+48+16 = 344`): **Take back shares the Hint row** (Hint left, Take back right, each ≈ 160×48), so the fixed height does not change: 344 + 328 board = **672 px ≤ 740** at 360 wide with no safe-area inset; the board keeps shrinking only by the existing `window.height − insets − GAME9_FIXED_HEIGHT` rule, and the feedback card keeps its 100 px (atari line = one note line, so it fits the 96 px note card; a second coaching line, if any, fits below it). No new row, no change to `GAME9_FIXED_HEIGHT`. All buttons ≥ 44 px high, secondary style. Take back sits right of Hint (hint = "before I move", take back = "after I moved"). Where Hint is hidden (mark/count/result) so is Take back. State table:
 
 | State | Rings | Slot | Take back |
 |---|---|---|---|
@@ -187,10 +188,13 @@ Final constants: `L1_BLUNDER_9 =`, `L1_SKIP_SAVE_9 =`, `L1_SKIP_ATARI_9 =`, `L2_
 - Atari line is the only coaching in this item: it states what the board shows. It never suggests a move. (Move notes / hints belong to the sibling spec.)
 - Feedback: take-back plays the soft stone-off sound already in the app, no new asset; rings appear without animation; no sound for rings. After 3 losses in a row the existing easier-tip applies (bot-levels spec AC 37); the next suggestion also gets one stone more, so the tip and the ladder agree.
 
-## 8. Coordination with `claude/m6-game-coaching` (move notes, hint button, game review)
-Both specs use **one shared feedback slot under the board** (the existing 72 px card). Slot priority, highest first: illegal-move reason > **atari line (this spec)** > the sibling's move note / hint text > capture and pass notes. Both specs must state this order; the atari line is only ever the sentence of §4.3 (facts, no advice). Rings and the line are computed by `dangerOf` (new file `src/game9/danger.ts`); the sibling reuses it rather than recomputing. Button row: this spec uses two rows (Take back, Pass / Count now, Resign); a Hint button from the sibling goes into the empty Count-now cell before move 6 or a third row if the sibling needs it — whoever merges second rebases and re-checks the 740 px height (≤ 740 − safe area). Conflict-prone files: `GameScreen.tsx`, `session.ts`, `en/fr/zh-CN.json` (append keys at the end of the `game9.*` block).
+## 8. Coordination with the merged game-coaching work (PR #22: `src/coach`, `docs/specs/M6-game-coaching.md`, hint, move notes, review)
+Coaching is merged; this item rebases onto it. Both use **one shared feedback card under the board** (100 + 8 px). Slot priority, highest first: illegal-move reason > **atari line (this spec)** > coaching move note / hint text > capture and pass notes. The atari line is only the sentence of §4.3 (facts, no advice). Rings and the line come from `dangerOf` (new `src/game9/danger.ts`); coaching may reuse it.
+**Dedupe (AC 44):** when the atari line is shown for a learner group, coach facts about the same group are dropped from the card so the learner never reads the same warning twice: facts of kind `exposed` and `selfAtari` (about the learner's own group) and the bot's `atari` fact (kind `atari` with the bot as mover) are dropped when their `point` is a stone of a `dangerOf` group (or that group's liberty point is the fact's point for `selfAtari`). Other facts (`capture`, `escape`, ataris by the learner) stay below the atari line as before.
+Layout: see §5.2 (Take back shares the Hint row). Conflict-prone files: `GameScreen.tsx`, `session.ts`, `en/fr/zh-CN.json` (append keys at the end of the `game9.*` block).
 
-## 9. i18n keys (zh-CN / en / fr; first use = Chinese term + pinyin)
+## 9. i18n keys (zh-CN / en / fr)
+Copy rule (PO 2026-10-23, M6-game-coaching §12c): in en/fr, Chinese + pinyin only for Weiqi terms the lessons teach (here 让子 ràngzǐ handicap, 叫吃 jiàochī atari); everyday labels are plain. 悔棋 is an everyday word, not a taught Weiqi term, so **Take back / Reprendre are plain in en/fr** and 悔棋 has no pinyin in zh-CN. zh-CN buttons never carry pinyin. 贴目 tiēmù is not used here (we keep "Komi"/"贴目" as in the existing header).
 | key | zh-CN | en | fr |
 |---|---|---|---|
 | `game9.picker.handicap` | 让子 ràngzǐ | Handicap · 让子 ràngzǐ | Handicap · 让子 ràngzǐ |
@@ -201,21 +205,19 @@ Both specs use **one shared feedback slot under the board** (the existing 72 px 
 | `game9.picker.explainEven` | 你执黑先走。贴目 5.5。 | You play Black and move first. Komi 5.5. | Vous jouez Noir et commencez. Komi 5,5. |
 | `game9.picker.start` | 开始 | Start | Commencer |
 | `game9.header.handicap` | {{level}} · 让 {{n}} 子 · 贴目 {{komi}} | {{level}} · {{n}} stones · Komi {{komi}} | {{level}} · {{n}} pierres · Komi {{komi}} |
-| `game9.btn.takeback` | 悔棋 | Take back | Annuler |
-| `game9.btn.takebackN` | 悔棋 ({{n}}) | Take back ({{n}}) | Annuler ({{n}}) |
-| `game9.takeback.done` | 已悔棋。轮到你了。 | Taken back. Your turn. | Coup annulé. À vous. |
-| `game9.takeback.first` | 悔棋 huǐqí：你的上一手和白棋的回应都撤销了。 | Take-back 悔棋 huǐqí: your last move and White's reply are undone. | Annulation 悔棋 huǐqí : votre dernier coup et la réponse de Blanc sont annulés. |
-| `game9.atari.you.one` | 你的黑子 {{where}} 被叫吃，只剩 1 口气，在 {{lib}}。 | Your stone at {{where}} is in atari — one liberty left at {{lib}}. | Votre pierre en {{where}} est en atari — il lui reste une liberté en {{lib}}. |
-| `game9.atari.you.many` | 你的黑子 {{where}} 被叫吃，只剩 1 口气，在 {{lib}}。 | Your stones at {{where}} are in atari — one liberty left at {{lib}}. | Vos pierres en {{where}} sont en atari — il leur reste une liberté en {{lib}}. |
+| `game9.btn.takeback` | 悔棋 | Take back | Reprendre |
+| `game9.btn.takebackN` | 悔棋 ({{n}}) | Take back ({{n}}) | Reprendre ({{n}}) |
+| `game9.takeback.done` | 已悔棋。轮到你了。 | Taken back. Your turn. | Coup repris. À vous. |
+| `game9.takeback.first` | 已悔棋：你的上一手和白棋的回应都撤销了。 | Taken back: your last move and White's reply are undone. | Coup repris : votre dernier coup et la réponse de Blanc sont annulés. |
+| `game9.atari.you.one` | 你的黑子 {{where}} 被叫吃，只剩 1 口气，在 {{lib}}。 | Your stone at {{where}} is in atari 叫吃 jiàochī — one liberty left at {{lib}}. | Votre pierre en {{where}} est en atari 叫吃 jiàochī — il lui reste une liberté en {{lib}}. |
+| `game9.atari.you.many` | 你的黑子 {{where}} 被叫吃，只剩 1 口气，在 {{lib}}。 | Your stones at {{where}} are in atari 叫吃 jiàochī — one liberty left at {{lib}}. | Vos pierres en {{where}} sont en atari 叫吃 jiàochī — il leur reste une liberté en {{lib}}. |
 | `game9.atari.bot.one` | 白子 {{where}} 只剩 1 口气，可在 {{lib}} 提掉。 | White's stone at {{where}} can be captured at {{lib}}. | La pierre blanche en {{where}} peut être capturée en {{lib}}. |
 | `game9.atari.bot.many` | 白子 {{where}} 只剩 1 口气，可在 {{lib}} 提掉。 | White's stones at {{where}} can be captured at {{lib}}. | Les pierres blanches en {{where}} peuvent être capturées en {{lib}}. |
 | `game9.atari.more` | 另有 {{n}} 处也被叫吃。 | +{{n}} more in atari. | +{{n}} autre(s) en atari. |
 | `game9.a11y.atari` | 被叫吃 | in atari | en atari |
 | `game9.result.next` | 下次：让 {{n}} 子。 | Next time: {{n}} stones. | La prochaine fois : {{n}} pierres. |
 | `game9.result.nextEven` | 下次：平分对局。 | Next time: an even game. | La prochaine fois : partie égale. |
-Pinyin policy: 让子 ràngzǐ and 悔棋 huǐqí carry pinyin at their first appearance (picker label, first take-back note; the
-buttons themselves are short). 叫吃 jiàochī / 气 qì were taught in Unit 5, so the atari line (zh-CN) has no pinyin; the English
-line keeps "atari" once with the term "叫吃" only in the a11y/help text if the developer wants a visual teach — not required.
+Pinyin: 让子 ràngzǐ in the en/fr picker label; 叫吃 jiàochī in the en/fr "your stone" atari lines (the "White can be captured" lines contain no term). zh-CN text has no pinyin. The "first use" note `game9.takeback.first` is shown once (flag) and is plain text.
 Every key exists in all three files; a test compares key sets.
 
 ## 10. Web check (extends `npm run verify:web:m6`, 360×740) and screenshots in `docs/screenshots/M6/` (new numbers, en + fr + zh-CN each)
