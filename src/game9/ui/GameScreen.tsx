@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBoard, type CaptureEvent, type Highlight, type Marker } from '@/board';
 import { useReduceMotion } from '@/board/useReduceMotion';
 import type { BotLevel } from '@/bot';
+import { REVIEW_MIN_MOVES } from '@/coach';
 import { parseVertex, toVertex, type CheckResult, type Point } from '@/engine';
 import { FeedbackCard, type FeedbackText, type FeedbackTone } from '@/exercises/ExerciseFrame';
 import { boardWidthFor } from '@/exercises/layout';
@@ -37,13 +38,17 @@ import {
 } from '../session';
 import { countStones } from '../countView';
 import { CountTable, countHighlights } from './CountTable';
+import { ReviewView } from './ReviewView';
 import { Sheet } from './Sheet';
 
 /**
  * Fixed heights at 360×740 (§5.2, AC 38): top bar 52, status 48 + 8, gap 8 under the board,
- * feedback / result card 100 + 8, buttons 48 + 8 + 44, bottom padding 16.
+ * feedback / result card 100 + 8, buttons 48 + 8 + 48 (Hint 提示 row + Pass row, M6-game-coaching
+ * §5.1), bottom padding 16.
  */
-export const GAME9_FIXED_HEIGHT = 52 + 56 + 8 + 108 + 48 + 8 + 44 + 16;
+export const GAME9_FIXED_HEIGHT = 52 + 56 + 8 + 108 + 48 + 8 + 48 + 16;
+/** The note card holds two note lines (M6-game-coaching §5.1). */
+const NOTE_CARD_HEIGHT = 96;
 
 type Sheets = 'none' | 'pass' | 'countNow' | 'resign' | 'leave';
 
@@ -130,10 +135,15 @@ export function GameScreen({
     }
   });
 
-  // ✕ and system back mid-game open the leave sheet; nothing is saved (AC 24).
+  // ✕ and system back mid-game open the leave sheet; nothing is saved (AC 24). In the review,
+  // back closes the review (M6-game-coaching AC 34).
   const [exiting, setExiting] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
   const inGame = s.phase !== 'result' && !exiting;
-  usePreventRemove(inGame, () => setSheet((open) => (open === 'leave' ? 'none' : 'leave')));
+  usePreventRemove(inGame || (reviewing && !exiting), () => {
+    if (reviewing) setReviewing(false);
+    else setSheet((open) => (open === 'leave' ? 'none' : 'leave'));
+  });
   const leave = () => {
     setSheet('none');
     setExiting(true);
@@ -161,6 +171,10 @@ export function GameScreen({
     if (!flags.passExplained) setSheet('pass');
     else send({ type: 'pass' });
   };
+
+  if (reviewing && s.phase === 'result') {
+    return <ReviewView s={s} onClose={() => setReviewing(false)} />;
+  }
 
   return (
     <View style={styles.root}>
@@ -199,7 +213,11 @@ export function GameScreen({
         ) : null}
       </View>
 
-      <View style={styles.boardWrap}>
+      <View
+        style={styles.boardWrap}
+        // The learner's next turn starts on the first touch: the notes clear (AC 12).
+        onTouchStart={() => send({ type: 'touch' })}
+      >
         <GameBoard s={s} width={boardWidth} send={send} />
       </View>
 
@@ -213,6 +231,7 @@ export function GameScreen({
         onResign={() => setSheet('resign')}
         onChangeLevel={onChangeLevel}
         onHome={onLeave}
+        onReview={() => setReviewing(true)}
       />
 
       <Sheet
@@ -405,6 +424,7 @@ function GameBoard({
   }
 
   const last = s.last;
+  const hintAt = s.phase === 'playing' ? (s.coach.hint?.point ?? null) : null;
   const lastCapture: CaptureEvent | null =
     last && last.captured.length > 0
       ? { id: last.id, color: last.color === 'B' ? 'W' : 'B', points: last.captured }
@@ -423,9 +443,17 @@ function GameBoard({
       onIllegal={(point) => send({ type: 'play', point })}
       lastMove={last?.point ?? null}
       lastCapture={lastCapture}
+      markers={hintAt ? [{ kind: 'diamond', point: hintAt, tone: 'hint' }] : undefined}
       testID="game9-board"
     />
   );
+}
+
+/** The card under the board while playing: an engine message, else the hint, else the notes. */
+function playingLines(s: GameSession, say: (note: Note) => string): FeedbackText[] {
+  if (s.note) return [{ text: say(s.note), tone: toneOf(s.note) }];
+  if (s.coach.hint) return [{ text: say(s.coach.hint.note), tone: 'success' }];
+  return s.coach.notes.map((note) => ({ text: say(note), tone: 'hint' }));
 }
 
 function Bottom({
@@ -438,6 +466,7 @@ function Bottom({
   onResign,
   onChangeLevel,
   onHome,
+  onReview,
 }: {
   s: GameSession;
   say: (note: Note) => string;
@@ -448,16 +477,30 @@ function Bottom({
   onResign: () => void;
   onChangeLevel: () => void;
   onHome: () => void;
+  onReview: () => void;
 }) {
   const { t } = useTranslation();
   const feedback: FeedbackText[] = s.note ? [{ text: say(s.note), tone: toneOf(s.note) }] : [];
 
   if (s.phase === 'playing') {
     const locked = s.thinking;
+    const { hintsLeft } = s.coach;
     return (
       <>
-        <FeedbackCard lines={feedback} />
+        <FeedbackCard lines={playingLines(s, say)} height={NOTE_CARD_HEIGHT} />
         <View style={styles.spacer} />
+        <Button
+          label={
+            hintsLeft === null
+              ? t('coach.hint.buttonFree')
+              : t('coach.hint.button', { n: n(hintsLeft) })
+          }
+          variant="secondary"
+          onPress={() => send({ type: 'hint' })}
+          disabled={locked || hintsLeft === 0}
+          accessibilityLabel={hintsLeft === 0 ? t('coach.hint.none') : undefined}
+          testID="game9-hint"
+        />
         <View style={styles.row}>
           <Button
             label={t('game9.btn.pass')}
@@ -559,22 +602,61 @@ function Bottom({
           testID="game9-show-count"
         />
       ) : null}
-      <View style={styles.row}>
-        <Button
-          label={t('game9.btn.again')}
-          onPress={() => send({ type: 'new', seed: newSeed() })}
-          testID="game9-again"
-          style={styles.flex}
-        />
-        <Button
-          label={t('game9.btn.level')}
-          variant="secondary"
-          onPress={onChangeLevel}
-          testID="game9-change-level"
-          style={styles.flex}
-        />
-      </View>
-      <Button label={t('game9.btn.home')} variant="text" onPress={onHome} testID="game9-home" />
+      {s.game.moves.length >= REVIEW_MIN_MOVES ? (
+        // Review 复盘 is the primary action; Change level and Home share the text row (§5.3).
+        <>
+          <View style={styles.row}>
+            <Button
+              label={t('coach.review.button')}
+              onPress={onReview}
+              testID="game9-review"
+              style={styles.flex}
+            />
+            <Button
+              label={t('game9.btn.again')}
+              variant="secondary"
+              onPress={() => send({ type: 'new', seed: newSeed() })}
+              testID="game9-again"
+              style={styles.flex}
+            />
+          </View>
+          <View style={styles.row}>
+            <Button
+              label={t('game9.btn.level')}
+              variant="text"
+              onPress={onChangeLevel}
+              testID="game9-change-level"
+              style={styles.flex}
+            />
+            <Button
+              label={t('game9.btn.home')}
+              variant="text"
+              onPress={onHome}
+              testID="game9-home"
+              style={styles.flex}
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.row}>
+            <Button
+              label={t('game9.btn.again')}
+              onPress={() => send({ type: 'new', seed: newSeed() })}
+              testID="game9-again"
+              style={styles.flex}
+            />
+            <Button
+              label={t('game9.btn.level')}
+              variant="secondary"
+              onPress={onChangeLevel}
+              testID="game9-change-level"
+              style={styles.flex}
+            />
+          </View>
+          <Button label={t('game9.btn.home')} variant="text" onPress={onHome} testID="game9-home" />
+        </>
+      )}
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { createGame, legalMoves, pass, play, score, type GameState, type Point } from '@/engine';
 
 import { isOwnEye } from './eyes';
-import { PlayoutBoard, colorOf } from './playout';
+import { PlayoutBoard, colorOf, winRate } from './playout';
 import { createRng } from './rng';
 import { position } from './__fixtures__/board';
 
@@ -166,5 +166,27 @@ describe('random playouts (§6.3 policy)', () => {
     }
     expect(taken / 400).toBeGreaterThan(0.45);
     expect(taken / 400).toBeLessThan(0.6);
+  });
+});
+
+describe('winRate (M6-game-coaching AC 27–28)', () => {
+  it('is seeded, in [0, 1], and 1 for a side that owns the whole board', () => {
+    const empty = createGame(9, { komi: 5.5 });
+    const a = winRate(empty, 'B', 40, 80, 7);
+    expect(a).toBe(winRate(empty, 'B', 40, 80, 7));
+    expect(a).toBeGreaterThanOrEqual(0);
+    expect(a).toBeLessThanOrEqual(1);
+    const black = position(
+      `
+      X X X X X
+      X . X . X
+      X X X X X
+      X . X . X
+      X X X X X
+    `,
+      'W',
+    );
+    expect(winRate(black, 'B', 10, 80, 1)).toBe(1);
+    expect(winRate(black, 'W', 10, 80, 1)).toBe(0);
   });
 });

@@ -52,7 +52,12 @@ export type Marker =
   | { kind: 'circle' | 'triangle' | 'square' | 'cross'; point: Point }
   | { kind: 'label'; point: Point; text: string }
   /** A dead stone 死子: the stone is dimmed and crossed (M5-territory-counting §5.5). */
-  | { kind: 'dead'; point: Point };
+  | { kind: 'dead'; point: Point }
+  /**
+   * A small filled diamond (M6-game-coaching §5.2–5.3): the 提示 hint move (`hint`, bamboo green)
+   * or the key point of a review moment (`moment`, amber). Never a ring.
+   */
+  | { kind: 'diamond'; point: Point; tone: 'hint' | 'moment' };
 
 /** Highlight kinds drawn below the stones instead of as rings. */
 const BELOW_STONES: readonly HighlightKind[] = ['liberty', 'territoryB', 'territoryW', 'scratch'];
@@ -1200,6 +1205,24 @@ function MarkerShape({ marker, g, on }: { marker: Marker; g: BoardGeometry; on: 
           <Line x1={c.x - d} y1={c.y - d} x2={c.x + d} y2={c.y + d} {...lines} />
           <Line x1={c.x - d} y1={c.y + d} x2={c.x + d} y2={c.y - d} {...lines} />
         </G>
+      );
+    }
+    case 'diamond': {
+      const d = 0.24 * cell;
+      const points = [
+        `${c.x},${c.y - d}`,
+        `${c.x + d},${c.y}`,
+        `${c.x},${c.y + d}`,
+        `${c.x - d},${c.y}`,
+      ].join(' ');
+      return (
+        <Polygon
+          testID={`${id}-${marker.tone}`}
+          points={points}
+          fill={marker.tone === 'hint' ? color.success : color.hint}
+          stroke={on === 'B' ? stone.white : 'none'}
+          strokeWidth={on === 'B' ? 1 : 0}
+        />
       );
     }
     case 'label': {

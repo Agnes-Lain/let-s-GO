@@ -91,6 +91,14 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
+
+- **M6 item 1b** game coaching for 9×9 (branch `claude/m6-game-coaching`, PO-approved spec, QA READY, 3803 tests):
+  pure `src/coach/` (move notes from MoveFacts, 提示 hint via level-2 `scoreMoves` — unlimited on Easy/Normal, 3 on Challenge, post-game
+  review 复盘 with 1–3 key moments: big capture, lost group "in atari since move m", playout swing via `winRate()`).
+  UI: note in the FeedbackCard, Hint row, `ReviewView` (chunked prep + Skip, chips, Prev/Next), board `diamond` marker.
+  Spec `docs/specs/M6-game-coaching.md` (§12b dev deviations). Web check `npm run verify:web:m6c` (Node 22); screenshots
+  `docs/screenshots/M6/40-*`, `50-*`–`58-*`. Shared feedback slot order agreed with the beginner-friendly branch
+  (illegal > danger atari > coach note/hint > capture/pass; dedupe atari). Web/mouse: notes clear on next move, not on touch.
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch
   `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
   (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.

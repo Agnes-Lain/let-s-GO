@@ -80,7 +80,8 @@ describe('copy table §4 is implemented verbatim', () => {
       (key) =>
         // sequence.*: the M5 sequence runner (docs/specs/M5-life-death.md §5.4).
         // game9.*: the M6 9×9 games (docs/specs/M6-bot-levels.md §9), checked by src/game9 tests.
-        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|game9|sequence)\./.test(
+        // coach.*: M6 game coaching (docs/specs/M6-game-coaching.md §5.4), checked by src/coach tests.
+        !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|game9|coach|sequence)\./.test(
           key,
         ) && !m3Home.test(key),
     );

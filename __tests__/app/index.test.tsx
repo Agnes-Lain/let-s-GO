@@ -169,7 +169,7 @@ describe('learning path, dev build (AC 97, 99, 101–102, 106)', () => {
       'Unit 14, End of game · 终局 zhōngjú, locked',
       'Checkpoint, Review 4, locked',
       // M6 AC 14: the 9×9 card, shown disabled until Unit 14 has a star.
-      'Play 9×9 · 九路对弈 jiǔlù duìyì, Finish Unit 14 first',
+      'Play 9×9, Finish Unit 14 first',
     ]);
   });
 

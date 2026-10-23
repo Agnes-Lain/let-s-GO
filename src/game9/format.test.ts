@@ -15,4 +15,11 @@ describe('formatNumber (§9: French decimals use a comma)', () => {
     });
     expect(formatParams({ key: 'k' }, 'fr')).toBeUndefined();
   });
+
+  it('keeps integers (plural `count`) as numbers', () => {
+    expect(formatParams({ key: 'k', params: { count: 2, n: 12 } }, 'fr')).toEqual({
+      count: 2,
+      n: 12,
+    });
+  });
 });
