@@ -11,7 +11,7 @@ import { explainFrames, type Lesson } from '@/lessons';
 import { Button, IconButton } from '@/theme/Button';
 import { ChevronIcon, CloseIcon, ReplayIcon } from '@/theme/icons';
 import { Screen } from '@/theme/Screen';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import { useBoardWidth } from './layout';
 
@@ -109,6 +109,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
         <View style={styles.skipSlot}>
           {stars >= 1 ? (
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               variant="text"
               label={t('lesson.skip')}
               onPress={onStartPractice}
@@ -121,7 +122,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
 
       <View style={styles.textCard} testID="lesson-text-card">
         <ScrollView>
-          <Text style={styles.text} testID="lesson-text">
+          <Text maxFontSizeMultiplier={textScale.hud} style={styles.text} testID="lesson-text">
             {text}
           </Text>
         </ScrollView>
@@ -145,6 +146,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
       <View style={styles.replayRow}>
         {step.moves.length > 0 ? (
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             variant="text"
             label={t('lesson.replay')}
             icon={<ReplayIcon color={color.accent} size={18} />}
@@ -159,6 +161,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
       <View style={styles.buttons}>
         {view.step > 0 ? (
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             variant="secondary"
             label={t('lesson.back')}
             icon={<ChevronIcon direction="left" color={color.accent} size={18} />}
@@ -169,6 +172,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
         ) : null}
         {isLast ? (
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={t('lesson.startPractice')}
             onPress={onStartPractice}
             testID="lesson-start-practice"
@@ -176,6 +180,7 @@ export function ExplainPlayer({ lesson, stars, onClose, onStartPractice }: Props
           />
         ) : (
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={t('lesson.next')}
             trailingIcon={<ChevronIcon color={color.onAccent} size={18} />}
             onPress={() => enter(view.step + 1, false)}

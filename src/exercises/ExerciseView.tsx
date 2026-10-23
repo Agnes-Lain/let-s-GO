@@ -13,7 +13,7 @@ import {
   type PlayBotExercise,
   type SequenceExercise,
 } from '@/lessons';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import {
   INITIAL_ATTEMPTS,
@@ -139,7 +139,9 @@ function MoveExerciseView({
       />
 
       <View style={styles.prompt} testID="practice-prompt">
-        <Text style={styles.promptText}>{t(exercise.promptKey)}</Text>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.promptText}>
+          {t(exercise.promptKey)}
+        </Text>
       </View>
 
       {exercise.type === 'tap-point' ? (

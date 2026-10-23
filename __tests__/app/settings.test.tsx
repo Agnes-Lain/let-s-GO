@@ -1,7 +1,9 @@
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import appConfig from '../../app.json';
-import { progressStore } from '@/store';
+import { SETTINGS_KEY, progressStore } from '@/store';
 import i18n, { getLanguageChoice, setLanguageChoice } from '@/i18n';
 
 // Device locale: Simplified Chinese.
@@ -82,19 +84,33 @@ describe('Settings', () => {
     expect(screen.getByText('版本 0.1.0')).toBeOnTheScreen();
   });
 
-  it('does not persist the choice: a fresh start follows the device again (AC27)', async () => {
+  // M6-settings AC 7: replaces M0 AC27 ("not persisted"); the choice is saved (AC 4).
+  it('persists the choice: a fresh start reads it back (M6-settings AC 4, 7)', async () => {
     await renderRouter('./app', { initialUrl: '/settings' });
     await fireEvent.press(screen.getByRole('button', { name: 'English' }));
     expect(getLanguageChoice()).toBe('en');
+    const saved = await AsyncStorage.getItem(SETTINGS_KEY);
+    expect(JSON.parse(saved as string).language).toBe('en');
 
-    // Simulate an app reload: a fresh module registry re-initialises i18n.
+    // Simulate an app reload: a fresh module registry (fresh i18n, stores and storage) whose
+    // storage holds what this run saved.
     let reloaded: typeof import('@/i18n') | undefined;
+    let reloadedStore: typeof import('@/store') | undefined;
     jest.isolateModules(() => {
-      // A synchronous require is the only way to load a fresh copy inside isolateModules.
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // Synchronous requires are the only way to load fresh copies inside isolateModules.
+      /* eslint-disable @typescript-eslint/no-require-imports */
+      const storage = require('@react-native-async-storage/async-storage').default;
+      void storage.setItem(SETTINGS_KEY, saved);
       reloaded = require('@/i18n');
+      reloadedStore = require('@/store');
+      /* eslint-enable @typescript-eslint/no-require-imports */
     });
-    expect(reloaded?.getLanguageChoice()).toBe('system');
-    expect(reloaded?.default.language).toBe('zh-CN');
+    // The fresh registry's timers are not the real ones: wait on microtasks only.
+    for (let i = 0; i < 20 && !reloadedStore?.settingsStore.getState().hydrated; i++) {
+      await Promise.resolve();
+    }
+    expect(reloadedStore?.settingsStore.getState().hydrated).toBe(true);
+    expect(reloaded?.getLanguageChoice()).toBe('en');
+    expect(reloaded?.default.language).toBe('en');
   });
 });

@@ -12,7 +12,7 @@ import { useReduceMotion } from '@/board/useReduceMotion';
 import { parseVertex, toVertex, type GameState, type IllegalReason, type Point } from '@/engine';
 import { toStepMarkers, type Lesson, type Outcome, type SequenceExercise } from '@/lessons';
 import { Button } from '@/theme/Button';
-import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
+import { color, radius, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 import {
   INITIAL_ATTEMPTS,
@@ -117,18 +117,20 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
     });
   };
 
+  /** One stone, said once (the board itself is silent here, M6-settings AC 38). */
+  const announceStone = (s: SequenceStone) =>
+    AccessibilityInfo.announceForAccessibility(
+      t(`sequence.a11y.plays.${s.color}`, { point: toVertex(s.point, size) }),
+    );
+
   /** Plays `stones` one after another, `delay` ms apart, then calls `done`. */
-  const schedule = (stones: SequenceStone[], delay: number, done: () => void, announce = true) => {
+  const schedule = (stones: SequenceStone[], delay: number, done: () => void) => {
     stones.forEach((s, i) => {
       timers.current.push(
         setTimeout(
           () => {
             showStone(s);
-            if (announce) {
-              AccessibilityInfo.announceForAccessibility(
-                t(`sequence.a11y.plays.${s.color}`, { point: toVertex(s.point, size) }),
-              );
-            }
+            announceStone(s);
           },
           delay * (i + 1),
         ),
@@ -151,7 +153,7 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
       return;
     }
     setShown({ state: start.state, lastMove: null, capture: null });
-    schedule(stones, REVEAL_MS, () => {}, false);
+    schedule(stones, REVEAL_MS, () => {});
   };
 
   /** Counts a mistake (the attempts reducer decides when the answer is revealed). */
@@ -169,6 +171,7 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
     }
     dispatch({ type: 'clear' });
     showStone(judgement.move);
+    announceStone(judgement.move);
     switch (judgement.kind) {
       case 'next':
         setPhase('replying');
@@ -313,7 +316,9 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
       <ExerciseTopBar index={index} total={total} onClose={onClose} />
 
       <View style={styles.prompt} testID="practice-prompt">
-        <Text style={styles.promptText}>{t(exercise.promptKey)}</Text>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.promptText}>
+          {t(exercise.promptKey)}
+        </Text>
       </View>
 
       <View
@@ -322,7 +327,9 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
         accessible
         accessibilityLabel={progressLabel}
       >
-        <Text style={styles.progressText}>{progressLabel}</Text>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.progressText}>
+          {progressLabel}
+        </Text>
         <View style={styles.dots}>
           {Array.from({ length: m }, (_, i) => (
             <View
@@ -332,7 +339,12 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
             />
           ))}
         </View>
-        <Text style={styles.status} numberOfLines={1} testID="sequence-status">
+        <Text
+          maxFontSizeMultiplier={textScale.hud}
+          style={styles.status}
+          numberOfLines={1}
+          testID="sequence-status"
+        >
           {status}
         </Text>
       </View>
@@ -353,13 +365,16 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
           lastCapture={shown.capture}
           highlights={highlights}
           markers={markers}
+          // This runner says every stone itself (sequence.a11y.plays), so the board stays silent.
+          announce={false}
           testID="practice-board"
         />
-        <FeedbackCard lines={feedback} />
+        <FeedbackCard lines={feedback} liveRegion={false} />
         <View style={styles.spacer} />
         <View style={styles.buttons}>
           {!active ? (
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={isLast ? t('practice.finish') : t('practice.next')}
               onPress={() => onDone(outcomeOf(attempts))}
               testID={isLast ? 'practice-finish' : 'practice-next'}
@@ -369,6 +384,7 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
             <>
               {showHint ? (
                 <Button
+                  maxFontSizeMultiplier={textScale.hud}
                   variant="secondary"
                   label={t('practice.hint')}
                   onPress={() => dispatch({ type: 'hint' })}
@@ -379,6 +395,7 @@ export function SequenceRunner({ lesson, index, exercise, onClose, onDone }: Pro
               ) : null}
               {phase === 'wrong' && mistake ? (
                 <Button
+                  maxFontSizeMultiplier={textScale.hud}
                   label={recoverLabel}
                   onPress={recover}
                   testID={mistake.recovery === 'undo' ? 'sequence-undo' : 'practice-try-again'}

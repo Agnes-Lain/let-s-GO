@@ -38,7 +38,7 @@ async function openSettings() {
 
 /** Every text on the screen in render order. */
 function textsInOrder(): string[] {
-  return screen.UNSAFE_root.findAll((node) => node.type === 'Text').map((node) =>
+  return screen.UNSAFE_root.findAll((node) => (node.type as unknown) === 'Text').map((node) =>
     [node.props.children].flat().join(''),
   );
 }

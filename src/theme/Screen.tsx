@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ChevronIcon } from './icons';
 import { Landscape } from './Landscape';
-import { color, spacing, tapTarget, typography } from './tokens';
+import { color, spacing, tapTarget, textScale, typography } from './tokens';
 
 type ScreenProps = {
   /** `home` draws mist + mountains; every other screen gets the thin mist only. */
@@ -58,7 +58,12 @@ export function TopBar({ title, showBack = false, right }: TopBarProps) {
   return (
     <View style={styles.topBar}>
       {title ? (
-        <Text style={styles.topBarTitle} accessibilityRole="header" numberOfLines={1}>
+        <Text
+          style={styles.topBarTitle}
+          accessibilityRole="header"
+          numberOfLines={1}
+          maxFontSizeMultiplier={textScale.page}
+        >
           {title}
         </Text>
       ) : null}
@@ -70,7 +75,9 @@ export function TopBar({ title, showBack = false, right }: TopBarProps) {
           style={({ pressed }) => [styles.back, pressed && styles.pressed]}
         >
           <ChevronIcon direction="left" color={color.accent} size={20} />
-          <Text style={styles.backLabel}>{t('common.back')}</Text>
+          <Text style={styles.backLabel} maxFontSizeMultiplier={textScale.page}>
+            {t('common.back')}
+          </Text>
         </Pressable>
       ) : (
         <View style={styles.spacer} />

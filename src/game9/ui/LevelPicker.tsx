@@ -13,7 +13,7 @@ import { Button } from '@/theme/Button';
 import { CheckIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
 import { SwitchRow } from '@/theme/SwitchRow';
-import { color, radius, spacing, stone, typography } from '@/theme/tokens';
+import { color, radius, spacing, stone, textScale, typography } from '@/theme/tokens';
 
 import { BOT_LEVELS } from '../config';
 import { HANDICAP_CHOICES, handicapStones, suggestedHandicap, type Handicap } from '../handicap';
@@ -53,12 +53,19 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
       {/* The title carries the term + pinyin (fr/en are long), so it gets its own wrapping line
           under the back button instead of the one-line top-bar slot. */}
       <TopBar showBack />
-      <Text style={styles.title} accessibilityRole="header" testID="game9-picker-title">
+      <Text
+        maxFontSizeMultiplier={textScale.page}
+        style={styles.title}
+        accessibilityRole="header"
+        testID="game9-picker-title"
+      >
         {t('game9.entry.title')}
       </Text>
-      <Text style={styles.prompt}>{t('game9.picker.title')}</Text>
+      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
+        {t('game9.picker.title')}
+      </Text>
       {tip ? (
-        <Text style={styles.tip} testID="game9-tip">
+        <Text maxFontSizeMultiplier={textScale.page} style={styles.tip} testID="game9-tip">
           {t('game9.tip.easier')}
         </Text>
       ) : null}
@@ -89,17 +96,23 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
               ))}
             </View>
             <View style={styles.text}>
-              <Text style={styles.name} numberOfLines={1}>
+              <Text maxFontSizeMultiplier={textScale.page} style={styles.name} numberOfLines={1}>
                 {name}
               </Text>
-              <Text style={styles.desc} testID={`game9-level-${level}-desc`}>
+              <Text
+                maxFontSizeMultiplier={textScale.page}
+                style={styles.desc}
+                testID={`game9-level-${level}-desc`}
+              >
                 {desc}
               </Text>
             </View>
             {beaten ? (
               <View style={styles.beaten} testID={`game9-level-${level}-beaten`}>
                 <CheckIcon color={color.success} size={18} />
-                <Text style={styles.beatenText}>{t('game9.level.beaten')}</Text>
+                <Text maxFontSizeMultiplier={textScale.page} style={styles.beatenText}>
+                  {t('game9.level.beaten')}
+                </Text>
               </View>
             ) : null}
           </Pressable>
@@ -107,10 +120,13 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
       })}
       {isBeaten(bots, 3) ? (
         <View style={styles.badge} testID="game9-challenge-beaten">
-          <Text style={styles.badgeText}>{t('game9.picker.challengeBeaten')}</Text>
+          <Text maxFontSizeMultiplier={textScale.page} style={styles.badgeText}>
+            {t('game9.picker.challengeBeaten')}
+          </Text>
         </View>
       ) : null}
-      <Text style={styles.prompt} accessibilityRole="header">
+      {/* One header per screen (M6-settings AC 36): the title above. */}
+      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
         {t('game9.picker.handicap')}
       </Text>
       <View style={styles.chips} accessibilityRole="radiogroup">
@@ -133,12 +149,16 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
               pressed && styles.pressed,
             ]}
           >
-            <Text style={[styles.chipText, n === handicap && styles.chipTextSelected]}>
+            <Text
+              maxFontSizeMultiplier={textScale.page}
+              style={[styles.chipText, n === handicap && styles.chipTextSelected]}
+            >
               {n === 0 ? t('game9.picker.even') : t('game9.picker.stones', { n })}
             </Text>
             {/* The suggestion is named in text, not only by colour (§5.1). */}
             {n === suggested ? (
               <Text
+                maxFontSizeMultiplier={textScale.page}
                 style={[styles.chipTag, n === handicap && styles.chipTextSelected]}
                 numberOfLines={1}
                 testID={`game9-handicap-${n}-suggested`}
@@ -150,7 +170,11 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
         ))}
       </View>
       <View style={styles.explainRow}>
-        <Text style={styles.explain} testID="game9-handicap-explain">
+        <Text
+          maxFontSizeMultiplier={textScale.page}
+          style={styles.explain}
+          testID="game9-handicap-explain"
+        >
           {handicap === 0
             ? t('game9.picker.explainEven')
             : t('game9.picker.explain', { n: handicap })}

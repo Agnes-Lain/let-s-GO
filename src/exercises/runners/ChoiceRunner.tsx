@@ -11,7 +11,7 @@ import {
   toStepMarkers,
   type ChoiceExercise,
 } from '@/lessons';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import { ExerciseFrame } from '../ExerciseFrame';
 import { OPTION_GAP, OPTION_HEIGHT } from '../layout';
@@ -84,7 +84,10 @@ export function ChoiceRunner({
                 pressed && styles.pressed,
               ]}
             >
-              <Text style={[styles.optionText, isWrong && styles.optionTextWrong]}>
+              <Text
+                maxFontSizeMultiplier={textScale.hud}
+                style={[styles.optionText, isWrong && styles.optionTextWrong]}
+              >
                 {t(option.textKey)}
               </Text>
             </Pressable>

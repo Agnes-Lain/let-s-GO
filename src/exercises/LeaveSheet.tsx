@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/theme/Button';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 /** "Leave practice?" bottom sheet (spec §6.5). Leaving records nothing. */
 export function LeaveSheet({
@@ -43,10 +43,16 @@ export function LeaveSheet({
           testID="leave-sheet"
           accessibilityViewIsModal
         >
-          <Text style={styles.title} accessibilityRole="header">
+          <Text
+            maxFontSizeMultiplier={textScale.page}
+            style={styles.title}
+            accessibilityRole="header"
+          >
             {t('practice.leave.title')}
           </Text>
-          <Text style={styles.body}>{t('practice.leave.body')}</Text>
+          <Text maxFontSizeMultiplier={textScale.page} style={styles.body}>
+            {t('practice.leave.body')}
+          </Text>
           <Button label={t('practice.leave.stay')} onPress={onStay} testID="leave-stay" />
           <Button
             variant="secondary"

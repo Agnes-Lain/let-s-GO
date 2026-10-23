@@ -30,7 +30,8 @@ const press = async (testID: string) => {
     fireEvent.press(screen.getByTestId(testID));
   });
 };
-const flat = (style: unknown) => StyleSheet.flatten(style as never) ?? {};
+const flat = (style: unknown) =>
+  (StyleSheet.flatten(style as never) ?? {}) as Record<string, number>;
 const SIX = Array(6).fill('clean') as 'clean'[];
 
 /** The latest hardware back handler the screen registered. */
@@ -126,9 +127,9 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     await launch();
     const order = screen.UNSAFE_root.findAll(
       (n) =>
-        (n.type === 'Text' && typeof n.props.children === 'string') ||
+        ((n.type as unknown) === 'Text' && typeof n.props.children === 'string') ||
         n.props.testID === 'onboarding-welcome-board',
-    ).map((n) => (n.type === 'Text' ? n.props.children : 'BOARD'));
+    ).map((n) => ((n.type as unknown) === 'Text' ? n.props.children : 'BOARD'));
     const index = (item: string) => order.indexOf(item);
     const sequence = [
       texts['onboarding.1.title'],

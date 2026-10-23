@@ -7,7 +7,7 @@ import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-nati
 import { GoBoard, vertexLabel, type Highlight, type Marker } from '@/board';
 import { parseVertex, toVertex, type Point, type Vertex } from '@/engine';
 import { getSolution, startState, toStepMarkers, type MarkExercise } from '@/lessons';
-import { color, spacing, tapTarget, typography } from '@/theme/tokens';
+import { color, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 import { ExerciseFrame } from '../ExerciseFrame';
 import { judgeMarks, tapMark } from '../mark';
@@ -113,7 +113,11 @@ export function MarkRunner({
   return (
     <ExerciseFrame feedback={feedback} action={action}>
       <View style={styles.status} testID="practice-mark-status">
-        <Text style={styles.count} testID="practice-mark-count">
+        <Text
+          maxFontSizeMultiplier={textScale.hud}
+          style={styles.count}
+          testID="practice-mark-count"
+        >
           {t('practice.mark.count', { count: marks.length })}
         </Text>
         {active && marks.length > 0 ? (
@@ -124,7 +128,9 @@ export function MarkRunner({
             accessibilityLabel={t('practice.mark.clear')}
             style={({ pressed }) => [styles.clear, pressed && styles.pressed]}
           >
-            <Text style={styles.clearText}>{t('practice.mark.clear')}</Text>
+            <Text maxFontSizeMultiplier={textScale.hud} style={styles.clearText}>
+              {t('practice.mark.clear')}
+            </Text>
           </Pressable>
         ) : null}
       </View>

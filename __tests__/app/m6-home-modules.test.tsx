@@ -189,6 +189,7 @@ describe('toggling (AC 58, 60, 64)', () => {
   it('a tap toggles only that module; several can be open; nothing extra is announced', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
     await renderHome();
+    announce.mockClear();
     await press('home-module-3');
     expect([expanded(1), expanded(2), expanded(3)]).toEqual([true, false, true]);
     await press('home-module-1');
