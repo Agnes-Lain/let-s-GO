@@ -1,27 +1,7 @@
 Dev web build (expo start --web), 360x740, locales zh-CN, en, fr.
 Pages: home, picker, lesson u01 (+leave sheet), game (+pass/resign/count sheets), result.
-Matches for "non-boolean attribute" / "Received `false`": 21
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[zh-CN] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[en] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
-[fr] Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
+Matches for "non-boolean attribute" / "Received `false`": 0
+
 
 --- all console messages ---
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
@@ -34,7 +14,6 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
@@ -45,37 +24,31 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [zh-CN] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [zh-CN] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[zh-CN] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
@@ -86,7 +59,6 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
@@ -97,37 +69,31 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [en] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [en] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[en] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
@@ -138,7 +104,6 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
@@ -149,34 +114,28 @@ Performance optimizations: OFF.
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
 [fr] info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [fr] log: Running application "main" with appParams:
  {rootTag: #root, hydrate: undefined} 
 Development-level warnings: ON.
 Performance optimizations: OFF.
-[fr] error: Received `%s` for a non-boolean attribute `%s`.  If you want to write it to the DOM, pass a string instead: %s="%s" or %s={value.toString()}.  If you used to conditionally omit it with %s={condition & [attribute collapsable] false
