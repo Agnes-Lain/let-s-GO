@@ -76,14 +76,20 @@ describe('copy table §4 is implemented verbatim', () => {
     // Capture Go keys (game.*, docs/specs/M4-bot-capture-go.md §11) by src/exercises tests.
     const m3Home =
       /^home\.(continue|start|unit\.label|checkpoint\.label|sample\.label|locked\.hint|node\.a11y\..+|allDone)$/;
+    // M6 settings/onboarding/modules keys (docs/specs/M6-settings-onboarding-a11y.md §6) are
+    // checked by __tests__/app/m6-settings-copy.test.ts.
+    const m6Settings =
+      /^(onboarding\..+|home\.module\..+|settings\.(section\..+|sound.*|motion.*|intro|reset.*))$/;
     const m0Keys = Object.keys(zhCN).filter(
       (key) =>
+        !m6Settings.test(key) &&
         // sequence.*: the M5 sequence runner (docs/specs/M5-life-death.md §5.4).
         // game9.*: the M6 9×9 games (docs/specs/M6-bot-levels.md §9), checked by src/game9 tests.
         // coach.*: M6 game coaching (docs/specs/M6-game-coaching.md §5.4), checked by src/coach tests.
         !/^(engine|board|dev|unit|lesson|error|complete|practice|fb|game|game9|coach|sequence)\./.test(
           key,
-        ) && !m3Home.test(key),
+        ) &&
+        !m3Home.test(key),
     );
     // M3 removed the placeholder keys its screens replaced (spec M3 §7.1).
     const removedByM3 = [
@@ -101,12 +107,12 @@ describe('every key used in code exists in all languages (and none are orphaned)
   const sources = [...sourceFiles('app'), ...sourceFiles('src')]
     .map((file) => readFileSync(join(root, file), 'utf8'))
     .join('\n');
-  // t('key') calls, `labelKey: 'key'` entries (Settings language list) and `key: 'key'` feedback
-  // lines / key maps (M3 exercises).
+  // t('key') calls, `labelKey: 'key'` entries (Settings language list), `titleKey: 'key'` entries
+  // (Home modules, M6-settings) and `key: 'key'` feedback lines / key maps (M3 exercises).
   const usedKeys = new Set(
     [
       ...sources.matchAll(
-        /\bt\(\s*'([^']+)'|labelKey:\s*'([^']+)'|\bkey:\s*'([^']+)'|:\s*'(engine\.illegal\.[^']+)'/g,
+        /\bt\(\s*'([^']+)'|(?:labelKey|titleKey):\s*'([^']+)'|\bkey:\s*'([^']+)'|:\s*'(engine\.illegal\.[^']+)'/g,
       ),
     ].map((m) => m[1] ?? m[2] ?? m[3] ?? m[4]),
   );

@@ -1,16 +1,16 @@
 // A bottom sheet with a title, lines and buttons (Count now, Resign, Pass explainer, dead-stone
-// dispute, Leave — spec docs/specs/M6-bot-levels.md AC 19, 21, 22, 24, 29). Same look as the
-// practice LeaveSheet.
+// dispute, Leave — spec docs/specs/M6-bot-levels.md AC 19, 21, 22, 24, 29; Settings → Erase
+// progress, M6-settings AC 20–22). Same look as the practice LeaveSheet.
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '@/theme/Button';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { Button } from './Button';
+import { color, radius, spacing, typography } from './tokens';
 
 export interface SheetAction {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   testID: string;
 }
 
@@ -48,6 +48,7 @@ export function Sheet({
         <Pressable
           style={styles.dismiss}
           onPress={onDismiss}
+          testID={`${testID}-dismiss`}
           aria-hidden
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
@@ -57,11 +58,11 @@ export function Sheet({
           testID={testID}
           accessibilityViewIsModal
         >
-          <Text style={styles.title} accessibilityRole="header">
+          <Text style={styles.title} accessibilityRole="header" maxFontSizeMultiplier={2}>
             {title}
           </Text>
           {lines.map((line, i) => (
-            <Text key={i} style={styles.body}>
+            <Text key={i} style={styles.body} maxFontSizeMultiplier={2}>
               {line}
             </Text>
           ))}

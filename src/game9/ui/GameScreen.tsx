@@ -42,7 +42,7 @@ import {
 import { countStones } from '../countView';
 import { CountTable, countHighlights } from './CountTable';
 import { ReviewView } from './ReviewView';
-import { Sheet } from './Sheet';
+import { Sheet } from '@/theme/Sheet';
 
 /**
  * Fixed heights at 360×740 (§5.2, AC 38): top bar 52, status 48 + 8, gap 8 under the board,
@@ -425,6 +425,7 @@ function GameBoard({
         showCoordinates
         highlights={countHighlights(s.count.score, s.game.board.cells, s.count.dead)}
         sound={false}
+        announce={false}
         testID="game9-board"
       />
     );
@@ -455,6 +456,7 @@ function GameBoard({
         markers={markers}
         highlights={highlights}
         sound={false}
+        announce={false}
         testID="game9-board"
       />
     );
@@ -498,6 +500,7 @@ function GameBoard({
       lastCapture={lastCapture}
       markers={markers.length > 0 ? markers : undefined}
       highlights={highlights.length > 0 ? highlights : undefined}
+      announce={false}
       testID="game9-board"
     />
   );

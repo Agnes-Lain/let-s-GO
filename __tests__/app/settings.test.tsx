@@ -1,6 +1,7 @@
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 
 import appConfig from '../../app.json';
+import { progressStore } from '@/store';
 import i18n, { getLanguageChoice, setLanguageChoice } from '@/i18n';
 
 // Device locale: Simplified Chinese.
@@ -9,6 +10,8 @@ jest.mock('expo-localization', () => ({
 }));
 
 beforeEach(async () => {
+  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('system'));
 });
 

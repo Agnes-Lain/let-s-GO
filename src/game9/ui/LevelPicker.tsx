@@ -3,7 +3,7 @@
 // Nothing is locked; the selected row has a tea-green border.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { GoBoard } from '@/board';
 import type { BotLevel } from '@/bot';
@@ -12,6 +12,7 @@ import { progressStore, useProgress } from '@/store';
 import { Button } from '@/theme/Button';
 import { CheckIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
+import { SwitchRow } from '@/theme/SwitchRow';
 import { color, radius, spacing, stone, typography } from '@/theme/tokens';
 
 import { BOT_LEVELS } from '../config';
@@ -163,21 +164,15 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
           <GoBoard size={9} stones={previewStones(handicap)} width={PREVIEW_SIZE} sound={false} />
         </View>
       </View>
-      <View style={styles.hintsRow}>
-        <View style={styles.text}>
-          <Text style={styles.name} nativeID="game9-atari-hints-label">
-            {t('game9.picker.atariHints')}
-          </Text>
-          <Text style={styles.desc}>{t('game9.picker.atariHintsDesc')}</Text>
-        </View>
-        <Switch
-          value={!flags.atariHintsOff}
-          onValueChange={(on) => progressStore.getState().setFlag('atariHintsOff', !on)}
-          trackColor={{ false: color.border, true: color.accent }}
-          accessibilityLabel={t('game9.picker.atariHints')}
-          testID="game9-atari-hints"
-        />
-      </View>
+      {/* The whole row is the switch (M6-settings AC 17, 35); the same flag as Settings (AC 18). */}
+      <SwitchRow
+        title={t('game9.picker.atariHints')}
+        description={t('game9.picker.atariHintsDesc')}
+        value={!flags.atariHintsOff}
+        onChange={(on) => progressStore.getState().setFlag('atariHintsOff', !on)}
+        testID="game9-atari-hints"
+        style={styles.hintsRow}
+      />
       <Button
         label={t('game9.picker.start')}
         onPress={() => onPick(selected, handicap)}
@@ -239,13 +234,9 @@ const styles = StyleSheet.create({
   chipSelected: { backgroundColor: color.accent, borderColor: color.accent },
   chipText: { ...typography.label, fontSize: 15, color: color.textPrimary },
   chipTextSelected: { color: color.onAccent },
-  chipTag: { fontSize: 10, lineHeight: 12, color: color.textSecondary },
-  hintsRow: {
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
+  // 12 px: no text under 12 px on the picker (M6-settings AC 40).
+  chipTag: { fontSize: 12, lineHeight: 14, color: color.textSecondary },
+  hintsRow: { paddingHorizontal: 0 },
   explainRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   explain: { flex: 1, fontSize: 14, lineHeight: 20, color: color.textPrimary },
 });
