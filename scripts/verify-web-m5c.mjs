@@ -236,6 +236,10 @@ async function main() {
       // --- Home map: Units 10–11, Unit 12 "coming soon" ---
       await page.goto(base);
       await page.getByTestId('home-continue').waitFor({ timeout: 30000 });
+      // M6-settings: Home groups rows in collapsible modules; open them all.
+      for (const n of [1, 2, 3])
+        if ((await page.getByTestId(`home-module-${n}-rows`).count()) === 0)
+          await page.getByTestId(`home-module-${n}`).click();
       const soon = page.getByTestId('home-node-unit-12');
       await soon.scrollIntoViewIfNeeded();
       await page.waitForTimeout(400);

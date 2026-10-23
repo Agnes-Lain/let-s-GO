@@ -1,0 +1,23 @@
+## home-module-1  Module 1 | The basics | Units 1–5 · 0 of 6 done
+   home-node-unit-1  Unit 1 | Board & stones · 棋盘 qípán
+   home-node-unit-2  Unit 2 | Liberties · 气 qì
+   home-node-unit-3  Unit 3 | Connection · 连接 liánjiē
+   home-node-unit-4  Unit 4 | Capture · 提子 tízǐ
+   home-node-unit-5  Unit 5 | Atari & escape · 叫吃 jiàochī
+   home-node-checkpoint-5  Checkpoint | Review
+## home-module-2  Module 2 | Locked | Playing an opponent | Units 6–9 · 0 of 6 done
+   home-node-unit-6  Unit 6 | Capture Go · 吃子棋 chīzǐqí
+   home-node-checkpoint-6  Checkpoint | Capture Go games
+   home-node-unit-7  Unit 7 | Forbidden points · 禁入点 jìnrùdiǎn
+   home-node-unit-8  Unit 8 | Ko · 打劫 dǎjié
+   home-node-unit-9  Unit 9 | Ladder · 征子 zhēngzi
+   home-node-checkpoint-9  Checkpoint | Review 2
+## home-module-3  Module 3 | Locked | How to win a game | Units 10–14 · 0 of 8 done
+   home-node-unit-10  Unit 10 | Eyes · 眼 yǎn
+   home-node-unit-11  Unit 11 | Life and death · 死活 sǐhuó
+   home-node-lesson-u11-vital  Unit 11 | The vital point
+   home-node-checkpoint-11  Checkpoint | Review 3
+   home-node-unit-12  Unit 12 | Territory · 地 dì
+   home-node-unit-13  Unit 13 | Counting · 数子 shùzǐ
+   home-node-unit-14  Unit 14 | End of game · 终局 zhōngjú
+   home-node-checkpoint-14  Checkpoint | Review 4
