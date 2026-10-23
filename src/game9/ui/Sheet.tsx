@@ -43,7 +43,15 @@ export function Sheet({
       onDismiss={onDismissed}
     >
       <View style={styles.backdrop}>
-        <Pressable style={styles.dismiss} onPress={onDismiss} accessible={false} />
+        {/* The tap-outside area is not a screen-reader stop (the sheet has its own buttons). Not
+            the `accessible` false prop: react-native-web would pass it to the DOM (AC 43). */}
+        <Pressable
+          style={styles.dismiss}
+          onPress={onDismiss}
+          aria-hidden
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        />
         <View
           style={[styles.sheet, { paddingBottom: insets.bottom + spacing.lg }]}
           testID={testID}

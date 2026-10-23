@@ -1,26 +1,46 @@
-// Level picker (spec docs/specs/M6-bot-levels.md §5.1, AC 15, 34, 36, 37): three rows, a tap
-// starts the game at once. Nothing is locked; the pre-selected row has a tea-green border.
+// Level picker (spec docs/specs/M6-bot-levels.md §5.1, AC 15, 34, 36, 37; M6-beginner-friendly
+// §5.1, AC 7–8): three level rows (radio), the handicap 让子 chips with a mini board, then Start.
+// Nothing is locked; the selected row has a tea-green border.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { GoBoard } from '@/board';
 import type { BotLevel } from '@/bot';
+import { parseVertex } from '@/engine';
 import { progressStore, useProgress } from '@/store';
+import { Button } from '@/theme/Button';
 import { CheckIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
 import { color, radius, spacing, stone, typography } from '@/theme/tokens';
 
-import { BOT_LEVELS, GAME_KOMI_9 } from '../config';
-import { formatNumber } from '../format';
+import { BOT_LEVELS } from '../config';
+import { HANDICAP_CHOICES, handicapStones, suggestedHandicap, type Handicap } from '../handicap';
 import { isBeaten, preselectedLevel, showEasierTip } from '../picker';
 
 export const LEVEL_ROW_HEIGHT = 72;
+export const HANDICAP_CHIP_HEIGHT = 48;
+const PREVIEW_SIZE = 96;
 
-export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
-  const { t, i18n } = useTranslation();
+/** The mini board's stones: the handicap points in Black (AC 8). */
+function previewStones(n: Handicap): ('B' | null)[] {
+  const cells: ('B' | null)[] = Array(81).fill(null);
+  for (const v of handicapStones(n)) {
+    const p = parseVertex(v, 9);
+    cells[p.y * 9 + p.x] = 'B';
+  }
+  return cells;
+}
+
+export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Handicap) => void }) {
+  const { t } = useTranslation();
   const bots = useProgress((p) => p.bots);
   const flags = useProgress((p) => p.flags);
-  const selected = preselectedLevel(bots);
+  // Until the learner taps, the level and handicap follow the stored progress (it may load late).
+  const [choice, setChoice] = useState<{ level: BotLevel; handicap: Handicap } | null>(null);
+  const selected = choice?.level ?? preselectedLevel(bots);
+  const suggested = suggestedHandicap(bots, selected);
+  const handicap = choice?.handicap ?? suggested;
   // The tip is decided once when the picker opens, then remembered as shown (AC 37: once).
   const [tip] = useState(() => showEasierTip(bots, flags));
   useEffect(() => {
@@ -28,7 +48,7 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
   }, [tip]);
 
   return (
-    <View style={styles.root}>
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.root}>
       {/* The title carries the term + pinyin (fr/en are long), so it gets its own wrapping line
           under the back button instead of the one-line top-bar slot. */}
       <TopBar showBack />
@@ -48,12 +68,13 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
         return (
           <Pressable
             key={level}
-            onPress={() => onPick(level)}
-            accessibilityRole="button"
+            // A tap only selects; the handicap jumps to that level's suggestion (AC 7, 8).
+            onPress={() => setChoice({ level, handicap: suggestedHandicap(bots, level) })}
+            accessibilityRole="radio"
             accessibilityLabel={[name, desc, beaten ? t('game9.level.beaten') : '']
               .filter(Boolean)
               .join('. ')}
-            accessibilityState={{ selected: level === selected }}
+            accessibilityState={{ selected: level === selected, checked: level === selected }}
             testID={`game9-level-${level}`}
             style={({ pressed }) => [
               styles.row,
@@ -88,15 +109,72 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel) => void }) {
           <Text style={styles.badgeText}>{t('game9.picker.challengeBeaten')}</Text>
         </View>
       ) : null}
-      <Text style={styles.caption}>
-        {t('game9.youBlack', { komi: formatNumber(GAME_KOMI_9, i18n.language) })}
+      <Text style={styles.prompt} accessibilityRole="header">
+        {t('game9.picker.handicap')}
       </Text>
-    </View>
+      <View style={styles.chips} accessibilityRole="radiogroup">
+        {HANDICAP_CHOICES.map((n) => (
+          <Pressable
+            key={n}
+            onPress={() => setChoice({ level: selected, handicap: n })}
+            accessibilityRole="radio"
+            accessibilityLabel={[
+              n === 0 ? t('game9.picker.even') : t('game9.picker.stonesA11y', { n }),
+              n === suggested ? t('game9.picker.suggested') : '',
+            ]
+              .filter(Boolean)
+              .join(', ')}
+            accessibilityState={{ selected: n === handicap, checked: n === handicap }}
+            testID={`game9-handicap-${n}`}
+            style={({ pressed }) => [
+              styles.chip,
+              n === handicap && styles.chipSelected,
+              pressed && styles.pressed,
+            ]}
+          >
+            <Text style={[styles.chipText, n === handicap && styles.chipTextSelected]}>
+              {n === 0 ? t('game9.picker.even') : t('game9.picker.stones', { n })}
+            </Text>
+            {/* The suggestion is named in text, not only by colour (§5.1). */}
+            {n === suggested ? (
+              <Text
+                style={[styles.chipTag, n === handicap && styles.chipTextSelected]}
+                numberOfLines={1}
+                testID={`game9-handicap-${n}-suggested`}
+              >
+                {t('game9.picker.suggested')}
+              </Text>
+            ) : null}
+          </Pressable>
+        ))}
+      </View>
+      <View style={styles.explainRow}>
+        <Text style={styles.explain} testID="game9-handicap-explain">
+          {handicap === 0
+            ? t('game9.picker.explainEven')
+            : t('game9.picker.explain', { n: handicap })}
+        </Text>
+        <View
+          testID="game9-handicap-preview"
+          aria-hidden
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <GoBoard size={9} stones={previewStones(handicap)} width={PREVIEW_SIZE} sound={false} />
+        </View>
+      </View>
+      <Button
+        label={t('game9.picker.start')}
+        onPress={() => onPick(selected, handicap)}
+        testID="game9-start"
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, gap: spacing.sm },
+  scroll: { flex: 1 },
+  root: { flexGrow: 1, gap: spacing.sm, paddingBottom: spacing.lg },
   title: { ...typography.title, fontSize: 20, color: color.textPrimary },
   prompt: { ...typography.label, color: color.textSecondary, marginBottom: spacing.xs },
   tip: { ...typography.body, color: color.hint },
@@ -130,5 +208,23 @@ const styles = StyleSheet.create({
     backgroundColor: color.badge,
   },
   badgeText: { ...typography.label, fontSize: 14, color: color.onBadge },
-  caption: { ...typography.caption, color: color.textSecondary, textAlign: 'center' },
+  chips: { flexDirection: 'row', gap: spacing.xs },
+  chip: {
+    flex: 1,
+    minWidth: 44,
+    minHeight: HANDICAP_CHIP_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 2,
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.md,
+  },
+  chipSelected: { backgroundColor: color.accent, borderColor: color.accent },
+  chipText: { ...typography.label, fontSize: 15, color: color.textPrimary },
+  chipTextSelected: { color: color.onAccent },
+  chipTag: { fontSize: 10, lineHeight: 12, color: color.textSecondary },
+  explainRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  explain: { flex: 1, fontSize: 14, lineHeight: 20, color: color.textPrimary },
 });

@@ -60,6 +60,8 @@ export interface LastMove {
   /** null for a pass. */
   point: Point | null;
   captured: Point[];
+  /** Brought back by a take-back: shown again, not announced again. */
+  restored?: boolean;
 }
 
 /** The dead-stone sheet (AC 29): the bot proposes proved-dead groups. */
@@ -363,7 +365,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         game: snap.game,
         thinking: false,
         // A fresh id and no captures: the board does not replay the old capture fade.
-        last: snap.last ? { ...snap.last, id, captured: [] } : null,
+        last: snap.last ? { ...snap.last, id, captured: [], restored: true } : null,
         note: { key: event.first ? 'game9.takeback.first' : 'game9.takeback.done' },
         history: s.history.slice(0, -1),
         takebacksLeft: s.takebacksLeft === null ? null : s.takebacksLeft - 1,

@@ -46,6 +46,8 @@ export interface Highlight {
   points: readonly Point[];
   /** Dashed ring (the mistaken stone of a sequence, M5-life-death AC 32). Rings only. */
   dashed?: boolean;
+  /** Screen-reader words for these points instead of the kind's (e.g. "in atari", M6 AC 35). */
+  label?: string;
 }
 
 export type Marker =
@@ -55,9 +57,10 @@ export type Marker =
   | { kind: 'dead'; point: Point }
   /**
    * A small filled diamond (M6-game-coaching §5.2–5.3): the 提示 hint move (`hint`, bamboo green)
-   * or the key point of a review moment (`moment`, amber). Never a ring.
+   * or the key point of a review moment (`moment`, amber). Never a ring. `danger` (rouge) / `chance`
+   * (tea green): the last liberty of a group in atari (M6-beginner-friendly AC 30).
    */
-  | { kind: 'diamond'; point: Point; tone: 'hint' | 'moment' };
+  | { kind: 'diamond'; point: Point; tone: 'hint' | 'moment' | 'danger' | 'chance' };
 
 /** Highlight kinds drawn below the stones instead of as rings. */
 const BELOW_STONES: readonly HighlightKind[] = ['liberty', 'territoryB', 'territoryW', 'scratch'];
@@ -122,6 +125,12 @@ const NO_HIGHLIGHTS: readonly Highlight[] = [];
 const NO_MARKERS: readonly Marker[] = [];
 const NO_STONES: readonly (Color | null)[] = [];
 const SQRT3_HALF = Math.sqrt(3) / 2;
+const DIAMOND_FILL = {
+  hint: color.success,
+  moment: color.hint,
+  danger: color.error,
+  chance: color.success,
+} as const;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -1129,7 +1138,9 @@ function PointsLayer({
         );
       }
       for (const h of highlights) {
-        if (h.points.some((q) => samePoint(q, p))) parts.push(t(`board.a11y.highlight.${h.kind}`));
+        if (h.points.some((q) => samePoint(q, p))) {
+          parts.push(h.label ?? t(`board.a11y.highlight.${h.kind}`));
+        }
       }
       const c = pointToLocation(g, p);
       const style = {
@@ -1219,7 +1230,7 @@ function MarkerShape({ marker, g, on }: { marker: Marker; g: BoardGeometry; on: 
         <Polygon
           testID={`${id}-${marker.tone}`}
           points={points}
-          fill={marker.tone === 'hint' ? color.success : color.hint}
+          fill={DIAMOND_FILL[marker.tone]}
           stroke={on === 'B' ? stone.white : 'none'}
           strokeWidth={on === 'B' ? 1 : 0}
         />
