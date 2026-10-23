@@ -82,9 +82,9 @@ afterEach(async () => {
 });
 
 describe('review announcements (AC 38)', () => {
-  // BUG (QA M6-settings): ReviewView does not pass announce={false} to its GoBoard, so Next says
-  // "White played C2" and "Move 10 of 10, White at C2". Remove `.failing` when fixed.
-  it.failing('stepping the review announces each step exactly once', async () => {
+  // ReviewView passes announce={false} to its GoBoard, so Next says "Move 10 of 10, White at C2"
+  // and not also "White played C2".
+  it('stepping the review announces each step exactly once', async () => {
     await openGame(1);
     await playUntil(10);
     await resign();

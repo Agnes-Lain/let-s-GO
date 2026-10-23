@@ -136,6 +136,8 @@ const TABLE: [string, string, string, string][] = [
     'locked, finish the previous module first',
     "verrouillé, terminez d'abord le module précédent",
   ],
+  // The 12 px handicap chip tag (AC 40): en "suggested" was cut to "suggest…" in a 360 px chip.
+  ['game9.picker.suggested', '推荐', 'advised', 'conseillé'],
 ];
 
 describe('§6 copy keys', () => {

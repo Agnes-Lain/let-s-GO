@@ -833,7 +833,7 @@
   "game9.picker.even": "Even",
   "game9.picker.stones": "{{n}}",
   "game9.picker.stonesA11y": "{{n}} stones",
-  "game9.picker.suggested": "suggested",
+  "game9.picker.suggested": "advised",
   "game9.picker.explain": "You play Black with {{n}} stones already placed. White moves first. Komi 0.5.",
   "game9.picker.explainEven": "You play Black and move first. Komi 5.5.",
   "game9.picker.start": "Start",

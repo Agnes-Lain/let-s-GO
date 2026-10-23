@@ -232,6 +232,8 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
           lastMove={lastMove?.type === 'play' ? lastMove.point : null}
           markers={markers}
           sound={false}
+          // The step line below announces "Move n of N"; the board stays quiet (AC 38).
+          announce={false}
           testID="review-board"
         />
       </View>

@@ -24,6 +24,12 @@ interface SwitchRowProps {
   maxFontSizeMultiplier?: number;
 }
 
+/** The web keyboard event, as react-native-web hands it to Pressable's `onKeyDown`. */
+interface WebKeyEvent {
+  key: string;
+  preventDefault(): void;
+}
+
 export function SwitchRow({
   title,
   description,
@@ -35,6 +41,14 @@ export function SwitchRow({
   style,
   maxFontSizeMultiplier = 2,
 }: SwitchRowProps) {
+  // react-native-web presses only role="button" on Space; a switch toggles on Space too (AC 45).
+  const onKeyDown = (event: WebKeyEvent) => {
+    if (event.key !== ' ' && event.key !== 'Spacebar') return;
+    event.preventDefault();
+    if (!disabled) onChange(!value);
+  };
+  // `onKeyDown` exists on react-native-web only; RN's Pressable types do not list it.
+  const webProps = { onKeyDown } as object;
   return (
     <Pressable
       testID={testID}
@@ -44,6 +58,10 @@ export function SwitchRow({
       accessibilityLabel={title}
       accessibilityHint={description}
       accessibilityState={{ checked: value, disabled }}
+      // react-native-web 0.21 drops accessibilityState; aria-* reaches the DOM (AC 45).
+      aria-checked={value}
+      aria-disabled={disabled}
+      {...webProps}
       style={({ pressed }) => [styles.row, pressed && !disabled && styles.pressed, style]}
     >
       <View style={styles.text}>

@@ -2,7 +2,15 @@
 // M6-settings §4.8 the path is grouped in three collapsible modules.
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AccessibilityInfo, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { useReduceMotion } from '@/board/useReduceMotion';
 import {
@@ -281,7 +289,8 @@ function ModuleChevron({ expanded, reduceMotion }: { expanded: boolean; reduceMo
     const animation = Animated.timing(turn, {
       toValue: expanded ? 1 : 0,
       duration: CHEVRON_TURN_MS,
-      useNativeDriver: true,
+      // react-native-web has no native driver and warns about it (AC 45).
+      useNativeDriver: Platform.OS !== 'web',
     });
     animation.start();
     return () => animation.stop();
@@ -326,6 +335,8 @@ export function ModuleHeader({
       accessibilityRole="button"
       accessibilityLabel={a11y}
       accessibilityState={{ expanded }}
+      // react-native-web 0.21 drops accessibilityState; aria-expanded reaches the DOM (AC 45).
+      aria-expanded={expanded}
       style={({ pressed }) => [styles.moduleHeader, pressed && styles.pressed]}
     >
       <View style={styles.moduleIcons} aria-hidden>
