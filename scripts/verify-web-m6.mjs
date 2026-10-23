@@ -90,6 +90,8 @@ function serve() {
 
 const failures = [];
 const consoleErrors = [];
+const accessibleWarnings = [];
+const ACCESSIBLE_WARNING = /non-boolean attribute `?(accessible|collapsable)`?/;
 function check(name, ok, detail = '') {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? `  (${detail})` : ''}`);
   if (!ok) failures.push(name);
@@ -148,7 +150,11 @@ async function newPage(browser, locale, unlocked = true, extra = {}) {
     progress(unlocked, extra),
   );
   const page = await context.newPage();
-  page.on('console', (m) => m.type() === 'error' && consoleErrors.push(`[${locale}] ${m.text()}`));
+  page.on('console', (m) => {
+    if (m.type() === 'error') consoleErrors.push(`[${locale}] ${m.text()}`);
+    // M6-beginner-friendly AC 43: this warning must never come back (any message type).
+    if (ACCESSIBLE_WARNING.test(m.text())) accessibleWarnings.push(`[${locale}] ${m.text()}`);
+  });
   page.on('pageerror', (e) => consoleErrors.push(`[${locale}] pageerror ${e.message}`));
   return { context, page };
 }
@@ -298,9 +304,11 @@ async function pickerChecks(browser, base, locale) {
   }
   await layout(page, `${L} picker`, { board: false });
   await shot(page, `02-picker-${locale}`);
+  // M6-beginner-friendly AC 7: a tap selects the level; Start starts the game.
   await press(page, 'game9-level-2');
+  await press(page, 'game9-start');
   await page.getByTestId('game9-board').waitFor({ timeout: 10000 });
-  check(`${L} a tap starts the game`, true);
+  check(`${L} Start starts the game`, true);
   await context.close();
 }
 
@@ -438,6 +446,11 @@ async function main() {
     server.close();
   }
   check('zero console errors', consoleErrors.length === 0, consoleErrors.slice(0, 5).join(' | '));
+  check(
+    'no "non-boolean attribute accessible / collapsable" warning (AC 43)',
+    accessibleWarnings.length === 0,
+    accessibleWarnings.slice(0, 3).join(' | '),
+  );
   if (failures.length > 0) {
     console.error(`\n${failures.length} check(s) failed.`);
     process.exit(1);

@@ -1,0 +1,46 @@
+{
+  "23-atari-own": {
+    "level": 1,
+    "handicap": 3,
+    "moves": ["e3", "j9", "d4", "f4"],
+    "expectRings": ["error-j9", "diamond-h9-danger"],
+    "expectText": true,
+    "shot": "23-atari-own"
+  },
+  "24-atari-white": {
+    "level": 1,
+    "handicap": 0,
+    "moves": ["e5", "c8", "e8", "d9"],
+    "expectRings": ["success-d8", "diamond-d7-chance"],
+    "expectText": true,
+    "shot": "24-atari-white"
+  },
+  "26-takeback-done": {
+    "level": 1,
+    "handicap": 0,
+    "moves": ["e5", "c8", "TB"],
+    "shot": "26-takeback-done"
+  },
+  "27-takeback-limit": {
+    "level": 2,
+    "handicap": 0,
+    "moves": ["e5", "TB", "e5", "TB", "e5", "TB", "e5"],
+    "disabledTakeback": true,
+    "shot": "27-takeback-limit"
+  },
+  "28-result-next-handicap": {
+    "level": 1,
+    "handicap": 3,
+    "moves": ["e5"],
+    "resign": true,
+    "shot": "28-result-next-handicap"
+  },
+  "25-atari-two-stones": {
+    "level": 1,
+    "handicap": 3,
+    "moves": ["e3", "j9", "d4", "f4", "h9"],
+    "expectRings": ["error-h9", "error-j9"],
+    "expectText": true,
+    "shot": "25-atari-two-stones"
+  }
+}

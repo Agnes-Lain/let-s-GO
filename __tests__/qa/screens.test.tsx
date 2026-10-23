@@ -182,7 +182,8 @@ describe('decorative landscape (spec §6)', () => {
       await renderRouter('./app', { initialUrl: url });
       const mist = screen.getByTestId('landscape-mist', { includeHiddenElements: true });
       expect(mist.props.pointerEvents).toBe('none');
-      expect(mist.props.accessible).toBe(false);
+      // M6-beginner-friendly AC 43: hidden via aria-hidden instead of the `accessible` prop.
+      expect(mist.props['aria-hidden']).toBe(true);
       expect(screen.queryByTestId('landscape-home', { includeHiddenElements: true })).toBeNull();
     },
   );

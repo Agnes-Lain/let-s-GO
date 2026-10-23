@@ -70,7 +70,9 @@ describe('Home screen (M0 copy)', () => {
   it('draws the decorative landscape hidden from accessibility and touches', async () => {
     await renderHome('zh-CN');
     const landscape = screen.getByTestId('landscape-home', hidden);
-    expect(landscape.props.accessible).toBe(false);
+    // M6-beginner-friendly AC 43: hidden without the `accessible` prop (it reached the DOM on web).
+    expect(landscape.props['aria-hidden']).toBe(true);
+    expect(landscape.props.importantForAccessibility).toBe('no-hide-descendants');
     expect(landscape.props.pointerEvents).toBe('none');
   });
 });

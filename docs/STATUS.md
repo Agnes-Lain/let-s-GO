@@ -99,6 +99,14 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   Spec `docs/specs/M6-game-coaching.md` (§12b dev deviations). Web check `npm run verify:web:m6c` (Node 22); screenshots
   `docs/screenshots/M6/40-*`, `50-*`–`58-*`. Shared feedback slot order agreed with the beginner-friendly branch
   (illegal > danger atari > coach note/hint > capture/pass; dedupe atari). Web/mouse: notes clear on next move, not on touch.
+- **M6 item 1c** beginner-friendly 9×9 (branch `claude/m6-beginner-friendly`, PO-approved spec, QA READY, 3946 tests):
+  handicap 让子 2–5 (pure `src/game9/handicap.ts`; White first, komi 0.5; picker row + Start; auto-adjust ±1 per level in
+  progress `bots[L].handicap`, start Easy 2 / Normal 5 / Challenge 5 from tuning), take-back 悔棋 (Easy ∞ / Normal 3 / Challenge 1,
+  reducer `history`), danger rings + atari line (`src/game9/danger.ts` `dangerOf`, dedupes coach atari/escape notes), softer Easy
+  (blunder 0.6, skipSave/skipAtari 0.5) and Normal slip 0.7 (Sensible wins Easy 92.5 %, Normal 57 %). Fixed dev web warnings
+  `accessible`/`collapsable` (icons.tsx, Landscape, Sheets, GoBoard `CircleNoCollapse`). Spec `docs/specs/M6-beginner-friendly.md`
+  (§6 tuning, §14 dev deviations). Web check `e2e/verify-web-m6-beginner.mjs` (dev server :8099); screenshots `docs/screenshots/M6/20-*`–`30-*`.
+  **Pending PO:** confirm start Normal 5 (= max, no step up after a loss); L3 handicap numbers are 25-seed and noisy.
 - **M4 item 2 — PR #13 open (2026-10-19), QA READY, awaiting merge + PO iPhone check.** Branch
   `claude/m4-second-half-kickoff-15r25e`. Spec `docs/specs/M4-bot-capture-go.md` is PO-approved
   (§15: all §14 defaults accepted), mockup `docs/specs/M4-bot-mockup.html`.

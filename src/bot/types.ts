@@ -17,6 +17,17 @@ export interface BotOptions {
    * always play this way. Default false, so recorded Capture Go games do not change.
    */
   board9?: boolean;
+  /**
+   * Level 1 with `board9` only (M6-beginner-friendly §4.4): the chance to not save an own group in
+   * atari (skip rule 2) and to not put an opponent group in atari (skip rule 3). Default 0.
+   */
+  skipSave?: number;
+  skipAtari?: number;
+  /**
+   * Level 2 only (M6-beginner-friendly AC 39): the chance to play the 2nd or 3rd best point when
+   * no capture or save exists. Default 0.
+   */
+  slip?: number;
 }
 
 export interface BotChoice {

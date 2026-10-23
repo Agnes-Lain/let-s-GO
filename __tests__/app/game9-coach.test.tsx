@@ -113,7 +113,7 @@ describe('Hint 提示 (AC 17–20)', () => {
     await press('game9-hint');
     expect(label('practice-feedback')).toBe('This puts 1 white stone in atari.');
     await tapBoard('f4');
-    expect(label('practice-feedback')).toMatch(/^You put 1 stone at [a-j]\d in atari\.$/);
+    expect(label('practice-feedback')).toMatch(/^You put 1 stone at [A-J]\d in atari\.$/);
     expect(label('practice-feedback')).not.toMatch(/coach\./);
   });
 
@@ -192,7 +192,7 @@ describe('Review 复盘 (AC 27, 32–35, §9 #9)', () => {
     await press('review-prev');
     expect(screen.getByTestId('review-step').props.children).toMatch(/^Move (\d+) of \d+$/);
     expect(announce).toHaveBeenCalledWith(
-      expect.stringMatching(/^Move \d+ of \d+, (Black|White) at [a-j]\d$/),
+      expect.stringMatching(/^Move \d+ of \d+, (Black|White) at [A-J]\d$/),
     );
     await press('review-next');
     expect(screen.getByTestId('review-step').props.children).toBe(total);

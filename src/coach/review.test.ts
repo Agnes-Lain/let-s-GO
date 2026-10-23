@@ -131,7 +131,7 @@ describe('reviewMoments: capture moments (AC 26, 31)', () => {
         kind: 'bigCapture',
         ply: 27,
         point: parseVertex('d1', 9),
-        note: { key: 'coach.review.bigCapture.B', params: { n: 27, k: 2, point: 'd1' } },
+        note: { key: 'coach.review.bigCapture.B', params: { n: 27, k: 2, point: 'D1' } },
       },
     ]);
   });
@@ -180,7 +180,7 @@ describe('reviewMoments: swing (AC 28, 29, 31)', () => {
       kind: 'swing',
       ply: 15,
       point: parseVertex('e7', 9),
-      note: { key: 'coach.review.swing', params: { n: 15, point: 'e7' } },
+      note: { key: 'coach.review.swing', params: { n: 15, point: 'E7' } },
       reply: { key: 'coach.review.reply.none' },
     });
   });

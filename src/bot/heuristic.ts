@@ -5,6 +5,7 @@ import { legalMoves, type GameState, type Point } from '@/engine';
 import { analyzeMoves, exposedStones, type MoveAnalysis } from './analysis';
 import { MAX_PLIES_9, opponentJustPassed } from './board9';
 import { isOwnEye } from './eyes';
+import { createRng } from './rng';
 import type { BotChoice, BotOptions } from './types';
 
 /** 9×9 opening (M6 §6.1): while more points than this are empty, level 1 avoids the first line. */
@@ -41,6 +42,15 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
   const color = state.toPlay;
 
   const board9 = opts.board9 ?? false;
+  // The softer 9×9 mistakes (M6-beginner-friendly §4.4) use a derived rng from a 4th draw, so
+  // the first three draws (and Capture Go games) stay the same.
+  let skipSave = false;
+  let skipAtari = false;
+  if (board9) {
+    const extra = createRng(Math.floor(opts.rng() * 0x100000000));
+    skipSave = extra() < (opts.skipSave ?? 0);
+    skipAtari = extra() < (opts.skipAtari ?? 0);
+  }
   const passMove: BotChoice = { move: { type: 'pass', color }, reason: 'pass' };
 
   let points = legalMoves(state);
@@ -82,7 +92,7 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
   }
 
   // 2. Save own stones in atari: fewest stones left in atari, then most liberties.
-  if (exposedBefore > 0) {
+  if (exposedBefore > 0 && !skipSave) {
     const saves = candidates.filter((c) => c.exposed < exposedBefore && !c.selfAtari);
     if (saves.length > 0) {
       const fewest = best(saves, (c) => -c.exposed);
@@ -97,9 +107,11 @@ export function level1(state: GameState, opts: BotOptions): BotChoice {
   }
 
   // 3. Put the largest opponent group in atari, without weakening own stones.
-  const ataris = candidates.filter(
-    (c) => c.opponentAtari.length > 0 && !c.selfAtari && c.exposed <= exposedBefore,
-  );
+  const ataris = skipAtari
+    ? []
+    : candidates.filter(
+        (c) => c.opponentAtari.length > 0 && !c.selfAtari && c.exposed <= exposedBefore,
+      );
   if (ataris.length > 0) {
     return choice(
       pick(

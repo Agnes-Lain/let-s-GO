@@ -10,7 +10,7 @@ import {
   type BotLevel,
   type GroupJudgement,
 } from '@/bot';
-import { HINTS_PER_GAME, hintFor, hintNote, moveNote, pickNote } from '@/coach';
+import { HINTS_PER_GAME, hintFor, hintNote, moveNote, pickNote, type CoachFact } from '@/coach';
 import {
   createGame,
   groupAt,
@@ -28,7 +28,16 @@ import {
   type Vertex,
 } from '@/engine';
 
-import { GAME_KOMI_9, L1_BLUNDER_9 } from './config';
+import {
+  GAME_KOMI_9,
+  L1_BLUNDER_9,
+  L1_SKIP_ATARI_9,
+  L1_SKIP_SAVE_9,
+  L2_SLIP_9,
+  TAKEBACKS_PER_GAME,
+} from './config';
+import { dangerOf, withoutDangerFacts } from './danger';
+import { HANDICAP_KOMI, handicapStones, type Handicap } from './handicap';
 
 /** "Count now" needs at least this many moves (AC 23). */
 export const COUNT_NOW_MIN_MOVES = 6;
@@ -51,6 +60,8 @@ export interface LastMove {
   /** null for a pass. */
   point: Point | null;
   captured: Point[];
+  /** Brought back by a take-back: shown again, not announced again. */
+  restored?: boolean;
 }
 
 /** The dead-stone sheet (AC 29): the bot proposes proved-dead groups. */
@@ -87,9 +98,20 @@ export type GameResult =
   | { kind: 'count'; winner: Color | null; margin: number; score: ScoreResult }
   | { kind: 'resigned' };
 
+/** The position before one learner action (M6-beginner-friendly §4.2): what a take-back restores. */
+export interface Snapshot {
+  game: GameState;
+  last: LastMove | null;
+  note: Note | null;
+}
+
 export interface GameSession {
   level: BotLevel;
   seed: number;
+  /** Black stones placed before the game (让子 ràngzǐ, 0 = even game). */
+  handicap: Handicap;
+  /** Danger rings + atari line on (the learner can switch them off on the picker). */
+  atariHints: boolean;
   learner: Color;
   bot: Color;
   game: GameState;
@@ -110,6 +132,10 @@ export interface GameSession {
   count: CountView | null;
   result: GameResult | null;
   coach: CoachState;
+  /** One snapshot per learner move or pass since the game (or Play on) started (§4.2). */
+  history: Snapshot[];
+  /** Take-backs 悔棋 left in this game; null = unlimited (Easy). */
+  takebacksLeft: number | null;
 }
 
 export type GameEvent =
@@ -129,17 +155,38 @@ export type GameEvent =
   | { type: 'hint' }
   /** The learner touches the board: the next turn starts and the notes clear (AC 12). */
   | { type: 'touch' }
-  | { type: 'new'; seed: number };
+  /** Take back 悔棋 the learner's last move and the bot's reply; `first`: the first time ever. */
+  | { type: 'takeback'; first?: boolean }
+  /** A new game on the same level; the handicap stays unless given. */
+  | { type: 'new'; seed: number; handicap?: Handicap };
 
-export function startSession(level: BotLevel, seed: number): GameSession {
+/** The empty board, or the handicap stones with White to move (§3). */
+function newGame(handicap: Handicap): GameState {
+  if (handicap === 0) return createGame(9, { komi: GAME_KOMI_9 });
+  return createGame(9, {
+    komi: HANDICAP_KOMI,
+    setup: { B: handicapStones(handicap) },
+    toPlay: 'W',
+  });
+}
+
+export function startSession(
+  level: BotLevel,
+  seed: number,
+  handicap: Handicap = 0,
+  atariHints = true,
+): GameSession {
   return {
     level,
     seed,
+    handicap,
+    atariHints,
     learner: 'B',
     bot: 'W',
-    game: createGame(9, { komi: GAME_KOMI_9 }),
+    game: newGame(handicap),
     phase: 'playing',
-    thinking: false,
+    // With a handicap White moves first: the screen sends `bot` after the delay (AC 2).
+    thinking: handicap > 0,
     last: null,
     note: null,
     marks: [],
@@ -150,7 +197,14 @@ export function startSession(level: BotLevel, seed: number): GameSession {
     count: null,
     result: null,
     coach: { notes: [], hint: null, hintsLeft: HINTS_PER_GAME[level], hintsUsed: 0 },
+    history: [],
+    takebacksLeft: TAKEBACKS_PER_GAME[level],
   };
+}
+
+/** The snapshot pushed before a learner action. */
+function pushHistory(s: GameSession): Snapshot[] {
+  return [...s.history, { game: s.game, last: s.last, note: s.note }];
 }
 
 /** The coaching after a ply: notes replaced or extended, the hint marker gone. */
@@ -165,9 +219,30 @@ function noteLines(
   move: Move,
   after: GameState,
   facts: MoveFacts,
+  keep: (facts: CoachFact[]) => CoachFact[] = (f) => f,
 ): Note[] {
-  const note = pickNote(moveNote(before, move, after, facts), s.learner, move.color);
+  const note = pickNote(keep(moveNote(before, move, after, facts)), s.learner, move.color);
   return note ? [note] : [];
+}
+
+/**
+ * The notes after the bot's reply, without the facts the atari line already says (AC 44): the
+ * learner's move is re-read from the last snapshot, the bot's from its own move.
+ */
+function notesAfterReply(s: GameSession, move: Move, after: GameState, facts: MoveFacts): Note[] {
+  // With the atari hints off nothing else says the atari, so the coach keeps those facts.
+  const danger = s.atariHints ? dangerOf(after, s.learner) : [];
+  const keep = (f: CoachFact[]) => withoutDangerFacts(f, danger, s.learner);
+  const mine: Note[] = [];
+  const learnerMove = s.game.moves[s.game.moves.length - 1];
+  const before = s.history[s.history.length - 1]?.game;
+  if (learnerMove?.type === 'play' && learnerMove.color === s.learner && before) {
+    const replay = play(before, learnerMove.point);
+    if (replay.ok) mine.push(...noteLines(s, before, learnerMove, s.game, replay.facts, keep));
+  } else {
+    mine.push(...s.coach.notes);
+  }
+  return [...mine, ...noteLines(s, s.game, move, after, facts, keep)];
 }
 
 function apply(state: GameState, move: Move): GameState {
@@ -221,6 +296,9 @@ function botMove(s: GameSession): Move {
       rng,
       board9: true,
       blunder: level === 1 ? L1_BLUNDER_9 : 0,
+      skipSave: level === 1 ? L1_SKIP_SAVE_9 : 0,
+      skipAtari: level === 1 ? L1_SKIP_ATARI_9 : 0,
+      slip: level === 2 ? L2_SLIP_9 : 0,
     }).move;
   } catch {
     const points = legalMoves(game);
@@ -233,7 +311,7 @@ function botMove(s: GameSession): Move {
 function beforePasses(s: GameSession): GameState {
   const moves = [...s.game.moves];
   while (moves.length > 0 && moves[moves.length - 1].type === 'pass') moves.pop();
-  let game = createGame(9, { komi: s.game.komi });
+  let game = newGame(s.handicap);
   for (const move of moves) game = apply(game, move);
   // The bot passed first: its pass stands, so the learner is to move.
   if (game.toPlay === s.bot) game = apply(game, { type: 'pass', color: s.bot });
@@ -285,7 +363,24 @@ function onMarkDone(s: GameSession): GameSession {
 export function gameReducer(s: GameSession, event: GameEvent): GameSession {
   switch (event.type) {
     case 'new':
-      return startSession(s.level, event.seed);
+      return startSession(s.level, event.seed, event.handicap ?? s.handicap, s.atariHints);
+
+    case 'takeback': {
+      if (!canTakeBack(s)) return s;
+      const snap = s.history[s.history.length - 1];
+      const id = (s.last?.id ?? 0) + 1;
+      return {
+        ...s,
+        game: snap.game,
+        thinking: false,
+        // A fresh id and no captures: the board does not replay the old capture fade.
+        last: snap.last ? { ...snap.last, id, captured: [], restored: true } : null,
+        note: event.first ? { key: 'game9.takeback.first' } : { key: 'game9.takeback.done' },
+        history: s.history.slice(0, -1),
+        takebacksLeft: s.takebacksLeft === null ? null : s.takebacksLeft - 1,
+        coach: coachAfter(s, []),
+      };
+    }
 
     case 'play': {
       if (s.phase !== 'playing' || s.thinking) return s;
@@ -295,6 +390,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
       const move: Move = { type: 'play', color: s.learner, point: event.point };
       return {
         ...s,
+        history: pushHistory(s),
         game: result.state,
         thinking: true,
         last: lastOf(s, s.learner, event.point, captured),
@@ -309,6 +405,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
       if (game.isOver) return enterMark(s, game);
       return {
         ...s,
+        history: pushHistory(s),
         game,
         thinking: true,
         last: lastOf(s, s.learner, null, []),
@@ -342,10 +439,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         thinking: false,
         last: lastOf(s, s.bot, move.point, captured),
         note: null,
-        coach: coachAfter(s, [
-          ...s.coach.notes,
-          ...noteLines(s, s.game, move, result.state, result.facts),
-        ]),
+        coach: coachAfter(s, notesAfterReply(s, move, result.state, result.facts)),
       };
     }
 
@@ -398,6 +492,8 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         dispute: null,
         flash: [],
         last: null,
+        // No take-back into the finished game; used take-backs stay used (AC 22).
+        history: [],
         playOnRounds: rounds,
         coach: coachAfter(s, []),
         note:
@@ -430,8 +526,15 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
     }
 
     case 'touch': {
-      if (s.phase !== 'playing' || s.thinking || s.coach.notes.length === 0) return s;
-      return { ...s, coach: { ...s.coach, notes: [] } };
+      if (s.phase !== 'playing' || s.thinking) return s;
+      // An illegal-move reason lasts until the next tap (M6-beginner-friendly AC 34).
+      const illegal = s.note?.key.startsWith('game.fb.illegal.') ?? false;
+      if (s.coach.notes.length === 0 && !illegal) return s;
+      return {
+        ...s,
+        note: illegal ? null : s.note,
+        coach: s.coach.notes.length === 0 ? s.coach : { ...s.coach, notes: [] },
+      };
     }
 
     case 'countDone': {
@@ -445,6 +548,11 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
       };
     }
   }
+}
+
+/** Take back 悔棋 is possible (AC 19, 20). */
+export function canTakeBack(s: GameSession): boolean {
+  return s.phase === 'playing' && !s.thinking && s.history.length > 0 && s.takebacksLeft !== 0;
 }
 
 /** *Count now* is offered (AC 21, 23). */

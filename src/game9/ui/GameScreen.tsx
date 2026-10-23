@@ -19,13 +19,16 @@ import { Button, IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
 import { color, radius, spacing, typography } from '@/theme/tokens';
 
+import { atariLine, dangerOf, type DangerGroup } from '../danger';
 import { checkGameMove } from '../engineView';
 import { formatNumber, formatParams } from '../format';
+import { nextHandicap, suggestedHandicap, type Handicap } from '../handicap';
 import {
   BOT_DELAY_MS,
   BOT_DELAY_REDUCED_MS,
   anyAtari,
   canCountNow,
+  canTakeBack,
   gameReducer,
   lossFact,
   outcomeOf,
@@ -64,12 +67,20 @@ function toneOf(note: Note): FeedbackTone {
   return 'hint';
 }
 
+/** Groups in atari while the learner is to move (AC 30, 32): none while the bot thinks or with the hints off. */
+function visibleDanger(s: GameSession): DangerGroup[] {
+  return s.atariHints && s.phase === 'playing' && !s.thinking ? dangerOf(s.game, s.learner) : [];
+}
+
 export function GameScreen({
   level,
+  handicap = 0,
   onLeave,
   onChangeLevel,
 }: {
   level: BotLevel;
+  /** Black stones placed before the game (让子, M6-beginner-friendly §3). */
+  handicap?: Handicap;
   /** Back to Home (✕ after the game, Home button, confirmed Leave). */
   onLeave: () => void;
   onChangeLevel: () => void;
@@ -81,7 +92,9 @@ export function GameScreen({
   const reduceMotion = useReduceMotion();
   const flags = useProgress((p) => p.flags);
 
-  const [s, setS] = useState<GameSession>(() => startSession(level, newSeed()));
+  const [s, setS] = useState<GameSession>(() =>
+    startSession(level, newSeed(), handicap, !flags.atariHintsOff),
+  );
   const current = useRef(s);
   const send = useCallback(
     (event: GameEvent) => {
@@ -91,8 +104,11 @@ export function GameScreen({
       current.current = next;
       setS(next);
       // Saved here, in the event handler, so a re-render never records twice (AC 34).
+      // The next handicap suggestion steps with the outcome (M6-beginner-friendly AC 11).
       const outcome = outcomeOf(next);
-      if (outcome && !before.result) progressStore.getState().recordGame(level, outcome);
+      if (outcome && !before.result) {
+        progressStore.getState().recordGame(level, outcome, nextHandicap(next.handicap, outcome));
+      }
     },
     [level],
   );
@@ -116,6 +132,8 @@ export function GameScreen({
     const last = s.last;
     if (!last || last.id === announcedMove.current) return;
     announcedMove.current = last.id;
+    // A take-back's restored move is not news; the feedback card says "Taken back".
+    if (last.restored) return;
     const parts = [
       last.point
         ? t(`game9.a11y.played.${last.color}`, { point: toVertex(last.point, 9) })
@@ -171,6 +189,14 @@ export function GameScreen({
     if (!flags.passExplained) setSheet('pass');
     else send({ type: 'pass' });
   };
+  // The very first take-back ever explains itself once (AC 15).
+  const onTakeBack = () => {
+    send({ type: 'takeback', first: !flags.takebackExplained });
+    if (!flags.takebackExplained) progressStore.getState().setFlag('takebackExplained');
+  };
+  const bots = useProgress((p) => p.bots);
+  const onAgain = () =>
+    send({ type: 'new', seed: newSeed(), handicap: suggestedHandicap(bots, level) });
 
   if (reviewing && s.phase === 'result') {
     return <ReviewView s={s} onClose={() => setReviewing(false)} />;
@@ -189,7 +215,13 @@ export function GameScreen({
         <Text style={styles.header} numberOfLines={1} testID="game9-header">
           {s.phase === 'count'
             ? t('game9.count.title')
-            : t('game9.header', { level: levelName, komi: n(s.game.komi) })}
+            : s.handicap > 0
+              ? t('game9.header.handicap', {
+                  level: levelName,
+                  n: s.handicap,
+                  komi: n(s.game.komi),
+                })
+              : t('game9.header', { level: levelName, komi: n(s.game.komi) })}
         </Text>
         <Text style={styles.move} numberOfLines={1} testID="game9-move">
           {t('game9.move', { n: s.game.moves.length })}
@@ -227,6 +259,9 @@ export function GameScreen({
         n={n}
         send={send}
         onPass={onPass}
+        onTakeBack={onTakeBack}
+        onAgain={onAgain}
+        nextHandicap={suggestedHandicap(bots, level)}
         onCountNow={() => setSheet('countNow')}
         onResign={() => setSheet('resign')}
         onChangeLevel={onChangeLevel}
@@ -377,6 +412,8 @@ function GameBoard({
   width: number;
   send: (event: GameEvent) => void;
 }) {
+  const { t } = useTranslation();
+  const atariLabel = t('game9.a11y.atari');
   const points = (vertices: readonly string[]): Point[] => vertices.map((v) => parseVertex(v, 9));
 
   if (s.phase === 'count' && s.count) {
@@ -425,6 +462,20 @@ function GameBoard({
 
   const last = s.last;
   const hintAt = s.phase === 'playing' ? (s.coach.hint?.point ?? null) : null;
+  const danger = visibleDanger(s);
+  const markers: Marker[] = danger.map((g) => ({
+    kind: 'diamond',
+    point: g.liberty,
+    tone: g.color === s.learner ? 'danger' : 'chance',
+  }));
+  if (hintAt) markers.push({ kind: 'diamond', point: hintAt, tone: 'hint' });
+  // Own groups: solid rouge ring; White groups: dashed tea-green ring (AC 30–31).
+  const highlights: Highlight[] = danger.map((g) => ({
+    kind: g.color === s.learner ? 'error' : 'success',
+    points: g.stones,
+    dashed: g.color !== s.learner,
+    label: atariLabel,
+  }));
   const lastCapture: CaptureEvent | null =
     last && last.captured.length > 0
       ? { id: last.id, color: last.color === 'B' ? 'W' : 'B', points: last.captured }
@@ -441,19 +492,42 @@ function GameBoard({
       checkPoint={(p) => checkGameMove(s.game, p)}
       onPlay={(point) => send({ type: 'play', point })}
       onIllegal={(point) => send({ type: 'play', point })}
+      // Touch-down (mouse or finger) starts the next turn: old notes and an illegal reason clear.
+      onTouchDown={() => send({ type: 'touch' })}
       lastMove={last?.point ?? null}
       lastCapture={lastCapture}
-      markers={hintAt ? [{ kind: 'diamond', point: hintAt, tone: 'hint' }] : undefined}
+      markers={markers.length > 0 ? markers : undefined}
+      highlights={highlights.length > 0 ? highlights : undefined}
       testID="game9-board"
     />
   );
 }
 
-/** The card under the board while playing: an engine message, else the hint, else the notes. */
-function playingLines(s: GameSession, say: (note: Note) => string): FeedbackText[] {
-  if (s.note) return [{ text: say(s.note), tone: toneOf(s.note) }];
-  if (s.coach.hint) return [{ text: say(s.coach.hint.note), tone: 'success' }];
-  return s.coach.notes.map((note) => ({ text: say(note), tone: 'hint' }));
+/**
+ * The one shared card under the board while playing (M6-beginner-friendly §8): an illegal-move
+ * reason, else the atari line, else the hint, else the coaching notes, else the other notes. With
+ * the atari line one more line fits below it (the hint, else the latest note).
+ */
+function playingLines(
+  s: GameSession,
+  say: (note: Note) => string,
+  more: (n: number) => string,
+): FeedbackText[] {
+  if (s.note && s.note.key.startsWith('game.fb.illegal.')) {
+    return [{ text: say(s.note), tone: toneOf(s.note) }];
+  }
+  const line = atariLine(visibleDanger(s), s.learner);
+  const rest: FeedbackText[] = s.coach.hint
+    ? [{ text: say(s.coach.hint.note), tone: 'success' }]
+    : s.coach.notes.length > 0
+      ? s.coach.notes.map((note) => ({ text: say(note), tone: 'hint' }))
+      : s.note
+        ? [{ text: say(s.note), tone: toneOf(s.note) }]
+        : [];
+  if (!line) return rest;
+  const own = line.note.key.startsWith('game9.atari.you.');
+  const text = line.more > 0 ? `${say(line.note)}${more(line.more)}` : say(line.note);
+  return [{ text, tone: own ? 'error' : 'success' }, ...rest.slice(-1)];
 }
 
 function Bottom({
@@ -462,6 +536,9 @@ function Bottom({
   n,
   send,
   onPass,
+  onTakeBack,
+  onAgain,
+  nextHandicap: next,
   onCountNow,
   onResign,
   onChangeLevel,
@@ -473,34 +550,53 @@ function Bottom({
   n: (value: number) => string;
   send: (event: GameEvent) => void;
   onPass: () => void;
+  onTakeBack: () => void;
+  onAgain: () => void;
+  nextHandicap: Handicap;
   onCountNow: () => void;
   onResign: () => void;
   onChangeLevel: () => void;
   onHome: () => void;
   onReview: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const feedback: FeedbackText[] = s.note ? [{ text: say(s.note), tone: toneOf(s.note) }] : [];
+  // "+2 more in atari." joins the line (no space in Chinese).
+  const more = (count: number) =>
+    `${i18n.language.startsWith('zh') ? '' : ' '}${t('game9.atari.more', { n: count })}`;
 
   if (s.phase === 'playing') {
     const locked = s.thinking;
     const { hintsLeft } = s.coach;
+    const left = s.takebacksLeft;
     return (
       <>
-        <FeedbackCard lines={playingLines(s, say)} height={NOTE_CARD_HEIGHT} />
+        <FeedbackCard lines={playingLines(s, say, more)} height={NOTE_CARD_HEIGHT} />
         <View style={styles.spacer} />
-        <Button
-          label={
-            hintsLeft === null
-              ? t('coach.hint.buttonFree')
-              : t('coach.hint.button', { n: n(hintsLeft) })
-          }
-          variant="secondary"
-          onPress={() => send({ type: 'hint' })}
-          disabled={locked || hintsLeft === 0}
-          accessibilityLabel={hintsLeft === 0 ? t('coach.hint.none') : undefined}
-          testID="game9-hint"
-        />
+        {/* Hint ("before I move") left, Take back 悔棋 ("after I moved") right (§5.2). */}
+        <View style={styles.row}>
+          <Button
+            label={
+              hintsLeft === null
+                ? t('coach.hint.buttonFree')
+                : t('coach.hint.button', { n: n(hintsLeft) })
+            }
+            variant="secondary"
+            onPress={() => send({ type: 'hint' })}
+            disabled={locked || hintsLeft === 0}
+            accessibilityLabel={hintsLeft === 0 ? t('coach.hint.none') : undefined}
+            testID="game9-hint"
+            style={styles.flex}
+          />
+          <Button
+            label={left === null ? t('game9.btn.takeback') : t('game9.btn.takebackN', { n: left })}
+            variant="secondary"
+            onPress={onTakeBack}
+            disabled={!canTakeBack(s)}
+            testID="game9-takeback"
+            style={styles.flex}
+          />
+        </View>
         <View style={styles.row}>
           <Button
             label={t('game9.btn.pass')}
@@ -593,6 +689,10 @@ function Bottom({
           {fact ? <Text style={styles.resultDetail}>{say(fact)}</Text> : null}
         </View>
       </View>
+      {/* The next game's handicap 让子 (M6-beginner-friendly AC 12, §5.4). */}
+      <Text style={styles.caption} testID="game9-next-handicap">
+        {next > 0 ? t('game9.result.next', { n: next }) : t('game9.result.nextEven')}
+      </Text>
       <View style={styles.spacer} />
       {outcome === 'resigned' ? (
         <Button
@@ -615,7 +715,7 @@ function Bottom({
             <Button
               label={t('game9.btn.again')}
               variant="secondary"
-              onPress={() => send({ type: 'new', seed: newSeed() })}
+              onPress={onAgain}
               testID="game9-again"
               style={styles.flex}
             />
@@ -642,7 +742,7 @@ function Bottom({
           <View style={styles.row}>
             <Button
               label={t('game9.btn.again')}
-              onPress={() => send({ type: 'new', seed: newSeed() })}
+              onPress={onAgain}
               testID="game9-again"
               style={styles.flex}
             />

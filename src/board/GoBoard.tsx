@@ -1,6 +1,6 @@
 // <GoBoard/> — pure-presentational SVG board. No game logic: the parent owns the GameState.
 // PR 1 = static drawing. Extension points for later PRs are marked "PR 2" / "PR 3".
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AccessibilityInfo,
@@ -13,7 +13,15 @@ import {
   type GestureResponderEvent,
   type LayoutChangeEvent,
 } from 'react-native';
-import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, {
+  Circle,
+  G,
+  Line,
+  Polygon,
+  Rect,
+  Text as SvgText,
+  type CircleProps,
+} from 'react-native-svg';
 
 import '@/i18n';
 import { parseVertex, toVertex } from '@/engine';
@@ -46,6 +54,8 @@ export interface Highlight {
   points: readonly Point[];
   /** Dashed ring (the mistaken stone of a sequence, M5-life-death AC 32). Rings only. */
   dashed?: boolean;
+  /** Screen-reader words for these points instead of the kind's (e.g. "in atari", M6 AC 35). */
+  label?: string;
 }
 
 export type Marker =
@@ -55,9 +65,10 @@ export type Marker =
   | { kind: 'dead'; point: Point }
   /**
    * A small filled diamond (M6-game-coaching §5.2–5.3): the 提示 hint move (`hint`, bamboo green)
-   * or the key point of a review moment (`moment`, amber). Never a ring.
+   * or the key point of a review moment (`moment`, amber). Never a ring. `danger` (rouge) / `chance`
+   * (tea green): the last liberty of a group in atari (M6-beginner-friendly AC 30).
    */
-  | { kind: 'diamond'; point: Point; tone: 'hint' | 'moment' };
+  | { kind: 'diamond'; point: Point; tone: 'hint' | 'moment' | 'danger' | 'chance' };
 
 /** Highlight kinds drawn below the stones instead of as rings. */
 const BELOW_STONES: readonly HighlightKind[] = ['liberty', 'territoryB', 'territoryW', 'scratch'];
@@ -97,6 +108,8 @@ export interface GoBoardProps {
   onPlay?: (p: Point) => void;
   /** Touch-up on an illegal point. */
   onIllegal?: (p: Point, reason: IllegalReason) => void;
+  /** Touch-down on the board (before any preview or commit), e.g. to clear old feedback. */
+  onTouchDown?: () => void;
   lastMove?: Point | null;
   /** Screen-reader announcement and capture fade-out; each `id` plays once. */
   lastCapture?: CaptureEvent | null;
@@ -122,8 +135,24 @@ const NO_HIGHLIGHTS: readonly Highlight[] = [];
 const NO_MARKERS: readonly Marker[] = [];
 const NO_STONES: readonly (Color | null)[] = [];
 const SQRT3_HALF = Math.sqrt(3) / 2;
+const DIAMOND_FILL = {
+  hint: color.success,
+  moment: color.hint,
+  danger: color.error,
+  chance: color.success,
+} as const;
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+/**
+ * A Circle that drops `collapsable`: Animated forces `collapsable={false}` on its child, and
+ * react-native-svg on web passes it to <circle> (React warns about a non-boolean attribute).
+ */
+export const CircleNoCollapse = forwardRef<Circle, CircleProps & { collapsable?: boolean }>(
+  function CircleNoCollapse({ collapsable: _collapsable, ...props }, ref) {
+    return <Circle ref={ref} {...props} />;
+  },
+);
+
+const AnimatedCircle = Animated.createAnimatedComponent(CircleNoCollapse);
 
 function warnDev(message: string) {
   if (__DEV__) console.warn(`[GoBoard] ${message}`);
@@ -141,6 +170,7 @@ export function GoBoard({
   checkPoint,
   onPlay,
   onIllegal,
+  onTouchDown,
   lastMove = null,
   lastCapture = null,
   sound = true,
@@ -194,6 +224,7 @@ export function GoBoard({
           checkPoint={checkPoint}
           onPlay={onPlay}
           onIllegal={onIllegal}
+          onTouchDown={onTouchDown}
           lastMove={lastMove}
           lastCapture={lastCapture}
           sound={sound}
@@ -224,6 +255,7 @@ interface DrawingProps {
   checkPoint: GoBoardProps['checkPoint'];
   onPlay: GoBoardProps['onPlay'];
   onIllegal: GoBoardProps['onIllegal'];
+  onTouchDown: GoBoardProps['onTouchDown'];
   lastMove: Point | null;
   lastCapture: CaptureEvent | null;
   sound: boolean;
@@ -249,6 +281,7 @@ function BoardDrawing({
   checkPoint,
   onPlay,
   onIllegal,
+  onTouchDown,
   lastMove,
   lastCapture,
   sound,
@@ -322,6 +355,7 @@ function BoardDrawing({
     if (!canTouch || touching.current) return;
     touching.current = true;
     clearFadeTimer();
+    onTouchDown?.();
     showPreviewAt(pointAt(e));
   };
   const onMove = (e: GestureResponderEvent) => {
@@ -1129,7 +1163,9 @@ function PointsLayer({
         );
       }
       for (const h of highlights) {
-        if (h.points.some((q) => samePoint(q, p))) parts.push(t(`board.a11y.highlight.${h.kind}`));
+        if (h.points.some((q) => samePoint(q, p))) {
+          parts.push(h.label ?? t(`board.a11y.highlight.${h.kind}`));
+        }
       }
       const c = pointToLocation(g, p);
       const style = {
@@ -1219,7 +1255,7 @@ function MarkerShape({ marker, g, on }: { marker: Marker; g: BoardGeometry; on: 
         <Polygon
           testID={`${id}-${marker.tone}`}
           points={points}
-          fill={marker.tone === 'hint' ? color.success : color.hint}
+          fill={DIAMOND_FILL[marker.tone]}
           stroke={on === 'B' ? stone.white : 'none'}
           strokeWidth={on === 'B' ? 1 : 0}
         />

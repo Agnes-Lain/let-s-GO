@@ -104,7 +104,7 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
       ? t(`coach.review.a11y.${move.type === 'play' ? 'played' : 'passed'}.${move.color}`, {
           n: step,
           total,
-          point: move.type === 'play' ? toVertex(move.point, 9) : '',
+          point: move.type === 'play' ? toVertex(move.point, 9).toUpperCase() : '',
         })
       : t('coach.review.start');
     AccessibilityInfo.announceForAccessibility(text);

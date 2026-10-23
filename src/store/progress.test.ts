@@ -239,3 +239,43 @@ describe('9×9 bot games (M6 AC 34–37)', () => {
     expect(store.getState().bots).toEqual({});
   });
 });
+
+describe('handicap suggestion per level (M6-beginner-friendly AC 10, 11)', () => {
+  it('AC 11: stores the next suggestion per level; a game without one keeps the old', () => {
+    const store = make();
+    store.getState().recordGame(1, 'win', 2);
+    expect(store.getState().bots['1']?.handicap).toBe(2);
+    store.getState().recordGame(2, 'loss', 5);
+    expect(store.getState().bots['2']?.handicap).toBe(5);
+    store.getState().recordGame(1, 'loss');
+    expect(store.getState().bots['1']).toMatchObject({ games: 2, handicap: 2 });
+  });
+
+  it('AC 10: the suggestion survives a restart; a broken value is dropped, the record kept', () => {
+    const storage = createMemoryStorage();
+    make(storage).getState().recordGame(2, 'loss', 4);
+    expect(make(storage).getState().bots['2']?.handicap).toBe(4);
+
+    const raw = JSON.stringify({
+      v: 1,
+      lessons: {},
+      bots: { '1': { games: 2, wins: 1, lossStreak: 0, handicap: 'x' } },
+    });
+    const store = make(createMemoryStorage({ [PROGRESS_KEY]: raw }));
+    expect(store.getState().bots['1']).toEqual({ games: 2, wins: 1, lossStreak: 0 });
+  });
+
+  it('the first take-back note is a one-time flag', () => {
+    const storage = createMemoryStorage();
+    make(storage).getState().setFlag('takebackExplained');
+    expect(make(storage).getState().flags).toEqual({ takebackExplained: true });
+  });
+
+  it('atari hints can be switched off and on again; the choice is saved', () => {
+    const storage = createMemoryStorage();
+    make(storage).getState().setFlag('atariHintsOff');
+    expect(make(storage).getState().flags).toEqual({ atariHintsOff: true });
+    make(storage).getState().setFlag('atariHintsOff', false);
+    expect(make(storage).getState().flags).toEqual({});
+  });
+});
