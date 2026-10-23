@@ -871,6 +871,7 @@
   "coach.bot.atari": "The bot put your stones at {{point}} in atari.",
   "coach.bot.escape": "The bot's group escaped the atari.",
   "coach.hint.button": "Hint 提示 tíshì · {{n}}",
+  "coach.hint.buttonFree": "Hint 提示 tíshì",
   "coach.hint.none": "No hints left",
   "coach.hint.capture_one": "This captures {{count}} stone.",
   "coach.hint.capture_other": "This captures {{count}} stones.",

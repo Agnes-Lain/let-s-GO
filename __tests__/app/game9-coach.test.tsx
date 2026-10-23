@@ -85,18 +85,18 @@ afterEach(async () => {
 });
 
 describe('Hint 提示 (AC 17–20)', () => {
-  it('Normal has 2 hints; a hint shows a diamond and its reason, then a move removes it', async () => {
+  it('Normal has no limit; a hint shows a diamond and its reason, then a move removes it', async () => {
     await openGame(2);
-    expect(label('game9-hint')).toBe('Hint 提示 tíshì · 2');
+    expect(label('game9-hint')).toBe('Hint 提示 tíshì');
     expect(diamonds()).toHaveLength(0);
     await press('game9-hint');
-    expect(label('game9-hint')).toBe('Hint 提示 tíshì · 1');
+    expect(label('game9-hint')).toBe('Hint 提示 tíshì');
     expect(diamonds()).toHaveLength(1);
     expect(diamonds()[0].props.testID).toMatch(/-hint$/);
     expect(label('practice-feedback')).toBe(texts['coach.hint.territory']);
     // AC 18: a second tap changes nothing.
     await press('game9-hint');
-    expect(label('game9-hint')).toBe('Hint 提示 tíshì · 1');
+    expect(label('game9-hint')).toBe('Hint 提示 tíshì');
     // AC 19: any move removes it.
     await tapBoard('a9');
     expect(diamonds()).toHaveLength(0);
@@ -117,11 +117,26 @@ describe('Hint 提示 (AC 17–20)', () => {
     expect(label('practice-feedback')).not.toMatch(/coach\./);
   });
 
-  it('AC 20: Challenge has 1; then "· 0", disabled, "No hints left", still ≥ 44 px', async () => {
+  it('AC 17: Easy has no limit: no count on the button, still enabled after hints', async () => {
+    await openGame(1);
+    expect(screen.getByText('Hint 提示 tíshì')).toBeOnTheScreen();
+    for (const v of ['c3', 'g7', 'c7']) {
+      await press('game9-hint');
+      await tapBoard(v);
+      await advance(BOT_DELAY_MS + 50);
+    }
+    expect(screen.getByTestId('game9-hint').props.accessibilityState.disabled).toBe(false);
+    expect(screen.getByText('Hint 提示 tíshì')).toBeOnTheScreen();
+  });
+
+  it('AC 20: Challenge has 3; then "· 0", disabled, "No hints left", still ≥ 44 px', async () => {
     await openGame(3);
-    await press('game9-hint');
-    await tapBoard('c3');
-    await advance(BOT_DELAY_MS + 50);
+    expect(screen.getByText('Hint 提示 tíshì · 3')).toBeOnTheScreen();
+    for (const v of ['c3', 'g7', 'c7']) {
+      await press('game9-hint');
+      await tapBoard(v);
+      await advance(BOT_DELAY_MS + 50);
+    }
     const button = screen.getByTestId('game9-hint');
     expect(button.props.accessibilityState.disabled).toBe(true);
     expect(button.props.accessibilityLabel).toBe(texts['coach.hint.none']);

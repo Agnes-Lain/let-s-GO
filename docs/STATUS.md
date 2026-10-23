@@ -93,7 +93,7 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   card under choice options (same as the M4 note below).
 
 - **M6 item 1b** game coaching for 9×9 (branch `claude/m6-game-coaching`, PO-approved spec, QA READY, 3803 tests):
-  pure `src/coach/` (move notes from MoveFacts, 提示 hint via level-2 `scoreMoves` — 3/2/1 per game by level, post-game
+  pure `src/coach/` (move notes from MoveFacts, 提示 hint via level-2 `scoreMoves` — unlimited on Easy/Normal, 3 on Challenge, post-game
   review 复盘 with 1–3 key moments: big capture, lost group "in atari since move m", playout swing via `winRate()`).
   UI: note in the FeedbackCard, Hint row, `ReviewView` (chunked prep + Skip, chips, Prev/Next), board `diamond` marker.
   Spec `docs/specs/M6-game-coaching.md` (§12b dev deviations). Web check `npm run verify:web:m6c` (Node 22); screenshots

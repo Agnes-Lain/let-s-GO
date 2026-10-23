@@ -77,7 +77,8 @@ export interface CoachState {
   /** At most two lines: the learner's move, then the bot's reply (AC 10–12). */
   notes: Note[];
   hint: HintView | null;
-  hintsLeft: number;
+  /** null: no limit (Easy, Normal). */
+  hintsLeft: number | null;
   /** For the review header (AC 24). */
   hintsUsed: number;
 }
@@ -413,7 +414,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
     }
 
     case 'hint': {
-      if (s.phase !== 'playing' || s.thinking || s.coach.hint || s.coach.hintsLeft <= 0) return s;
+      if (s.phase !== 'playing' || s.thinking || s.coach.hint || s.coach.hintsLeft === 0) return s;
       const hint = hintFor(s.game);
       // "Nothing urgent" costs no hint (AC 22).
       const used = hint.point ? 1 : 0;
@@ -422,7 +423,7 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
         coach: {
           notes: [],
           hint: { point: hint.point, note: hintNote(hint) },
-          hintsLeft: s.coach.hintsLeft - used,
+          hintsLeft: s.coach.hintsLeft === null ? null : s.coach.hintsLeft - used,
           hintsUsed: s.coach.hintsUsed + used,
         },
       };

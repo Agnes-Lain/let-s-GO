@@ -871,6 +871,7 @@
   "coach.bot.atari": "Le robot met vos pierres en {{point}} en atari.",
   "coach.bot.escape": "Le groupe du robot a échappé à l'atari.",
   "coach.hint.button": "Indice 提示 tíshì · {{n}}",
+  "coach.hint.buttonFree": "Indice 提示 tíshì",
   "coach.hint.none": "Plus d'indice",
   "coach.hint.capture_one": "Ce coup capture {{count}} pierre.",
   "coach.hint.capture_other": "Ce coup capture {{count}} pierres.",

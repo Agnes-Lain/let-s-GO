@@ -31,9 +31,14 @@ const BOARD = position(
 
 describe('notes (AC 10–14)', () => {
   it('a new game has no notes and the per-level hints', () => {
-    expect(startSession(1, 1).coach).toEqual({ notes: [], hint: null, hintsLeft: 3, hintsUsed: 0 });
-    expect(startSession(2, 1).coach.hintsLeft).toBe(2);
-    expect(startSession(3, 1).coach.hintsLeft).toBe(1);
+    expect(startSession(1, 1).coach).toEqual({
+      notes: [],
+      hint: null,
+      hintsLeft: null,
+      hintsUsed: 0,
+    });
+    expect(startSession(2, 1).coach.hintsLeft).toBeNull();
+    expect(startSession(3, 1).coach.hintsLeft).toBe(3);
   });
 
   it("AC 12: line 1 appears at commit, before the bot's move", () => {
@@ -92,13 +97,26 @@ describe('notes (AC 10–14)', () => {
 
 describe('hint (AC 17–20, 22, 24)', () => {
   it('AC 17: shows the best move with its reason and uses one hint', () => {
-    const s = run(sessionAt(BOARD), { type: 'hint' });
+    const s = run(sessionAt(BOARD, 3), { type: 'hint' });
     expect(s.coach.hint).toEqual({
       point: parseVertex('e5', 9),
       note: { key: 'coach.hint.capture', params: { count: 1 } },
     });
-    expect(s.coach.hintsLeft).toBe(1);
+    expect(s.coach.hintsLeft).toBe(2);
     expect(s.coach.hintsUsed).toBe(1);
+  });
+
+  it('AC 17: Easy and Normal have no limit; hints used still counts', () => {
+    for (const level of [1, 2] as const) {
+      let s = sessionAt(BOARD, level);
+      for (let i = 0; i < 5; i += 1) {
+        s = gameReducer(s, { type: 'hint' });
+        expect(s.coach.hint).not.toBeNull();
+        s = { ...s, coach: { ...s.coach, hint: null } };
+      }
+      expect(s.coach.hintsLeft).toBeNull();
+      expect(s.coach.hintsUsed).toBe(5);
+    }
   });
 
   it('AC 18: tapping Hint again changes nothing', () => {
@@ -137,9 +155,9 @@ describe('hint (AC 17–20, 22, 24)', () => {
       `,
       'B',
     );
-    const s = run(sessionAt(full), { type: 'hint' });
+    const s = run(sessionAt(full, 3), { type: 'hint' });
     expect(s.coach.hint).toEqual({ point: null, note: { key: 'coach.hint.pass' } });
-    expect(s.coach.hintsLeft).toBe(2);
+    expect(s.coach.hintsLeft).toBe(3);
     expect(s.coach.hintsUsed).toBe(0);
   });
 
@@ -150,7 +168,7 @@ describe('hint (AC 17–20, 22, 24)', () => {
   });
 
   it('a new game resets the hints', () => {
-    const s = run(sessionAt(BOARD), { type: 'hint' }, { type: 'new', seed: 3 });
-    expect(s.coach).toEqual({ notes: [], hint: null, hintsLeft: 2, hintsUsed: 0 });
+    const s = run(sessionAt(BOARD, 3), { type: 'hint' }, { type: 'new', seed: 3 });
+    expect(s.coach).toEqual({ notes: [], hint: null, hintsLeft: 3, hintsUsed: 0 });
   });
 });

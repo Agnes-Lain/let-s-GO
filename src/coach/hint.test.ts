@@ -18,7 +18,7 @@ const at = (v: string) => parseVertex(v, 9);
 
 describe('hintFor (AC 17, 21, 22)', () => {
   it('per-game hints: Easy 3, Normal 2, Challenge 1', () => {
-    expect(HINTS_PER_GAME).toEqual({ 1: 3, 2: 2, 3: 1 });
+    expect(HINTS_PER_GAME).toEqual({ 1: null, 2: null, 3: 3 });
   });
 
   it('capture: Black e5 takes White d5 (fixture A)', () => {

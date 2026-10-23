@@ -81,13 +81,14 @@ shows only the **single highest-priority fact** of that ply. Priority (high to l
     150 ms fade (none under reduce-motion).
 
 ### 4.3 Hint 提示 tíshì
-Hint count per game by level: **Easy 3, Normal 2, Challenge 1.** (Easy has more because it is the first game.)
+Hint count per game by level (PO 2026-10-23): **Easy and Normal: no limit; Challenge: 3.** Without a limit the button shows
+no count ("Hint 提示 tíshì"); on Challenge it shows the count left ("Hint 提示 tíshì · 3").
 17. Given the learner's turn in `playing`, When they tap *Hint 提示*, Then the engine computes `scoreMoves(state)` (level-2 scorer,
     deterministic, no randomness) and the best-scored move is shown: a marker on that point and one reason line. `hintsLeft` drops by 1.
 18. Given the hint is showing, When the learner taps Hint again, Then nothing changes and no use is consumed (the hint stays).
 19. Given the hint is showing, When the learner commits any move (the hinted one or another) or passes, Then the marker disappears.
     The learner is **free to ignore it**.
-20. Given `hintsLeft = 0`, Then the button shows "Hint · 0" disabled (still ≥ 44 px tall) with an accessibility label "No hints left".
+20. (Challenge only; Easy/Normal never run out.) Given `hintsLeft = 0`, Then the button shows "Hint · 0" disabled (still ≥ 44 px tall) with an accessibility label "No hints left".
     Given the bot is thinking or the phase is not `playing`, Then the button is disabled and no use is consumed.
 21. Reason categories (from the `MoveKind` and facts of the hinted move; one line, no coordinates beyond the marker):
     | Condition | Category | en text |
@@ -200,6 +201,7 @@ no error shown). Result screen shows primary *Review 复盘*, secondary *New gam
 | `coach.you.escape` | 你的子逃出了叫吃 | Your group escaped the atari. | Votre groupe a échappé à l'atari. |
 | `coach.you.exposed` | 你{{pt}}处的子只剩一口气 | Your group at {{pt}} has one liberty left. | Votre groupe en {{pt}} n'a plus qu'une liberté. |
 | `coach.hint.button` | 提示 tíshì · {{n}} | Hint 提示 tíshì · {{n}} | Indice 提示 tíshì · {{n}} |
+| `coach.hint.buttonFree` | 提示 tíshì | Hint 提示 tíshì | Indice 提示 tíshì |
 | `coach.hint.capture` | 这手能吃{{n}}子 | This captures {{n}} stone(s). | Ce coup capture {{n}} pierre(s). |
 | `coach.hint.save` | 这手救出被叫吃的棋 | This saves your group in atari. | Ce coup sauve votre groupe en atari. |
 | `coach.hint.territory` | 这手占地盘 | This claims space (territory). | Ce coup prend du terrain. |
@@ -212,7 +214,7 @@ Plurals via i18next `_one/_other` (fr/en); zh has none.
 - **Tone:** facts, never verdicts: no "mistake", "blunder", red, or sound of failure. Notes use the muted ink token; the only
   sound is none (silent), the capture fade already plays.
 - **Frequency:** notes appear on roughly 1 ply in 3; if a note appears 6 plies in a row the learner is in a fight, that is fine.
-- **Hints:** Easy 3 / Normal 2 / Challenge 1; unused hints give nothing (no hoarding reward). After a hint is used and the
+- **Hints:** Easy and Normal unlimited / Challenge 3 (PO 2026-10-23); unused hints give nothing (no hoarding reward). After a hint is used and the
   learner ignores it, nothing happens. No "3 failures" rule in a game; the learner is never blocked.
 - **Review rewards:** one calm closing line "You noticed {n} moments. Next game, look for liberties first." (static text).
   No stars from the review; opening it is optional.
@@ -235,7 +237,7 @@ non-9×9 boards; sounds for notes.
 |---|---|---|
 | 1 | Note structure | One line per ply, highest priority only, max 2 lines (yours, bot's), cleared on next touch |
 | 2 | Note priority | capture > self-atari > exposed > atari > escape |
-| 3 | Hints per game | Easy 3 / Normal 2 / Challenge 1; no penalty for using |
+| 3 | Hints per game | ~~Easy 3 / Normal 2 / Challenge 1~~ → PO 2026-10-23: Easy and Normal unlimited, Challenge 3; no penalty for using |
 | 4 | Hint when best move is pass | Say "nothing urgent", no use consumed |
 | 5 | Hint marker | Filled diamond (not a ring) to avoid clashing with danger rings |
 | 6 | Review budget | ≤ 24 learner-move positions × 40 playouts, cap 80 plies, 4 positions per tick, Skip link |

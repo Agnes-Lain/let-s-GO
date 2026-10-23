@@ -871,6 +871,7 @@
   "coach.bot.atari": "机器人叫吃了你 {{point}} 的棋。",
   "coach.bot.escape": "机器人的棋逃出了叫吃。",
   "coach.hint.button": "提示 tíshì · {{n}}",
+  "coach.hint.buttonFree": "提示 tíshì",
   "coach.hint.none": "提示已用完",
   "coach.hint.capture_one": "这手能提 {{count}} 颗子。",
   "coach.hint.capture_other": "这手能提 {{count}} 颗子。",

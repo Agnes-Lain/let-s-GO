@@ -258,6 +258,24 @@ async function noteText(page) {
   return (await page.getByTestId('practice-feedback').last().innerText()).trim();
 }
 
+// Challenge has 3 hints (PO 2026-10-23); Easy and Normal have no limit.
+async function challengeHints(browser, base, locale) {
+  const L = `[${locale}]`;
+  const { context, page } = await newPage(browser, locale);
+  await openGame(page, base, 3);
+  for (const v of ['c3', 'g7', 'c7']) {
+    await press(page, 'game9-hint');
+    await tap(page, v);
+    await wait(page, 2500);
+  }
+  const left = page.getByTestId('game9-hint').last();
+  check(`${L} Challenge hints exhausted: button disabled`, await left.isDisabled());
+  check(`${L} exhausted hint button still >= 44`, (await left.boundingBox()).height >= 43.5);
+  await layout(page, `${L} hints exhausted`);
+  await shot(page, `52-hints-exhausted-${locale}`);
+  await context.close();
+}
+
 async function coachGame(browser, base, locale) {
   const L = `[${locale}]`;
   const { context, page } = await newPage(browser, locale);
@@ -290,15 +308,14 @@ async function coachGame(browser, base, locale) {
       seen++;
     }
     if (i === 1 || i === 2) {
-      await press(page, 'game9-hint'); // uses 2 and 3
+      await press(page, 'game9-hint'); // Easy has no limit (PO 2026-10-23)
     }
   }
   console.log(`${L} notes seen: ${notes.join(' ## ')}`);
-  const left = await page.getByTestId('game9-hint').last();
-  check(`${L} hints exhausted: button disabled`, await left.isDisabled());
-  check(`${L} exhausted hint button still >= 44`, (await left.boundingBox()).height >= 43.5);
-  await layout(page, `${L} hints exhausted`);
-  await shot(page, `52-hints-exhausted-${locale}`);
+  check(
+    `${L} Easy: hint still enabled after 3 hints`,
+    !(await page.getByTestId('game9-hint').last().isDisabled()),
+  );
   check(`${L} capture note screenshot taken`, seen === 1);
 
   // Resign -> result with the Review button -> review.
@@ -374,6 +391,7 @@ async function main() {
   try {
     for (const locale of LOCALES) {
       await coachGame(browser, base, locale);
+      await challengeHints(browser, base, locale);
       await quietGame(browser, base, locale);
     }
   } finally {

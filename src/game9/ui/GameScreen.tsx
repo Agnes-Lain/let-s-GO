@@ -490,7 +490,11 @@ function Bottom({
         <FeedbackCard lines={playingLines(s, say)} height={NOTE_CARD_HEIGHT} />
         <View style={styles.spacer} />
         <Button
-          label={t('coach.hint.button', { n: n(hintsLeft) })}
+          label={
+            hintsLeft === null
+              ? t('coach.hint.buttonFree')
+              : t('coach.hint.button', { n: n(hintsLeft) })
+          }
           variant="secondary"
           onPress={() => send({ type: 'hint' })}
           disabled={locked || hintsLeft === 0}

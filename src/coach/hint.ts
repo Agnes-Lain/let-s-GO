@@ -5,8 +5,8 @@ import { groupAt, play, type GameState, type Point } from '@/engine';
 
 import type { CoachNote } from './facts';
 
-/** Hints per game by level (AC 17–20): Easy 3, Normal 2, Challenge 1. */
-export const HINTS_PER_GAME: Readonly<Record<BotLevel, number>> = { 1: 3, 2: 2, 3: 1 };
+/** Hints per game by level (AC 17–20, PO 2026-10-23): Easy and Normal unlimited (null), Challenge 3. */
+export const HINTS_PER_GAME: Readonly<Record<BotLevel, number | null>> = { 1: null, 2: null, 3: 3 };
 
 export type HintCategory = 'capture' | 'save' | 'atari' | 'liberties' | 'territory' | 'pass';
 
