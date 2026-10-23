@@ -202,7 +202,7 @@ Copy rule (PO 2026-10-23, M6-game-coaching §12c): in en/fr, Chinese + pinyin on
 | key | zh-CN | en | fr |
 |---|---|---|---|
 | `game9.picker.handicap` | 让子 ràngzǐ | Handicap · 让子 ràngzǐ | Handicap · 让子 ràngzǐ |
-| `game9.picker.even` | 平分（不让子） | Even | Égal |
+| `game9.picker.even` | 平分 | Even | Égal |
 | `game9.picker.stones` | {{n}} 子 | {{n}} | {{n}} |
 | `game9.picker.suggested` | 推荐 | suggested | conseillé |
 | `game9.picker.explain` | 你执黑，棋盘上先有 {{n}} 个黑子，白先走。贴目 0.5。 | You play Black with {{n}} stones already placed. White moves first. Komi 0.5. | Vous jouez Noir avec {{n}} pierres déjà posées. Blanc joue en premier. Komi 0,5. |

@@ -854,7 +854,7 @@
   "game9.black": "黑",
   "game9.white": "白",
   "game9.picker.handicap": "让子",
-  "game9.picker.even": "平分（不让子）",
+  "game9.picker.even": "平分",
   "game9.picker.stones": "{{n}} 子",
   "game9.picker.stonesA11y": "让 {{n}} 子",
   "game9.picker.suggested": "推荐",
