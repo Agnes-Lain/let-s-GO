@@ -277,3 +277,14 @@ describe('take-back 悔棋 (AC 15–25)', () => {
     expect(play(s.history[1].game, 'j9').ok).toBe(true);
   });
 });
+
+describe('QA: AC 34 — the illegal-move reason clears on the next touch-down', () => {
+  it('touch clears an illegal note (and only that kind of note)', () => {
+    const s = run(startSession(1, 4), at('e5'), BOT);
+    const illegal = gameReducer(s, at('e5'));
+    expect(illegal.note).toEqual({ key: 'game.fb.illegal.occupied' });
+    expect(gameReducer(illegal, { type: 'touch' }).note).toBeNull();
+    const back = gameReducer(run(s, at('c3'), BOT), TAKEBACK);
+    expect(gameReducer(back, { type: 'touch' }).note).toEqual(back.note);
+  });
+});

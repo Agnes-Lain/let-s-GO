@@ -259,3 +259,7 @@ Move notes, hint button, game review (sibling spec); free handicap placement by 
 11. After a take-back the restored last move gets a new id, no capture fade, and is not re-announced.
 12. "Next time: …" sits under the result card, not inside it.
 13. Starting table rule taken over n ∈ {2…5}; Noob as Black even vs Easy (72 %) would also pass 60 %.
+14. (QA fix) The dedupe also drops the learner's `escape` fact when its group is in atari again ("escaped the atari" next to "is in atari" contradicted itself); escapes of other groups stay.
+15. (QA fix) Coach notes write points uppercase (`D8`) like the board labels and the atari line.
+16. (QA fix) The animated stone circle drops `collapsable` (Animated forces it; react-native-svg passed it to `<circle>` on web); the web checks now fail on any non-boolean attribute warning.
+17. (QA fix) An illegal-move reason clears on the next touch-down, not only on the next commit (AC 34).

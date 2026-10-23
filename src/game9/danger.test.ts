@@ -198,7 +198,7 @@ describe('AC 44: coach facts about a group in atari are dropped', () => {
     const at = (s: string) => parseVertex(s, 9);
     const facts: CoachFact[] = [
       { kind: 'capture', color: 'W', point: at('d4'), count: 1 },
-      { kind: 'escape', color: 'B', point: at('d4'), size: 1 },
+      { kind: 'escape', color: 'B', point: at('j8'), size: 1 },
       { kind: 'exposed', color: 'B', point: at('j9'), size: 1 },
       { kind: 'atari', color: 'B', point: at('d5'), size: 1 },
       { kind: 'selfAtari', color: 'B', point: at('d3'), size: 2 },
@@ -210,6 +210,14 @@ describe('AC 44: coach facts about a group in atari are dropped', () => {
       'exposed',
       'atari',
     ]);
+  });
+
+  it('QA: "escaped the atari" about a group still in atari is dropped (it contradicts the line)', () => {
+    const facts: CoachFact[] = [
+      { kind: 'escape', color: 'B', point: parseVertex('d4', 9), size: 1 },
+      { kind: 'escape', color: 'W', point: parseVertex('d4', 9), size: 1 },
+    ];
+    expect(withoutDangerFacts(facts, dangerOf(A), 'B')).toEqual([facts[1]]);
   });
 
   it('White groups in atari never drop facts', () => {

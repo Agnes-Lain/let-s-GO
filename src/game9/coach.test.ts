@@ -90,7 +90,7 @@ describe('notes (AC 10–14)', () => {
     const s = run(sessionAt(board), at('a1'));
     expect(s.game.moves).toHaveLength(1);
     expect(s.coach.notes).toEqual([
-      { key: 'coach.you.selfAtari', params: { count: 1, point: 'a1' } },
+      { key: 'coach.you.selfAtari', params: { count: 1, point: 'A1' } },
     ]);
   });
 });

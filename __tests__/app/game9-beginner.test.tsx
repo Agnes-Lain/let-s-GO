@@ -197,6 +197,24 @@ describe('danger rings and the atari line (AC 30, 32, 33, 35)', () => {
   });
 });
 
+describe('AC 34: the illegal reason clears on touch-down (QA)', () => {
+  it('a touch-down alone removes the engine message', async () => {
+    await openAt('/game/play?level=1');
+    await playAndReply('e5');
+    await tapBoard('e5');
+    expect(feedback()).toBe(texts['game.fb.illegal.occupied']);
+    const board = screen.getByTestId('game9-board');
+    const g = boardGeometry(9, flat(board.props.style).width as number, true);
+    const { x, y } = pointToLocation(g, parseVertex('a9', 9));
+    await act(async () => {
+      fireEvent(screen.getByTestId('board-touch'), 'responderGrant', {
+        nativeEvent: { locationX: x, locationY: y },
+      });
+    });
+    expect(feedback()).not.toBe(texts['game.fb.illegal.occupied']);
+  });
+});
+
 describe('the result (AC 11, 12)', () => {
   it('a resignation at 3 stones suggests 4 next time; Play again starts with 4', async () => {
     await openAt('/game/play?level=1&handicap=3');

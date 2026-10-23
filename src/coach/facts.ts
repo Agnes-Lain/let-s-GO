@@ -128,7 +128,7 @@ export function moveNote(
 /** Parameters of a fact's sentence: `count` (plurals) and `point` (e.g. "e4"). */
 export function factParams(fact: CoachFact, size: BoardSize = 9): Record<string, string | number> {
   if (fact.kind === 'capture') return { count: fact.count ?? 0 };
-  return { count: fact.size ?? 1, point: toVertex(fact.point, size) };
+  return { count: fact.size ?? 1, point: toVertex(fact.point, size).toUpperCase() };
 }
 
 /**

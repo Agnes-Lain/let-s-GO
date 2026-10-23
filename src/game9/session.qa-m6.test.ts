@@ -299,6 +299,8 @@ describe('QA: dedupe (AC 44) selfAtari on the liberty point', () => {
       { kind: 'selfAtari', color: 'B', point: p('d3') },
       { kind: 'exposed', color: 'B', point: p('d4') },
       { kind: 'capture', color: 'B', point: p('j9') },
+      // An escape of another group stays; an escape of the ringed d4 is dropped (QA bug 2, §14).
+      { kind: 'escape', color: 'B', point: p('j8') },
       { kind: 'escape', color: 'B', point: p('d4') },
     ] as unknown as Parameters<typeof withoutDangerFacts>[0];
     const kept = withoutDangerFacts(facts, danger, 'B').map((f) => f.kind);

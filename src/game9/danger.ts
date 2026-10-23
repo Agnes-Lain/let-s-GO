@@ -83,7 +83,8 @@ const samePoint = (a: Point, b: Point) => a.x === b.x && a.y === b.y;
 
 /**
  * The coaching dedupe (AC 44, §8): drops the facts that repeat the atari line — `exposed` and
- * `selfAtari` about a learner group in atari, and the bot's `atari` on such a group. Facts about
+ * `selfAtari` about a learner group in atari, the bot's `atari` on such a group, and the learner's
+ * `escape` of a group that is in atari again. Facts about
  * other groups, and captures, escapes and the learner's own ataris stay.
  */
 export function withoutDangerFacts(
@@ -103,6 +104,9 @@ export function withoutDangerFacts(
         return !(f.color === learner && (inDanger(f.point) || isLiberty(f.point)));
       case 'atari':
         return !(f.color !== learner && inDanger(f.point));
+      // "Your group escaped" while the line says it is in atari again (QA, §14).
+      case 'escape':
+        return !(f.color === learner && inDanger(f.point));
       default:
         return true;
     }

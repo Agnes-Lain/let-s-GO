@@ -517,8 +517,15 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
     }
 
     case 'touch': {
-      if (s.phase !== 'playing' || s.thinking || s.coach.notes.length === 0) return s;
-      return { ...s, coach: { ...s.coach, notes: [] } };
+      if (s.phase !== 'playing' || s.thinking) return s;
+      // An illegal-move reason lasts until the next tap (M6-beginner-friendly AC 34).
+      const illegal = s.note?.key.startsWith('game.fb.illegal.') ?? false;
+      if (s.coach.notes.length === 0 && !illegal) return s;
+      return {
+        ...s,
+        note: illegal ? null : s.note,
+        coach: s.coach.notes.length === 0 ? s.coach : { ...s.coach, notes: [] },
+      };
     }
 
     case 'countDone': {

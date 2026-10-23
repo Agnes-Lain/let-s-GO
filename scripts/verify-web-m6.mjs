@@ -91,7 +91,7 @@ function serve() {
 const failures = [];
 const consoleErrors = [];
 const accessibleWarnings = [];
-const ACCESSIBLE_WARNING = /non-boolean attribute `?accessible`?/;
+const ACCESSIBLE_WARNING = /non-boolean attribute `?(accessible|collapsable)`?/;
 function check(name, ok, detail = '') {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? `  (${detail})` : ''}`);
   if (!ok) failures.push(name);
@@ -447,7 +447,7 @@ async function main() {
   }
   check('zero console errors', consoleErrors.length === 0, consoleErrors.slice(0, 5).join(' | '));
   check(
-    'no "non-boolean attribute accessible" warning (AC 43)',
+    'no "non-boolean attribute accessible / collapsable" warning (AC 43)',
     accessibleWarnings.length === 0,
     accessibleWarnings.slice(0, 3).join(' | '),
   );

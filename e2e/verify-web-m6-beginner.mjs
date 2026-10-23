@@ -242,7 +242,8 @@ async function main() {
   );
   const acc = warnings.filter((l) => /accessible/.test(l));
   check('AC 43: no "non-boolean attribute accessible" warning', acc.length === 0, acc[0] ?? '');
-  console.log(`INFO non-boolean attribute warnings of any kind: ${warnings.length}`);
+  // QA bug 1: `collapsable` (Animated) must not reach the DOM either; no such warning at all.
+  check('no "non-boolean attribute" warning of any kind', warnings.length === 0, warnings[0] ?? '');
   await browser.close();
   console.log(failures.length ? `\nFAILED: ${failures.length}` : '\nAll checks passed.');
   process.exit(failures.length ? 1 : 0);

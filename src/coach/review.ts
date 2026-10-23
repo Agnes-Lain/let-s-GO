@@ -142,7 +142,7 @@ function firstPoint(points: readonly Point[]): Point {
 }
 
 function bigParams(ply: number, k: number, point: Point) {
-  return { n: ply, k, point: toVertex(point, 9) };
+  return { n: ply, k, point: toVertex(point, 9).toUpperCase() };
 }
 
 /** True when `stones` are exactly one group with one liberty in `state`. */
@@ -250,7 +250,10 @@ function swingMoment(plan: ReviewPlan, chances: readonly number[]): ReviewMoment
     kind: 'swing',
     ply,
     point: move.point,
-    note: { key: 'coach.review.swing', params: { n: ply, point: toVertex(move.point, 9) } },
+    note: {
+      key: 'coach.review.swing',
+      params: { n: ply, point: toVertex(move.point, 9).toUpperCase() },
+    },
     reply: replyOf(plan, ply),
   };
 }

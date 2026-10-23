@@ -101,7 +101,7 @@ describe('moveNote (AC 1–9)', () => {
     expect(facts).toContainEqual({ kind: 'exposed', color: 'W', point: pt('e5'), size: 2 });
     expect(pickNote(facts, 'B', 'B')).toEqual({
       key: 'coach.you.atari',
-      params: { count: 2, point: 'e5' },
+      params: { count: 2, point: 'E5' },
     });
   });
 
@@ -145,7 +145,7 @@ describe('moveNote (AC 1–9)', () => {
     // The learner (Black) reads it as "Your group at c3 has one liberty left".
     expect(pickNote(facts, 'B', 'W')).toEqual({
       key: 'coach.you.exposed',
-      params: { count: 2, point: 'c3' },
+      params: { count: 2, point: 'C3' },
     });
   });
 
@@ -202,7 +202,7 @@ describe('pickNote (AC 10–14): one line, highest priority first', () => {
     const own: CoachFact = { kind: 'selfAtari', color: 'B', point: pt('a1'), size: 1 };
     expect(pickNote([own], 'B', 'B')).toEqual({
       key: 'coach.you.selfAtari',
-      params: { count: 1, point: 'a1' },
+      params: { count: 1, point: 'A1' },
     });
   });
 

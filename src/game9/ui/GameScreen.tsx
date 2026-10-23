@@ -490,6 +490,8 @@ function GameBoard({
       checkPoint={(p) => checkGameMove(s.game, p)}
       onPlay={(point) => send({ type: 'play', point })}
       onIllegal={(point) => send({ type: 'play', point })}
+      // Touch-down (mouse or finger) starts the next turn: old notes and an illegal reason clear.
+      onTouchDown={() => send({ type: 'touch' })}
       lastMove={last?.point ?? null}
       lastCapture={lastCapture}
       markers={markers.length > 0 ? markers : undefined}
