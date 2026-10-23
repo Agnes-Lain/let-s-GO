@@ -10,12 +10,14 @@ jest.mock('expo-localization', () => ({
 }));
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 jest.mock('@/lessons/registry', () => {
-  const actual = jest.requireActual('@/lessons/registry');
-  const [sample] = actual.LESSON_FILES;
+  const { registryWithSample, SAMPLE_LESSON: sample } = jest.requireActual(
+    '@/lessons/__fixtures__/sampleRegistry',
+  );
+  const actual = registryWithSample();
   return {
     ...actual,
+    // No unit-0 file: Unit 1 comes first and is open (the developer sample is gone, M6-settings).
     LESSON_FILES: [
-      sample,
       { ...sample, id: 'u01-test', unit: 1 },
       { ...sample, id: 'u02-test', unit: 2 },
     ],

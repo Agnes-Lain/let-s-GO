@@ -6,14 +6,14 @@ function unitOne(id = 'u01-board') {
 }
 
 describe('loadLesson (AC 25)', () => {
-  it('loads the sample in a dev build', () => {
-    const result = loadLesson('u00-sample', { includeDev: true });
+  it('loads a shipped lesson', () => {
+    const result = loadLesson('u01-board');
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.lesson.id).toBe('u00-sample');
+    if (result.ok) expect(result.lesson.id).toBe('u01-board');
   });
 
-  it('defaults to the dev build in tests (__DEV__)', () => {
-    expect(loadLesson('u00-sample').ok).toBe(true);
+  it('the removed developer sample is not-found, in __DEV__ too (M6-settings AC 50)', () => {
+    expect(loadLesson('u00-sample')).toEqual({ ok: false, reason: 'not-found' });
   });
 
   it('an unknown id is not-found', () => {
@@ -42,21 +42,16 @@ describe('loadLesson (AC 25)', () => {
   });
 });
 
-describe('dev sample visibility (AC 26)', () => {
-  it('a production build neither lists nor loads the sample', () => {
-    expect(listLessons({ includeDev: false }).map((l) => l.id)).not.toContain('u00-sample');
-    expect(loadLesson('u00-sample', { includeDev: false })).toEqual({
-      ok: false,
-      reason: 'not-found',
-    });
+describe('no developer sample (AC 26, M6-settings AC 50)', () => {
+  it('the app lists no unit-0 lesson', () => {
+    expect(listLessons().map((l) => l.id)).not.toContain('u00-sample');
+    expect(listLessons().some((l) => l.unit === 0)).toBe(false);
+    expect(getUnits()[0].unit).toBe(1);
   });
 
-  it('a dev build lists it first', () => {
+  it('a loader fed a unit-0 file (test fixture) lists it first, like any unit', () => {
     const loader = createLessonLoader([unitOne(), sampleLesson()], allTexts);
-    expect(loader.listLessons({ includeDev: true }).map((l) => l.id)).toEqual([
-      'u00-sample',
-      'u01-board',
-    ]);
+    expect(loader.listLessons().map((l) => l.id)).toEqual(['u00-sample', 'u01-board']);
   });
 
   it('lessons are sorted by unit, then lesson before checkpoint', () => {
@@ -64,11 +59,7 @@ describe('dev sample visibility (AC 26)', () => {
     delete (checkpoint as Record<string, unknown>).explain;
     const unitTwo = { ...unitOne('u02-x'), unit: 2 };
     const loader = createLessonLoader([unitTwo, checkpoint, unitOne()], allTexts);
-    expect(loader.listLessons({ includeDev: false }).map((l) => l.id)).toEqual([
-      'u01-board',
-      'u01-review',
-      'u02-x',
-    ]);
+    expect(loader.listLessons().map((l) => l.id)).toEqual(['u01-board', 'u01-review', 'u02-x']);
   });
 });
 
@@ -76,7 +67,7 @@ describe('getUnits (AC 27)', () => {
   // Updated by M5 item 3: Units 10–11 ship (Unit 11 has two lessons), Unit 12 is planned.
   // Updated by M5 item 4: Units 12–14 ship (Unit 14 has a checkpoint); nothing is planned.
   it('M5: units 1–14 carry their lessons (units 5, 6, 9, 11 and 14 have a checkpoint)', () => {
-    const units = getUnits({ includeDev: false });
+    const units = getUnits();
     expect(
       units.map((u) => [u.unit, u.titleKey, u.lesson?.id ?? null, u.checkpoint?.id ?? null]),
     ).toEqual([
@@ -98,16 +89,15 @@ describe('getUnits (AC 27)', () => {
     expect(units.find((u) => u.unit === 11)?.laterLessons?.map((l) => l.id)).toEqual(['u11-vital']);
   });
 
-  it('a dev build adds the sample as unit 0', () => {
-    const [first] = getUnits({ includeDev: true });
-    expect(first.unit).toBe(0);
-    expect(first.lesson?.id).toBe('u00-sample');
-    expect(first.titleKey).toBe('lesson.u00-sample.title');
+  it('the first unit is Unit 1 "Board & stones" (M6-settings AC 50)', () => {
+    const [first] = getUnits();
+    expect(first.unit).toBe(1);
+    expect(first.titleKey).toBe('unit.1.title');
   });
 
   it('a valid unit-1 lesson makes unit 1 carry it (the map keeps the unit title)', () => {
     const loader = createLessonLoader([unitOne()], allTexts);
-    const units = loader.getUnits({ includeDev: false });
+    const units = loader.getUnits();
     expect(units[0].lesson?.id).toBe('u01-board');
     expect(units[0].titleKey).toBe('unit.1.title');
     // No planned ("coming soon") unit follows since M5 item 4 (PLANNED_UNITS = []).

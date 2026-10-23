@@ -1,14 +1,7 @@
 // The learning-path map as rows (spec §6.1): one row per unit, plus a row per checkpoint.
 // Pure: the home screen only draws these rows.
 import type { Lesson, MapNode, StarsByLesson, TextKey, UnitEntry } from './schema';
-import {
-  SAMPLE_UNIT,
-  isCheckpointUnlocked,
-  isLessonUnlocked,
-  isUnlocked,
-  starsOf,
-  unitLessons,
-} from './unlock';
+import { isCheckpointUnlocked, isLessonUnlocked, isUnlocked, starsOf, unitLessons } from './unlock';
 
 export type NodeState = 'done' | 'available' | 'locked' | 'soon';
 
@@ -18,7 +11,7 @@ export interface MapRow {
   unit: number;
   /** null for a planned unit ("coming soon"). */
   lesson: Lesson | null;
-  /** Unit title for units 1–16; the lesson title for the sample and for checkpoints. */
+  /** Unit title for a unit's first lesson; the lesson title for later lessons and checkpoints. */
   titleKey: TextKey;
   state: NodeState;
   stars: number;
@@ -34,7 +27,7 @@ export function mapRows(units: readonly UnitEntry[], progress: StarsByLesson): M
       kind: 'unit',
       unit: u.unit,
       lesson: u.lesson,
-      titleKey: u.unit === SAMPLE_UNIT && u.lesson ? u.lesson.titleKey : `unit.${u.unit}.title`,
+      titleKey: `unit.${u.unit}.title`,
       state: stateOf(u.lesson !== null, isUnlocked(units, progress, u.unit), stars),
       stars,
     });
@@ -77,5 +70,5 @@ function stateOf(hasContent: boolean, unlocked: boolean, stars: number): NodeSta
 export function nodeTitleKey(units: readonly UnitEntry[], node: MapNode): TextKey {
   const entry = units.find((u) => u.unit === node.unit);
   const first = node.kind === 'lesson' && entry?.lesson?.id === node.lesson.id;
-  return first && node.unit !== SAMPLE_UNIT ? `unit.${node.unit}.title` : node.lesson.titleKey;
+  return first ? `unit.${node.unit}.title` : node.lesson.titleKey;
 }

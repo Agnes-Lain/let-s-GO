@@ -102,7 +102,7 @@ describe('A. files and validity (AC 1–8)', () => {
   // Updated by M5 item 4: Units 12–14 ship, nothing is planned (M5-territory-counting AC 2).
   it('AC 2: the catalog is consistent; Units 1–14 have a lesson, nothing is planned', () => {
     expect(validateCatalog([...lessons])).toEqual({ ok: true });
-    const units = getUnits({ includeDev: false });
+    const units = getUnits();
     expect(units.filter((u) => u.lesson).map((u) => u.unit)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     ]);
@@ -200,7 +200,7 @@ describe('A. files and validity (AC 1–8)', () => {
   // Updated by M5 item 4: Units 12–14 ship and PLANNED_UNITS is [] (M5-territory-counting AC 2).
   it('AC 7: Units 10–11 rows are unchanged; Unit 12 now follows as a real unit', () => {
     expect(PLANNED_UNITS).toEqual([]);
-    const rows = mapRows(getUnits({ includeDev: false }), {});
+    const rows = mapRows(getUnits(), {});
     const at = rows.findIndex((r) => r.key === 'unit-10');
     expect(rows.slice(at, at + 5).map((r) => `${r.key}:${r.state}`)).toEqual([
       'unit-10:locked',

@@ -29,9 +29,9 @@ describe('mapRows (AC 97–103)', () => {
     ]);
   });
 
-  it('the sample row uses the lesson title and is available', () => {
-    const rows = mapRows([{ ...unit(0), lesson: base }, unit(1, false)], {});
-    expect(rows[0]).toMatchObject({ titleKey: 'lesson.u00-sample.title', state: 'available' });
+  it('a unit row uses the unit title, never the lesson title (M6-settings AC 52)', () => {
+    const rows = mapRows([{ ...unit(1), lesson: base }, unit(2, false)], {});
+    expect(rows[0]).toMatchObject({ titleKey: 'unit.1.title', state: 'available' });
     expect(rows[1].state).toBe('soon');
   });
 

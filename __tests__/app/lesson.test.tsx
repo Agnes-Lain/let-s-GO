@@ -6,15 +6,19 @@ import { AccessibilityInfo, processColor } from 'react-native';
 import { boardWidthFor } from '@/exercises/layout';
 import { setLanguageChoice } from '@/i18n';
 import en from '@/i18n/en.json';
+import { SAMPLE_TEXTS } from '@/lessons/__fixtures__/sampleRegistry';
 import { progressStore } from '@/store';
 import { stone } from '@/theme/tokens';
 
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
+jest.mock('@/lessons/registry', () =>
+  jest.requireActual('@/lessons/__fixtures__/sampleRegistry').registryWithSample(),
+);
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
-const texts = en as Record<string, string>;
+const texts = { ...en, ...SAMPLE_TEXTS.en } as Record<string, string>;
 const BLACK_FILL = { type: 0, payload: processColor(stone.black) };
 
 function reduceMotion(value: boolean) {

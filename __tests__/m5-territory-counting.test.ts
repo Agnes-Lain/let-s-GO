@@ -162,7 +162,7 @@ describe('A. files and validity (AC 1–8)', () => {
   it('AC 2: the catalog is consistent; Units 1–14 have a lesson, nothing is planned', () => {
     expect(validateCatalog([...lessons])).toEqual({ ok: true });
     expect(PLANNED_UNITS).toEqual([]);
-    const units = getUnits({ includeDev: false });
+    const units = getUnits();
     expect(units.map((u) => u.unit)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
     expect(units.every((u) => u.lesson !== null)).toBe(true);
     expect(units.find((u) => u.unit === 14)?.checkpoint?.id).toBe('u14-review');

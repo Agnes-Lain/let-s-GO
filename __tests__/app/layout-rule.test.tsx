@@ -20,6 +20,9 @@ import { progressStore } from '@/store';
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
+jest.mock('@/lessons/registry', () =>
+  jest.requireActual('@/lessons/__fixtures__/sampleRegistry').registryWithSample(),
+);
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
 beforeEach(async () => {

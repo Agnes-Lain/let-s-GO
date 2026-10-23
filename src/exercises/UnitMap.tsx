@@ -3,15 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import {
-  SAMPLE_UNIT,
-  getUnits,
-  mapRows,
-  nextNode,
-  nodeTitleKey,
-  type MapNode,
-  type MapRow,
-} from '@/lessons';
+import { getUnits, mapRows, nextNode, nodeTitleKey, type MapNode, type MapRow } from '@/lessons';
 import { useProgress } from '@/store';
 import { ChevronIcon, LockIcon, PlayIcon, StarIcon } from '@/theme/icons';
 import { color, radius, spacing, stone, typography } from '@/theme/tokens';
@@ -24,10 +16,9 @@ const SMALL_DOT = 28;
 
 type T = ReturnType<typeof useTranslation>['t'];
 
-/** Caption of a node: "Unit 2", "Checkpoint" or "Sample (developer)". */
+/** Caption of a node: "Unit 2" or "Checkpoint". */
 function captionOf(row: Pick<MapRow, 'kind' | 'unit'>, t: T): string {
   if (row.kind === 'checkpoint') return t('home.checkpoint.label');
-  if (row.unit === SAMPLE_UNIT) return t('home.sample.label');
   return t('home.unit.label', { n: row.unit });
 }
 
@@ -64,12 +55,9 @@ export function ContinueCard({
 }) {
   const { t } = useTranslation();
   const label = started ? t('home.continue') : t('home.start');
-  const caption =
-    node.kind === 'lesson' && node.unit === SAMPLE_UNIT
-      ? captionOf({ kind: 'unit', unit: node.unit }, t)
-      : `${captionOf({ kind: node.kind === 'lesson' ? 'unit' : 'checkpoint', unit: node.unit }, t)} · ${t(
-          titleKey ?? (node.kind === 'lesson' ? `unit.${node.unit}.title` : node.lesson.titleKey),
-        )}`;
+  const caption = `${captionOf({ kind: node.kind === 'lesson' ? 'unit' : 'checkpoint', unit: node.unit }, t)} · ${t(
+    titleKey ?? (node.kind === 'lesson' ? `unit.${node.unit}.title` : node.lesson.titleKey),
+  )}`;
   return (
     <Pressable
       testID="home-continue"

@@ -9,12 +9,14 @@ jest.mock('expo-localization', () => ({
 }));
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 jest.mock('@/lessons/registry', () => {
-  const actual = jest.requireActual('@/lessons/registry');
-  const [sample] = actual.LESSON_FILES;
+  const { registryWithSample, SAMPLE_LESSON: sample } = jest.requireActual(
+    '@/lessons/__fixtures__/sampleRegistry',
+  );
+  const actual = registryWithSample();
   return {
     ...actual,
+    // No unit-0 file: Unit 1 comes first and is open (the developer sample is gone, M6-settings).
     LESSON_FILES: [
-      sample,
       { ...sample, id: 'u01-test', unit: 1 },
       { ...sample, id: 'u02-test', unit: 2, coordinates: true },
     ],
@@ -51,13 +53,13 @@ describe('locked lessons (AC 56)', () => {
 });
 
 describe('coordinates (AC 52)', () => {
-  it('a lesson with coordinates: true shows them; the sample does not', async () => {
+  it('a lesson with coordinates: true shows them; one without (u01-test) does not', async () => {
     act(() => {
       progressStore.getState().record('u01-test', ['clean', 'clean']);
     });
     await open('/lesson/u02-test');
     expect(screen.getByTestId('board-label-col-A', hidden)).toBeTruthy();
-    await open('/lesson/u00-sample');
+    await open('/lesson/u01-test');
     expect(screen.queryByTestId('board-label-col-A', hidden)).toBeNull();
   });
 });

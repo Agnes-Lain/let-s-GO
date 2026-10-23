@@ -26,7 +26,6 @@ export {
 } from './scoring';
 export { STAR_RULES, computeStars, countOutcomes, type Stars } from './stars';
 export {
-  SAMPLE_UNIT,
   isCheckpointUnlocked,
   isLessonUnlocked,
   isUnlocked,
@@ -43,7 +42,6 @@ export {
   hasTextIn,
   listLessons,
   loadLesson,
-  type ListOptions,
   type LessonLoader,
   type LoadResult,
 } from './loader';

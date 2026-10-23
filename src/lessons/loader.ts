@@ -1,17 +1,11 @@
 // Lesson loader (spec §4.5, §4.6). Validates each file once, caches the result, never throws.
 import { LESSON_FILES, LESSON_TEXTS } from './registry';
 import type { Language, Lesson, LessonError, UnitEntry, ValidationContext } from './schema';
-import { SAMPLE_UNIT } from './unlock';
 import { validateLesson } from './validate';
 
 export type LoadResult =
   | { ok: true; lesson: Lesson }
   | { ok: false; reason: 'not-found' | 'invalid'; errors?: LessonError[] };
-
-export interface ListOptions {
-  /** Include the unit-0 sample. Defaults to `__DEV__` (the Expo Go build). */
-  includeDev?: boolean;
-}
 
 /**
  * Units shown as "coming soon" until their content exists (§4.6). Empty since M5 item 4 shipped
@@ -20,9 +14,9 @@ export interface ListOptions {
 export const PLANNED_UNITS: readonly number[] = [];
 
 export interface LessonLoader {
-  loadLesson(id: string, opts?: ListOptions): LoadResult;
-  listLessons(opts?: ListOptions): Lesson[];
-  getUnits(opts?: ListOptions): UnitEntry[];
+  loadLesson(id: string): LoadResult;
+  listLessons(): Lesson[];
+  getUnits(): UnitEntry[];
 }
 
 /** A text key is present when it is a non-empty string in that language. */
@@ -33,22 +27,10 @@ export function hasTextIn(texts: Readonly<Record<Language, Readonly<Record<strin
   };
 }
 
-/**
- * Developer content (the unit-0 sample) is shown in dev builds (Expo Go), and in a release web
- * export made with EXPO_PUBLIC_DEV_LESSONS=1 for the web checks (scripts/verify-web-m3.mjs).
- */
-function isDevBuild(): boolean {
-  return (typeof __DEV__ !== 'undefined' && __DEV__) || process.env.EXPO_PUBLIC_DEV_LESSONS === '1';
-}
-
 function rawId(entry: unknown): string | null {
   if (typeof entry !== 'object' || entry === null) return null;
   const id = (entry as { id?: unknown }).id;
   return typeof id === 'string' ? id : null;
-}
-
-function rawUnit(entry: unknown): unknown {
-  return typeof entry === 'object' && entry !== null ? (entry as { unit?: unknown }).unit : null;
 }
 
 /** Builds a loader over a list of raw lesson files (the app uses the registry). */
@@ -58,10 +40,9 @@ export function createLessonLoader(
 ): LessonLoader {
   const cache = new Map<string, LoadResult>();
 
-  function load(id: string, opts: ListOptions = {}): LoadResult {
-    const includeDev = opts.includeDev ?? isDevBuild();
+  function load(id: string): LoadResult {
     const entry = files.find((file) => rawId(file) === id);
-    if (entry === undefined || (!includeDev && rawUnit(entry) === SAMPLE_UNIT)) {
+    if (entry === undefined) {
       return { ok: false, reason: 'not-found' };
     }
     const cached = cache.get(id);
@@ -80,19 +61,19 @@ export function createLessonLoader(
     return result;
   }
 
-  function list(opts: ListOptions = {}): Lesson[] {
+  function list(): Lesson[] {
     const lessons: Lesson[] = [];
     for (const file of files) {
       const id = rawId(file);
-      const result = id === null ? null : load(id, opts);
+      const result = id === null ? null : load(id);
       if (result?.ok) lessons.push(result.lesson);
     }
     const order = (l: Lesson) => l.unit * 2 + (l.kind === 'lesson' ? 0 : 1);
     return lessons.sort((a, b) => order(a) - order(b));
   }
 
-  function units(opts: ListOptions = {}): UnitEntry[] {
-    const lessons = list(opts);
+  function units(): UnitEntry[] {
+    const lessons = list();
     const numbers = [...new Set([...lessons.map((l) => l.unit), ...PLANNED_UNITS])].sort(
       (a, b) => a - b,
     );
@@ -103,8 +84,7 @@ export function createLessonLoader(
       const checkpoint = lessons.find((l) => l.unit === unit && l.kind === 'checkpoint') ?? null;
       const entry: UnitEntry = {
         unit,
-        // The sample has no unit title; curriculum units use `unit.N.title` (spec AC 100).
-        titleKey: unit === SAMPLE_UNIT && lesson ? lesson.titleKey : `unit.${unit}.title`,
+        titleKey: `unit.${unit}.title`,
         lesson,
         checkpoint,
       };

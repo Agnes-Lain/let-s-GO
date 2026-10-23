@@ -9,8 +9,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
 jest.mock('@/lessons/registry', () => {
-  const actual = jest.requireActual('@/lessons/registry');
-  const [sample] = actual.LESSON_FILES;
+  const { registryWithSample, SAMPLE_LESSON: sample } = jest.requireActual(
+    '@/lessons/__fixtures__/sampleRegistry',
+  );
+  const actual = registryWithSample();
   const checkpoint = { ...sample, id: 'u02-review', unit: 2, kind: 'checkpoint' };
   delete checkpoint.explain;
   return {

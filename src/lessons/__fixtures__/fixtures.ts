@@ -1,7 +1,7 @@
 // Test helpers for lesson tests: positions from ASCII boards and a sample-based lesson builder.
 import { parseBoard, toVertex, type Vertex } from '@/engine';
 
-import sample from '../content/u00-sample.json';
+import sample from './u00-sample.json';
 import type { LessonSize, Setup } from '../schema';
 
 /** `{ size, setup }` from an ASCII board ('.' empty, 'X' black, 'O' white). */

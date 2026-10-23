@@ -17,7 +17,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:web": "node scripts/verify-web.mjs",
-    "verify:web:m3": "node scripts/verify-web-m3.mjs",
     "verify:web:m4": "node scripts/verify-web-m4.mjs",
     "verify:web:m5": "node scripts/verify-web-m5.mjs",
     "verify:web:m5c": "node scripts/verify-web-m5c.mjs",

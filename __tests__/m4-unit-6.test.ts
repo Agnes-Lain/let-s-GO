@@ -229,7 +229,7 @@ describe('D. content (AC 34, 37–42)', () => {
 });
 
 describe('F. map, stars and flow (AC 58–61)', () => {
-  const units = getUnits({ includeDev: false });
+  const units = getUnits();
 
   // Updated by M5 item 1: Units 7–9 follow; by M5 item 3: Units 10–11 follow, Unit 12 is planned;
   // by M5 item 4: Units 12–14 follow and nothing is planned.
