@@ -3,6 +3,9 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
 import stoneSource from '../../assets/sounds/stone.mp3';
+import { isSoundEnabled, setSoundEnabled } from './soundSetting';
+
+export { setSoundEnabled };
 
 const VOLUME = 0.6;
 
@@ -26,6 +29,7 @@ function getPlayer(): AudioPlayer | null {
 
 /** Plays the stone "tock". Resolves always; never throws. */
 export async function playStoneSound(): Promise<void> {
+  if (!isSoundEnabled()) return;
   try {
     const p = getPlayer();
     if (!p) return;
@@ -40,4 +44,5 @@ export async function playStoneSound(): Promise<void> {
 export function resetStoneSoundForTests(): void {
   player = null;
   failed = false;
+  setSoundEnabled(true);
 }

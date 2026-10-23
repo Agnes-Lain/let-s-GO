@@ -18,8 +18,8 @@ function make(storage: StorageAdapter = createMemoryStorage(), units: UnitEntry[
 describe('record (AC 32–34)', () => {
   it('AC 32: a first 3★ run', () => {
     const store = make();
-    const result = store.getState().record('u00-sample', run('CCCCCC'));
-    expect(store.getState().lessons['u00-sample']).toEqual({
+    const result = store.getState().record('u01-board', run('CCCCCC'));
+    expect(store.getState().lessons['u01-board']).toEqual({
       stars: 3,
       plays: 1,
       bestClean: 6,
@@ -32,9 +32,9 @@ describe('record (AC 32–34)', () => {
 
   it('AC 33: a worse replay keeps the best stars and counts the play', () => {
     const store = make();
-    store.getState().record('u00-sample', run('CCCCCC'));
-    const result = store.getState().record('u00-sample', run('CCCRRR'));
-    expect(store.getState().lessons['u00-sample']).toMatchObject({
+    store.getState().record('u01-board', run('CCCCCC'));
+    const result = store.getState().record('u01-board', run('CCCRRR'));
+    expect(store.getState().lessons['u01-board']).toMatchObject({
       stars: 3,
       plays: 2,
       bestClean: 6,
@@ -61,12 +61,12 @@ describe('record (AC 32–34)', () => {
 describe('persistence (AC 35–38)', () => {
   it('AC 35: a new store over the same storage holds the same data', () => {
     const storage = createMemoryStorage();
-    make(storage).getState().record('u00-sample', run('CCCCSS'));
+    make(storage).getState().record('u01-board', run('CCCCSS'));
     const raw = storage.data.get(PROGRESS_KEY) as string;
-    expect(JSON.parse(raw)).toEqual({ v: 1, lessons: { 'u00-sample': expect.any(Object) } });
+    expect(JSON.parse(raw)).toEqual({ v: 1, lessons: { 'u01-board': expect.any(Object) } });
     const again = make(storage);
     expect(again.getState().lessons).toEqual({
-      'u00-sample': {
+      'u01-board': {
         stars: 2,
         plays: 1,
         bestClean: 4,
@@ -90,7 +90,7 @@ describe('persistence (AC 35–38)', () => {
     }).not.toThrow();
     expect(store?.getState().lessons).toEqual({});
     expect(storage.data.get(PROGRESS_KEY)).toBe(bad);
-    store?.getState().record('u00-sample', run('CCCCCC'));
+    store?.getState().record('u01-board', run('CCCCCC'));
     expect(storage.data.get(PROGRESS_KEY)).not.toBe(bad);
   });
 
@@ -105,7 +105,7 @@ describe('persistence (AC 35–38)', () => {
   it('AC 37: reset empties the store and the storage key', () => {
     const storage = createMemoryStorage();
     const store = make(storage);
-    store.getState().record('u00-sample', run('CCCCCC'));
+    store.getState().record('u01-board', run('CCCCCC'));
     store.getState().reset();
     expect(store.getState().lessons).toEqual({});
     expect(storage.data.has(PROGRESS_KEY)).toBe(false);
@@ -185,9 +185,9 @@ describe('the adapter (AC 44)', () => {
   it('the app store saves through AsyncStorage', async () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(progressStore.getState().hydrated).toBe(true);
-    progressStore.getState().record('u00-sample', run('CCCCCS'));
+    progressStore.getState().record('u01-board', run('CCCCCS'));
     const raw = await AsyncStorage.getItem(PROGRESS_KEY);
-    expect(JSON.parse(raw as string).lessons['u00-sample'].stars).toBe(3);
+    expect(JSON.parse(raw as string).lessons['u01-board'].stars).toBe(3);
     progressStore.getState().reset();
   });
 });
@@ -277,5 +277,79 @@ describe('handicap suggestion per level (M6-beginner-friendly AC 10, 11)', () =>
     expect(make(storage).getState().flags).toEqual({ atariHintsOff: true });
     make(storage).getState().setFlag('atariHintsOff', false);
     expect(make(storage).getState().flags).toEqual({});
+  });
+});
+
+describe('M6-settings: onboarding flag, erase with kept flags, sample cleanup', () => {
+  const lesson = { stars: 2, plays: 1, bestClean: 4, bestSolved: 6, total: 6, lastPlayedAt: 'x' };
+
+  it('AC 25: onboardingSeen is a saved flag', () => {
+    const storage = createMemoryStorage();
+    make(storage).getState().setFlag('onboardingSeen');
+    expect(make(storage).getState().flags).toEqual({ onboardingSeen: true });
+  });
+
+  it('AC 21: reset({ keepFlags }) clears lessons, bots and the one-time tips, keeps the listed flags', () => {
+    const storage = createMemoryStorage();
+    const store = make(storage);
+    store.getState().record('u01-board', run('CCCCCC'));
+    store.getState().recordGame(2, 'loss', 4);
+    for (const flag of [
+      'passExplained',
+      'easierTipShown',
+      'takebackExplained',
+      'atariHintsOff',
+      'onboardingSeen',
+    ] as const) {
+      store.getState().setFlag(flag);
+    }
+    store.getState().reset({ keepFlags: ['atariHintsOff', 'onboardingSeen'] });
+    expect(store.getState().lessons).toEqual({});
+    expect(store.getState().bots).toEqual({});
+    expect(store.getState().flags).toEqual({ atariHintsOff: true, onboardingSeen: true });
+    // The key is rewritten without the erased parts.
+    expect(JSON.parse(storage.data.get(PROGRESS_KEY) as string)).toEqual({
+      v: 1,
+      lessons: {},
+      flags: { atariHintsOff: true, onboardingSeen: true },
+    });
+    expect(make(storage).getState().flags).toEqual({ atariHintsOff: true, onboardingSeen: true });
+  });
+
+  it('AC 21: reset({ keepFlags }) with no kept flag set removes the key, like reset()', () => {
+    const storage = createMemoryStorage();
+    const store = make(storage);
+    store.getState().record('u01-board', run('CCCCCC'));
+    store.getState().reset({ keepFlags: ['atariHintsOff', 'onboardingSeen'] });
+    expect(storage.data.has(PROGRESS_KEY)).toBe(false);
+  });
+
+  it('reset() with no option still forgets every flag (unchanged)', () => {
+    const store = make();
+    store.getState().setFlag('onboardingSeen');
+    store.getState().setFlag('atariHintsOff');
+    store.getState().reset();
+    expect(store.getState().flags).toEqual({});
+  });
+
+  it('AC 51: a saved u00-sample entry is dropped on hydrate and not rewritten; the rest is unchanged', () => {
+    const raw = JSON.stringify({
+      v: 1,
+      lessons: { 'u00-sample': lesson, 'u01-board': lesson },
+      bots: { '1': { games: 1, wins: 0, lossStreak: 1 } },
+      flags: { passExplained: true },
+    });
+    const storage = createMemoryStorage({ [PROGRESS_KEY]: raw });
+    const store = make(storage);
+    expect(store.getState().lessons).toEqual({ 'u01-board': lesson });
+    expect(store.getState().bots).toEqual({ '1': { games: 1, wins: 0, lossStreak: 1 } });
+    expect(store.getState().flags).toEqual({ passExplained: true });
+    // Hydration alone writes nothing.
+    expect(storage.data.get(PROGRESS_KEY)).toBe(raw);
+    // The next save leaves the sample out; the version stays 1.
+    store.getState().setFlag('easierTipShown');
+    const after = JSON.parse(storage.data.get(PROGRESS_KEY) as string);
+    expect(after.v).toBe(1);
+    expect(Object.keys(after.lessons)).toEqual(['u01-board']);
   });
 });

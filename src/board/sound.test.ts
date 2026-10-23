@@ -1,6 +1,6 @@
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 
-import { playStoneSound, resetStoneSoundForTests } from './sound';
+import { playStoneSound, resetStoneSoundForTests, setSoundEnabled } from './sound';
 
 // The mock hands out one shared fake player; read it from the import so we get the same instance.
 const mockPlayer = (createAudioPlayer as jest.Mock)() as {
@@ -48,5 +48,18 @@ describe('playStoneSound', () => {
     });
     await expect(playStoneSound()).resolves.toBeUndefined();
     await expect(playStoneSound()).resolves.toBeUndefined();
+  });
+});
+
+describe('the Stone sound setting (M6-settings AC 9)', () => {
+  it('off: no player is created and nothing plays; on again: plays once per call', async () => {
+    setSoundEnabled(false);
+    await playStoneSound();
+    expect(createAudioPlayer).not.toHaveBeenCalled();
+    expect(mockPlayer.play).not.toHaveBeenCalled();
+    setSoundEnabled(true);
+    await playStoneSound();
+    expect(createAudioPlayer).toHaveBeenCalledTimes(1);
+    expect(mockPlayer.play).toHaveBeenCalledTimes(1);
   });
 });

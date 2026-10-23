@@ -41,19 +41,54 @@ export function getDeviceLanguage(): Language {
 /** The app's single i18next instance. */
 const i18n = createInstance();
 
-// The choice is kept in memory only: M0 does not persist it (AC27).
+// The choice lives here for the UI and is saved by the settings store once one is bound
+// (M6-settings AC 4; replaces the M0 "not persisted" rule AC27).
 let languageChoice: LanguageChoice = 'system';
 const listeners = new Set<() => void>();
+
+/** The part of the settings store that the language needs (kept structural: no store import). */
+export interface LanguageSettingsStore {
+  getState(): { language: LanguageChoice; setLanguage(choice: LanguageChoice): void };
+  subscribe(listener: () => void): () => void;
+}
+
+let boundStore: LanguageSettingsStore | null = null;
 
 export function getLanguageChoice(): LanguageChoice {
   return languageChoice;
 }
 
-/** Apply a Settings choice immediately; screens re-render through react-i18next. */
+function applyChoice(choice: LanguageChoice): Promise<unknown> {
+  if (choice !== languageChoice) {
+    languageChoice = choice;
+    listeners.forEach((listener) => listener());
+  }
+  const language = choice === 'system' ? getDeviceLanguage() : choice;
+  return i18n.language === language ? Promise.resolve() : i18n.changeLanguage(language);
+}
+
+/** Apply a Settings choice immediately (screens re-render through react-i18next) and save it. */
 export async function setLanguageChoice(choice: LanguageChoice): Promise<void> {
-  languageChoice = choice;
-  listeners.forEach((listener) => listener());
-  await i18n.changeLanguage(choice === 'system' ? getDeviceLanguage() : choice);
+  const applied = applyChoice(choice);
+  boundStore?.getState().setLanguage(choice);
+  await applied;
+}
+
+/**
+ * Connects the saved language: applies the store's choice now and whenever it changes (e.g. when
+ * the storage has been read), and makes `setLanguageChoice` save into it. Returns an unbind.
+ */
+export function bindLanguageSettings(store: LanguageSettingsStore): () => void {
+  boundStore = store;
+  void applyChoice(store.getState().language);
+  const unsubscribe = store.subscribe(() => {
+    const { language } = store.getState();
+    if (language !== languageChoice) void applyChoice(language);
+  });
+  return () => {
+    unsubscribe();
+    if (boundStore === store) boundStore = null;
+  };
 }
 
 function subscribeLanguageChoice(listener: () => void): () => void {
