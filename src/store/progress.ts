@@ -40,6 +40,11 @@ export interface BotRecord {
   firstWinAt?: string;
   /** Losses (or resignations) in a row since the last win (AC 37). */
   lossStreak: number;
+  /**
+   * The suggested handicap 让子 for the next game (M6-beginner-friendly AC 10–11); optional. The
+   * value is checked where it is read (`suggestedHandicap` in src/game9/handicap.ts).
+   */
+  handicap?: number;
 }
 
 export type BotLevelKey = '1' | '2' | '3';
@@ -51,6 +56,8 @@ export interface ProgressFlags {
   passExplained?: boolean;
   /** The "Try Easy for a warm-up?" tip was shown. */
   easierTipShown?: boolean;
+  /** The first take-back 悔棋 showed the longer note (M6-beginner-friendly AC 15). */
+  takebackExplained?: boolean;
 }
 
 export type GameOutcome = 'win' | 'loss' | 'resigned';
@@ -71,8 +78,11 @@ export interface ProgressState {
   /** 9×9 games per bot level; additive (old saves load with `{}`). */
   bots: BotProgress;
   flags: ProgressFlags;
-  /** Saves a finished 9×9 game (a resignation is a loss, AC 22, 34). */
-  recordGame(level: 1 | 2 | 3, outcome: GameOutcome): void;
+  /**
+   * Saves a finished 9×9 game (a resignation is a loss, AC 22, 34) and, when given, the next
+   * handicap suggestion of that level (M6-beginner-friendly AC 11; the caller steps the ladder).
+   */
+  recordGame(level: 1 | 2 | 3, outcome: GameOutcome, nextHandicap?: number): void;
   /** Wins against a bot level, 0 when never played. */
   botWins(level: 1 | 2 | 3): number;
   /** Remembers that a one-time tip was shown. */
@@ -153,13 +163,17 @@ export function parseSaved(raw: string | null): SavedProgress | null {
   if (typeof bots === 'object' && bots !== null) {
     for (const key of ['1', '2', '3'] as BotLevelKey[]) {
       const entry = (bots as Record<string, unknown>)[key];
-      if (isBotRecord(entry)) out.bots[key] = entry;
+      if (!isBotRecord(entry)) continue;
+      // A broken suggestion is dropped (the starting table applies), the record kept (AC 10).
+      const { handicap, ...record } = entry;
+      out.bots[key] = isCount(handicap) ? { ...record, handicap } : record;
     }
   }
   if (typeof flags === 'object' && flags !== null) {
     const f = flags as Record<string, unknown>;
     if (f.passExplained === true) out.flags.passExplained = true;
     if (f.easierTipShown === true) out.flags.easierTipShown = true;
+    if (f.takebackExplained === true) out.flags.takebackExplained = true;
   }
   return out;
 }
@@ -188,6 +202,9 @@ function mergeBot(a: BotRecord, b: BotRecord): BotRecord {
     games: a.games + b.games,
     wins: a.wins + b.wins,
     lossStreak: b.games > 0 ? b.lossStreak : a.lossStreak,
+    ...(b.handicap !== undefined || a.handicap !== undefined
+      ? { handicap: b.handicap ?? (a.handicap as number) }
+      : {}),
     ...(firstWins.length > 0 ? { firstWinAt: firstWins.sort()[0] } : {}),
   };
 }
@@ -225,7 +242,7 @@ export function createProgressStore({
     bots: {},
     flags: {},
 
-    recordGame(level, outcome) {
+    recordGame(level, outcome, nextHandicap) {
       const key = String(level) as BotLevelKey;
       const before = get().bots[key] ?? { games: 0, wins: 0, lossStreak: 0 };
       const won = outcome === 'win';
@@ -233,6 +250,11 @@ export function createProgressStore({
         games: before.games + 1,
         wins: before.wins + (won ? 1 : 0),
         lossStreak: won ? 0 : before.lossStreak + 1,
+        ...(nextHandicap !== undefined
+          ? { handicap: nextHandicap }
+          : before.handicap !== undefined
+            ? { handicap: before.handicap }
+            : {}),
         ...(before.firstWinAt || won
           ? { firstWinAt: before.firstWinAt ?? now().toISOString() }
           : {}),

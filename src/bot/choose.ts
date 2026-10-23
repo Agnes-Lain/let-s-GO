@@ -27,6 +27,18 @@ export function level2(state: GameState, opts: BotOptions): BotChoice {
   const moves = playableMoves(state);
   const passed = passCheck(state, opts, moves.length > 0);
   if (passed) return passed;
+  const slip = opts.slip ?? 0;
+  if (slip > 0) {
+    // AC 39: a seeded slip to the 2nd or 3rd best point, never when a capture or save exists.
+    const roll = opts.rng();
+    const which = opts.rng();
+    const urgent = moves.some((m) => m.kind === 'capture' || m.kind === 'save');
+    const worse = moves.filter((m) => m.score < moves[0].score).slice(0, 2);
+    if (roll < slip && !urgent && worse.length > 0) {
+      const pick = worse[Math.min(worse.length - 1, Math.floor(which * worse.length))];
+      return { move: { type: 'play', color: state.toPlay, point: pick.point }, reason: pick.kind };
+    }
+  }
   const top = moves.filter((m) => m.score === moves[0].score);
   const pick = top[Math.min(top.length - 1, Math.floor(r * top.length))];
   return { move: { type: 'play', color: state.toPlay, point: pick.point }, reason: pick.kind };
