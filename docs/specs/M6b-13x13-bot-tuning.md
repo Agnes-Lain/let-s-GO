@@ -235,3 +235,6 @@ liberties as listed.
 
 ## 12. Dev deviations and measurements (developer fills)
 (empty)
+
+## PO approval (2026-10-25)
+PO approved the spec with all open-decision defaults.
