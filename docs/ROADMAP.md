@@ -54,6 +54,13 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 
 # Backlog (after MVP)
 
+## M6b — 13×13 games (after the EAS Build item)
+The next board after 9×9 (PO 2026-10-24). 19×19 comes later: it needs board zoom and a stronger bot.
+- [ ] 13×13 game vs the bot: size picker, komi, handicap star points for 13×13, game screen sized for a phone
+      (tap help: preview stone, maybe a magnifier; tap targets per CLAUDE.md rule 7).
+- [ ] Bot levels, dead-stone count and review tuned for 13×13 (speed per move on a phone; win-rate targets like M6).
+- [ ] Coaching notes and danger rings checked on the bigger board.
+
 ## M7 — AI tutor 问老师 "Ask the teacher" (needs a small backend)
 Optional button on exercises and finished games that explains *why* a move was good or bad.
 - [ ] Engine "facts" API: `describePosition(state, move)` returns structured facts (groups, liberties,
