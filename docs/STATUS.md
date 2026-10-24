@@ -109,10 +109,11 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   AAB upload, testers; support email placeholder `<support email>`; public `lets-go-privacy` repo for the privacy URL); ACs 22, 26 on a
   real Android build. Claude runs `eas build`/`submit` only on the PO's explicit "go".
 
-- **M6b item 1** 13×13 game vs the bot (branch `claude/m6b-13x13-6d7869`, PO-approved spec, QA READY, 4411 tests):
-  size control 9×9 | 13×13 on `/game` (13×13 unlocked after any 9×9 win, title follows size, time note), `GAME_KOMI_13 = 6.5`
+- **M6b item 1** 13×13 game vs the bot (branch `claude/m6b-13x13-6d7869`, PO-approved spec, QA READY, 4419 tests):
+  separate "Play 13×13" card on `/learn` below the 9×9 card (locked until any 9×9 win; opens `/game?size=13`, picker size from the
+  route, no size control; spec §13 PO change 2026-10-25; zh-CN strings without pinyin), title/time note follow size, `GAME_KOMI_13 = 6.5`
   (handicap 0.5), `handicapStones(size, n)` 13×13 d4,k10,k4,d10,g7 (2–5), start Easy 2 / Normal 4 / Challenge 5, own auto-adjust
-  `bots13`, last size `flags.gameSize`. Bot `boardN` (alias `board9`), L3 `mcBudget` 600 playouts / 220 plies on 13×13 (~154 ms
+  `bots13`. Bot `boardN` (alias `board9`), L3 `mcBudget` 600 playouts / 220 plies on 13×13 (~154 ms
   mean desktop), ply cap 400. Board 328 px (cells ~25 px): existing preview/crosshair/coord tag + optional "Confirm each move"
   (Play button replaces Hint), "Thinking…" after 0.5 s, Resign while thinking. Review hidden on 13×13. Spec
   `docs/specs/M6b-13x13-game.md` (§12 dev deviations). Web check `npm run verify:web:m6b` (dev server :8099); screenshots
