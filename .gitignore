@@ -44,3 +44,6 @@ yarn-error.*
 .claude/settings.local.json
 *.log
 .env*
+
+# store upload keys (Play service account) — never commit (M6-eas-build AC 5)
+*service-account*.json

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <!-- Google Play feature graphic (docs/specs/M6-eas-build.md §8), exported to
+       docs/store/feature-graphic.png. Same palette as icon.svg (src/theme/tokens.ts): sky #DCE6EA,
+       background #F4F1EA, mountainFar #C9D5D6, mountainNear #9DB2AE, textPrimary #26292B,
+       textSecondary #5E6A6E, stones #22252A / #F7F5EE / #6B675C. -->
+  <defs>
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DCE6EA"/>
+      <stop offset="0.7" stop-color="#F4F1EA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="500" fill="url(#mist)"/>
+  <path d="M0 360 C110 320 220 300 330 330 C410 352 470 300 570 290 C680 280 760 330 850 322 C930 315 980 335 1024 330 L1024 500 L0 500 Z" fill="#C9D5D6"/>
+  <path d="M0 440 C90 410 180 398 280 415 C370 432 430 398 540 400 C650 403 710 440 820 430 C910 422 970 434 1024 428 L1024 500 L0 500 Z" fill="#9DB2AE" opacity="0.85"/>
+  <circle cx="250" cy="230" r="120" fill="#22252A"/>
+  <circle cx="358" cy="230" r="120" fill="#F7F5EE" stroke="#6B675C" stroke-width="5"/>
+  <text x="540" y="245" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="700" fill="#26292B">Let's GO</text>
+  <text x="544" y="300" font-family="'PingFang SC', 'Helvetica Neue', Arial, sans-serif" font-size="34" fill="#5E6A6E">围棋 · Go · Weiqi</text>
+</svg>

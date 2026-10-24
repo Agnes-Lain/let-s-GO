@@ -19,8 +19,7 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
 
 - **M3** lesson framework (one PR): `src/lessons` (schema, validator that proves every exercise
   solvable with the engine, loader, stars/unlock pure functions; React-free), `src/store/progress`
-  (Zustand + `StorageAdapter` on AsyncStorage — MMKV isn't in App Store Expo Go, swap one file in
-  M6), lesson UI in `src/exercises/` (explanation player, runners tap-point/play-move/choice/count,
+  (Zustand + `StorageAdapter` on AsyncStorage; since M6 item 3 MMKV on native builds, AsyncStorage in Expo Go/web), lesson UI in `src/exercises/` (explanation player, runners tap-point/play-move/choice/count,
   leave sheet, result screen), home unit map `app/index.tsx`. Spec `docs/specs/M3-lesson-framework.md`
   (PO decisions §11). Dev sample lesson `u00-sample` shows only in `__DEV__` or with
   `EXPO_PUBLIC_DEV_LESSONS=1`. Web check: `npm run verify:web:m3`; screenshots `docs/screenshots/M3/`.
@@ -96,11 +95,22 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   → PNGs, adaptive background `#DCE6EA`). A11y: each move/feedback announced once, `expectAccessible` audit helper, `textScale` caps,
   contrast tests, web `aria-*`. Spec `docs/specs/M6-settings-onboarding-a11y.md` (§12a–c). Web check `npm run verify:web:m6s`;
   screenshots `docs/screenshots/M6/59-*`–`82-*`. **Pending PO:** iPhone checklist `docs/specs/M6-a11y-device-checklist.md`.
-  Known: `verify-web-m5`/`m5c` "Unit 12 shows coming soon" check is stale (unit 12 has content); `assets/splash-icon.png` is the
-  unused Expo template.
+  Known: `verify-web-m5`/`m5c` "Unit 12 shows coming soon" check is stale (unit 12 has content).
+
+- **M6 item 3** EAS Build, **Android / Play internal testing first** (PO 2026-10-24: no Apple/TestFlight for now, 99 USD/yr;
+  iOS config kept, never built) (branch `claude/m6-eas-build-07f2d0`, PO-approved spec, QA READY, 4274 tests): `eas.json`
+  (development / preview APK / production AAB, `appVersionSource: remote`, autoIncrement, submit track internal), package
+  `com.agneslain.letsgo`, no extra Android permissions (`blockedPermissions`). Storage: `src/store/storageSelect.ts` picks MMKV
+  on native builds, AsyncStorage in Expo Go (`storeClient`) and on web; one-time copy AsyncStorage → MMKV (flag `migration.mmkv.v1`,
+  rollback on failure). Splash: stones on `#F4F1EA` (`assets/icon-source/splash.svg`, expo-splash-screen). New deps: expo-dev-client,
+  expo-splash-screen, react-native-mmkv 4 + react-native-nitro-modules, expo-system-ui. Store: `docs/privacy-policy.md`,
+  `docs/store/` (listing zh-CN/en/fr, icon 512, feature graphic, 4 en screenshots). Spec `docs/specs/M6-eas-build.md` (§12a–b).
+  **Pending PO:** `docs/specs/M6-eas-build-po-checklist.md` (Expo account, `eas init`, Play Console 25 USD + ID check, first manual
+  AAB upload, testers; support email placeholder `<support email>`; public `lets-go-privacy` repo for the privacy URL); ACs 22, 26 on a
+  real Android build. Claude runs `eas build`/`submit` only on the PO's explicit "go".
 
 ## Next
-- M6 items 1, 1b, 1c, 2 done. Next: M6 "EAS Build, TestFlight / Play internal testing" (incl. the MMKV swap). Later: nets 枷 and multi-answer tsumego on the
+- M6 done (items 1, 1b, 1c, 2, 3). Next: the PO's first Android build per the checklist; then backlog. Later: nets 枷 and multi-answer tsumego on the
   search judge (revisit the libs > moves-left pruning, spec §9b).
 - Minor (QA, M5): zh-CN `engine.illegal.suicide`/`.ko` contain pinyin; empty reserved feedback
   card under choice options (same as the M4 note below).
@@ -136,6 +146,8 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
     with `CHROMIUM_PATH` (local Chrome) and `PLAYWRIGHT_PATH` (a `playwright-core` install).
 
 ## Known follow-ups (minor, not scheduled)
+- M6 EAS: store screenshots are plain (empty 9×9 board, lesson without stone preview); retake before a public listing.
+  Web bundle includes react-native-mmkv's (unused) web code. Apple/TestFlight when the PO decides.
 - M4: `u05-atari` "atari-group" also accepts a1, which puts Black's own a1 stone in atari (c2 is
   the clean answer). Approved in the spec; consider dropping a1 or mentioning it in the explanation.
 - M4: before an answer, choice/count screens show the reserved feedback card as an empty white box
