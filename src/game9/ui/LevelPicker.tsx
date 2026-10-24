@@ -1,7 +1,7 @@
 // Level picker (spec docs/specs/M6-bot-levels.md §5.1, AC 15, 34, 36, 37; M6-beginner-friendly
-// §5.1, AC 7–8; M6b-13x13-game.md §5.1, AC 1–4, 9, 13, 22): the board size 9×9 / 13×13, three
-// level rows (radio), the handicap 让子 chips with a mini board, then Start. Only 13×13 can be
-// locked (until a 9×9 win); the selected row has a tea-green border.
+// §5.1, AC 7–8; M6b-13x13-game.md §13, AC 4, 9, 13, 22): for the board size of the route (9×9 or
+// 13×13; a locked 13×13 falls back to 9×9), three level rows (radio), the handicap 让子 chips with
+// a mini board, then Start. The selected row has a tea-green border.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -10,12 +10,12 @@ import { GoBoard, stonesFromSetup } from '@/board';
 import type { BotLevel } from '@/bot';
 import { progressStore, useProgress } from '@/store';
 import { Button } from '@/theme/Button';
-import { CheckIcon, LockIcon } from '@/theme/icons';
+import { CheckIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
 import { SwitchRow } from '@/theme/SwitchRow';
 import { color, radius, spacing, stone, textScale, typography } from '@/theme/tokens';
 
-import { BOT_LEVELS, GAME_SIZES, gameKomi, type GameSize } from '../config';
+import { BOT_LEVELS, gameKomi, type GameSize } from '../config';
 import { formatNumber } from '../format';
 import {
   HANDICAP_CHOICES,
@@ -29,8 +29,6 @@ import { isBeaten, isSize13Unlocked, preselectedLevel, showEasierTip } from '../
 
 export const LEVEL_ROW_HEIGHT = 72;
 export const HANDICAP_CHIP_HEIGHT = 48;
-/** The size segments (M6b §5.1): 48 px high. */
-export const SIZE_SEGMENT_HEIGHT = 48;
 const PREVIEW_SIZE = 96;
 
 /** The mini board's stones: the handicap points in Black (AC 8). */
@@ -39,9 +37,12 @@ function previewStones(size: GameSize, n: Handicap) {
 }
 
 export function LevelPicker({
+  size: requestedSize = 9,
   onPick,
   onBack,
 }: {
+  /** The board size from the route (M6b §13). */
+  size?: GameSize;
   onPick: (pick: GamePick) => void;
   /** Back button; default: the previous screen. */
   onBack?: () => void;
@@ -50,11 +51,9 @@ export function LevelPicker({
   const bots9 = useProgress((p) => p.bots);
   const bots13 = useProgress((p) => p.bots13);
   const flags = useProgress((p) => p.flags);
-  const unlocked13 = isSize13Unlocked(bots9);
-  // The remembered size (AC 1); a locked 13×13 (e.g. after Erase progress) falls back to 9×9.
-  const size: GameSize = flags.gameSize === 13 && unlocked13 ? 13 : 9;
+  // A locked 13×13 (a typed link, or after Erase progress) falls back to 9×9 (M6b §13).
+  const size: GameSize = requestedSize === 13 && isSize13Unlocked(bots9) ? 13 : 9;
   const bots = size === 13 ? bots13 : bots9;
-  const [lockedNote, setLockedNote] = useState(false);
   const [confirm, setConfirm] = useState(false);
   // Until the learner taps, the level and handicap follow the stored progress (it may load late).
   const [choice, setChoice] = useState<{ level: BotLevel; handicap: Handicap | null } | null>(null);
@@ -62,16 +61,7 @@ export function LevelPicker({
   const suggested = suggestedHandicap(bots, selected, size);
   const handicap = choice?.handicap ?? suggested;
   const komi = formatNumber(handicap === 0 ? gameKomi(size) : HANDICAP_KOMI, i18n.language);
-  const pickSize = (next: GameSize) => {
-    if (next === 13 && !unlocked13) {
-      setLockedNote(true);
-      return;
-    }
-    setLockedNote(false);
-    // §5.1: the level stays, the handicap goes back to that size's suggestion.
-    setChoice({ level: selected, handicap: null });
-    progressStore.getState().setGameSize(next);
-  };
+
   // The tip is decided once when the picker opens, then remembered as shown (AC 37: once).
   const [tip] = useState(() => showEasierTip(bots, flags));
   useEffect(() => {
@@ -95,58 +85,6 @@ export function LevelPicker({
       <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
         {t('game9.picker.title')}
       </Text>
-      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
-        {t('game.size.title')}
-      </Text>
-      <View style={styles.segments} accessibilityRole="radiogroup">
-        {GAME_SIZES.map((option) => {
-          const locked = option === 13 && !unlocked13;
-          const label = t(`game.size.${option}`);
-          return (
-            <Pressable
-              key={option}
-              onPress={() => pickSize(option)}
-              accessibilityRole="radio"
-              accessibilityLabel={
-                locked
-                  ? `${label}, ${t('game.size.locked')}`
-                  : option === size
-                    ? t('game.a11y.sizeSelected', { size: option })
-                    : label
-              }
-              accessibilityState={{
-                selected: option === size,
-                checked: option === size,
-                disabled: locked,
-              }}
-              testID={`game-size-${option}`}
-              style={({ pressed }) => [
-                styles.segment,
-                option === size && styles.chipSelected,
-                locked && styles.locked,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text
-                maxFontSizeMultiplier={textScale.page}
-                style={[styles.chipText, option === size && styles.chipTextSelected]}
-              >
-                {label}
-              </Text>
-              {locked ? (
-                <View testID="game-size-13-lock">
-                  <LockIcon color={color.textSecondary} size={16} />
-                </View>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </View>
-      {lockedNote && !unlocked13 ? (
-        <Text maxFontSizeMultiplier={textScale.page} style={styles.note} testID="game-size-locked">
-          {t('game.size.locked')}
-        </Text>
-      ) : null}
       {size === 13 ? (
         <Text maxFontSizeMultiplier={textScale.page} style={styles.note} testID="game-size-time">
           {t('game.size.time13')}
@@ -349,21 +287,6 @@ const styles = StyleSheet.create({
   },
   badgeText: { ...typography.label, fontSize: 14, color: color.onBadge },
   chips: { flexDirection: 'row', gap: spacing.xs },
-  segments: { flexDirection: 'row', gap: spacing.xs },
-  segment: {
-    flex: 1,
-    minWidth: 44,
-    minHeight: SIZE_SEGMENT_HEIGHT,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-  },
-  locked: { opacity: 0.55 },
   note: { fontSize: 14, lineHeight: 20, color: color.textSecondary },
   chip: {
     flex: 1,

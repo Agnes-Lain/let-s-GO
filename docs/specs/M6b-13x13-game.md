@@ -306,3 +306,27 @@ PO approved the spec with all open-decision defaults (komi 6.5 / 0.5 handicap; d
 Measured desktop (Jest, Apple silicon), ms per move on 13×13 positions from a level-2 self-play (20 samples, plies
 0–160): L1 ≤ 1, L2 ≤ 1, **L3 mean 154 / p95 249 / max 249** (600 playouts); hint ≤ 1; dead-stone judgement at ply
 160: 25 ms. 9×9 L3 for comparison: mean 132 / p95 205. Phone check (AC 29) is for the PO.
+
+## 13. PO change 2026-10-25
+Learners did not find 13×13 inside the 9×9 flow. Changes (they replace the parts of §4.1, §5 and §12 they contradict):
+- **Learn page**: a separate card **"Play 13×13"** (`game.entry.card13`: 十三路对弈 / Play 13×13 / Jouer en 13×13) right
+  below the 9×9 card (same `Game9Card` component with `size={13}`). Locked until any 9×9 win (`isSize13Unlocked`):
+  lock icon, the note `game.size.locked` as its second line, not tappable, a11y state disabled. Unlocked: opens
+  `/game?size=13`; the second line lists the levels beaten on 13×13 (`bots13`).
+- **Picker**: the 9×9 | 13×13 size control is removed. The size comes from the route (`parseSize`): the 9×9 card opens
+  `/game` (9×9), the 13×13 card `/game?size=13`. A locked `/game?size=13` falls back to 9×9. Title, komi, time note and
+  the Confirm switch follow the route's size. "Change level" after a 13×13 game returns to `/game?size=13`; Close /
+  Home return to `/learn` as for 9×9.
+- **Store**: `flags.gameSize` and `setGameSize` are removed; an old save that still has it loads normally (the field
+  is ignored). Unused keys `game.size.title`, `game.size.9`, `game.size.13`, `game.a11y.sizeSelected` were removed.
+- **zh-CN without pinyin** (PO): the zh-CN strings added in this branch carry no pinyin (十三路对弈, 棋盘大小 removed with
+  the control); en/fr keep the "Chinese term + pinyin" style where they use a Chinese term.
+
+Affected ACs: **AC 1** now reads "the Learn page shows a 9×9 card and a 13×13 card below it; the size is chosen by the
+card (no remembered size)". **AC 2** "with no 9×9 win the 13×13 card is dimmed with a lock icon and the lock note, and
+cannot be opened; `/game?size=13` falls back to 9×9". **AC 3** "after a 9×9 win the 13×13 card opens
+`/game?size=13`". **AC 4** "on `/game?size=13` the level cards show the `bots13` badges and the 13×13 suggestion".
+**AC 6** "the 9×9 card is unchanged and opens `/game` (9×9)". §5 flow: Learn --(9×9 card)--> /game;
+Learn --(13×13 card)--> /game?size=13 --Start--> /game/play?size=13&…; §5.1 loses the size segments and the lock note.
+Deviation 9 (§12) is superseded: the picker title follows the route's size.
+Web check `npm run verify:web:m6b`: Learn page screenshots `docs/screenshots/M6b/00-learn-13-{locked,unlocked}-{zh-CN,en,fr}.png`.

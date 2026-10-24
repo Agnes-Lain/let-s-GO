@@ -192,10 +192,10 @@ describe('AC 32–33: allowances are per level, also on 13×13', () => {
 });
 
 describe('AC 40: new i18n keys', () => {
+  // §13 (PO 2026-10-25): the size control and its keys are gone; the Learn card keys are new.
   const keys = [
-    'game.size.title',
-    'game.size.9',
-    'game.size.13',
+    'game.entry.card13',
+    'game.entry.title13',
     'game.size.locked',
     'game.size.time13',
     'game.confirm.label',
@@ -206,7 +206,6 @@ describe('AC 40: new i18n keys', () => {
     'game.header.sizeEven',
     'game9.picker.explain',
     'game9.picker.explainEven',
-    'game.a11y.sizeSelected',
   ];
   const params = (s: string) => [...new Set(s.match(/{{\w+}}/g) ?? [])].sort().join();
   const files: Record<string, Record<string, string>> = { zh, en, fr };

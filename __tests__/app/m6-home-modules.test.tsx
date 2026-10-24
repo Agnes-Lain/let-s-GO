@@ -132,6 +132,8 @@ describe('headers and rows (AC 56, 62, 63, 50)', () => {
       'Checkpoint, Review 4, locked',
       // AC 61: the 9×9 card, open from the start, below module 3.
       'Play 9×9',
+      // M6b §13 (PO 2026-10-25): the 13×13 card right below, locked until a 9×9 win.
+      'Play 13×13, Win a 9×9 game to unlock 13×13.',
     ]);
     expect(screen.queryByText('Sample (developer)')).toBeNull();
   });

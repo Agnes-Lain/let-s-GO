@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Web check for docs/specs/M6b-13x13-game.md (360x740): the size control (locked / open), the
-// 13×13 picker, the 13×13 game screen layout, the touch preview with crosshair, Confirm each move
+// Web check for docs/specs/M6b-13x13-game.md (360x740): the Learn page 13×13 card (locked /
+// open, §13), the 13×13 picker, the 13×13 game screen layout, the touch preview with crosshair, Confirm each move
 // and a few moves against Easy. Runs against a URL (default http://localhost:8099, a DEV
 // `npx expo start --web --port 8099` server).
 //   CHROMIUM_PATH=... PLAYWRIGHT_PATH=... node e2e/verify-web-m6b-13x13.mjs [baseUrl]
@@ -105,24 +105,44 @@ async function main() {
   fs.mkdirSync(SHOTS, { recursive: true });
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH });
 
-  // Locked: no 9×9 win yet.
-  {
-    const { context, page } = await newPage(browser, 'en', false);
-    await page.goto(`${base}/game`);
-    await page.getByTestId('game-size-13').waitFor();
-    await press(page, 'game-size-13');
-    check('locked: note shown', await page.getByTestId('game-size-locked').isVisible());
-    await layout(page, 'picker locked');
-    await shot(page, '01-picker-locked-en');
-    await context.close();
+  // Learn page (§13, PO 2026-10-25): the 13×13 card below 9×9, locked until a 9×9 win.
+  for (const locale of ['zh-CN', 'en', 'fr']) {
+    for (const won9 of [false, true]) {
+      const tag = won9 ? 'unlocked' : 'locked';
+      const { context, page } = await newPage(browser, locale, won9);
+      await page.goto(`${base}/learn`);
+      const card = page.getByTestId('home-game13').last();
+      await card.waitFor();
+      await card.scrollIntoViewIfNeeded();
+      await wait(page, 300);
+      const b9 = await page.getByTestId('home-game9').last().boundingBox();
+      const b13 = await card.boundingBox();
+      check(`${locale} learn ${tag}: 13×13 card below 9×9`, b13.y > b9.y, `${b9.y} < ${b13.y}`);
+      check(`${locale} learn ${tag}: card height >= 44`, b13.height >= 44, `${b13.height}`);
+      const lock = (await page.getByTestId('home-game13-lock').count()) > 0;
+      check(`${locale} learn ${tag}: lock icon ${won9 ? 'hidden' : 'shown'}`, lock === !won9);
+      await shot(page, `00-learn-13-${tag}-${locale}`);
+      await card.click({ force: true });
+      await wait(page, 600);
+      const url = page.url();
+      check(
+        `${locale} learn ${tag}: tap ${won9 ? 'opens /game?size=13' : 'does nothing'}`,
+        won9 ? /\/game\?size=13/.test(url) : /\/learn/.test(url),
+        url,
+      );
+      await context.close();
+    }
   }
 
   for (const locale of ['zh-CN', 'en', 'fr']) {
     const { context, page } = await newPage(browser, locale, true);
-    await page.goto(`${base}/game`);
-    await page.getByTestId('game-size-13').waitFor();
-    await press(page, 'game-size-13');
-    check(`${locale} picker: time note`, await page.getByTestId('game-size-time').isVisible());
+    await page.goto(`${base}/game?size=13`);
+    await page.getByTestId('game-size-time').waitFor();
+    check(
+      `${locale} picker: no size control`,
+      (await page.getByTestId('game-size-13').count()) === 0,
+    );
+    await layout(page, `${locale} picker 13×13`);
     await shot(page, `02-picker-13-${locale}`);
     await page.getByTestId('game-confirm-switch').scrollIntoViewIfNeeded();
     await shot(page, `03-picker-13-bottom-${locale}`);

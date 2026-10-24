@@ -76,6 +76,8 @@ export default function LearnScreen() {
         {/* Outside the modules, always visible and open from the start (AC 61). */}
         <View style={styles.game9}>
           <Game9Card onOpen={() => router.push('/game')} />
+          {/* 13×13 right below (M6b §13, PO 2026-10-25): locked until any 9×9 win. */}
+          <Game9Card size={13} onOpen={() => router.push('/game?size=13')} />
         </View>
         {map.hydrated && map.hasContent && !map.next ? (
           <Text style={styles.caption} testID="home-all-done" maxFontSizeMultiplier={TEXT_SCALE}>
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.border,
     opacity: 0.35,
   },
-  game9: { marginTop: spacing.lg },
+  game9: { marginTop: spacing.lg, gap: spacing.sm },
   caption: {
     ...typography.caption,
     color: color.textSecondary,

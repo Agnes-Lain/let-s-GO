@@ -1,5 +1,6 @@
 // Spec docs/specs/M6b-13x13-game.md AC 1, 14–17: 13×13 results in `bots13` (separate from 9×9)
-// and the remembered board size `flags.gameSize`, with old saves loading unchanged.
+// with old saves loading unchanged. The size comes from the route since §13 (PO 2026-10-25): an old
+// save's `flags.gameSize` (M6b first draft) is ignored on load.
 import { createProgressStore, parseSaved, PROGRESS_KEY, serializeProgress } from './progress';
 import { createMemoryStorage, type StorageAdapter } from './storage';
 
@@ -48,32 +49,18 @@ describe('AC 14–16: 13×13 results are stored apart from 9×9', () => {
     expect(make(storage).getState().bots13['2']).toMatchObject({ games: 1, handicap: 5 });
   });
 
-  it('Erase progress forgets bots13 and the size', () => {
+  it('Erase progress forgets bots13', () => {
     const store = make();
     store.getState().recordGame(2, 'loss', 5, 13);
-    store.getState().setGameSize(13);
     store.getState().reset({ keepFlags: ['onboardingSeen'] });
     expect(store.getState().bots13).toEqual({});
-    expect(store.getState().flags.gameSize).toBeUndefined();
   });
 });
 
-describe('AC 1: the last chosen size is remembered', () => {
-  it('is 9 (undefined) by default; 13 is saved and reloaded', () => {
-    const storage = createMemoryStorage();
-    const store = make(storage);
-    expect(store.getState().flags.gameSize).toBeUndefined();
-    store.getState().setGameSize(13);
-    expect(make(storage).getState().flags.gameSize).toBe(13);
-    store.getState().setGameSize(9);
-    expect(make(storage).getState().flags.gameSize).toBeUndefined();
-  });
-
-  it('a broken saved size loads as the default', () => {
-    const raw = JSON.stringify({ v: 1, lessons: {}, flags: { gameSize: 19, passExplained: true } });
+describe('§13: no remembered size', () => {
+  it('an old save with flags.gameSize loads; the size flag is dropped, the rest kept', () => {
+    const raw = JSON.stringify({ v: 1, lessons: {}, flags: { gameSize: 13, passExplained: true } });
     expect(parseSaved(raw)?.flags).toEqual({ passExplained: true });
-    const ok = JSON.stringify({ v: 1, lessons: {}, flags: { gameSize: 13 } });
-    expect(parseSaved(ok)?.flags).toEqual({ gameSize: 13 });
   });
 });
 

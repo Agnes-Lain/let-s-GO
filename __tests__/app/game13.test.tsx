@@ -92,39 +92,78 @@ afterEach(async () => {
   await act(() => setLanguageChoice('system'));
 });
 
-describe('size control (AC 1–4)', () => {
-  it('AC 1–2: 9×9 selected first; 13×13 locked with a lock icon; a tap shows the note only', async () => {
-    const router = await openAt('/game');
-    expect(screen.getByText(texts['game.size.title'])).toBeTruthy();
-    expect(state('game-size-9').selected).toBe(true);
-    expect(state('game-size-13')).toMatchObject({ selected: false, disabled: true });
-    expect(screen.getByTestId('game-size-13-lock')).toBeTruthy();
-    expect(flat(screen.getByTestId('game-size-13').props.style).minHeight).toBeGreaterThanOrEqual(
-      44,
+describe('Learn page cards (§13 PO change, AC 1–3, 6)', () => {
+  it('shows "Play 9×9" and a locked "Play 13×13" card below it until a 9×9 win', async () => {
+    const router = await openAt('/learn');
+    expect(screen.getByTestId('home-game9')).toHaveTextContent(texts['game9.entry.title']);
+    const card = screen.getByTestId('home-game13');
+    expect(card.props.accessibilityLabel).toBe(
+      `${texts['game.entry.card13']}, ${texts['game.size.locked']}`,
     );
-    expect(screen.queryByTestId('game-size-locked')).toBeNull();
-    await press('game-size-13');
-    expect(screen.getByTestId('game-size-locked')).toHaveTextContent(texts['game.size.locked']);
-    expect(state('game-size-9').selected).toBe(true);
-    expect(progressStore.getState().flags.gameSize).toBeUndefined();
-    expect(router.getPathname()).toBe('/game');
+    expect(screen.getByTestId('home-game13-line')).toHaveTextContent(texts['game.size.locked']);
+    expect(screen.getByTestId('home-game13-lock')).toBeTruthy();
+    expect(state('home-game13').disabled).toBe(true);
+    // Order: the 13×13 card comes right after the 9×9 card.
+    const cards = screen.getAllByTestId(/^home-game(9|13)$/).map((n) => n.props.testID);
+    expect(cards).toEqual(['home-game9', 'home-game13']);
+    await press('home-game13');
+    expect(router.getPathname()).toBe('/learn');
   });
 
-  it('AC 3–4, 9, 13: after a 9×9 win 13×13 opens with its own badges, chips and suggestion', async () => {
+  it('after a 9×9 win the 13×13 card opens /game?size=13; the 9×9 card opens /game', async () => {
+    await win9();
+    const router = await openAt('/learn');
+    expect(state('home-game13').disabled).toBeFalsy();
+    expect(screen.queryByTestId('home-game13-lock')).toBeNull();
+    await press('home-game13');
+    expect(router.getPathname()).toBe('/game');
+    expect(router.getSearchParams()).toMatchObject({ size: '13' });
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game.entry.title13']);
+    await act(() => appRouter.back());
+    await settle();
+    await press('home-game9');
+    expect(router.getPathname()).toBe('/game');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
+  });
+
+  it('the 13×13 card lists the levels beaten on 13×13 only', async () => {
     await win9();
     await act(async () => progressStore.getState().recordGame(3, 'win', 4, 13));
+    await openAt('/learn');
+    expect(screen.getByTestId('home-game13-line')).toHaveTextContent('Beaten: Challenge ✓');
+    expect(screen.getByTestId('home-game9-line')).toHaveTextContent('Beaten: Easy ✓');
+  });
+});
+
+describe('picker by route (§13 PO change, AC 4, 9, 13)', () => {
+  it('has no size control; /game is 9×9 without the 13×13 notes', async () => {
+    await win9();
     await openAt('/game');
-    expect(screen.queryByTestId('game-size-13-lock')).toBeNull();
-    // 9×9: level 1 beaten (the 9×9 win), level 3 not.
-    expect(screen.getByTestId('game9-level-1-beaten')).toBeTruthy();
-    expect(screen.queryByTestId('game9-level-3-beaten')).toBeNull();
-    await press('game-size-13');
-    expect(state('game-size-13').selected).toBe(true);
-    expect(progressStore.getState().flags.gameSize).toBe(13);
+    expect(screen.queryByTestId('game-size-9')).toBeNull();
+    expect(screen.queryByTestId('game-size-13')).toBeNull();
+    expect(screen.queryByTestId('game-size-time')).toBeNull();
+    expect(screen.queryByTestId('game-confirm-switch')).toBeNull();
+    expect(screen.getByTestId('game9-handicap-explain')).toHaveTextContent(/Komi/);
+  });
+
+  it('a locked /game?size=13 falls back to 9×9', async () => {
+    await openAt('/game?size=13');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
+    expect(screen.queryByTestId('game-size-time')).toBeNull();
+    expect(screen.queryByTestId('game-confirm-switch')).toBeNull();
+  });
+
+  it('/game?size=13: own badges, chips, suggestion, komi, time note and Confirm switch', async () => {
+    await win9();
+    await act(async () => progressStore.getState().recordGame(3, 'win', 4, 13));
+    await openAt('/game?size=13');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game.entry.title13']);
     // 13×13 badges come from bots13 only.
     expect(screen.queryByTestId('game9-level-1-beaten')).toBeNull();
     expect(screen.getByTestId('game9-level-3-beaten')).toBeTruthy();
     expect(screen.getByTestId('game-size-time')).toHaveTextContent(texts['game.size.time13']);
+    expect(screen.getByTestId('game-confirm-switch')).toBeTruthy();
+    expect(texts['game.confirm.desc']).toMatch(/Hint is not available/);
     // Chips Even, 2–5 (no 1, no 6–9); after any win Normal is preselected: 13×13 suggests 4.
     for (const n of [0, 2, 3, 4, 5]) expect(screen.getByTestId(`game9-handicap-${n}`)).toBeTruthy();
     expect(screen.queryByTestId('game9-handicap-1')).toBeNull();
@@ -138,48 +177,12 @@ describe('size control (AC 1–4)', () => {
     await press('game9-handicap-3');
     expect(screen.getByTestId('game9-handicap-explain')).toHaveTextContent(/Komi 0\.5\.$/);
   });
-
-  it('§5.1: switching size keeps the level and resets the handicap to that size’s suggestion', async () => {
-    await win9();
-    await openAt('/game');
-    await press('game9-level-3');
-    await press('game9-handicap-2');
-    await press('game-size-13');
-    expect(state('game9-level-3').selected).toBe(true);
-    expect(state('game9-handicap-5').selected).toBe(true);
-  });
-
-  it('the picker title follows the size; the Learn card keeps "Play 9×9" (AC 6)', async () => {
-    await win9();
-    await openAt('/game');
-    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
-    await press('game-size-13');
-    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game.entry.title13']);
-    await press('game-size-9');
-    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
-    expect(texts['game.confirm.desc']).toMatch(/Hint is not available/);
-  });
-
-  it('AC 1: the chosen size is remembered on the next visit', async () => {
-    await win9();
-    await act(async () => progressStore.getState().setGameSize(13));
-    await openAt('/game');
-    expect(state('game-size-13').selected).toBe(true);
-    expect(screen.getByTestId('game-confirm-switch')).toBeTruthy();
-  });
-
-  it('the Confirm switch shows only on 13×13', async () => {
-    await win9();
-    await openAt('/game');
-    expect(screen.queryByTestId('game-confirm-switch')).toBeNull();
-  });
 });
 
 describe('Start and the play route (AC 5, 7, 8)', () => {
   it('AC 5, 8: Start opens /game/play with size 13; header, komi and stones', async () => {
     await win9();
-    const router = await openAt('/game');
-    await press('game-size-13');
+    const router = await openAt('/game?size=13');
     await press('game9-start');
     expect(router.getPathname()).toBe('/game/play');
     expect(router.getSearchParams()).toMatchObject({ size: '13', level: '2', handicap: '4' });
@@ -299,6 +302,15 @@ describe('bot thinking (AC 30–31)', () => {
     await advance(BOT_DELAY_MS * 2);
     expect(progressStore.getState().bots13['2']).toMatchObject({ games: 1, wins: 0, handicap: 2 });
     expect(progressStore.getState().bots).toEqual({});
+  });
+
+  it('§13: Change level after a 13×13 game returns to the 13×13 picker; Home to /learn', async () => {
+    const router = await openAt('/game/play?level=1&size=13');
+    await press('game9-resign');
+    await press('game9-resign-confirm');
+    await press('game9-change-level');
+    expect(router.getPathname()).toBe('/game');
+    expect(router.getSearchParams()).toMatchObject({ size: '13' });
   });
 
   it('AC 31: leaving while the bot thinks drops its answer without error', async () => {

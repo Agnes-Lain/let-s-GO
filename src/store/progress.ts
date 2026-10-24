@@ -62,12 +62,10 @@ export interface ProgressFlags {
   atariHintsOff?: boolean;
   /** The first-launch intro was left by Finish, Skip or Back (M6-settings AC 25–28). */
   onboardingSeen?: boolean;
-  /** The last board size chosen on the opponent screen (M6b AC 1); absent = 9×9. */
-  gameSize?: 13;
 }
 
-/** The on/off flags (every flag except the remembered board size). */
-export type BooleanFlag = Exclude<keyof ProgressFlags, 'gameSize'>;
+/** The on/off flags (all flags are booleans). */
+export type BooleanFlag = keyof ProgressFlags;
 
 /** The board sizes of games against the bot. */
 export type GameBoardSize = 9 | 13;
@@ -127,8 +125,6 @@ export interface ProgressState {
   /** Remembers that a one-time tip was shown. */
   /** Sets a flag (or clears it with `false`). */
   setFlag(flag: BooleanFlag, value?: boolean): void;
-  /** Remembers the board size of the opponent screen (M6b AC 1). */
-  setGameSize(size: GameBoardSize): void;
   /** Saves a finished practice set. */
   record(lessonId: string, outcomes: readonly Outcome[]): RecordResult;
   /** Best stars of a lesson, 0 when never played. */
@@ -224,7 +220,6 @@ export function parseSaved(raw: string | null): SavedProgress | null {
   if (typeof flags === 'object' && flags !== null) {
     const f = flags as Record<string, unknown>;
     for (const name of FLAG_NAMES) if (f[name] === true) out.flags[name] = true;
-    if (f.gameSize === 13) out.flags.gameSize = 13;
   }
   return out;
 }
@@ -337,15 +332,6 @@ export function createProgressStore({
       const flags = { ...get().flags };
       if (value) flags[flag] = true;
       else delete flags[flag];
-      set({ flags });
-      save();
-    },
-
-    setGameSize(size) {
-      if ((get().flags.gameSize ?? 9) === size) return;
-      const flags = { ...get().flags };
-      if (size === 13) flags.gameSize = 13;
-      else delete flags.gameSize;
       set({ flags });
       save();
     },

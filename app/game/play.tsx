@@ -27,7 +27,7 @@ export default function GamePlayScreen() {
         handicap={stones}
         confirmMoves={boardSize === 13 && parseConfirm(confirm)}
         onLeave={goHome}
-        onChangeLevel={() => router.replace('/game')}
+        onChangeLevel={() => router.replace(boardSize === 13 ? '/game?size=13' : '/game')}
       />
     </Screen>
   );
