@@ -1,5 +1,6 @@
 import type { BotLevel } from '@/bot';
 
+import type { GameSize } from './config';
 import { isHandicap, type Handicap } from './handicap';
 
 /** The `level` route parameter; anything else plays Normal. */
@@ -12,4 +13,30 @@ export function parseHandicap(value: string | undefined): Handicap {
   if (value === undefined || !/^[0-9]$/.test(value)) return 0;
   const n = Number(value);
   return isHandicap(n) ? n : 0;
+}
+
+/** The `size` route parameter (M6b AC 5): "13" plays 13×13, anything else (or none) 9×9. */
+export function parseSize(value: string | undefined): GameSize {
+  return value === '13' ? 13 : 9;
+}
+
+/** The `confirm` route parameter (M6b AC 22): "1" turns "Confirm each move" on. */
+export function parseConfirm(value: string | undefined): boolean {
+  return value === '1';
+}
+
+/** What Start on the opponent screen opens (M6b AC 5, 22). */
+export interface GamePick {
+  level: BotLevel;
+  handicap: Handicap;
+  size: GameSize;
+  /** "Confirm each move" (13×13 only, default off). */
+  confirm: boolean;
+}
+
+/** The play route of a pick: 9×9 links stay as before; 13×13 adds `size` (and `confirm`). */
+export function playUrl({ level, handicap, size, confirm }: GamePick): string {
+  const base = `/game/play?level=${level}&handicap=${handicap}`;
+  if (size !== 13) return base;
+  return `${base}&size=13${confirm ? '&confirm=1' : ''}`;
 }

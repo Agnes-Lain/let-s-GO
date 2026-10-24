@@ -1,4 +1,5 @@
-// The 9×9 game screen (spec docs/specs/M6-bot-levels.md §5.2–5.4): playing, marking dead stones,
+// The 9×9 / 13×13 game screen (spec docs/specs/M6-bot-levels.md §5.2–5.4, M6b-13x13-game.md
+// §5.2): playing, marking dead stones,
 // the count and the result are states of one screen. The rules live in ../session.ts (a pure
 // reducer); this file draws the state, holds the bot timer and the sheets, and saves progress.
 import { usePreventRemove } from 'expo-router/react-navigation';
@@ -19,6 +20,7 @@ import { Button, IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
 import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
+import type { GameSize } from '../config';
 import { atariLine, dangerOf, type DangerGroup } from '../danger';
 import { checkGameMove } from '../engineView';
 import { formatNumber, formatParams } from '../format';
@@ -28,6 +30,7 @@ import {
   BOT_DELAY_REDUCED_MS,
   anyAtari,
   canCountNow,
+  canResignWhileThinking,
   canTakeBack,
   gameReducer,
   lossFact,
@@ -52,6 +55,8 @@ import { Sheet } from '@/theme/Sheet';
 export const GAME9_FIXED_HEIGHT = 52 + 56 + 8 + 108 + 48 + 8 + 48 + 16;
 /** The note card holds two note lines (M6-game-coaching §5.1). */
 const NOTE_CARD_HEIGHT = 96;
+/** "Thinking…" shows only when the bot's turn lasts longer than this (M6b AC 30: no flicker). */
+export const THINKING_NOTICE_MS = 500;
 
 type Sheets = 'none' | 'pass' | 'countNow' | 'resign' | 'leave';
 
@@ -74,11 +79,17 @@ function visibleDanger(s: GameSession): DangerGroup[] {
 
 export function GameScreen({
   level,
+  size = 9,
   handicap = 0,
+  confirmMoves = false,
   onLeave,
   onChangeLevel,
 }: {
   level: BotLevel;
+  /** The board: 9×9 (default) or 13×13 (M6b). */
+  size?: GameSize;
+  /** "Confirm each move" (M6b AC 22): a lift keeps a preview, the Play button commits. */
+  confirmMoves?: boolean;
   /** Black stones placed before the game (让子, M6-beginner-friendly §3). */
   handicap?: Handicap;
   /** Back to Home (✕ after the game, Home button, confirmed Leave). */
@@ -93,7 +104,7 @@ export function GameScreen({
   const flags = useProgress((p) => p.flags);
 
   const [s, setS] = useState<GameSession>(() =>
-    startSession(level, newSeed(), handicap, !flags.atariHintsOff),
+    startSession(level, newSeed(), handicap, !flags.atariHintsOff, size),
   );
   const current = useRef(s);
   const send = useCallback(
@@ -107,10 +118,12 @@ export function GameScreen({
       // The next handicap suggestion steps with the outcome (M6-beginner-friendly AC 11).
       const outcome = outcomeOf(next);
       if (outcome && !before.result) {
-        progressStore.getState().recordGame(level, outcome, nextHandicap(next.handicap, outcome));
+        progressStore
+          .getState()
+          .recordGame(level, outcome, nextHandicap(next.handicap, outcome), size);
       }
     },
-    [level],
+    [level, size],
   );
 
   const [sheet, setSheet] = useState<Sheets>('none');
@@ -126,6 +139,32 @@ export function GameScreen({
     return () => clearTimeout(timer);
   }, [s.thinking, ply, delay, send]);
 
+  // 13×13: "Thinking…" once the bot's turn lasts over 0.5 s, never earlier (M6b AC 30). The
+  // notice is keyed by the ply so a new bot turn starts without it.
+  const [slowPly, setSlowPly] = useState<number | null>(null);
+  useEffect(() => {
+    if (!s.thinking || size !== 13) return;
+    const timer = setTimeout(() => setSlowPly(ply), THINKING_NOTICE_MS);
+    return () => clearTimeout(timer);
+  }, [s.thinking, ply, size]);
+  const showThinking = s.thinking && s.phase === 'playing' && slowPly === ply;
+
+  // "Confirm each move": the chosen point belongs to one position; any change drops it.
+  const [pending, setPending] = useState<{ point: Point; game: GameSession['game'] } | null>(null);
+  const pendingPoint =
+    confirmMoves && pending && pending.game === s.game && s.phase === 'playing' && !s.thinking
+      ? pending.point
+      : null;
+  const onBoardPlay = (point: Point) => {
+    if (confirmMoves) setPending({ point, game: s.game });
+    else send({ type: 'play', point });
+  };
+  const onConfirmPlay = () => {
+    if (!pendingPoint) return;
+    setPending(null);
+    send({ type: 'play', point: pendingPoint });
+  };
+
   // Screen reader: every move, pass and capture, and the state changes (AC 40).
   const announcedMove = useRef(0);
   useEffect(() => {
@@ -136,13 +175,13 @@ export function GameScreen({
     if (last.restored) return;
     const parts = [
       last.point
-        ? t(`game9.a11y.played.${last.color}`, { point: toVertex(last.point, 9) })
+        ? t(`game9.a11y.played.${last.color}`, { point: toVertex(last.point, size) })
         : t(`game9.a11y.passed.${last.color}`),
     ];
     if (last.captured.length > 0)
       parts.push(t('game9.a11y.captured', { count: last.captured.length }));
     AccessibilityInfo.announceForAccessibility(parts.join(' '));
-  }, [s.last, t]);
+  }, [s.last, t, size]);
   const announcedPhase = useRef(s.phase);
   useEffect(() => {
     if (announcedPhase.current === s.phase) return;
@@ -194,9 +233,11 @@ export function GameScreen({
     send({ type: 'takeback', first: !flags.takebackExplained });
     if (!flags.takebackExplained) progressStore.getState().setFlag('takebackExplained');
   };
-  const bots = useProgress((p) => p.bots);
+  const bots9 = useProgress((p) => p.bots);
+  const bots13 = useProgress((p) => p.bots13);
+  const bots = size === 13 ? bots13 : bots9;
   const onAgain = () =>
-    send({ type: 'new', seed: newSeed(), handicap: suggestedHandicap(bots, level) });
+    send({ type: 'new', seed: newSeed(), handicap: suggestedHandicap(bots, level, size) });
 
   if (reviewing && s.phase === 'result') {
     return <ReviewView s={s} onClose={() => setReviewing(false)} />;
@@ -215,18 +256,28 @@ export function GameScreen({
         <Text
           maxFontSizeMultiplier={textScale.hud}
           style={styles.header}
-          numberOfLines={1}
+          // The 13×13 header also names the size (M6b §7): two lines so the komi stays visible.
+          numberOfLines={size === 13 ? 2 : 1}
           testID="game9-header"
         >
           {s.phase === 'count'
             ? t('game9.count.title')
-            : s.handicap > 0
-              ? t('game9.header.handicap', {
-                  level: levelName,
-                  n: s.handicap,
-                  komi: n(s.game.komi),
-                })
-              : t('game9.header', { level: levelName, komi: n(s.game.komi) })}
+            : size === 13
+              ? s.handicap > 0
+                ? t('game.header.size', {
+                    size,
+                    level: levelName,
+                    n: s.handicap,
+                    komi: n(s.game.komi),
+                  })
+                : t('game.header.sizeEven', { size, level: levelName, komi: n(s.game.komi) })
+              : s.handicap > 0
+                ? t('game9.header.handicap', {
+                    level: levelName,
+                    n: s.handicap,
+                    komi: n(s.game.komi),
+                  })
+                : t('game9.header', { level: levelName, komi: n(s.game.komi) })}
         </Text>
         <Text
           maxFontSizeMultiplier={textScale.hud}
@@ -247,7 +298,8 @@ export function GameScreen({
           accessibilityLiveRegion={s.phase === 'count' || s.phase === 'result' ? 'none' : 'polite'}
           testID="game9-status-text"
         >
-          {say(status)}
+          {/* 13×13: a long bot turn says "Thinking…" in place of the turn line (M6b AC 30). */}
+          {showThinking ? t('game.thinking') : say(status)}
         </Text>
         {s.phase === 'mark' ? (
           <MarkCount
@@ -262,7 +314,13 @@ export function GameScreen({
         // The learner's next turn starts on the first touch: the notes clear (AC 12).
         onTouchStart={() => send({ type: 'touch' })}
       >
-        <GameBoard s={s} width={boardWidth} send={send} />
+        <GameBoard
+          s={s}
+          width={boardWidth}
+          send={send}
+          onPlay={onBoardPlay}
+          pending={pendingPoint}
+        />
       </View>
 
       <Bottom
@@ -273,7 +331,10 @@ export function GameScreen({
         onPass={onPass}
         onTakeBack={onTakeBack}
         onAgain={onAgain}
-        nextHandicap={suggestedHandicap(bots, level)}
+        nextHandicap={suggestedHandicap(bots, level, size)}
+        confirmMoves={confirmMoves}
+        canConfirm={pendingPoint !== null}
+        onConfirmPlay={onConfirmPlay}
         onCountNow={() => setSheet('countNow')}
         onResign={() => setSheet('resign')}
         onChangeLevel={onChangeLevel}
@@ -424,19 +485,26 @@ function GameBoard({
   s,
   width,
   send,
+  onPlay,
+  pending,
 }: {
   s: GameSession;
   width: number;
   send: (event: GameEvent) => void;
+  /** A legal lift while playing: plays, or (Confirm each move) keeps the preview. */
+  onPlay: (point: Point) => void;
+  pending: Point | null;
 }) {
   const { t } = useTranslation();
   const atariLabel = t('game9.a11y.atari');
-  const points = (vertices: readonly string[]): Point[] => vertices.map((v) => parseVertex(v, 9));
+  const size = s.size;
+  const points = (vertices: readonly string[]): Point[] =>
+    vertices.map((v) => parseVertex(v, size));
 
   if (s.phase === 'count' && s.count) {
     return (
       <GoBoard
-        size={9}
+        size={size}
         stones={countStones(s.game.board.cells, s.count.dead)}
         width={width}
         showCoordinates
@@ -451,14 +519,14 @@ function GameBoard({
   if (s.phase === 'mark') {
     const markers: Marker[] = [...s.marks, ...(s.dispute?.points ?? [])].map((v) => ({
       kind: 'dead',
-      point: parseVertex(v, 9),
+      point: parseVertex(v, size),
     }));
     const highlights: Highlight[] = [];
     if (s.flash.length > 0) highlights.push({ kind: 'error', points: points(s.flash) });
     if (s.dispute) highlights.push({ kind: 'hint', points: points(s.dispute.points) });
     return (
       <GoBoard
-        size={9}
+        size={size}
         stones={s.game.board.cells}
         width={width}
         showCoordinates
@@ -467,8 +535,8 @@ function GameBoard({
         pointer="ring"
         checkPoint={ALWAYS_LEGAL}
         onPlay={(p) => {
-          if (s.game.board.cells[p.y * 9 + p.x] !== null)
-            send({ type: 'mark', at: toVertex(p, 9) });
+          if (s.game.board.cells[p.y * size + p.x] !== null)
+            send({ type: 'mark', at: toVertex(p, size) });
         }}
         markers={markers}
         highlights={highlights}
@@ -501,7 +569,7 @@ function GameBoard({
       : null;
   return (
     <GoBoard
-      size={9}
+      size={size}
       stones={s.game.board.cells}
       width={width}
       showCoordinates
@@ -509,7 +577,8 @@ function GameBoard({
       disabled={s.thinking || s.phase !== 'playing'}
       playerColor={s.learner}
       checkPoint={(p) => checkGameMove(s.game, p)}
-      onPlay={(point) => send({ type: 'play', point })}
+      onPlay={onPlay}
+      pending={pending}
       onIllegal={(point) => send({ type: 'play', point })}
       // Touch-down (mouse or finger) starts the next turn: old notes and an illegal reason clear.
       onTouchDown={() => send({ type: 'touch' })}
@@ -536,7 +605,7 @@ function playingLines(
   if (s.note && s.note.key.startsWith('game.fb.illegal.')) {
     return [{ text: say(s.note), tone: toneOf(s.note) }];
   }
-  const line = atariLine(visibleDanger(s), s.learner);
+  const line = atariLine(visibleDanger(s), s.learner, s.size);
   const rest: FeedbackText[] = s.coach.hint
     ? [{ text: say(s.coach.hint.note), tone: 'success' }]
     : s.coach.notes.length > 0
@@ -559,6 +628,9 @@ function Bottom({
   onTakeBack,
   onAgain,
   nextHandicap: next,
+  confirmMoves,
+  canConfirm,
+  onConfirmPlay,
   onCountNow,
   onResign,
   onChangeLevel,
@@ -573,6 +645,9 @@ function Bottom({
   onTakeBack: () => void;
   onAgain: () => void;
   nextHandicap: Handicap;
+  confirmMoves: boolean;
+  canConfirm: boolean;
+  onConfirmPlay: () => void;
   onCountNow: () => void;
   onResign: () => void;
   onChangeLevel: () => void;
@@ -593,22 +668,34 @@ function Bottom({
       <>
         <FeedbackCard lines={playingLines(s, say, more)} height={NOTE_CARD_HEIGHT} />
         <View style={styles.spacer} />
-        {/* Hint ("before I move") left, Take back 悔棋 ("after I moved") right (§5.2). */}
+        {/* Hint ("before I move") left, Take back 悔棋 ("after I moved") right (§5.2). With
+            "Confirm each move" the Play button takes the Hint slot (M6b §5.2). */}
         <View style={styles.row}>
-          <Button
-            maxFontSizeMultiplier={textScale.hud}
-            label={
-              hintsLeft === null
-                ? t('coach.hint.buttonFree')
-                : t('coach.hint.button', { n: n(hintsLeft) })
-            }
-            variant="secondary"
-            onPress={() => send({ type: 'hint' })}
-            disabled={locked || hintsLeft === 0}
-            accessibilityLabel={hintsLeft === 0 ? t('coach.hint.none') : undefined}
-            testID="game9-hint"
-            style={styles.flex}
-          />
+          {confirmMoves ? (
+            <Button
+              maxFontSizeMultiplier={textScale.hud}
+              label={t('game.confirm.play')}
+              onPress={onConfirmPlay}
+              disabled={locked || !canConfirm}
+              testID="game-confirm-play"
+              style={styles.flex}
+            />
+          ) : (
+            <Button
+              maxFontSizeMultiplier={textScale.hud}
+              label={
+                hintsLeft === null
+                  ? t('coach.hint.buttonFree')
+                  : t('coach.hint.button', { n: n(hintsLeft) })
+              }
+              variant="secondary"
+              onPress={() => send({ type: 'hint' })}
+              disabled={locked || hintsLeft === 0}
+              accessibilityLabel={hintsLeft === 0 ? t('coach.hint.none') : undefined}
+              testID="game9-hint"
+              style={styles.flex}
+            />
+          )}
           <Button
             maxFontSizeMultiplier={textScale.hud}
             label={left === null ? t('game9.btn.takeback') : t('game9.btn.takebackN', { n: left })}
@@ -645,7 +732,7 @@ function Bottom({
             label={t('game9.btn.resign')}
             variant="secondary"
             onPress={onResign}
-            disabled={locked}
+            disabled={locked && !canResignWhileThinking(s)}
             testID="game9-resign"
             style={styles.flex}
           />
@@ -751,7 +838,8 @@ function Bottom({
           testID="game9-show-count"
         />
       ) : null}
-      {s.game.moves.length >= REVIEW_MIN_MOVES ? (
+      {/* Review 复盘 is 9×9 only until M6b-2 (M6b AC 37). */}
+      {s.size === 9 && s.game.moves.length >= REVIEW_MIN_MOVES ? (
         // Review 复盘 is the primary action; Change level and Home share the text row (§5.3).
         <>
           <View style={styles.row}>

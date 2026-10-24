@@ -4,6 +4,17 @@ import type { BotLevel } from '@/bot';
 
 /** Komi (贴目 tiēmù) for the learner's 9×9 games; the engine default for 9×9 stays 7.5. */
 export const GAME_KOMI_9 = 5.5;
+/** Komi of an even 13×13 game (M6b §11 decision 1): a half point, so there is never a draw. */
+export const GAME_KOMI_13 = 6.5;
+
+/** The board sizes of games against the bot (M6b): 9×9 and 13×13. */
+export type GameSize = 9 | 13;
+export const GAME_SIZES: readonly GameSize[] = [9, 13];
+
+/** Komi of an even game on a board size. */
+export function gameKomi(size: GameSize): number {
+  return size === 13 ? GAME_KOMI_13 : GAME_KOMI_9;
+}
 
 /** Level 1 (入门 Easy) blunder on 9×9: misses a capture with half this (§6.1, AC 8 tuning). */
 export const L1_BLUNDER_9 = 0.6;

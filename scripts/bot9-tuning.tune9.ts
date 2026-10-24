@@ -96,7 +96,7 @@ function playGame(black: PlayerId, white: PlayerId, seed: number, handicap = 0):
   const komi = handicap > 0 ? HANDICAP_KOMI : GAME_KOMI_9;
   let state: GameState =
     handicap > 0
-      ? createGame(9, { komi, setup: { B: handicapStones(handicap) }, toPlay: 'W' })
+      ? createGame(9, { komi, setup: { B: handicapStones(9, handicap) }, toPlay: 'W' })
       : createGame(9, { komi });
   while (!state.isOver) {
     const id = state.toPlay === 'B' ? black : white;

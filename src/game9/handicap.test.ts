@@ -15,19 +15,19 @@ import {
 
 describe('handicapStones (AC 1, §3)', () => {
   it('returns the §3 star points, each list a prefix of the next', () => {
-    expect(handicapStones(0)).toEqual([]);
-    expect(handicapStones(2)).toEqual(['c3', 'g7']);
-    expect(handicapStones(3)).toEqual(['c3', 'g7', 'g3']);
-    expect(handicapStones(4)).toEqual(['c3', 'g7', 'g3', 'c7']);
-    expect(handicapStones(5)).toEqual(['c3', 'g7', 'g3', 'c7', 'e5']);
+    expect(handicapStones(9, 0)).toEqual([]);
+    expect(handicapStones(9, 2)).toEqual(['c3', 'g7']);
+    expect(handicapStones(9, 3)).toEqual(['c3', 'g7', 'g3']);
+    expect(handicapStones(9, 4)).toEqual(['c3', 'g7', 'g3', 'c7']);
+    expect(handicapStones(9, 5)).toEqual(['c3', 'g7', 'g3', 'c7', 'e5']);
   });
 
   it.each([1, 6, -1, 2.5, NaN])('throws for n = %p', (n) => {
-    expect(() => handicapStones(n)).toThrow();
+    expect(() => handicapStones(9, n)).toThrow();
   });
 
   it('n = 5 matches the §3 diagram; every stone is alone with 4 liberties', () => {
-    const game = createGame(9, { setup: { B: handicapStones(5) }, toPlay: 'W' });
+    const game = createGame(9, { setup: { B: handicapStones(9, 5) }, toPlay: 'W' });
     expect(printBoard(game.board)).toBe(
       [
         '. . . . . . . . .',
@@ -41,7 +41,7 @@ describe('handicapStones (AC 1, §3)', () => {
         '. . . . . . . . .',
       ].join('\n'),
     );
-    for (const v of handicapStones(5)) {
+    for (const v of handicapStones(9, 5)) {
       const group = groupAt(game.board, parseVertex(v, 9));
       expect(group?.stones).toHaveLength(1);
       expect(group?.liberties).toHaveLength(4);

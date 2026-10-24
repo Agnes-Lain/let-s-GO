@@ -1,4 +1,5 @@
-// A whole 9×9 game against the bot (spec docs/specs/M6-bot-levels.md §4.3–4.5, §5): play, pass
+// A whole 9×9 or 13×13 game against the bot (spec docs/specs/M6-bot-levels.md §4.3–4.5, §5;
+// docs/specs/M6b-13x13-game.md): play, pass
 // 弃权, Count now, Resign 认输, marking dead stones with the bot, the count and the result. A pure
 // reducer: the screen holds the timers and sends `bot` after the delay; it never calls the engine.
 import {
@@ -29,12 +30,13 @@ import {
 } from '@/engine';
 
 import {
-  GAME_KOMI_9,
   L1_BLUNDER_9,
   L1_SKIP_ATARI_9,
   L1_SKIP_SAVE_9,
   L2_SLIP_9,
   TAKEBACKS_PER_GAME,
+  gameKomi,
+  type GameSize,
 } from './config';
 import { dangerOf, withoutDangerFacts } from './danger';
 import { HANDICAP_KOMI, handicapStones, type Handicap } from './handicap';
@@ -107,6 +109,8 @@ export interface Snapshot {
 
 export interface GameSession {
   level: BotLevel;
+  /** The board: 9×9 or 13×13 (M6b). */
+  size: GameSize;
   seed: number;
   /** Black stones placed before the game (让子 ràngzǐ, 0 = even game). */
   handicap: Handicap;
@@ -160,12 +164,12 @@ export type GameEvent =
   /** A new game on the same level; the handicap stays unless given. */
   | { type: 'new'; seed: number; handicap?: Handicap };
 
-/** The empty board, or the handicap stones with White to move (§3). */
-function newGame(handicap: Handicap): GameState {
-  if (handicap === 0) return createGame(9, { komi: GAME_KOMI_9 });
-  return createGame(9, {
+/** The empty board, or the handicap stones with White to move (§3, M6b AC 7–8). */
+function newGame(size: GameSize, handicap: Handicap): GameState {
+  if (handicap === 0) return createGame(size, { komi: gameKomi(size) });
+  return createGame(size, {
     komi: HANDICAP_KOMI,
-    setup: { B: handicapStones(handicap) },
+    setup: { B: handicapStones(size, handicap) },
     toPlay: 'W',
   });
 }
@@ -175,15 +179,17 @@ export function startSession(
   seed: number,
   handicap: Handicap = 0,
   atariHints = true,
+  size: GameSize = 9,
 ): GameSession {
   return {
     level,
+    size,
     seed,
     handicap,
     atariHints,
     learner: 'B',
     bot: 'W',
-    game: newGame(handicap),
+    game: newGame(size, handicap),
     phase: 'playing',
     // With a handicap White moves first: the screen sends `bot` after the delay (AC 2).
     thinking: handicap > 0,
@@ -221,7 +227,7 @@ function noteLines(
   facts: MoveFacts,
   keep: (facts: CoachFact[]) => CoachFact[] = (f) => f,
 ): Note[] {
-  const note = pickNote(keep(moveNote(before, move, after, facts)), s.learner, move.color);
+  const note = pickNote(keep(moveNote(before, move, after, facts)), s.learner, move.color, s.size);
   return note ? [note] : [];
 }
 
@@ -294,7 +300,7 @@ function botMove(s: GameSession): Move {
     return chooseMove(game, {
       level,
       rng,
-      board9: true,
+      boardN: true,
       blunder: level === 1 ? L1_BLUNDER_9 : 0,
       skipSave: level === 1 ? L1_SKIP_SAVE_9 : 0,
       skipAtari: level === 1 ? L1_SKIP_ATARI_9 : 0,
@@ -311,7 +317,7 @@ function botMove(s: GameSession): Move {
 function beforePasses(s: GameSession): GameState {
   const moves = [...s.game.moves];
   while (moves.length > 0 && moves[moves.length - 1].type === 'pass') moves.pop();
-  let game = newGame(s.handicap);
+  let game = newGame(s.size, s.handicap);
   for (const move of moves) game = apply(game, move);
   // The bot passed first: its pass stands, so the learner is to move.
   if (game.toPlay === s.bot) game = apply(game, { type: 'pass', color: s.bot });
@@ -321,7 +327,7 @@ function beforePasses(s: GameSession): GameState {
 function toggleGroup(s: GameSession, at: Vertex): Vertex[] {
   const group = groupAt(s.game.board, at);
   if (!group) return s.marks;
-  const stones = group.stones.map((p) => toVertex(p, 9));
+  const stones = group.stones.map((p) => toVertex(p, s.size));
   const marked = s.marks.includes(stones[0]);
   const rest = s.marks.filter((v) => !stones.includes(v));
   return marked ? rest : [...rest, ...stones];
@@ -363,7 +369,7 @@ function onMarkDone(s: GameSession): GameSession {
 export function gameReducer(s: GameSession, event: GameEvent): GameSession {
   switch (event.type) {
     case 'new':
-      return startSession(s.level, event.seed, event.handicap ?? s.handicap, s.atariHints);
+      return startSession(s.level, event.seed, event.handicap ?? s.handicap, s.atariHints, s.size);
 
     case 'takeback': {
       if (!canTakeBack(s)) return s;
@@ -452,9 +458,12 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
     }
 
     case 'resign': {
-      if (s.phase !== 'playing' || s.thinking) return s;
+      // On 13×13 also while the bot thinks (M6b AC 30: its late answer is then ignored); 9×9
+      // keeps its locked buttons (M6 AC 16).
+      if (s.phase !== 'playing' || (s.thinking && !canResignWhileThinking(s))) return s;
       return {
         ...s,
+        thinking: false,
         phase: 'result',
         result: { kind: 'resigned' },
         note: null,
@@ -550,6 +559,11 @@ export function gameReducer(s: GameSession, event: GameEvent): GameSession {
   }
 }
 
+/** Resign stays enabled while the bot thinks on the bigger board (M6b AC 30). */
+export function canResignWhileThinking(s: GameSession): boolean {
+  return s.size === 13;
+}
+
 /** Take back 悔棋 is possible (AC 19, 20). */
 export function canTakeBack(s: GameSession): boolean {
   return s.phase === 'playing' && !s.thinking && s.history.length > 0 && s.takebacksLeft !== 0;
@@ -563,12 +577,12 @@ export function canCountNow(s: GameSession): boolean {
 /** Some group of either colour is in atari (the extra line of the Count now sheet, AC 21). */
 export function anyAtari(game: GameState): boolean {
   const seen = new Set<number>();
-  const { cells } = game.board;
+  const { cells, size } = game.board;
   for (let i = 0; i < cells.length; i++) {
     if (cells[i] === null || seen.has(i)) continue;
-    const group = groupAt(game.board, { x: i % 9, y: Math.floor(i / 9) });
+    const group = groupAt(game.board, { x: i % size, y: Math.floor(i / size) });
     if (!group) continue;
-    for (const p of group.stones) seen.add(p.y * 9 + p.x);
+    for (const p of group.stones) seen.add(p.y * size + p.x);
     if (group.liberties.length === 1) return true;
   }
   return false;

@@ -146,8 +146,8 @@ export function pickFact(facts: readonly CoachFact[], learner: Color): CoachFact
 }
 
 /** The note of a fact of the learner's own move (`exposed` never applies to it). */
-function youNote(fact: CoachFact): CoachNote | null {
-  const params = factParams(fact);
+function youNote(fact: CoachFact, size: BoardSize): CoachNote | null {
+  const params = factParams(fact, size);
   switch (fact.kind) {
     case 'capture':
       return { key: 'coach.you.capture', params };
@@ -163,8 +163,8 @@ function youNote(fact: CoachFact): CoachNote | null {
 }
 
 /** The note of a fact of the bot's move. */
-function botNote(fact: CoachFact): CoachNote {
-  const params = factParams(fact);
+function botNote(fact: CoachFact, size: BoardSize): CoachNote {
+  const params = factParams(fact, size);
   switch (fact.kind) {
     case 'capture':
       return { key: 'coach.bot.capture', params };
@@ -181,14 +181,15 @@ function botNote(fact: CoachFact): CoachNote {
 
 /**
  * One note line for a ply (§4.2): the highest-priority fact, worded for the learner. `mover` is
- * the colour that played the move.
+ * the colour that played the move; `size` names the points (13×13 labels, M6b AC 35).
  */
 export function pickNote(
   facts: readonly CoachFact[],
   learner: Color,
   mover: Color,
+  size: BoardSize = 9,
 ): CoachNote | null {
   const fact = pickFact(facts, learner);
   if (!fact) return null;
-  return mover === learner ? youNote(fact) : botNote(fact);
+  return mover === learner ? youNote(fact, size) : botNote(fact, size);
 }

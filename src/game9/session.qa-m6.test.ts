@@ -51,7 +51,7 @@ describe('QA: handicap 2–5 on the real engine', () => {
     'n=%i: Black area includes the handicap stones, komi 0.5 on White',
     (n) => {
       // White first passes, Black passes: an unenclosed board has only neutral points.
-      const g = createGame(9, { komi: 0.5, setup: { B: handicapStones(n) }, toPlay: 'W' });
+      const g = createGame(9, { komi: 0.5, setup: { B: handicapStones(9, n) }, toPlay: 'W' });
       const r = score(g.board, { komi: 0.5 });
       expect(r.black.stones).toBe(n);
       expect(r.black.total).toBe(81); // all empty points border only Black

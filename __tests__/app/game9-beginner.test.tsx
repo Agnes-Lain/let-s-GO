@@ -117,8 +117,9 @@ describe('picker handicap row (AC 7–9)', () => {
       'You play Black with 2 stones already placed. White moves first. Komi 0.5.',
     );
     await press('game9-handicap-0');
+    // M6b AC 9: the komi is a parameter now; 9×9 still says 5.5.
     expect(screen.getByTestId('game9-handicap-explain')).toHaveTextContent(
-      texts['game9.picker.explainEven'],
+      'You play Black and move first. Komi 5.5.',
     );
     await press('game9-handicap-5');
     await press('game9-start');

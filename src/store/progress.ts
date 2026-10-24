@@ -32,7 +32,7 @@ export interface LessonProgress {
 
 export type LessonProgressMap = Record<string, LessonProgress>;
 
-/** 9×9 games against one bot level (M6 §7, AC 34–37). */
+/** Games against one bot level on one board size (M6 §7, AC 34–37; 13×13 in M6b AC 14–16). */
 export interface BotRecord {
   games: number;
   wins: number;
@@ -64,7 +64,13 @@ export interface ProgressFlags {
   onboardingSeen?: boolean;
 }
 
-const FLAG_NAMES: readonly (keyof ProgressFlags)[] = [
+/** The on/off flags (all flags are booleans). */
+export type BooleanFlag = keyof ProgressFlags;
+
+/** The board sizes of games against the bot. */
+export type GameBoardSize = 9 | 13;
+
+const FLAG_NAMES: readonly BooleanFlag[] = [
   'passExplained',
   'easierTipShown',
   'takebackExplained',
@@ -80,7 +86,7 @@ export const REMOVED_LESSON_IDS: readonly string[] = ['u00-sample'];
 
 export interface ResetOptions {
   /** Flags that survive the reset (Settings → Erase keeps atariHintsOff and onboardingSeen). */
-  keepFlags?: readonly (keyof ProgressFlags)[];
+  keepFlags?: readonly BooleanFlag[];
 }
 
 export type GameOutcome = 'win' | 'loss' | 'resigned';
@@ -100,17 +106,25 @@ export interface ProgressState {
   lessons: LessonProgressMap;
   /** 9×9 games per bot level; additive (old saves load with `{}`). */
   bots: BotProgress;
+  /** 13×13 games per bot level (M6b AC 14–17), kept apart from `bots`; old saves load `{}`. */
+  bots13: BotProgress;
   flags: ProgressFlags;
   /**
-   * Saves a finished 9×9 game (a resignation is a loss, AC 22, 34) and, when given, the next
+   * Saves a finished game (a resignation is a loss, AC 22, 34) and, when given, the next
    * handicap suggestion of that level (M6-beginner-friendly AC 11; the caller steps the ladder).
+   * `size` 13 writes `bots13`, never `bots` (M6b AC 14, 16).
    */
-  recordGame(level: 1 | 2 | 3, outcome: GameOutcome, nextHandicap?: number): void;
+  recordGame(
+    level: 1 | 2 | 3,
+    outcome: GameOutcome,
+    nextHandicap?: number,
+    size?: GameBoardSize,
+  ): void;
   /** Wins against a bot level, 0 when never played. */
   botWins(level: 1 | 2 | 3): number;
   /** Remembers that a one-time tip was shown. */
   /** Sets a flag (or clears it with `false`). */
-  setFlag(flag: keyof ProgressFlags, value?: boolean): void;
+  setFlag(flag: BooleanFlag, value?: boolean): void;
   /** Saves a finished practice set. */
   record(lessonId: string, outcomes: readonly Outcome[]): RecordResult;
   /** Best stars of a lesson, 0 when never played. */
@@ -163,7 +177,22 @@ function isBotRecord(value: unknown): value is BotRecord {
 export interface SavedProgress {
   lessons: LessonProgressMap;
   bots: BotProgress;
+  bots13: BotProgress;
   flags: ProgressFlags;
+}
+
+/** The valid bot records of a saved value (M6 AC 35: a broken part loads as empty). */
+function parseBots(bots: unknown): BotProgress {
+  const out: BotProgress = {};
+  if (typeof bots !== 'object' || bots === null) return out;
+  for (const key of ['1', '2', '3'] as BotLevelKey[]) {
+    const entry = (bots as Record<string, unknown>)[key];
+    if (!isBotRecord(entry)) continue;
+    // A broken suggestion is dropped (the starting table applies), the record kept (AC 10).
+    const { handicap, ...record } = entry;
+    out[key] = isCount(handicap) ? { ...record, handicap } : record;
+  }
+  return out;
 }
 
 /** Everything saved, or null when the value is missing, corrupt or of another version. */
@@ -176,22 +205,17 @@ export function parseSaved(raw: string | null): SavedProgress | null {
     return null;
   }
   if (typeof data !== 'object' || data === null) return null;
-  const { v, lessons, bots, flags } = data as Record<string, unknown>;
+  const { v, lessons, bots, bots13, flags } = data as Record<string, unknown>;
   if (v !== PROGRESS_VERSION) return null;
   if (typeof lessons !== 'object' || lessons === null || Array.isArray(lessons)) return null;
-  const out: SavedProgress = { lessons: {}, bots: {}, flags: {} };
+  const out: SavedProgress = {
+    lessons: {},
+    bots: parseBots(bots),
+    bots13: parseBots(bots13),
+    flags: {},
+  };
   for (const [id, entry] of Object.entries(lessons)) {
     if (isLessonProgress(entry) && !REMOVED_LESSON_IDS.includes(id)) out.lessons[id] = entry;
-  }
-  // Additive fields (M6 AC 35): a missing or broken part loads as empty.
-  if (typeof bots === 'object' && bots !== null) {
-    for (const key of ['1', '2', '3'] as BotLevelKey[]) {
-      const entry = (bots as Record<string, unknown>)[key];
-      if (!isBotRecord(entry)) continue;
-      // A broken suggestion is dropped (the starting table applies), the record kept (AC 10).
-      const { handicap, ...record } = entry;
-      out.bots[key] = isCount(handicap) ? { ...record, handicap } : record;
-    }
   }
   if (typeof flags === 'object' && flags !== null) {
     const f = flags as Record<string, unknown>;
@@ -209,11 +233,13 @@ export function serializeProgress(
   lessons: LessonProgressMap,
   bots: BotProgress = {},
   flags: ProgressFlags = {},
+  bots13: BotProgress = {},
 ): string {
   return JSON.stringify({
     v: PROGRESS_VERSION,
     lessons,
     ...(Object.keys(bots).length > 0 ? { bots } : {}),
+    ...(Object.keys(bots13).length > 0 ? { bots13 } : {}),
     ...(Object.keys(flags).length > 0 ? { flags } : {}),
   });
 }
@@ -229,6 +255,16 @@ function mergeBot(a: BotRecord, b: BotRecord): BotRecord {
       : {}),
     ...(firstWins.length > 0 ? { firstWinAt: firstWins.sort()[0] } : {}),
   };
+}
+
+/** The saved bot records with the ones played before hydration added on top. */
+function mergeBots(saved: BotProgress, current: BotProgress): BotProgress {
+  const out: BotProgress = { ...saved };
+  for (const [key, entry] of Object.entries(current) as [BotLevelKey, BotRecord][]) {
+    const old = saved[key];
+    out[key] = old ? mergeBot(old, entry) : entry;
+  }
+  return out;
 }
 
 /** Keeps the best of two records of the same lesson (used when a run finishes before hydration). */
@@ -254,19 +290,21 @@ export function createProgressStore({
   now = () => new Date(),
 }: ProgressStoreOptions): ProgressStore {
   const save = () => {
-    const { lessons, bots, flags } = store.getState();
-    ignoreRejection(storage.setItem(PROGRESS_KEY, serializeProgress(lessons, bots, flags)));
+    const { lessons, bots, bots13, flags } = store.getState();
+    ignoreRejection(storage.setItem(PROGRESS_KEY, serializeProgress(lessons, bots, flags, bots13)));
   };
 
   const store: ProgressStore = createStore<ProgressState>()((set, get) => ({
     hydrated: false,
     lessons: {},
     bots: {},
+    bots13: {},
     flags: {},
 
-    recordGame(level, outcome, nextHandicap) {
+    recordGame(level, outcome, nextHandicap, size = 9) {
       const key = String(level) as BotLevelKey;
-      const before = get().bots[key] ?? { games: 0, wins: 0, lossStreak: 0 };
+      const field = size === 13 ? 'bots13' : 'bots';
+      const before = get()[field][key] ?? { games: 0, wins: 0, lossStreak: 0 };
       const won = outcome === 'win';
       const entry: BotRecord = {
         games: before.games + 1,
@@ -281,7 +319,7 @@ export function createProgressStore({
           ? { firstWinAt: before.firstWinAt ?? now().toISOString() }
           : {}),
       };
-      set({ bots: { ...get().bots, [key]: entry } });
+      set({ [field]: { ...get()[field], [key]: entry } });
       save();
     },
 
@@ -328,29 +366,27 @@ export function createProgressStore({
     reset({ keepFlags = [] } = {}) {
       const flags: ProgressFlags = {};
       for (const name of keepFlags) if (get().flags[name]) flags[name] = true;
-      set({ lessons: {}, bots: {}, flags });
+      set({ lessons: {}, bots: {}, bots13: {}, flags });
       if (Object.keys(flags).length > 0) save();
       else ignoreRejection(storage.removeItem(PROGRESS_KEY));
     },
   }));
 
   const hydrate = (raw: string | null) => {
-    const saved = parseSaved(raw) ?? { lessons: {}, bots: {}, flags: {} };
+    const saved = parseSaved(raw) ?? { lessons: {}, bots: {}, bots13: {}, flags: {} };
     const current = store.getState();
     const lessons: LessonProgressMap = { ...saved.lessons };
     for (const [id, entry] of Object.entries(current.lessons)) {
       lessons[id] = saved.lessons[id] ? mergeEntry(saved.lessons[id], entry) : entry;
     }
-    const bots: BotProgress = { ...saved.bots };
-    for (const [key, entry] of Object.entries(current.bots) as [BotLevelKey, BotRecord][]) {
-      const old = saved.bots[key];
-      bots[key] = old ? mergeBot(old, entry) : entry;
-    }
+    const bots = mergeBots(saved.bots, current.bots);
+    const bots13 = mergeBots(saved.bots13, current.bots13);
     const flags: ProgressFlags = { ...saved.flags, ...current.flags };
-    store.setState({ lessons, bots, flags, hydrated: true });
+    store.setState({ lessons, bots, bots13, flags, hydrated: true });
     const changed =
       Object.keys(current.lessons).length > 0 ||
       Object.keys(current.bots).length > 0 ||
+      Object.keys(current.bots13).length > 0 ||
       Object.keys(current.flags).length > 0;
     if (changed) save();
   };
