@@ -26,7 +26,7 @@ const PREVIEW_SIZE = 96;
 /** The mini board's stones: the handicap points in Black (AC 8). */
 function previewStones(n: Handicap): ('B' | null)[] {
   const cells: ('B' | null)[] = Array(81).fill(null);
-  for (const v of handicapStones(n)) {
+  for (const v of handicapStones(9, n)) {
     const p = parseVertex(v, 9);
     cells[p.y * 9 + p.x] = 'B';
   }

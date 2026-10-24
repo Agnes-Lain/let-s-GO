@@ -21,6 +21,11 @@ export function showEasierTip(bots: BotProgress, flags: ProgressFlags): boolean 
   return (['2', '3'] as const).some((key) => (bots[key]?.lossStreak ?? 0) >= LOSSES_BEFORE_TIP);
 }
 
+/** 13×13 opens once any 9×9 level is beaten (M6b AC 2–3, §11 decision 6). */
+export function isSize13Unlocked(bots9: BotProgress): boolean {
+  return ([1, 2, 3] as const).some((level) => isBeaten(bots9, level));
+}
+
 /**
  * Unit 14's lesson: its result screen offers "Play 9×9". The Home card no longer waits for it
  * (open from the start since M6-settings AC 61).

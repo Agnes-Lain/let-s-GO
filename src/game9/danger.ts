@@ -2,7 +2,14 @@
 // Facts come only from the engine's groups: a group is in atari 叫吃 jiàochī iff it has exactly
 // one liberty 气 qì. No heuristic, no bot code. Pure: no React, no clock.
 import type { CoachFact } from '@/coach';
-import { groupAt, toVertex, type Color, type GameState, type Point } from '@/engine';
+import {
+  groupAt,
+  toVertex,
+  type BoardSize,
+  type Color,
+  type GameState,
+  type Point,
+} from '@/engine';
 
 import type { Note } from './session';
 
@@ -46,8 +53,8 @@ export function dangerOf(game: GameState, learner: Color = 'B'): DangerGroup[] {
 }
 
 /** "D4" — the board label of a point (uppercase column letter, row from the bottom). */
-function label(p: Point): string {
-  return toVertex(p, 9).toUpperCase();
+function label(p: Point, size: BoardSize): string {
+  return toVertex(p, size).toUpperCase();
 }
 
 /** The feedback line of the first group and how many more groups are in atari (AC 33). */
@@ -56,7 +63,12 @@ export interface AtariLine {
   more: number;
 }
 
-export function atariLine(groups: readonly DangerGroup[], learner: Color): AtariLine | null {
+/** `size` names the points with that board's labels ("K10" on 13×13, M6b AC 34). */
+export function atariLine(
+  groups: readonly DangerGroup[],
+  learner: Color,
+  size: BoardSize = 9,
+): AtariLine | null {
   if (groups.length === 0) return null;
   const [first] = groups;
   const own = first.color === learner;
@@ -68,12 +80,12 @@ export function atariLine(groups: readonly DangerGroup[], learner: Color): Atari
     : one
       ? { key: 'game9.atari.bot.one' }
       : { key: 'game9.atari.bot.many' };
-  const listed = first.stones.slice(0, ATARI_LINE_MAX_POINTS).map(label);
+  const listed = first.stones.slice(0, ATARI_LINE_MAX_POINTS).map((p) => label(p, size));
   if (first.stones.length > ATARI_LINE_MAX_POINTS) listed.push('…');
   return {
     note: {
       key,
-      params: { where: listed.join(', '), lib: label(first.liberty) },
+      params: { where: listed.join(', '), lib: label(first.liberty, size) },
     },
     more: groups.length - 1,
   };
