@@ -15,42 +15,45 @@ phone).
 Tick each box when it works. If something looks wrong, write one line about what you saw (and on
 which language and text size).
 
-## 1. First launch and the intro (AC 34)
-- [ ] A fresh install opens the **welcome page** first (title, two short paragraphs, a small board,
-      one button **Start learning**). Home does not appear before it.
-- [ ] **Skip** (top right) is easy to hit with a thumb and takes you to Home. The intro does not
-      come back after you close and reopen the app.
-- [ ] Tap **Start learning**: page 2 shows an empty 5×5 board. **Put a finger down on a crossing
-      and keep it there**: a faint stone shows under the finger.
+## 1. Home page and the intro (AC 34, spec §12c)
+- [ ] The app opens on the **Home page**: logo, "Let's GO", one intro line, a small board picture,
+      the **Start learning** button and the gear. The mountains at the bottom are clear; nothing
+      covers them. The board picture cannot be tapped.
+- [ ] First time only: **Start learning** opens intro page 1 (Welcome) with a **Next** button.
+- [ ] **Skip** (top right, on either page) is easy to hit with a thumb and opens the **learning page**
+      (the modules). Back on the learning page returns to the Home page.
+- [ ] After that, **Start learning** goes straight to the learning page; the intro does not come back,
+      even after you close and reopen the app.
+- [ ] To see the intro again: **Settings > Show the intro again**. Page 2 shows an empty 5×5 board.
+      **Put a finger down on a crossing and keep it there**: a faint stone shows under the finger.
 - [ ] **Slide the finger to another crossing**: the faint stone moves with it.
 - [ ] **Lift the finger**: a black stone is placed on that crossing and a green "well done" line
       shows. Try again: stones alternate white / black.
 - [ ] **Put a finger down, slide it off the board, lift**: nothing is placed.
 - [ ] Touch a crossing that already has a stone: a short, polite message says why it cannot be used.
-- [ ] **Go to lesson 1** works before and after you tried the board. It opens lesson 1; the back
-      arrow there goes to Home (not to the intro).
-- [ ] French: step 2 shows the whole board and the button without scrolling (iPhone SE size is the
+- [ ] **Done** on page 2 opens the learning page (not lesson 1), before or after you tried the board.
+- [ ] French: page 2 shows the whole board and the button without scrolling (iPhone SE size is the
       tightest if you have one).
 
 ## 2. Settings (AC 12, 15 and the switches)
-Open Home, tap the gear.
+On the Home page, tap the gear.
 - [ ] Order from the top: Language, Sound and motion, Games, Help, Progress, version.
 - [ ] Tap the **whole row** of **Stone sound** (not only the little switch): it toggles. With sound
       off, place a stone in lesson 1: no "tock". With sound on: "tock". (Check the phone's silent
       switch is off, otherwise there is never a tock.)
-- [ ] **Reduce motion** on: stones appear at once, captured stones vanish at once, the Home module
-      arrow turns at once.
+- [ ] **Reduce motion** on: stones appear at once, captured stones vanish at once, the learning-page
+      module arrow turns at once.
 - [ ] iPhone **Settings > Accessibility > Motion > Reduce Motion** on, then reopen the app: the
       app's **Reduce motion** row shows **on** and is greyed out with a line explaining why.
       Turn the phone setting off again afterwards.
 - [ ] **Atari warnings** off here, then open the 9×9 picker: the same switch is off there.
-- [ ] **Language**: pick Français, close the app completely, reopen: Settings and Home are French
+- [ ] **Language**: pick Français, close the app completely, reopen: Settings, the Home page and the learning page are French
       from the first screen. Repeat with 中文 and English; then **Follow device**.
 - [ ] **Erase progress**: a sheet asks first; **Keep** is the first, strong button; tapping outside
-      the sheet closes it without erasing. After **Erase**, Home shows lesson 1 as Continue with no
+      the sheet closes it without erasing. After **Erase**, the learning page shows lesson 1 as Continue with no
       stars, the atari switch and your language are unchanged, and the intro does not reappear.
 
-## 3. Home with modules
+## 3. Learning page with modules
 - [ ] Three module cards (basics, playing an opponent, how to win). A new learner has module 1 open;
       modules 2 and 3 show a lock and **Locked**. They can still be opened to look; tapping a
       locked lesson only shows a short message.
@@ -60,7 +63,7 @@ Open Home, tap the gear.
 ## 4. Larger Text (AC 43)
 iPhone **Settings > Accessibility > Display & Text Size > Larger Text**, switch on **Larger
 Accessibility Sizes** and drag to the **largest** size. Then reopen the app.
-- [ ] **Settings**, **intro step 1 and step 2** and **Home**: everything is readable by scrolling;
+- [ ] **Settings**, **intro step 1 and step 2**, the **Home page** and the **learning page**: everything is readable by scrolling;
       nothing is cut off or drawn over other text; buttons are still reachable.
 - [ ] **9×9 game** at the default size plus two steps bigger: the whole board and the **Pass** and
       **Resign** buttons are still on the screen; the text above the board grows only a little
@@ -78,7 +81,7 @@ Turn on **Settings > Accessibility > VoiceOver** (or triple-click the side butto
 - [ ] **Erase progress**: VoiceOver stays inside the sheet (swiping never reaches the page behind
       it) and reads the title, the text and the two buttons. After Erase it says "Progress
       erased".
-- [ ] **Home**: each module is read like "Module 2, Playing an opponent, Units 6–9, 0 of 6 done,
+- [ ] **Learning page**: each module is read like "Module 2, Playing an opponent, Units 6–9, 0 of 6 done,
       locked, button, collapsed". Double-tap opens it and it then says "expanded". A collapsed
       module's lessons cannot be reached.
 - [ ] **Intro**: each page reads its title and "Step 1 of 2" when it appears. The demo board is
@@ -99,7 +102,7 @@ Turn on TalkBack. Only if you have an Android phone.
 - [ ] Reset sheet traps focus; Android **Back** closes it without erasing.
 - [ ] Lesson 1 exercise feedback is read once (not twice: no echo from a live region).
 - [ ] 9×9 game: each move read once.
-- [ ] Android **Back** on intro page 2 returns to page 1; on page 1 it behaves like **Skip**.
+- [ ] Android **Back** on intro page 2 returns to page 1; on page 1 it behaves like **Skip** (opens the learning page).
 - [ ] Android system **Remove animations** on: the app's Reduce motion row shows on and is greyed.
 
 ## Known issues from QA (not yet fixed when this list was written)
