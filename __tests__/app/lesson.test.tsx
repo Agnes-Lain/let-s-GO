@@ -38,8 +38,8 @@ function stones(): string[] {
 }
 
 const hidden = { includeHiddenElements: true };
-const settle = () => act(async () => {});
-const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+const settle = async () => act(async () => {});
+const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 async function open(url = '/lesson/u00-sample') {
   const router = await renderRouter('./app', { initialUrl: '/learn' });
@@ -154,7 +154,7 @@ describe('explanation player (sample)', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Close' }));
     expect(router.getPathname()).toBe('/learn');
 
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u00-sample', ['clean', 'clean', 'clean', 'revealed']);
     });
     await act(() => appRouter.push('/lesson/u00-sample'));

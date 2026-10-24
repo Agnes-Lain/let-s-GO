@@ -5,8 +5,8 @@ import { render } from '@testing-library/react-native';
 import { router as appRouter } from 'expo-router';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { AccessibilityInfo, StyleSheet } from 'react-native';
-import type { ReactTestInstance } from 'react-test-renderer';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { TestInstance } from 'test-renderer';
 
 import { boardGeometry, pointToLocation } from '@/board';
 import { parseVertex } from '@/engine';
@@ -31,29 +31,29 @@ const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 740 },
   insets: { top: 0, left: 0, right: 0, bottom: 0 },
 };
-const settle = () => act(async () => {});
-const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+const settle = async () => act(async () => {});
+const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
-const root = () => screen.UNSAFE_root;
+const root = () => screen.container;
 const SIX = Array(6).fill('clean') as 'clean'[];
 
 /** Host Text nodes (what reaches the screen). */
-function hostTexts(node: ReactTestInstance): ReactTestInstance[] {
-  return node.findAll((n) => (n.type as unknown) === 'Text', { deep: true });
+function hostTexts(node: TestInstance): TestInstance[] {
+  return node.queryAll((n) => n.type === 'Text', { includeSelf: true });
 }
 /** Text nodes under 12 px, as "size: text". */
-function smallTexts(node: ReactTestInstance): string[] {
+function smallTexts(node: TestInstance): string[] {
   return hostTexts(node)
     .map((n) => ({ size: StyleSheet.flatten(n.props.style)?.fontSize, n }))
     .filter(({ size }) => typeof size === 'number' && size < 12)
     .map(({ size, n }) => `${size}: ${[n.props.children].flat().join('')}`);
 }
 /** Text nodes whose cap is missing or above `max`. */
-function uncapped(node: ReactTestInstance, max: number): string[] {
+function uncapped(node: TestInstance, max: number): string[] {
   return hostTexts(node)
     .filter((n) => !(typeof n.props.maxFontSizeMultiplier === 'number'))
     .concat(hostTexts(node).filter((n) => n.props.maxFontSizeMultiplier > max))
@@ -78,10 +78,10 @@ async function tapGame(vertex: string) {
   const { x, y } = pointToLocation(g, parseVertex(vertex, 9));
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(screen.getByTestId('board-touch'), 'responderGrant', event);
+    await fireEvent(screen.getByTestId('board-touch'), 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(screen.getByTestId('board-touch'), 'responderRelease', event);
+    await fireEvent(screen.getByTestId('board-touch'), 'responderRelease', event);
   });
 }
 
@@ -107,9 +107,9 @@ afterEach(async () => {
 });
 
 describe('the audit helper (AC 35)', () => {
-  it('flags a pressable without a role, a name, or 44 px', () => {
+  it('flags a pressable without a role, a name, or 44 px', async () => {
     const { Pressable, Text } = jest.requireActual('react-native');
-    const view = render(
+    const view = await render(
       <>
         <Pressable onPress={() => {}} style={{ minHeight: 44 }} testID="no-role">
           <Text>Go</Text>
@@ -137,7 +137,7 @@ describe('the audit helper (AC 35)', () => {
         />
       </>,
     );
-    const problems = accessibilityViolations(view.UNSAFE_root).map(
+    const problems = accessibilityViolations(view.container).map(
       (v) => `${v.testID}: ${v.problem}`,
     );
     expect(problems).toEqual([
@@ -145,7 +145,7 @@ describe('the audit helper (AC 35)', () => {
       'no-name: no label or text',
       'small: height 31 < 44',
     ]);
-    view.unmount();
+    await view.unmount();
   });
 });
 
@@ -239,19 +239,19 @@ describe('every screen passes the audit (AC 35, 36, 40, 42)', () => {
     ['sequence', 'u09-ladder', 4],
     ['mark', 'u12-territory', 0],
   ])('runner %s (%s #%i)', async (_type, id, index) => {
-    const view = render(
+    const view = await render(
       <SafeAreaProvider initialMetrics={METRICS}>
         <ExerciseView lesson={lessonOf(id)} index={index} onClose={jest.fn()} onDone={jest.fn()} />
       </SafeAreaProvider>,
     );
     await settle();
-    expectAccessible(view.UNSAFE_root);
+    expectAccessible(view.container);
     expect(uncapped(view.getByTestId('practice-feedback'), 1.3)).toEqual([]);
-    view.unmount();
+    await view.unmount();
   });
 
   it('ResultView', async () => {
-    const view = render(
+    const view = await render(
       <SafeAreaProvider initialMetrics={METRICS}>
         <ResultView
           outcomes={SIX}
@@ -265,9 +265,9 @@ describe('every screen passes the audit (AC 35, 36, 40, 42)', () => {
       </SafeAreaProvider>,
     );
     await advance(2000);
-    expectAccessible(view.UNSAFE_root);
+    expectAccessible(view.container);
     expect(view.getAllByRole('header')).toHaveLength(1);
-    view.unmount();
+    await view.unmount();
   });
 });
 
@@ -275,7 +275,7 @@ describe('exercise feedback is heard once (AC 39)', () => {
   it('a wrong tap: one announcement, and the card is not also an Android live region', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
     const lesson = lessonOf('u01-board');
-    const view = render(
+    const view = await render(
       <SafeAreaProvider initialMetrics={METRICS}>
         <ExerciseView lesson={lesson} index={2} onClose={jest.fn()} onDone={jest.fn()} />
       </SafeAreaProvider>,
@@ -290,16 +290,16 @@ describe('exercise feedback is heard once (AC 39)', () => {
     const { x, y } = pointToLocation(g, { x: 0, y: 0 });
     const event = { nativeEvent: { locationX: x, locationY: y } };
     await act(async () => {
-      fireEvent(view.getByTestId('board-touch'), 'responderGrant', event);
+      await fireEvent(view.getByTestId('board-touch'), 'responderGrant', event);
     });
     await act(async () => {
-      fireEvent(view.getByTestId('board-touch'), 'responderRelease', event);
+      await fireEvent(view.getByTestId('board-touch'), 'responderRelease', event);
     });
     const feedback = view.getByTestId('practice-feedback');
     expect(feedback.props.accessibilityLabel.length).toBeGreaterThan(0);
     expect(announce).toHaveBeenCalledTimes(1);
     expect(announce).toHaveBeenCalledWith(feedback.props.accessibilityLabel);
     expect(feedback.props.accessibilityLiveRegion).toBe('none');
-    view.unmount();
+    await view.unmount();
   });
 });

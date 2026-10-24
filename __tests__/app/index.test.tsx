@@ -42,7 +42,7 @@ describe('Home screen (M0 copy)', () => {
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
     expect(screen.getByText('从零开始，一步一步学会下围棋。')).toBeOnTheScreen();
     await act(async () => {
-      fireEvent.press(screen.getByTestId('landing-start'));
+      await fireEvent.press(screen.getByTestId('landing-start'));
     });
     expect(router.getPathname()).toBe('/learn');
     expect(screen.getByText('学习路线')).toBeOnTheScreen();
@@ -67,7 +67,7 @@ describe('Home screen (M0 copy)', () => {
       screen.getByText('Learn GO (围棋 wéiqí) from zero with short lessons.'),
     ).toBeOnTheScreen();
     await act(async () => {
-      fireEvent.press(screen.getByTestId('landing-start'));
+      await fireEvent.press(screen.getByTestId('landing-start'));
     });
     expect(screen.getByText('Learning path')).toBeOnTheScreen();
     expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
@@ -123,7 +123,7 @@ describe('learning path (AC 97–99, 101–102, 106; M6-settings AC 50: no sampl
   });
 
   it('AC 99: 2★ on Unit 1 → ★★☆, black dot; Continue moves on to Unit 2', async () => {
-    act(() => {
+    await act(() => {
       progressStore
         .getState()
         .record('u01-board', ['clean', 'clean', 'clean', 'clean', 'solved', 'solved']);
@@ -150,14 +150,14 @@ describe('learning path (AC 97–99, 101–102, 106; M6-settings AC 50: no sampl
       ...getUnits(),
       { unit: 15, titleKey: 'unit.14.title', lesson: null, checkpoint: null },
     ];
-    const planned = render(
+    const planned = await render(
       <UnitPath rows={mapRows(units, {})} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />,
     );
     const soon = planned.getByTestId('home-node-unit-15');
     expect(soon.props.accessibilityRole).toBeUndefined();
     expect(soon.props.onClick ?? soon.props.onPress).toBeUndefined();
     expect(planned.getByText('Coming soon')).toBeOnTheScreen();
-    planned.unmount();
+    await planned.unmount();
   });
 
   it('AC 106: gear 44×44, Continue ≥ 56, node cards at least 72 high (M4 §5: they may grow)', async () => {
@@ -198,9 +198,9 @@ describe('release build (AC 98)', () => {
 });
 
 describe('loading skeleton (AC 105)', () => {
-  it('shows 72 px skeleton bars until progress is read, then the nodes', () => {
+  it('shows 72 px skeleton bars until progress is read, then the nodes', async () => {
     const rows = mapRows(getUnits(), {});
-    const view = render(
+    const view = await render(
       <UnitPath rows={rows} hydrated={false} onOpen={jest.fn()} onLocked={jest.fn()} />,
     );
     const skeletons = screen.getAllByTestId('home-skeleton');
@@ -208,7 +208,7 @@ describe('loading skeleton (AC 105)', () => {
     for (const s of skeletons) expect(StyleSheet.flatten(s.props.style).height).toBe(72);
     expect(screen.queryByTestId('home-dot-locked')).toBeNull();
     expect(screen.queryByTestId('home-dot-available')).toBeNull();
-    view.rerender(<UnitPath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
+    await view.rerender(<UnitPath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
     expect(screen.queryAllByTestId('home-skeleton')).toHaveLength(0);
     expect(StyleSheet.flatten(screen.getByTestId('home-node-unit-1').props.style).minHeight).toBe(
       72,

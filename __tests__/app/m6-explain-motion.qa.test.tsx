@@ -25,8 +25,8 @@ const stones = () =>
         `${JSON.stringify(n.props.fill) === JSON.stringify(BLACK_FILL) ? 'B' : 'W'} ${String(n.props.testID).replace('board-stone-', '')}`,
     )
     .sort();
-const settle = () => act(async () => {});
-const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+const settle = async () => act(async () => {});
+const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 async function open() {
   await renderRouter('./app', { initialUrl: '/learn' });
@@ -42,15 +42,15 @@ beforeEach(async () => {
   progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
-afterEach(() => {
-  act(() => settingsStore.getState().setReduceMotion(false));
+afterEach(async () => {
+  await act(() => settingsStore.getState().setReduceMotion(false));
   jest.useRealTimers();
   jest.restoreAllMocks();
 });
 
 describe('ExplainPlayer and the app reduce-motion switch (AC 13)', () => {
   it('app switch on: the final position shows at once, no capture fade', async () => {
-    act(() => settingsStore.getState().setReduceMotion(true));
+    await act(() => settingsStore.getState().setReduceMotion(true));
     await open();
     await fireEvent.press(screen.getByRole('button', { name: 'Next' }));
     expect(stones()).toEqual(['B b3', 'B c2', 'B c4', 'B d3']);

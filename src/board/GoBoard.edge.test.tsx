@@ -13,8 +13,8 @@ const prop = (id: string, name: string) => screen.getByTestId(id).props[name];
 describe('QA edge cases: stars, labels, geometry', () => {
   it.each([5, 7, 9, 13, 19] as BoardSize[])(
     'size %i draws exactly its star points (AC3/AC14)',
-    (s) => {
-      render(<GoBoard size={s} stones={stonesFromSetup(s, {})} width={328} />);
+    async (s) => {
+      await render(<GoBoard size={s} stones={stonesFromSetup(s, {})} width={328} />);
       const ids = screen
         .queryAllByTestId(/^board-star-/)
         .map((e) => e.props.testID.slice('board-star-'.length))
@@ -23,16 +23,16 @@ describe('QA edge cases: stars, labels, geometry', () => {
     },
   );
 
-  it('7x7 has the centre star only (PO decision 1)', () => {
-    render(<GoBoard size={7} stones={stonesFromSetup(7, {})} width={328} />);
+  it('7x7 has the centre star only (PO decision 1)', async () => {
+    await render(<GoBoard size={7} stones={stonesFromSetup(7, {})} width={328} />);
     expect(screen.queryAllByTestId(/^board-star-/)).toHaveLength(1);
     const g = boardGeometry(7, 328, true);
     expect(screen.getByTestId('board-star-d4').props.cx).toBeCloseTo(g.origin + 3 * g.cell, 2);
     expect(screen.getByTestId('board-star-d4').props.cy).toBeCloseTo(164, 2);
   });
 
-  it('19x19 letters skip I and have 19 columns and 19 rows', () => {
-    render(<GoBoard size={19} stones={stonesFromSetup(19, {})} width={328} />);
+  it('19x19 letters skip I and have 19 columns and 19 rows', async () => {
+    await render(<GoBoard size={19} stones={stonesFromSetup(19, {})} width={328} />);
     expect(screen.queryByTestId('board-label-col-I')).toBeNull();
     expect(screen.getByTestId('board-label-col-T')).toBeTruthy();
     expect(screen.queryAllByTestId(/^board-label-col-/)).toHaveLength(19);
@@ -40,10 +40,10 @@ describe('QA edge cases: stars, labels, geometry', () => {
     expect(columnLabels(19).join('')).not.toContain('I');
   });
 
-  it('star points sit exactly on grid intersections for every size and coordinate mode', () => {
+  it('star points sit exactly on grid intersections for every size and coordinate mode', async () => {
     for (const s of [5, 7, 9, 13, 19] as BoardSize[]) {
       for (const coords of [true, false]) {
-        const { unmount } = render(
+        const { unmount } = await render(
           <GoBoard size={s} stones={stonesFromSetup(s, {})} width={328} showCoordinates={coords} />,
         );
         const g = boardGeometry(s, 328, coords);
@@ -53,7 +53,7 @@ describe('QA edge cases: stars, labels, geometry', () => {
           expect(col).toBeCloseTo(Math.round(col), 6);
           expect(row).toBeCloseTo(Math.round(row), 6);
         }
-        unmount();
+        await unmount();
       }
     }
   });
@@ -69,8 +69,8 @@ describe('QA edge cases: stars, labels, geometry', () => {
 });
 
 describe('QA edge cases: stones', () => {
-  it('stones are centred exactly on intersections incl. corners (a1, j9)', () => {
-    render(
+  it('stones are centred exactly on intersections incl. corners (a1, j9)', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stonesFromSetup(9, { B: ['a1', 'j9'], W: ['a9', 'j1'] })}
@@ -89,16 +89,18 @@ describe('QA edge cases: stones', () => {
     exp('board-stone-j1', far, far);
   });
 
-  it('stone fills use the stone tokens; white has the edge stroke, black has none (AC11)', () => {
-    render(<GoBoard size={9} stones={stonesFromSetup(9, { B: ['e5'], W: ['c6'] })} width={328} />);
+  it('stone fills use the stone tokens; white has the edge stroke, black has none (AC11)', async () => {
+    await render(
+      <GoBoard size={9} stones={stonesFromSetup(9, { B: ['e5'], W: ['c6'] })} width={328} />,
+    );
     expect(prop('board-stone-e5', 'fill')).toEqual(payload(stone.black));
     expect(prop('board-stone-e5', 'stroke')).toBeUndefined();
     expect(prop('board-stone-c6', 'fill')).toEqual(payload(stone.white));
     expect(prop('board-stone-c6', 'stroke')).toEqual(payload(stone.whiteEdge));
   });
 
-  it('a full board draws size*size stones; an empty array of correct length draws none', () => {
-    render(
+  it('a full board draws size*size stones; an empty array of correct length draws none', async () => {
+    await render(
       <GoBoard size={5} stones={Array.from({ length: 25 }, () => 'B' as const)} width={328} />,
     );
     expect(screen.queryAllByTestId(/^board-stone-/)).toHaveLength(25);
@@ -106,9 +108,9 @@ describe('QA edge cases: stones', () => {
 
   it.each([[[]], [Array.from({ length: 82 }, () => null)]])(
     'empty or too-long stones array renders no stones, no crash, one warning (AC12)',
-    (stones) => {
+    async (stones) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      render(<GoBoard size={9} stones={stones} width={328} />);
+      await render(<GoBoard size={9} stones={stones} width={328} />);
       expect(screen.queryAllByTestId(/^board-stone-/)).toHaveLength(0);
       expect(screen.getByTestId('board-grid-h-8')).toBeTruthy();
       expect(warn).toHaveBeenCalledTimes(1);
@@ -116,15 +118,15 @@ describe('QA edge cases: stones', () => {
     },
   );
 
-  it('does not warn for a correct stones array', () => {
+  it('does not warn for a correct stones array', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    render(<GoBoard size={9} stones={stonesFromSetup(9, {})} width={328} />);
+    await render(<GoBoard size={9} stones={stonesFromSetup(9, {})} width={328} />);
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
 
-  it('interactive=true still renders no touch surface in PR 1 (AC13 default false)', () => {
-    render(<GoBoard size={9} stones={stonesFromSetup(9, {})} width={328} />);
+  it('interactive=true still renders no touch surface in PR 1 (AC13 default false)', async () => {
+    await render(<GoBoard size={9} stones={stonesFromSetup(9, {})} width={328} />);
     expect(screen.queryByTestId('board-touch')).toBeNull();
   });
 });
@@ -132,8 +134,8 @@ describe('QA edge cases: stones', () => {
 describe('QA edge cases: markers and highlights', () => {
   const stones = stonesFromSetup(9, { B: ['e5'], W: ['c3'] });
 
-  it('marker strokes follow the stone underneath (AC16 colours)', () => {
-    render(
+  it('marker strokes follow the stone underneath (AC16 colours)', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -157,8 +159,8 @@ describe('QA edge cases: markers and highlights', () => {
     }
   });
 
-  it('marker sizes scale with the cell (circle 0.25, square 0.44)', () => {
-    render(
+  it('marker sizes scale with the cell (circle 0.25, square 0.44)', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -173,19 +175,19 @@ describe('QA edge cases: markers and highlights', () => {
     expect(Number(prop('board-marker-square-d4', 'width'))).toBeCloseTo(0.44 * 32.8, 2);
   });
 
-  it('a label on an occupied point has no mask disc; on an empty point it does (AC17)', () => {
+  it('a label on an occupied point has no mask disc; on an empty point it does (AC17)', async () => {
     const markers: Marker[] = [
       { kind: 'label', point: { x: 4, y: 4 }, text: 'A' },
       { kind: 'label', point: { x: 0, y: 8 }, text: 'B' },
     ];
-    render(<GoBoard size={9} stones={stones} width={328} markers={markers} />);
+    await render(<GoBoard size={9} stones={stones} width={328} markers={markers} />);
     expect(screen.queryByTestId('board-marker-label-mask-e5')).toBeNull();
     const mask = screen.getByTestId('board-marker-label-mask-a9');
     expect(mask.props.fill).toEqual(payload(board.bamboo));
   });
 
-  it('mask disc is drawn before (below) its text', () => {
-    render(
+  it('mask disc is drawn before (below) its text', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -199,8 +201,8 @@ describe('QA edge cases: markers and highlights', () => {
     );
   });
 
-  it('markers render above stones', () => {
-    render(
+  it('markers render above stones', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -212,8 +214,8 @@ describe('QA edge cases: markers and highlights', () => {
     expect(all.indexOf('board-marker-circle-e5')).toBeGreaterThan(all.indexOf('board-stone-e5'));
   });
 
-  it('a liberty highlight and a stone on the same point: stone is drawn above', () => {
-    render(
+  it('a liberty highlight and a stone on the same point: stone is drawn above', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -227,8 +229,8 @@ describe('QA edge cases: markers and highlights', () => {
     expect(all.indexOf('board-highlight-liberty-e5')).toBeLessThan(all.indexOf('board-stone-e5'));
   });
 
-  it('liberty fill/stroke use color.accent; success/error/hint use their tokens (AC18-20)', () => {
-    render(
+  it('liberty fill/stroke use color.accent; success/error/hint use their tokens (AC18-20)', async () => {
+    await render(
       <GoBoard
         size={9}
         stones={stones}
@@ -250,8 +252,8 @@ describe('QA edge cases: markers and highlights', () => {
     expect(prop('board-highlight-error-e5', 'fill')).toBeNull();
   });
 
-  it('empty markers/highlights render nothing extra', () => {
-    render(
+  it('empty markers/highlights render nothing extra', async () => {
+    await render(
       <GoBoard size={9} stones={stonesFromSetup(9, {})} width={328} markers={[]} highlights={[]} />,
     );
     expect(screen.queryAllByTestId(/^board-(marker|highlight)-/)).toHaveLength(0);

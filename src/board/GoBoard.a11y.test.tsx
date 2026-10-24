@@ -19,7 +19,7 @@ function mockScreenReader(enabled: boolean) {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(true);
 }
 async function renderBoard(ui: React.ReactElement) {
-  const view = render(ui);
+  const view = await render(ui);
   await act(async () => {});
   return view;
 }
@@ -104,7 +104,7 @@ describe('activating a point (AC44)', () => {
     const d4 = screen.getByTestId('board-point-d4');
     expect(d4.props.accessibilityRole).toBe('button');
     expect(d4.props.accessibilityHint).toBe('Double-tap to play here');
-    fireEvent.press(d4);
+    await fireEvent.press(d4);
     expect(onPlay).toHaveBeenCalledTimes(1);
     expect(onPlay).toHaveBeenCalledWith({ x: 3, y: 3 });
   });
@@ -125,7 +125,7 @@ describe('activating a point (AC44)', () => {
         onIllegal={onIllegal}
       />,
     );
-    fireEvent.press(screen.getByTestId('board-point-a1'));
+    await fireEvent.press(screen.getByTestId('board-point-a1'));
     expect(onIllegal).toHaveBeenCalledWith({ x: 0, y: 0 }, 'suicide');
     expect(onPlay).not.toHaveBeenCalled();
   });
@@ -134,7 +134,7 @@ describe('activating a point (AC44)', () => {
     mockScreenReader(true);
     const view = await renderBoard(<GoBoard size={9} stones={stones} width={328} />);
     expect(screen.getByTestId('board-point-d4').props.accessibilityRole).toBeUndefined();
-    view.rerender(<GoBoard size={9} stones={stones} width={328} interactive disabled />);
+    await view.rerender(<GoBoard size={9} stones={stones} width={328} interactive disabled />);
     expect(screen.getByTestId('board-point-d4').props.accessibilityRole).toBeUndefined();
   });
 });
@@ -150,7 +150,7 @@ describe('announcements (AC45)', () => {
     announce.mockClear();
     const view = await renderBoard(<GoBoard {...props} stones={before} />);
     expect(announce).not.toHaveBeenCalled();
-    view.rerender(
+    await view.rerender(
       <GoBoard
         {...props}
         stones={after}
@@ -168,7 +168,7 @@ describe('announcements (AC45)', () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
     announce.mockClear();
     const view = await renderBoard(<GoBoard {...props} stones={before} />);
-    view.rerender(<GoBoard {...props} stones={after} lastMove={{ x: 3, y: 3 }} />);
+    await view.rerender(<GoBoard {...props} stones={after} lastMove={{ x: 3, y: 3 }} />);
     expect(announce).toHaveBeenCalledWith('Noir joue D4');
   });
 
@@ -177,15 +177,15 @@ describe('announcements (AC45)', () => {
     announce.mockClear();
     // screen reader off
     const off = await renderBoard(<GoBoard {...props} stones={before} />);
-    off.rerender(<GoBoard {...props} stones={after} lastMove={{ x: 3, y: 3 }} />);
+    await off.rerender(<GoBoard {...props} stones={after} lastMove={{ x: 3, y: 3 }} />);
     expect(announce).not.toHaveBeenCalled();
-    off.unmount();
+    await off.unmount();
 
     mockScreenReader(true);
     const on = await renderBoard(<GoBoard {...props} stones={after} lastMove={{ x: 3, y: 3 }} />);
     expect(announce).not.toHaveBeenCalled();
     // undo: d4 removed, lastMove back on e5 which was already occupied
-    on.rerender(<GoBoard {...props} stones={before} lastMove={{ x: 4, y: 4 }} />);
+    await on.rerender(<GoBoard {...props} stones={before} lastMove={{ x: 4, y: 4 }} />);
     expect(announce).not.toHaveBeenCalled();
   });
 });
@@ -202,7 +202,7 @@ describe('web (react-native-web always reports a screen reader)', () => {
     await renderBoard(<GoBoard size={9} stones={stones} width={328} interactive />);
     expect(screen.queryAllByTestId(/^board-point-/)).toHaveLength(0);
     const overlay = screen.getByTestId('board-touch');
-    fireEvent(overlay, 'responderGrant', { nativeEvent: { locationX: 164, locationY: 100 } });
+    await fireEvent(overlay, 'responderGrant', { nativeEvent: { locationX: 164, locationY: 100 } });
     expect(screen.getByTestId('board-ghost')).toBeTruthy();
     expect(screen.getByTestId('board-crosshair')).toBeTruthy();
     expect(screen.getByTestId('board-coord-tag')).toBeTruthy();
@@ -221,7 +221,7 @@ describe('announce prop (M6-settings AC 38)', () => {
       <GoBoard size={9} stones={e5} width={328} lastMove={at(4, 4)} />,
     );
     announce.mockClear();
-    view.rerender(<GoBoard size={9} stones={e5d4} width={328} lastMove={at(3, 3)} />);
+    await view.rerender(<GoBoard size={9} stones={e5d4} width={328} lastMove={at(3, 3)} />);
     expect(announce).toHaveBeenCalledTimes(1);
     expect(announce).toHaveBeenCalledWith('White played D4');
   });
@@ -233,7 +233,7 @@ describe('announce prop (M6-settings AC 38)', () => {
     const view = await renderBoard(
       <GoBoard size={9} stones={e5} width={328} lastMove={at(4, 4)} announce={false} />,
     );
-    view.rerender(
+    await view.rerender(
       <GoBoard size={9} stones={e5d4} width={328} lastMove={at(3, 3)} announce={false} />,
     );
     expect(announce).not.toHaveBeenCalled();

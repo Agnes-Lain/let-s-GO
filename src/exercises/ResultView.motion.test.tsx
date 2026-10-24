@@ -21,7 +21,7 @@ const METRICS = {
 const SIX = Array(6).fill('clean') as 'clean'[];
 
 async function show() {
-  render(
+  await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <ResultView
         outcomes={SIX}
@@ -43,14 +43,14 @@ beforeEach(async () => {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   await act(() => setLanguageChoice('en'));
 });
-afterEach(() => {
+afterEach(async () => {
   jest.useRealTimers();
   jest.restoreAllMocks();
-  act(() => settingsStore.getState().setReduceMotion(false));
+  await act(() => settingsStore.getState().setReduceMotion(false));
 });
 
 it('app switch on (OS off): the three stars at once', async () => {
-  act(() => settingsStore.getState().setReduceMotion(true));
+  await act(() => settingsStore.getState().setReduceMotion(true));
   await show();
   expect(filled()).toBe(3);
 });

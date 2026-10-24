@@ -14,10 +14,10 @@ jest.mock('expo-localization', () => ({
 }));
 
 const hidden = { includeHiddenElements: true };
-const settle = () => act(async () => {});
+const settle = async () => act(async () => {});
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const expanded = (n: number) =>
@@ -30,8 +30,8 @@ function reduceMotion(value: boolean) {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(value);
 }
 
-function finish(ids: readonly string[]) {
-  act(() => {
+async function finish(ids: readonly string[]) {
+  await act(() => {
     for (const id of ids) progressStore.getState().record(id, SIX);
   });
 }
@@ -139,7 +139,7 @@ describe('headers and rows (AC 56, 62, 63, 50)', () => {
 
 describe('default state (AC 57)', () => {
   it('finished module 1 → module 2 open, 1 and 3 collapsed; 1 shows a check mark', async () => {
-    finish(ALL_IDS.slice(0, 6));
+    await finish(ALL_IDS.slice(0, 6));
     await renderHome();
     expect([expanded(1), expanded(2), expanded(3)]).toEqual([false, true, false]);
     expect(screen.getByTestId('home-module-1').props.accessibilityLabel).toBe(
@@ -150,27 +150,29 @@ describe('default state (AC 57)', () => {
   });
 
   it('everything done → all collapsed; the 9×9 card and "all done" still show', async () => {
-    finish(ALL_IDS);
+    await finish(ALL_IDS);
     await renderHome();
     expect([expanded(1), expanded(2), expanded(3)]).toEqual([false, false, false]);
     expect(screen.getByTestId('home-game9')).toBeOnTheScreen();
     expect(screen.getByTestId('home-all-done')).toBeOnTheScreen();
   });
 
-  it('before hydration: module 1 open as a skeleton; then the default once, keeping toggles', () => {
+  it('before hydration: module 1 open as a skeleton; then the default once, keeping toggles', async () => {
     const units = getUnits();
     const progress = Object.fromEntries(
       ALL_IDS.slice(0, 6).map((id) => [id, { stars: 1 }]),
     ) as unknown as StarsByLesson;
     const rows = mapRows(units, progress);
-    const view = render(
+    const view = await render(
       <ModulePath rows={rows} hydrated={false} onOpen={jest.fn()} onLocked={jest.fn()} />,
     );
     expect(view.getByTestId('home-module-1').props.accessibilityState.expanded).toBe(true);
     expect(view.getAllByTestId('home-skeleton').length).toBe(6);
     // The learner opens module 3 while loading.
-    fireEvent.press(view.getByTestId('home-module-3'));
-    view.rerender(<ModulePath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
+    await fireEvent.press(view.getByTestId('home-module-3'));
+    await view.rerender(
+      <ModulePath rows={rows} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />,
+    );
     const states = [1, 2, 3].map(
       (n) => view.getByTestId(`home-module-${n}`).props.accessibilityState.expanded,
     );
@@ -180,9 +182,11 @@ describe('default state (AC 57)', () => {
       units,
       Object.fromEntries(ALL_IDS.map((id) => [id, { stars: 1 }])) as unknown as StarsByLesson,
     );
-    view.rerender(<ModulePath rows={later} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />);
+    await view.rerender(
+      <ModulePath rows={later} hydrated onOpen={jest.fn()} onLocked={jest.fn()} />,
+    );
     expect(view.getByTestId('home-module-2').props.accessibilityState.expanded).toBe(true);
-    view.unmount();
+    await view.unmount();
   });
 });
 
@@ -222,7 +226,7 @@ describe('toggling (AC 58, 60, 64)', () => {
   });
 
   it('AC 59: units and progress under the title; a 4 px bar filled by the share done', async () => {
-    finish(['u01-board', 'u02-liberties', 'u03-connection']);
+    await finish(['u01-board', 'u02-liberties', 'u03-connection']);
     await renderHome();
     expect(screen.getByText('Units 1–5 · 3 of 6 done')).toBeOnTheScreen();
     const bar = screen.getByTestId('home-module-1-bar', hidden);
@@ -261,7 +265,7 @@ describe('the 9×9 card (AC 61)', () => {
     expect(router.getPathname()).toBe('/game');
     // §12c.2: the picker's Back returns to the learning page.
     await act(async () => {
-      fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+      await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
     });
     expect(router.getPathname()).toBe('/learn');
   });

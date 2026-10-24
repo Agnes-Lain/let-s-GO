@@ -12,9 +12,9 @@ const stones = stonesFromSetup(5, { B: ['c2', 'b3', 'd3'], W: ['c3'] });
 const g = boardGeometry(5, 328, false);
 const at = (v: string) => pointToLocation(g, parseVertex(v, 5));
 
-function touch(phase: 'responderGrant' | 'responderRelease', v: string) {
+async function touch(phase: 'responderGrant' | 'responderRelease', v: string) {
   const { x, y } = at(v);
-  fireEvent(screen.getByTestId('board-touch'), phase, {
+  await fireEvent(screen.getByTestId('board-touch'), phase, {
     nativeEvent: { locationX: x, locationY: y },
   });
 }
@@ -25,9 +25,9 @@ beforeEach(() => {
 afterEach(() => jest.restoreAllMocks());
 
 describe('pointer="ring"', () => {
-  it('shows a ring, not a ghost stone, and accepts occupied points when checkPoint allows', () => {
+  it('shows a ring, not a ghost stone, and accepts occupied points when checkPoint allows', async () => {
     const onPlay = jest.fn();
-    render(
+    await render(
       <GoBoard
         size={5}
         stones={stones}
@@ -39,18 +39,20 @@ describe('pointer="ring"', () => {
         onPlay={onPlay}
       />,
     );
-    touch('responderGrant', 'c3');
+    await touch('responderGrant', 'c3');
     const ring = screen.getByTestId('board-pointer-ring');
     expect(ring.props.stroke).toEqual({ type: 0, payload: processColor(color.accent) });
     expect(screen.queryByTestId('board-ghost')).toBeNull();
-    touch('responderRelease', 'c3');
+    await touch('responderRelease', 'c3');
     expect(onPlay).toHaveBeenCalledWith({ x: 2, y: 2 });
     expect(screen.queryByTestId('board-pointer-ring')).toBeNull();
   });
 
-  it('the default pointer is still the ghost stone', () => {
-    render(<GoBoard size={5} stones={stones} width={328} showCoordinates={false} interactive />);
-    touch('responderGrant', 'a1');
+  it('the default pointer is still the ghost stone', async () => {
+    await render(
+      <GoBoard size={5} stones={stones} width={328} showCoordinates={false} interactive />,
+    );
+    await touch('responderGrant', 'a1');
     expect(screen.getByTestId('board-ghost')).toBeTruthy();
     expect(screen.queryByTestId('board-pointer-ring')).toBeNull();
   });

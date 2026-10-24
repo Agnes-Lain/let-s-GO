@@ -57,7 +57,7 @@ afterEach(() => {
 
 it('AC 38: one learner move plus the bot reply → exactly 2 announcements', async () => {
   const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
-  render(
+  await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <PlayBotRunner
         exercise={exercise}

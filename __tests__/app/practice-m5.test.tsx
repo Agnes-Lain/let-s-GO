@@ -65,10 +65,10 @@ async function tap(vertex: string) {
   const target = screen.getByTestId('board-touch');
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(target, 'responderGrant', event);
+    await fireEvent(target, 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(target, 'responderRelease', event);
+    await fireEvent(target, 'responderRelease', event);
   });
 }
 

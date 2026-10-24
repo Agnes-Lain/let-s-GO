@@ -19,11 +19,11 @@ jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
 }));
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
-const settle = () => act(async () => {});
-const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+const settle = async () => act(async () => {});
+const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const flat = (style: unknown): Record<string, unknown> =>
@@ -48,10 +48,10 @@ async function tapBoard(vertex: string) {
   const target = screen.getByTestId('board-touch');
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(target, 'responderGrant', event);
+    await fireEvent(target, 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(target, 'responderRelease', event);
+    await fireEvent(target, 'responderRelease', event);
   });
 }
 
@@ -138,7 +138,7 @@ describe('Atari hints switch (PO 2026-10-23)', () => {
       checked: true,
     });
     await act(async () => {
-      fireEvent.press(screen.getByTestId('game9-atari-hints'));
+      await fireEvent.press(screen.getByTestId('game9-atari-hints'));
     });
     expect(screen.getByTestId('game9-atari-hints').props.accessibilityState).toMatchObject({
       checked: false,

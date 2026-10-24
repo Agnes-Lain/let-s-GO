@@ -26,8 +26,8 @@ async function tap(vertex: string) {
   );
   const nativeEvent = { locationX: x, locationY: y };
   await act(async () => {
-    fireEvent(screen.getByTestId('board-touch'), 'responderGrant', { nativeEvent });
-    fireEvent(screen.getByTestId('board-touch'), 'responderRelease', { nativeEvent });
+    await fireEvent(screen.getByTestId('board-touch'), 'responderGrant', { nativeEvent });
+    await fireEvent(screen.getByTestId('board-touch'), 'responderRelease', { nativeEvent });
   });
 }
 async function play(...vs: string[]) {
@@ -38,7 +38,7 @@ const stones = () =>
     .queryAllByTestId(/^board-stone-/)
     .map((e) => e.props.testID.slice(12))
     .sort();
-const press = (name: string) => fireEvent.press(screen.getByRole('button', { name }));
+const press = async (name: string) => fireEvent.press(screen.getByRole('button', { name }));
 const SUICIDE =
   'Forbidden point (禁入点 jìnrùdiǎn): your stone would have no liberties and captures nothing.';
 

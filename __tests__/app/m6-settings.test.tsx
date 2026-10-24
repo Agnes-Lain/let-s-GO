@@ -8,6 +8,7 @@ import { isSoundEnabled } from '@/board/soundSetting';
 import { setLanguageChoice } from '@/i18n';
 import en from '@/i18n/en.json';
 import { PROGRESS_KEY, SETTINGS_KEY, progressStore, settingsStore } from '@/store';
+import { propsOfOnly } from '@/theme/__fixtures__/fibers';
 
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
@@ -15,10 +16,10 @@ jest.mock('expo-localization', () => ({
 
 const texts = en as Record<string, string>;
 const hidden = { includeHiddenElements: true };
-const settle = () => act(async () => {});
+const settle = async () => act(async () => {});
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const checked = (testID: string) => screen.getByTestId(testID).props.accessibilityState?.checked;
@@ -39,16 +40,16 @@ async function openSettings() {
 
 /** Every text on the screen in render order. */
 function textsInOrder(): string[] {
-  return screen.UNSAFE_root.findAll((node) => (node.type as unknown) === 'Text').map((node) =>
-    [node.props.children].flat().join(''),
-  );
+  return screen.container
+    .queryAll((node) => node.type === 'Text')
+    .map((node) => [node.props.children].flat().join(''));
 }
 
 beforeEach(async () => {
   osReduceMotion(false);
   progressStore.getState().reset();
   progressStore.getState().setFlag('onboardingSeen');
-  act(() => {
+  await act(() => {
     settingsStore.getState().setSound(true);
     settingsStore.getState().setReduceMotion(false);
   });
@@ -56,7 +57,7 @@ beforeEach(async () => {
 });
 afterEach(async () => {
   jest.restoreAllMocks();
-  act(() => {
+  await act(() => {
     settingsStore.getState().setSound(true);
     settingsStore.getState().setReduceMotion(false);
   });
@@ -156,7 +157,7 @@ describe('switch rows (AC 17, 10)', () => {
   it('AC 4 (UI): picking Français saves it in the settings key', async () => {
     await openSettings();
     await act(async () => {
-      fireEvent.press(screen.getByRole('button', { name: 'Français' }));
+      await fireEvent.press(screen.getByRole('button', { name: 'Français' }));
     });
     const saved = JSON.parse((await AsyncStorage.getItem(SETTINGS_KEY)) as string);
     expect(saved.language).toBe('fr');
@@ -182,8 +183,8 @@ describe('Atari warnings (AC 18)', () => {
 });
 
 describe('Erase progress (AC 20–22)', () => {
-  function seed() {
-    act(() => {
+  async function seed() {
+    await act(() => {
       progressStore.getState().record('u01-board', SIX);
       progressStore.getState().recordGame(1, 'loss', 2);
       for (const flag of [
@@ -198,7 +199,7 @@ describe('Erase progress (AC 20–22)', () => {
   }
 
   it('AC 20, 22: the row opens the sheet; nothing is erased yet; Keep is first and primary', async () => {
-    seed();
+    await seed();
     await openSettings();
     const row = screen.getByTestId('settings-reset');
     expect(row.props.accessibilityRole).toBe('button');
@@ -218,19 +219,19 @@ describe('Erase progress (AC 20–22)', () => {
   });
 
   it('AC 20: Keep, Android back and the dim area close the sheet without erasing', async () => {
-    seed();
+    await seed();
     await openSettings();
     await press('settings-reset');
     await press('settings-reset-keep');
     expect(screen.queryByTestId('settings-reset-sheet')).toBeNull();
     await press('settings-reset');
     await act(async () => {
-      screen.UNSAFE_getByType(Modal).props.onRequestClose();
+      propsOfOnly(screen.container, Modal).onRequestClose();
     });
     expect(screen.queryByTestId('settings-reset-sheet')).toBeNull();
     await press('settings-reset');
     await act(async () => {
-      fireEvent.press(screen.getByTestId('settings-reset-sheet-dismiss', hidden));
+      await fireEvent.press(screen.getByTestId('settings-reset-sheet-dismiss', hidden));
     });
     expect(screen.queryByTestId('settings-reset-sheet')).toBeNull();
     expect(progressStore.getState().lessons['u01-board']).toBeDefined();
@@ -238,8 +239,8 @@ describe('Erase progress (AC 20–22)', () => {
   });
 
   it('AC 21: Erase clears lessons, bots and tips; keeps atariHintsOff, onboardingSeen and settings', async () => {
-    seed();
-    act(() => settingsStore.getState().setSound(false));
+    await seed();
+    await act(() => settingsStore.getState().setSound(false));
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
     const router = await openSettings();
     await press('settings-reset');
@@ -262,7 +263,7 @@ describe('Erase progress (AC 20–22)', () => {
     expect(announce).toHaveBeenCalledWith(texts['settings.reset.done']);
     // The learning page: lesson 1 is the Continue card with 0 stars (onboardingSeen kept).
     await act(async () => {
-      fireEvent.press(screen.getByRole('button', { name: texts['common.back'] }));
+      await fireEvent.press(screen.getByRole('button', { name: texts['common.back'] }));
     });
     expect(router.getPathname()).toBe('/learn');
     expect(screen.getByTestId('home-continue').props.accessibilityLabel).toBe(

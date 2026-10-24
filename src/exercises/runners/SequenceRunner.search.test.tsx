@@ -51,7 +51,7 @@ async function show(exercise: SequenceExercise = LADDER) {
     titleKey: 'lesson.u09-review.title',
     exercises: [exercise, { ...exercise, id: 'second' }],
   };
-  const view = render(
+  const view = await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <SequenceRunner
         exercise={exercise}
@@ -112,7 +112,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     expect(feedbackText()).toContain(texts['lesson.u09-ladder.e8.explain']);
     expect(has('board-highlight-success-e5')).toBe(true);
     await advance(5000);
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 
@@ -125,7 +125,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     expect(stoneAt('e2')).toBe(true);
     await tap('e1');
     expect(feedbackText()).toContain('You captured 4 stones.');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 
@@ -145,7 +145,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     // Locked until Try again.
     await tap('e5');
     expect(stoneAt('e5')).toBe(false);
-    fireEvent.press(screen.getByTestId('practice-try-again'));
+    await fireEvent.press(screen.getByTestId('practice-try-again'));
     await settle();
     expect(stoneAt('d3')).toBe(false);
     expect(stoneAt('c4')).toBe(false);
@@ -164,7 +164,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     // Two short lines fit the 72 px card at 360 px (5×5).
     expect(StyleSheet.flatten(screen.getByTestId('practice-feedback').props.style).height).toBe(72);
     expect(screen.getAllByTestId('practice-feedback-error', hidden)).toHaveLength(2);
-    fireEvent.press(screen.getByTestId('sequence-undo'));
+    await fireEvent.press(screen.getByTestId('sequence-undo'));
     await settle();
     expect(stoneAt('e4')).toBe(false);
     expect(stoneAt('d5')).toBe(false);
@@ -172,7 +172,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     expect(progressText()).toBe('Move 3 of 4');
     await play('d5');
     await tap('e5');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('solved');
   });
 
@@ -188,7 +188,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
 
   it('AC 20: the hint ring follows the position (e2 after c4 d3 d4 e3)', async () => {
     await show();
-    fireEvent.press(screen.getByTestId('practice-hint'));
+    await fireEvent.press(screen.getByTestId('practice-hint'));
     await settle();
     expect(feedbackText()).toBe(texts['lesson.u09-ladder.e8.hint']);
     expect(has('board-highlight-hint-c4')).toBe(true);
@@ -203,7 +203,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     for (let i = 0; i < 2; i++) {
       await tap('d3');
       await advance(REPLY_MS);
-      fireEvent.press(screen.getByTestId('practice-try-again'));
+      await fireEvent.press(screen.getByTestId('practice-try-again'));
       await settle();
     }
     await tap('d3');
@@ -215,7 +215,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     expect(stoneAt('e5')).toBe(true);
     expect(stoneAt('c3')).toBe(false);
     expect(feedbackText()).toContain(texts['lesson.u09-ladder.e8.explain']);
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('revealed');
   });
 
@@ -225,7 +225,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
     expect(feedbackText()).toBe(texts['engine.illegal.occupied']);
     await play('c4', 'e3', 'd5');
     await tap('e5');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 
@@ -234,7 +234,7 @@ describe('search-judged runner (M5-sequence-v2 AC 14–23)', () => {
       const view = await show();
       await tap(first);
       const errors = jest.spyOn(console, 'error').mockImplementation(() => {});
-      view.unmount();
+      await view.unmount();
       announce.mockClear();
       await advance(5000);
       expect(announce).not.toHaveBeenCalled();

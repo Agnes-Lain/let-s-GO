@@ -39,7 +39,7 @@ beforeEach(async () => {
 
 describe('locked lessons (AC 56)', () => {
   it('unit 2 with unit 1 at 0★ shows the locked screen', async () => {
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-test', ['revealed', 'revealed']);
     });
     await open('/lesson/u02-test');
@@ -56,7 +56,7 @@ describe('locked lessons (AC 56)', () => {
 
 describe('coordinates (AC 52)', () => {
   it('a lesson with coordinates: true shows them; one without (u01-test) does not', async () => {
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-test', ['clean', 'clean']);
     });
     await open('/lesson/u02-test');
