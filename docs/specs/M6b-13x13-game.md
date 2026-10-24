@@ -274,3 +274,34 @@ new art, new sounds, changes to lessons or the learning path.
 
 ## PO approval (2026-10-24)
 PO approved the spec with all open-decision defaults (komi 6.5 / 0.5 handicap; d4,k10,k4,d10,g7; start Easy 2 / Normal 4 / Challenge 5; separate 13×13 auto-adjust; preview + optional confirm switch off; picker locked until a 9×9 win; L3 600 playouts; review hidden until M6b-2; no game save).
+
+## 12. Dev deviations (developer, 2026-10-24)
+1. **Board width 328 px, not 336** (AC 18): the app's `Screen` gutter is 16 px (as on 9×9), so the 13×13 board is
+   328 px; cell 22.8 px with coordinates (24.8 without), stone diameter 21.4 px (≥ 21, AC 23). Fits 740 px with room
+   to spare (board + fixed rows = 672 px).
+2. **"Thinking…" (AC 30)**: the 9×9 status line already says `game9.turn.bot` ("Bot is thinking…") at once. On 13×13
+   the same line switches to `game.thinking` once the bot's turn lasts > 0.5 s (no second tag, so the message is not
+   shown twice). 9×9 is unchanged. Resign stays enabled while the bot thinks on 13×13 only (9×9 tests require it
+   locked); the reducer accepts `resign` while thinking only for size 13 (`canResignWhileThinking`).
+3. **Even-game header**: `game.header.size` has `{{n}} stones`; an even 13×13 game uses the extra key
+   `game.header.sizeEven` ("13×13 · Easy · Komi 6.5"). The 13×13 header may wrap to 2 lines (the 1-line version cut
+   the komi off at 360 px).
+4. **"Beaten" on 13×13** uses the 9×9 rule (any win at that level, `wins > 0`), stored in `bots13` with the same
+   record shape as `bots` (games / wins / lossStreak / handicap); no separate `beaten` field. The lock (AC 2) uses the
+   same 9×9 rule. `flags.gameSize` is stored only as `13` (absent = 9×9); Erase progress clears it and `bots13`.
+5. **Bot generalisation**: option `boardN` added; `board9` is kept as an alias (same behaviour) so recorded tests
+   stay unchanged. Level 1's "avoid the first line in the opening" threshold scales with the area
+   (`openingEmptyPoints`: 40 on 9×9, 83 on 13×13); dead-stone playouts use 300 plies on 13×13 (150 on 9×9), still
+   200 playouts. Level 2 scoring numbers (opening 30 moves, settled region 12) are unchanged on 13×13 (tune in M6b-2).
+6. **`handicapStones(size, n)`**: the 9×9 test calls were updated mechanically to `handicapStones(9, n)` (same
+   assertions). The 9×9 picker test now checks the rendered explanation text ("… Komi 5.5.") because the key now
+   carries `{{komi}}`.
+7. **Confirm each move** (AC 22): the Play button takes the Hint slot as §5.2 says, so Hint is not available in
+   that mode. The pending stone is drawn by a new optional `GoBoard` prop `pending`.
+8. **Review 复盘** stays 9×9-only: `ReviewView` / `src/coach/review.ts` still assume 9×9 (hidden on 13×13, M6b-2).
+9. **Picker title** still reads `game9.entry.title` ("Play 9×9") while 13×13 is selected (AC 6 keeps the key);
+   PO may want a neutral title.
+
+Measured desktop (Jest, Apple silicon), ms per move on 13×13 positions from a level-2 self-play (20 samples, plies
+0–160): L1 ≤ 1, L2 ≤ 1, **L3 mean 154 / p95 249 / max 249** (600 playouts); hint ≤ 1; dead-stone judgement at ply
+160: 25 ms. 9×9 L3 for comparison: mean 132 / p95 205. Phone check (AC 29) is for the PO.

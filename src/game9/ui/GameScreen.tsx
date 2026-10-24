@@ -256,7 +256,8 @@ export function GameScreen({
         <Text
           maxFontSizeMultiplier={textScale.hud}
           style={styles.header}
-          numberOfLines={1}
+          // The 13×13 header also names the size (M6b §7): two lines so the komi stays visible.
+          numberOfLines={size === 13 ? 2 : 1}
           testID="game9-header"
         >
           {s.phase === 'count'
@@ -297,18 +298,9 @@ export function GameScreen({
           accessibilityLiveRegion={s.phase === 'count' || s.phase === 'result' ? 'none' : 'polite'}
           testID="game9-status-text"
         >
-          {say(status)}
+          {/* 13×13: a long bot turn says "Thinking…" in place of the turn line (M6b AC 30). */}
+          {showThinking ? t('game.thinking') : say(status)}
         </Text>
-        {showThinking ? (
-          <Text
-            maxFontSizeMultiplier={textScale.hud}
-            style={styles.thinking}
-            accessibilityLiveRegion="polite"
-            testID="game-thinking"
-          >
-            {t('game.thinking')}
-          </Text>
-        ) : null}
         {s.phase === 'mark' ? (
           <MarkCount
             count={s.marks.length}
@@ -935,7 +927,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   statusText: { flex: 1, fontSize: 15, lineHeight: 20, color: color.textPrimary },
-  thinking: { ...typography.caption, color: color.textSecondary },
   markRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   markCount: { ...typography.caption, color: color.textSecondary },
   boardWrap: { alignItems: 'center' },

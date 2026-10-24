@@ -276,6 +276,8 @@ export function LevelPicker({
             size={size}
             stones={previewStones(size, handicap)}
             width={PREVIEW_SIZE}
+            // 13 labels do not fit 96 px (M6b §5.1); the 9×9 preview keeps its coordinates.
+            showCoordinates={size === 9}
             sound={false}
           />
         </View>
