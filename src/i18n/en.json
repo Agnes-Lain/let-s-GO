@@ -931,7 +931,7 @@
   "settings.reset.confirm": "Erase",
   "settings.reset.done": "Progress erased.",
   "onboarding.skip": "Skip",
-  "onboarding.start": "Go to lesson 1",
+  "onboarding.next": "Next",
   "onboarding.done": "Done",
   "onboarding.step": "Step {{n}} of {{total}}",
   "onboarding.1.title": "Learn Go (围棋 wéiqí) from zero",

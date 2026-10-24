@@ -1,4 +1,5 @@
-// First-launch intro (docs/specs/M6-settings-onboarding-a11y.md §4.4, §4.6, §5.2): AC 24–33, 46–48.
+// First-time intro (docs/specs/M6-settings-onboarding-a11y.md §4.4, §4.6, §5.2, as changed by
+// §12c): AC 24–33, 46–48. The landing page `/` opens it from "Start learning"; it ends on /learn.
 import { router as appRouter } from 'expo-router';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { AccessibilityInfo, BackHandler, StyleSheet, processColor } from 'react-native';
@@ -47,6 +48,12 @@ async function launch(url = '/') {
   await settle();
   return router;
 }
+/** Landing page → "Start learning" (a first-time learner gets the intro, §12c.3). */
+async function openIntro() {
+  const router = await launch();
+  await press('landing-start');
+  return router;
+}
 
 function demoEvent(vertex: string) {
   const board = screen.getByTestId('onboarding-demo-board');
@@ -91,40 +98,78 @@ afterEach(async () => {
   await act(() => setLanguageChoice('system'));
 });
 
-describe('when the intro shows (AC 25)', () => {
-  it('a fresh install opens /onboarding instead of Home', async () => {
+describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
+  it('a fresh install opens the landing page, not the intro; nothing is written', async () => {
     const router = await launch();
+    expect(router.getPathname()).toBe('/');
+    expect(screen.getByTestId('landing')).toBeOnTheScreen();
+    expect(screen.queryByTestId('onboarding-step-1')).toBeNull();
+    expect(screen.queryByTestId('home-continue')).toBeNull();
+    expect(progressStore.getState().flags).toEqual({});
+  });
+
+  it('§12c.1: logo, app name (the one header), intro line, Start learning and Settings', async () => {
+    await launch();
+    expect(screen.getAllByRole('header')).toHaveLength(1);
+    expect(screen.getByRole('header')).toHaveTextContent(texts['app.name']);
+    expect(screen.getByText(texts['home.subtitle'])).toBeOnTheScreen();
+    expect(screen.getAllByRole('button').map((b) => b.props.accessibilityLabel)).toEqual([
+      texts['settings.open'],
+      texts['home.start'],
+    ]);
+    for (const id of ['landing-start', 'landing-settings']) {
+      const style = flat(screen.getByTestId(id).props.style);
+      expect(Math.max(style.minHeight ?? 0, style.height ?? 0)).toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  it('first time: Start learning → intro step 1', async () => {
+    const router = await openIntro();
     expect(router.getPathname()).toBe('/onboarding');
     expect(screen.getByTestId('onboarding-step-1')).toBeOnTheScreen();
     expect(progressStore.getState().flags).toEqual({});
   });
 
-  it('onboardingSeen → Home', async () => {
+  it('onboardingSeen: Start learning → the learning page; Back → landing', async () => {
     progressStore.getState().setFlag('onboardingSeen');
     const router = await launch();
+    await press('landing-start');
+    expect(router.getPathname()).toBe('/learn');
+    expect(screen.getByTestId('home-continue')).toBeOnTheScreen();
+    await press('learn-back');
     expect(router.getPathname()).toBe('/');
   });
 
-  it('an existing player (lesson stars or a bot record) → Home, and no flag is written', async () => {
+  it('an existing player (lesson stars) → the learning page, and no flag is written', async () => {
     act(() => {
       progressStore.getState().record('u01-board', SIX);
     });
-    const router = await launch();
-    expect(router.getPathname()).toBe('/');
+    const router = await openIntro();
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags).toEqual({});
   });
 
-  it('an existing 9×9 player → Home', async () => {
+  it('an existing 9×9 player → the learning page', async () => {
     act(() => progressStore.getState().recordGame(1, 'loss'));
-    const router = await launch();
-    expect(router.getPathname()).toBe('/');
+    const router = await openIntro();
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags).toEqual({});
+  });
+
+  it('after the intro was left once, Start learning goes straight to the learning page', async () => {
+    const router = await openIntro();
+    await press('onboarding-skip');
+    expect(router.getPathname()).toBe('/learn');
+    await press('learn-back');
+    expect(router.getPathname()).toBe('/');
+    await press('landing-start');
+    expect(router.getPathname()).toBe('/learn');
   });
 });
 
 describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
-  it('AC 46: title, concept, what-is-Go, the example board, then Start learning', async () => {
-    await launch();
+  it('AC 46 / §12c.5: title, concept, what-is-Go, the example board, then Next', async () => {
+    await openIntro();
     const order = screen.UNSAFE_root.findAll(
       (n) =>
         ((n.type as unknown) === 'Text' && typeof n.props.children === 'string') ||
@@ -136,7 +181,7 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
       texts['onboarding.1.concept'],
       texts['onboarding.1.body'],
       'BOARD',
-      texts['home.start'],
+      texts['onboarding.next'],
     ].map(index);
     expect(sequence.every((i) => i >= 0)).toBe(true);
     expect(sequence).toEqual([...sequence].sort((a, b) => a - b));
@@ -147,11 +192,11 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     expect(stones()).toEqual(['B b3', 'B c3', 'W c4', 'W d3']);
   });
 
-  it('AC 48: Skip and Start learning are the only controls; one header', async () => {
-    await launch();
+  it('AC 48: Skip and Next are the only controls; one header', async () => {
+    await openIntro();
     expect(screen.getAllByRole('button').map((b) => b.props.accessibilityLabel)).toEqual([
       texts['onboarding.skip'],
-      texts['home.start'],
+      texts['onboarding.next'],
     ]);
     expect(screen.getAllByRole('header')).toHaveLength(1);
     expect(screen.getByRole('header')).toHaveTextContent(texts['onboarding.1.title']);
@@ -159,7 +204,7 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
 
   it('AC 32: each step announces its title and "Step n of 2"; the dots say it too', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-    await launch();
+    await openIntro();
     expect(announce).toHaveBeenCalledWith(`${texts['onboarding.1.title']}. Step 1 of 2`);
     expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 1 of 2');
     await press('onboarding-next');
@@ -172,19 +217,16 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     'the copy in %s (zh-CN buttons without pinyin)',
     async (lang) => {
       await act(() => setLanguageChoice(lang));
-      await launch();
+      await openIntro();
       const t = FILES[lang];
       expect(screen.getByText(t['onboarding.1.title'])).toBeOnTheScreen();
       expect(screen.getByText(t['onboarding.1.concept'])).toBeOnTheScreen();
-      expect(screen.getByRole('button', { name: t['home.start'] })).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: t['onboarding.next'] })).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: t['onboarding.skip'] })).toBeOnTheScreen();
+      await press('onboarding-next');
+      expect(screen.getByRole('button', { name: t['onboarding.done'] })).toBeOnTheScreen();
       if (lang === 'zh-CN') {
-        for (const key of [
-          'onboarding.skip',
-          'onboarding.start',
-          'onboarding.done',
-          'home.start',
-        ]) {
+        for (const key of ['onboarding.skip', 'onboarding.next', 'onboarding.done', 'home.start']) {
           expect(t[key]).not.toMatch(/[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/i);
         }
       }
@@ -192,51 +234,56 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
   );
 });
 
-describe('steps and leaving (AC 26–28, 31)', () => {
-  it('AC 26: Start learning → step 2; system Back → step 1; Back on step 1 = Skip', async () => {
-    const router = await launch();
+describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
+  it('AC 26: Next → step 2; system Back → step 1; Back on step 1 = Skip (→ learning page)', async () => {
+    const router = await openIntro();
     await press('onboarding-next');
     expect(screen.getByTestId('onboarding-step-2')).toBeOnTheScreen();
     await systemBack();
     expect(screen.getByTestId('onboarding-step-1')).toBeOnTheScreen();
     expect(progressStore.getState().flags.onboardingSeen).toBeUndefined();
     await systemBack();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags.onboardingSeen).toBe(true);
   });
 
   it.each([1, 2])(
-    'AC 27: Skip on step %i sets onboardingSeen and replaces the route with Home',
+    'AC 27: Skip on step %i sets onboardingSeen and replaces the intro with the learning page',
     async (step) => {
-      const router = await launch();
+      const router = await openIntro();
       if (step === 2) await press('onboarding-next');
       const skip = screen.getByTestId('onboarding-skip');
       expect(flat(skip.props.style).minHeight).toBeGreaterThanOrEqual(44);
       expect(flat(skip.props.style).minWidth).toBeGreaterThanOrEqual(44);
       await press('onboarding-skip');
-      expect(router.getPathname()).toBe('/');
+      expect(router.getPathname()).toBe('/learn');
       expect(progressStore.getState().flags.onboardingSeen).toBe(true);
-      // Back from Home does not return to the intro.
-      expect(appRouter.canGoBack()).toBe(false);
       expect(screen.queryByTestId('onboarding-step-1')).toBeNull();
+      // Back from the learning page goes to the landing page, not to the intro.
+      appRouter.back();
+      await settle();
+      expect(router.getPathname()).toBe('/');
+      expect(appRouter.canGoBack()).toBe(false);
     },
   );
 
-  it('AC 28, 31: "Go to lesson 1" (always enabled) opens lesson 1, replacing the intro', async () => {
-    const router = await launch();
+  it('AC 28, 31: Done (always enabled) opens the learning page, never lesson 1', async () => {
+    const router = await openIntro();
     await press('onboarding-next');
     const finish = screen.getByTestId('onboarding-finish');
-    expect(finish.props.accessibilityLabel).toBe(texts['onboarding.start']);
+    expect(finish.props.accessibilityLabel).toBe(texts['onboarding.done']);
     expect(finish.props.accessibilityState?.disabled).toBe(false);
     await tapDemo('c3');
     expect(screen.getByTestId('onboarding-finish').props.accessibilityState?.disabled).toBe(false);
     await press('onboarding-finish');
-    expect(router.getPathname()).toBe('/lesson/u01-board');
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags.onboardingSeen).toBe(true);
-    expect(appRouter.canGoBack()).toBe(false);
+    appRouter.back();
+    await settle();
+    expect(router.getPathname()).toBe('/');
   });
 
-  it('AC 28 / §5.4 replay: Done returns to Settings; Skip too; no progress changes', async () => {
+  it('§12c.4 replay from Settings: Done and Skip end on the learning page; no progress changes', async () => {
     progressStore.getState().setFlag('onboardingSeen');
     act(() => {
       progressStore.getState().record('u01-board', SIX);
@@ -250,10 +297,14 @@ describe('steps and leaving (AC 26–28, 31)', () => {
       texts['onboarding.done'],
     );
     await press('onboarding-finish');
+    expect(router.getPathname()).toBe('/learn');
+    await act(async () => {
+      fireEvent.press(screen.getByRole('button', { name: texts['settings.open'] }));
+    });
     expect(router.getPathname()).toBe('/settings');
     await press('settings-intro');
     await press('onboarding-skip');
-    expect(router.getPathname()).toBe('/settings');
+    expect(router.getPathname()).toBe('/learn');
     expect(JSON.stringify(progressStore.getState().lessons)).toBe(before);
     expect(progressStore.getState().flags).toEqual({ onboardingSeen: true });
   });
@@ -261,7 +312,7 @@ describe('steps and leaving (AC 26–28, 31)', () => {
 
 describe('step 2 demo (AC 29, 30, 32, 33)', () => {
   async function openDemo() {
-    await launch();
+    await openIntro();
     await press('onboarding-next');
   }
 
@@ -315,9 +366,9 @@ describe('step 2 demo (AC 29, 30, 32, 33)', () => {
   });
 });
 
-describe('Home has no welcome banner (AC 47)', () => {
+describe('the learning page has no welcome banner (AC 47)', () => {
   it('a new learner who skipped sees the map with "Start learning" → lesson 1', async () => {
-    const router = await launch();
+    const router = await openIntro();
     await press('onboarding-skip');
     expect(screen.queryByText(texts['onboarding.1.title'])).toBeNull();
     expect(screen.queryByText(texts['onboarding.1.concept'])).toBeNull();

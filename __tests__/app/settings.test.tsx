@@ -12,7 +12,7 @@ jest.mock('expo-localization', () => ({
 }));
 
 beforeEach(async () => {
-  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  // M6-settings: a returning learner, past the first-launch intro.
   progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('system'));
 });
@@ -36,7 +36,7 @@ describe('Settings', () => {
   });
 
   it('switches to English immediately and Home follows (AC24)', async () => {
-    const router = await renderRouter('./app', { initialUrl: '/' });
+    const router = await renderRouter('./app', { initialUrl: '/learn' });
     await fireEvent.press(screen.getByRole('button', { name: '打开设置' }));
     expect(router.getPathname()).toBe('/settings');
 
@@ -49,12 +49,12 @@ describe('Settings', () => {
     expect(isSelected('Use device language')).toBe(false);
 
     await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
   });
 
   it('switches to French immediately and Home follows (AC24)', async () => {
-    const router = await renderRouter('./app', { initialUrl: '/' });
+    const router = await renderRouter('./app', { initialUrl: '/learn' });
     await fireEvent.press(screen.getByRole('button', { name: '打开设置' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Français' }));
     expect(screen.getByText('Réglages')).toBeOnTheScreen();
@@ -63,7 +63,7 @@ describe('Settings', () => {
     expect(isSelected('Français')).toBe(true);
 
     await fireEvent.press(screen.getByRole('button', { name: 'Retour' }));
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(screen.getByText('Plateau et pierres · 棋盘 qípán')).toBeOnTheScreen();
   });
 

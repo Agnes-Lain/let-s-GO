@@ -37,7 +37,7 @@ function finish(ids: readonly string[]) {
 }
 
 async function renderHome() {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   return router;
 }
@@ -104,6 +104,7 @@ describe('headers and rows (AC 56, 62, 63, 50)', () => {
     await press('home-module-3');
     // Every Home button in order (replaces the M3 AC 102 list; no "Sample (developer)").
     expect(screen.getAllByRole('button').map((b) => b.props.accessibilityLabel)).toEqual([
+      'Back',
       'Open settings',
       'Start learning, Unit 1 · Board & stones · 棋盘 qípán',
       'Module 1, The basics, Units 1–5, 0 of 6 done',
@@ -206,7 +207,7 @@ describe('toggling (AC 58, 60, 64)', () => {
     expect(router.getPathname()).toBe('/lesson/u01-board');
     await act(() => appRouter.back());
     await settle();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect([expanded(1), expanded(2), expanded(3)]).toEqual([false, true, false]);
   });
 
@@ -214,10 +215,10 @@ describe('toggling (AC 58, 60, 64)', () => {
     const router = await renderHome();
     expect(screen.getAllByText('Locked', hidden)).toHaveLength(2);
     await press('home-module-2');
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     await press('home-node-unit-7');
     expect(screen.getByTestId('home-snackbar')).toBeOnTheScreen();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
   });
 
   it('AC 59: units and progress under the title; a 4 px bar filled by the share done', async () => {
@@ -258,5 +259,10 @@ describe('the 9×9 card (AC 61)', () => {
     expect(card.props.accessibilityLabel).toBe('Play 9×9');
     await press('home-game9');
     expect(router.getPathname()).toBe('/game');
+    // §12c.2: the picker's Back returns to the learning page.
+    await act(async () => {
+      fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+    });
+    expect(router.getPathname()).toBe('/learn');
   });
 });

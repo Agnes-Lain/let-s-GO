@@ -1,4 +1,5 @@
 // Home = learning-path map (M0 ACs 15–19, M3 ACs 97–99, 101–102, 105–106) on the real catalog.
+// Since M6-settings §12c the map is the learning page `/learn`, reached from the landing page `/`.
 import { render } from '@testing-library/react-native';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { AccessibilityInfo, StyleSheet } from 'react-native';
@@ -15,16 +16,17 @@ jest.mock('expo-localization', () => ({
 
 const hidden = { includeHiddenElements: true };
 
+/** The learning page (the map since M6-settings §12c.2), opened directly. */
 async function renderHome(language: Language) {
   await act(() => setLanguageChoice(language));
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await act(async () => {});
   return router;
 }
 
 beforeEach(() => {
   progressStore.getState().reset();
-  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  // M6-settings: a returning learner, past the first-launch intro.
   progressStore.getState().setFlag('onboardingSeen');
 });
 afterEach(async () => {
@@ -33,10 +35,16 @@ afterEach(async () => {
 
 describe('Home screen (M0 copy)', () => {
   it('shows the zh-CN home content (AC15)', async () => {
-    const router = await renderHome('zh-CN');
-    expect(router.getPathname()).toBe('/');
+    await act(() => setLanguageChoice('zh-CN'));
+    const router = await renderRouter('./app', { initialUrl: '/' });
+    await act(async () => {});
+    // The landing page carries the name and the subtitle (§12c.1).
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
     expect(screen.getByText('从零开始，一步一步学会下围棋')).toBeOnTheScreen();
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('landing-start'));
+    });
+    expect(router.getPathname()).toBe('/learn');
     expect(screen.getByText('学习路线')).toBeOnTheScreen();
     expect(screen.getByText('第 1 单元')).toBeOnTheScreen();
     expect(screen.getByText('棋盘与棋子')).toBeOnTheScreen();
@@ -52,10 +60,15 @@ describe('Home screen (M0 copy)', () => {
   });
 
   it('shows the English and French home content (AC16)', async () => {
-    await renderHome('en');
+    await act(() => setLanguageChoice('en'));
+    await renderRouter('./app', { initialUrl: '/' });
+    await act(async () => {});
     expect(
       screen.getByText('Learn Go (围棋 wéiqí) from zero, one rule at a time'),
     ).toBeOnTheScreen();
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('landing-start'));
+    });
     expect(screen.getByText('Learning path')).toBeOnTheScreen();
     expect(screen.getByText('Board & stones · 棋盘 qípán')).toBeOnTheScreen();
     // M6-settings §4.8: open modules 2 and 3 (collapsed for a new learner).

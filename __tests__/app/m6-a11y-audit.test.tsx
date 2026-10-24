@@ -150,8 +150,16 @@ describe('the audit helper (AC 35)', () => {
 });
 
 describe('every screen passes the audit (AC 35, 36, 40, 42)', () => {
-  it('Home (all modules open)', async () => {
+  it('Landing page (§12c.1)', async () => {
     await openAt('/');
+    expectAccessible(root());
+    expect(headers()).toHaveLength(1);
+    expect(smallTexts(root())).toEqual([]);
+    expect(uncapped(root(), 2)).toEqual([]);
+  });
+
+  it('Learning page (all modules open)', async () => {
+    await openAt('/learn');
     await press('home-module-2');
     await press('home-module-3');
     expectAccessible(root());
@@ -173,6 +181,7 @@ describe('every screen passes the audit (AC 35, 36, 40, 42)', () => {
   it('Onboarding, both steps', async () => {
     progressStore.getState().reset();
     await openAt('/');
+    await press('landing-start');
     expect(screen.getByTestId('onboarding-step-1')).toBeOnTheScreen();
     expectAccessible(root());
     expect(headers()).toHaveLength(1);

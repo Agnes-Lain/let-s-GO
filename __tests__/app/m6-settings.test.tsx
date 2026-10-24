@@ -28,8 +28,9 @@ function osReduceMotion(value: boolean) {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(value);
 }
 
+/** Settings opened from the learning page's gear (M6-settings §12c.2). */
 async function openSettings() {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   await act(() => appRouter.push('/settings'));
   await settle();
@@ -259,11 +260,11 @@ describe('Erase progress (AC 20–22)', () => {
     expect(done).toHaveTextContent(texts['settings.reset.done']);
     expect(done.props.accessibilityLiveRegion).toBe('polite');
     expect(announce).toHaveBeenCalledWith(texts['settings.reset.done']);
-    // Home: lesson 1 is the Continue card with 0 stars; no intro (onboardingSeen kept).
+    // The learning page: lesson 1 is the Continue card with 0 stars (onboardingSeen kept).
     await act(async () => {
       fireEvent.press(screen.getByRole('button', { name: texts['common.back'] }));
     });
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(screen.getByTestId('home-continue').props.accessibilityLabel).toBe(
       'Start learning, Unit 1 · Board & stones · 棋盘 qípán',
     );

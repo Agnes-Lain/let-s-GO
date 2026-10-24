@@ -48,11 +48,14 @@ type TopBarProps = {
   title?: string;
   /** Show the "‹ Back" button on the left. */
   showBack?: boolean;
+  /** Where Back goes; default: the previous screen, or the landing page without history. */
+  onBack?: () => void;
+  backTestID?: string;
   /** Optional element on the right (e.g. the settings button). */
   right?: ReactNode;
 };
 
-export function TopBar({ title, showBack = false, right }: TopBarProps) {
+export function TopBar({ title, showBack = false, onBack, backTestID, right }: TopBarProps) {
   const { t } = useTranslation();
   const goBack = useGoBack();
   return (
@@ -69,9 +72,10 @@ export function TopBar({ title, showBack = false, right }: TopBarProps) {
       ) : null}
       {showBack ? (
         <Pressable
-          onPress={goBack}
+          onPress={onBack ?? goBack}
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
+          testID={backTestID}
           style={({ pressed }) => [styles.back, pressed && styles.pressed]}
         >
           <ChevronIcon direction="left" color={color.accent} size={20} />

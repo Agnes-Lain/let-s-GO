@@ -2,14 +2,14 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ExplainPlayer } from '@/exercises/ExplainPlayer';
 import { LessonMessage } from '@/exercises/LessonMessage';
-import { useGoHome } from '@/exercises/navigation';
+import { useGoToLearning } from '@/exercises/navigation';
 import { useLessonGate } from '@/exercises/useLessonGate';
 
 /** Explanation player route (spec §6.2). UI only: the lesson data drives everything. */
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const goHome = useGoHome();
+  const goHome = useGoToLearning();
   const gate = useLessonGate(id);
 
   if (gate.status !== 'ok') return <LessonMessage status={gate.status} />;

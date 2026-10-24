@@ -257,7 +257,7 @@ async function mapChecks(browser, base, locale) {
   const s = strings(locale);
   const L = `[${locale}]`;
   const { context, page } = await newPage(browser, locale);
-  await page.goto(`${base}/`);
+  await page.goto(`${base}/learn`);
   await page.getByTestId('home-node-unit-12').waitFor({ timeout: 30000 });
   await page.getByTestId('home-node-checkpoint-14').scrollIntoViewIfNeeded();
   await wait(page, 300);

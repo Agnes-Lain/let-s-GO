@@ -259,7 +259,7 @@ async function homeChecks(browser, base, locale) {
   const L = `[${locale}]`;
   for (const unlocked of [false, true]) {
     const { context, page } = await newPage(browser, locale, unlocked);
-    await page.goto(`${base}/`);
+    await page.goto(`${base}/learn`);
     // M6-settings AC 61: the card is open from the start, with or without Unit 14.
     const id = 'home-game9';
     await page.getByTestId(id).waitFor({ timeout: 30000 });

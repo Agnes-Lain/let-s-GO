@@ -50,7 +50,8 @@ const TABLE: [string, string, string, string][] = [
   ['settings.reset.confirm', '清除', 'Erase', 'Effacer'],
   ['settings.reset.done', '学习记录已清除。', 'Progress erased.', 'Progression effacée.'],
   ['onboarding.skip', '跳过', 'Skip', 'Passer'],
-  ['onboarding.start', '去第一课', 'Go to lesson 1', 'Aller à la leçon 1'],
+  // §12c.5: step 1's button is Next, step 2's is Done (the intro no longer opens lesson 1).
+  ['onboarding.next', '下一步', 'Next', 'Suivant'],
   ['onboarding.done', '完成', 'Done', 'Terminé'],
   [
     'onboarding.step',
@@ -153,7 +154,7 @@ describe('§6 copy keys', () => {
       expect(
         keys.filter((k) => k === 'home.sample.label' || k.startsWith('lesson.u00-sample.')),
       ).toEqual([]);
-      expect(keys.filter((k) => k === 'onboarding.next' || k.startsWith('onboarding.3.'))).toEqual(
+      expect(keys.filter((k) => k === 'onboarding.start' || k.startsWith('onboarding.3.'))).toEqual(
         [],
       );
       expect(keys).not.toContain('game9.entry.locked');

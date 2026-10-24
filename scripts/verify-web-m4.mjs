@@ -353,7 +353,7 @@ async function main() {
     for (const locale of LOCALES) {
       const s = strings(locale);
       const { context, page } = await newPage(browser, locale);
-      await page.goto(base);
+      await page.goto(`${base}/learn`);
       await page.getByTestId('home-continue').waitFor({ timeout: 30000 });
       await page.waitForTimeout(400);
       check(

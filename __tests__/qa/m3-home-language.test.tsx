@@ -9,10 +9,10 @@ jest.mock('expo-localization', () => ({
 }));
 
 it('AC 108: language change re-renders unit titles without remount', async () => {
-  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  // M6-settings: a returning learner, past the first-launch intro.
   progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
-  await renderRouter('./app', { initialUrl: '/' });
+  await renderRouter('./app', { initialUrl: '/learn' });
   await act(async () => {});
   expect(screen.getByText(/Liberties/)).toBeTruthy();
   await act(() => setLanguageChoice('fr'));

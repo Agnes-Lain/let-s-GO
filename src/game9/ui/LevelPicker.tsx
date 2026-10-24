@@ -33,7 +33,14 @@ function previewStones(n: Handicap): ('B' | null)[] {
   return cells;
 }
 
-export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Handicap) => void }) {
+export function LevelPicker({
+  onPick,
+  onBack,
+}: {
+  onPick: (level: BotLevel, handicap: Handicap) => void;
+  /** Back button; default: the previous screen. */
+  onBack?: () => void;
+}) {
   const { t } = useTranslation();
   const bots = useProgress((p) => p.bots);
   const flags = useProgress((p) => p.flags);
@@ -52,7 +59,7 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
     <ScrollView style={styles.scroll} contentContainerStyle={styles.root}>
       {/* The title carries the term + pinyin (fr/en are long), so it gets its own wrapping line
           under the back button instead of the one-line top-bar slot. */}
-      <TopBar showBack />
+      <TopBar showBack onBack={onBack} />
       <Text
         maxFontSizeMultiplier={textScale.page}
         style={styles.title}

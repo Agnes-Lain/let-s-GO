@@ -45,7 +45,7 @@ const STARRED: LessonProgress = {
 };
 
 async function openAt(url: string) {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   if (url !== '/') {
     await act(() => appRouter.push(url));
@@ -76,7 +76,7 @@ beforeEach(async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0.25);
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   progressStore.getState().reset();
-  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  // M6-settings: a returning learner, past the first-launch intro.
   progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
@@ -317,7 +317,7 @@ describe('Game screen (AC 16–24, 38)', () => {
     await press('game9-close');
     await press('game9-leave-confirm');
     await settle();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().bots).toEqual({});
   });
 

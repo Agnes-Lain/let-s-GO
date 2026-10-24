@@ -931,7 +931,7 @@
   "settings.reset.confirm": "Effacer",
   "settings.reset.done": "Progression effacée.",
   "onboarding.skip": "Passer",
-  "onboarding.start": "Aller à la leçon 1",
+  "onboarding.next": "Suivant",
   "onboarding.done": "Terminé",
   "onboarding.step": "Étape {{n}} sur {{total}}",
   "onboarding.1.title": "Apprenez le Go (围棋 wéiqí) à partir de zéro",

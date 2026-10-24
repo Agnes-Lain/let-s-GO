@@ -315,10 +315,10 @@ async function settingsChecks(browser) {
       body.slice(0, 40).replace(/\n/g, ' '),
     );
     if (choice === 'fr') await shot(page, '74-language-persisted-after-reload-fr');
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await page.getByTestId('home-continue').waitFor({ timeout: 60000 });
     check(
-      `language ${choice}: Home in the same language`,
+      `language ${choice}: the learning page in the same language`,
       (await page.locator('body').innerText()).includes(texts[choice]['home.start']),
     );
     await context.close();
@@ -407,10 +407,21 @@ async function onboardingChecks(browser) {
   for (const locale of LOCALES) {
     const L = texts[locale];
     const { context, page } = await newPage(browser, locale, 'fresh');
+    // §12c: a fresh install opens the landing page; "Start learning" opens the intro.
     await page.goto(base);
-    await tid(page, 'onboarding-step-1').waitFor({ timeout: 60000 });
+    await tid(page, 'landing-start').waitFor({ timeout: 60000 });
     check(
-      `[${locale}] fresh install opens the intro`,
+      `[${locale}] fresh install opens the landing page`,
+      !page.url().includes('/onboarding'),
+      page.url(),
+    );
+    await wait(page, 300);
+    await shot(page, `64-landing-${locale}`);
+    await audit(page, `[${locale}] landing`);
+    await click(page, 'landing-start');
+    await tid(page, 'onboarding-step-1').waitFor({ timeout: 30000 });
+    check(
+      `[${locale}] Start learning opens the intro the first time`,
       page.url().includes('/onboarding'),
       page.url(),
     );
@@ -436,7 +447,7 @@ async function onboardingChecks(browser) {
       `[${locale}] step 1 shows title and concept`,
       body1.includes(L['onboarding.1.title']) && body1.includes(L['onboarding.1.concept']),
     );
-    check(`[${locale}] step 1 button reads "Start learning"`, body1.includes(L['home.start']));
+    check(`[${locale}] step 1 button reads "Next"`, body1.includes(L['onboarding.next']));
 
     await click(page, 'onboarding-next');
     await tid(page, 'onboarding-demo-board').waitFor();
@@ -494,32 +505,36 @@ async function onboardingChecks(browser) {
 
     if (locale === 'en') {
       await click(page, 'onboarding-finish');
-      await page.waitForURL(/lesson\/u01-board/, { timeout: 30000 }).catch(() => {});
-      check(
-        '[en] "Go to lesson 1" opens lesson 1',
-        page.url().includes('/lesson/u01-board'),
-        page.url(),
-      );
+      await tid(page, 'home-continue').waitFor({ timeout: 30000 });
+      check('[en] Done opens the learning page', page.url().includes('/learn'), page.url());
       await wait(page, 800);
-      await shot(page, '69-lesson-1-after-intro-en');
+      await shot(page, '69-learn-after-intro-en');
       const seen = await page.evaluate(() => JSON.parse(localStorage.getItem('progress') ?? '{}'));
       check('[en] onboardingSeen saved after Finish', seen.flags?.onboardingSeen === true);
     }
     await context.close();
   }
-  // Skip -> Home, 70; reload does not show the intro again.
+  // Skip -> the learning page, 70; afterwards Start learning skips the intro.
   for (const locale of LOCALES) {
     const { context, page } = await newPage(browser, locale, 'fresh');
     await page.goto(base);
-    await tid(page, 'onboarding-skip').waitFor({ timeout: 60000 });
+    await tid(page, 'landing-start').waitFor({ timeout: 60000 });
+    await click(page, 'landing-start');
+    await tid(page, 'onboarding-skip').waitFor({ timeout: 30000 });
     await click(page, 'onboarding-skip');
     await tid(page, 'home-continue').waitFor({ timeout: 30000 });
     await wait(page, 500);
-    check(`[${locale}] Skip lands on Home`, !page.url().includes('onboarding'), page.url());
-    await shot(page, `70-home-after-skip-${locale}`);
-    await page.reload();
-    await tid(page, 'home-continue').waitFor({ timeout: 60000 });
-    check(`[${locale}] intro does not return after a reload`, !page.url().includes('onboarding'));
+    check(`[${locale}] Skip lands on the learning page`, page.url().includes('/learn'), page.url());
+    await shot(page, `70-learn-after-skip-${locale}`);
+    await page.goto(base);
+    await tid(page, 'landing-start').waitFor({ timeout: 60000 });
+    await click(page, 'landing-start');
+    await tid(page, 'home-continue').waitFor({ timeout: 30000 });
+    check(
+      `[${locale}] after the intro, Start learning goes straight to the learning page`,
+      page.url().includes('/learn'),
+      page.url(),
+    );
     await context.close();
   }
 }
@@ -532,7 +547,7 @@ async function homeChecks(browser) {
   for (const locale of LOCALES) {
     // 76: new learner.
     let { context, page } = await newPage(browser, locale, 'seen');
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await tid(page, 'home-module-1').waitFor({ timeout: 60000 });
     await wait(page, 500);
     check(
@@ -636,7 +651,7 @@ async function homeChecks(browser) {
 
     // 78: module 1 done -> module 2 open midway.
     ({ context, page } = await newPage(browser, locale, 'module1Done'));
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await tid(page, 'home-module-1').waitFor({ timeout: 60000 });
     await wait(page, 500);
     check(
@@ -651,7 +666,7 @@ async function homeChecks(browser) {
 
     // 80: module 3 open (module 2 done).
     ({ context, page } = await newPage(browser, locale, 'module2Done'));
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await tid(page, 'home-module-3').waitFor({ timeout: 60000 });
     await wait(page, 500);
     check(`[${locale}] module 2 done: module 3 open`, (await expanded(page, 3)) === 'true');
@@ -661,7 +676,7 @@ async function homeChecks(browser) {
 
     // 77: finished profile, all collapsed, 9x9 card visible and unlocked.
     ({ context, page } = await newPage(browser, locale, 'all'));
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await tid(page, 'home-module-1').waitFor({ timeout: 60000 });
     await wait(page, 500);
     check(
@@ -682,7 +697,7 @@ async function homeChecks(browser) {
 
     // AC 61: the 9x9 card is unlocked from the start (new learner): it opens the picker.
     ({ context, page } = await newPage(browser, locale, 'seen'));
-    await page.goto(base);
+    await page.goto(`${base}/learn`);
     await tid(page, 'home-module-1').waitFor({ timeout: 60000 });
     const card = tid(page, 'home-game9');
     await card.scrollIntoViewIfNeeded();

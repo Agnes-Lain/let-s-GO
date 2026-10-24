@@ -28,7 +28,7 @@ beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(true);
   progressStore.getState().reset();
-  // M6-settings: a returning learner, past the first-launch intro (Home is not redirected).
+  // M6-settings: a returning learner, past the first-launch intro.
   progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });

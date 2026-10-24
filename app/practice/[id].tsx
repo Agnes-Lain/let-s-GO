@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { LessonMessage } from '@/exercises/LessonMessage';
-import { useGoHome } from '@/exercises/navigation';
+import { useGoToLearning } from '@/exercises/navigation';
 import { PracticeRunner } from '@/exercises/PracticeRunner';
 import { useLessonGate } from '@/exercises/useLessonGate';
 import { Screen } from '@/theme/Screen';
@@ -10,7 +10,7 @@ import { Screen } from '@/theme/Screen';
 export default function PracticeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const goHome = useGoHome();
+  const goHome = useGoToLearning();
   const gate = useLessonGate(id);
 
   if (gate.status !== 'ok') return <LessonMessage status={gate.status} />;

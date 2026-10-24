@@ -19,7 +19,7 @@ export function reduceMotion(value: boolean) {
 }
 
 export async function open(url = '/practice/u00-sample') {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   await act(() => appRouter.push(url));
   await settle();

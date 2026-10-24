@@ -259,7 +259,7 @@ async function scenarioRun(browser, locale, sc) {
   };
   let { context, page } = await newPage(browser, locale, extra);
   // Home + a lesson + leave sheet (AC 43)
-  await page.goto(`${base}/`);
+  await page.goto(`${base}/learn`);
   await page.getByTestId('home-game9').waitFor({ timeout: 120000 });
   await wait(page, 500);
   // 20 picker (Easy selected, stored suggestion 3)

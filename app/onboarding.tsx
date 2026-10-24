@@ -1,5 +1,6 @@
-// The first-launch intro (docs/specs/M6-settings-onboarding-a11y.md §5.2, AC 24–34, 46–49): step 1
-// Welcome, step 2 "Try placing a stone". Skippable; replayable from Settings (`?replay=1`).
+// The first-time intro (docs/specs/M6-settings-onboarding-a11y.md §5.2, AC 24–34, 46–49, §12c):
+// step 1 Welcome (Next), step 2 "Try placing a stone" (Done). Opened from the landing page's
+// "Start learning"; Done and Skip end on the learning page. Replayable from Settings (`?replay=1`).
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,14 +17,13 @@ import {
 
 import { GoBoard, stonesFromSetup } from '@/board';
 import { TouchDemo } from '@/exercises/TouchDemo';
+import { LEARN_ROUTE } from '@/exercises/navigation';
 import { progressStore } from '@/store';
 import { Button } from '@/theme/Button';
 import { Screen } from '@/theme/Screen';
 import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
 
 export const ONBOARDING_STEPS = 2;
-/** The first lesson the intro leads to (AC 28). */
-export const FIRST_LESSON = 'u01-board';
 /** Step 1's static example (§5.3): Black b3, c3; White c4, d3. Nothing in atari. */
 const WELCOME_STONES = stonesFromSetup(5, { B: ['b3', 'c3'], W: ['c4', 'd3'] });
 const WELCOME_BOARD = 200;
@@ -49,24 +49,14 @@ export default function OnboardingScreen() {
     AccessibilityInfo.announceForAccessibility(`${title}. ${stepLabel}`);
   }, [title, stepLabel]);
 
-  /** Skip, or Back on step 1 (AC 27): the intro is seen; Home replaces it. Replay: back to Settings. */
+  /**
+   * Skip, Back on step 1 (AC 27) and Done (AC 28) all end on the learning page (§12c.3–4), which
+   * replaces the intro. Only the first-time intro marks itself as seen; a replay changes nothing.
+   */
   const leave = () => {
-    if (replaying) {
-      if (router.canGoBack()) router.back();
-      else router.replace('/settings');
-      return;
-    }
-    progressStore.getState().setFlag('onboardingSeen');
-    router.replace('/');
-  };
-  /** The final button (AC 28): lesson 1, replacing the intro; Done in replay mode. */
-  const finish = () => {
-    if (replaying) {
-      leave();
-      return;
-    }
-    progressStore.getState().setFlag('onboardingSeen');
-    router.replace(`/lesson/${FIRST_LESSON}`);
+    if (!replaying) progressStore.getState().setFlag('onboardingSeen');
+    if (router.canGoBack()) router.dismissTo(LEARN_ROUTE);
+    else router.replace(LEARN_ROUTE);
   };
 
   // System back (AC 26): step 2 → step 1; on step 1 it is Skip.
@@ -154,7 +144,7 @@ export default function OnboardingScreen() {
         </View>
         {step === 1 ? (
           <Button
-            label={t('home.start')}
+            label={t('onboarding.next')}
             onPress={() => setStep(2)}
             testID="onboarding-next"
             style={styles.button}
@@ -162,8 +152,8 @@ export default function OnboardingScreen() {
         ) : (
           // Never blocked: enabled before and after the demo is used (AC 31).
           <Button
-            label={replaying ? t('onboarding.done') : t('onboarding.start')}
-            onPress={finish}
+            label={t('onboarding.done')}
+            onPress={leave}
             testID="onboarding-finish"
             style={styles.button}
           />
