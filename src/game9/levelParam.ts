@@ -24,3 +24,19 @@ export function parseSize(value: string | undefined): GameSize {
 export function parseConfirm(value: string | undefined): boolean {
   return value === '1';
 }
+
+/** What Start on the opponent screen opens (M6b AC 5, 22). */
+export interface GamePick {
+  level: BotLevel;
+  handicap: Handicap;
+  size: GameSize;
+  /** "Confirm each move" (13×13 only, default off). */
+  confirm: boolean;
+}
+
+/** The play route of a pick: 9×9 links stay as before; 13×13 adds `size` (and `confirm`). */
+export function playUrl({ level, handicap, size, confirm }: GamePick): string {
+  const base = `/game/play?level=${level}&handicap=${handicap}`;
+  if (size !== 13) return base;
+  return `${base}&size=13${confirm ? '&confirm=1' : ''}`;
+}

@@ -124,10 +124,16 @@ export interface GoBoardProps {
   accessibilityLabel?: string;
   highlights?: readonly Highlight[];
   markers?: readonly Marker[];
+  /**
+   * A chosen but not yet played point ("Confirm each move", M6b AC 22): drawn as the ghost stone
+   * of `playerColor` while no finger is on the board.
+   */
+  pending?: Point | null;
   testID?: string;
 }
 
 const STRIP_COUNT = 12;
+const LEGAL: CheckResult = { legal: true };
 /** Fixed node heights (fraction of board height) per strip — deterministic, no Math.random. */
 const NODE_HEIGHTS = [0.18, 0.62, 0.37, 0.81, 0.27, 0.71, 0.12, 0.55, 0.88, 0.43, 0.76, 0.31];
 const LINE_WIDTH = 1;
@@ -185,6 +191,7 @@ export function GoBoard({
   accessibilityLabel,
   highlights = NO_HIGHLIGHTS,
   markers = NO_MARKERS,
+  pending = null,
   testID = 'go-board',
 }: GoBoardProps) {
   const { t } = useTranslation();
@@ -241,6 +248,7 @@ export function GoBoard({
           sound={sound}
           screenReader={screenReader}
           announce={announce}
+          pending={pending}
         />
       ) : null}
     </View>
@@ -273,6 +281,7 @@ interface DrawingProps {
   sound: boolean;
   screenReader: boolean;
   announce: boolean;
+  pending: Point | null;
 }
 
 const sameCells = (a: readonly (Color | null)[], b: readonly (Color | null)[]) =>
@@ -300,6 +309,7 @@ function BoardDrawing({
   sound,
   screenReader,
   announce,
+  pending,
 }: DrawingProps) {
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
@@ -490,6 +500,14 @@ function BoardDrawing({
               playerColor={playerColor}
               pointer={pointer}
               tag={crosshairOn}
+            />
+          ) : pending ? (
+            <PreviewLayer
+              g={g}
+              preview={{ point: pending, result: LEGAL, fading: false }}
+              playerColor={playerColor}
+              pointer="stone"
+              tag={false}
             />
           ) : null}
         </Svg>

@@ -19,7 +19,7 @@ import {
   handicapStones,
   suggestedHandicap,
 } from './handicap';
-import { parseConfirm, parseSize } from './levelParam';
+import { parseConfirm, parseSize, playUrl } from './levelParam';
 import { isSize13Unlocked } from './picker';
 import { anyAtari, gameReducer, startSession, type GameEvent, type GameSession } from './session';
 
@@ -151,6 +151,18 @@ describe('AC 5, 22: route parameters', () => {
   it('size: "13" plays 13×13; missing or invalid falls back to 9', () => {
     expect(parseSize('13')).toBe(13);
     for (const v of [undefined, '9', '19', '', 'abc', '13.0']) expect(parseSize(v)).toBe(9);
+  });
+
+  it('Start: 9×9 links are unchanged; 13×13 adds size (and confirm)', () => {
+    expect(playUrl({ level: 2, handicap: 5, size: 9, confirm: true })).toBe(
+      '/game/play?level=2&handicap=5',
+    );
+    expect(playUrl({ level: 3, handicap: 4, size: 13, confirm: false })).toBe(
+      '/game/play?level=3&handicap=4&size=13',
+    );
+    expect(playUrl({ level: 1, handicap: 0, size: 13, confirm: true })).toBe(
+      '/game/play?level=1&handicap=0&size=13&confirm=1',
+    );
   });
 
   it('confirm: only "1" turns it on', () => {

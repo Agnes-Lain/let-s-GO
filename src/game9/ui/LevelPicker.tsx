@@ -1,54 +1,77 @@
 // Level picker (spec docs/specs/M6-bot-levels.md §5.1, AC 15, 34, 36, 37; M6-beginner-friendly
-// §5.1, AC 7–8): three level rows (radio), the handicap 让子 chips with a mini board, then Start.
-// Nothing is locked; the selected row has a tea-green border.
+// §5.1, AC 7–8; M6b-13x13-game.md §5.1, AC 1–4, 9, 13, 22): the board size 9×9 / 13×13, three
+// level rows (radio), the handicap 让子 chips with a mini board, then Start. Only 13×13 can be
+// locked (until a 9×9 win); the selected row has a tea-green border.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { GoBoard } from '@/board';
+import { GoBoard, stonesFromSetup } from '@/board';
 import type { BotLevel } from '@/bot';
-import { parseVertex } from '@/engine';
 import { progressStore, useProgress } from '@/store';
 import { Button } from '@/theme/Button';
-import { CheckIcon } from '@/theme/icons';
+import { CheckIcon, LockIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
 import { SwitchRow } from '@/theme/SwitchRow';
 import { color, radius, spacing, stone, textScale, typography } from '@/theme/tokens';
 
-import { BOT_LEVELS } from '../config';
-import { HANDICAP_CHOICES, handicapStones, suggestedHandicap, type Handicap } from '../handicap';
-import { isBeaten, preselectedLevel, showEasierTip } from '../picker';
+import { BOT_LEVELS, GAME_SIZES, gameKomi, type GameSize } from '../config';
+import { formatNumber } from '../format';
+import {
+  HANDICAP_CHOICES,
+  HANDICAP_KOMI,
+  handicapStones,
+  suggestedHandicap,
+  type Handicap,
+} from '../handicap';
+import type { GamePick } from '../levelParam';
+import { isBeaten, isSize13Unlocked, preselectedLevel, showEasierTip } from '../picker';
 
 export const LEVEL_ROW_HEIGHT = 72;
 export const HANDICAP_CHIP_HEIGHT = 48;
+/** The size segments (M6b §5.1): 48 px high. */
+export const SIZE_SEGMENT_HEIGHT = 48;
 const PREVIEW_SIZE = 96;
 
 /** The mini board's stones: the handicap points in Black (AC 8). */
-function previewStones(n: Handicap): ('B' | null)[] {
-  const cells: ('B' | null)[] = Array(81).fill(null);
-  for (const v of handicapStones(9, n)) {
-    const p = parseVertex(v, 9);
-    cells[p.y * 9 + p.x] = 'B';
-  }
-  return cells;
+function previewStones(size: GameSize, n: Handicap) {
+  return stonesFromSetup(size, { B: handicapStones(size, n) });
 }
 
 export function LevelPicker({
   onPick,
   onBack,
 }: {
-  onPick: (level: BotLevel, handicap: Handicap) => void;
+  onPick: (pick: GamePick) => void;
   /** Back button; default: the previous screen. */
   onBack?: () => void;
 }) {
-  const { t } = useTranslation();
-  const bots = useProgress((p) => p.bots);
+  const { t, i18n } = useTranslation();
+  const bots9 = useProgress((p) => p.bots);
+  const bots13 = useProgress((p) => p.bots13);
   const flags = useProgress((p) => p.flags);
+  const unlocked13 = isSize13Unlocked(bots9);
+  // The remembered size (AC 1); a locked 13×13 (e.g. after Erase progress) falls back to 9×9.
+  const size: GameSize = flags.gameSize === 13 && unlocked13 ? 13 : 9;
+  const bots = size === 13 ? bots13 : bots9;
+  const [lockedNote, setLockedNote] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   // Until the learner taps, the level and handicap follow the stored progress (it may load late).
-  const [choice, setChoice] = useState<{ level: BotLevel; handicap: Handicap } | null>(null);
-  const selected = choice?.level ?? preselectedLevel(bots);
-  const suggested = suggestedHandicap(bots, selected);
+  const [choice, setChoice] = useState<{ level: BotLevel; handicap: Handicap | null } | null>(null);
+  const selected = choice?.level ?? preselectedLevel(bots9);
+  const suggested = suggestedHandicap(bots, selected, size);
   const handicap = choice?.handicap ?? suggested;
+  const komi = formatNumber(handicap === 0 ? gameKomi(size) : HANDICAP_KOMI, i18n.language);
+  const pickSize = (next: GameSize) => {
+    if (next === 13 && !unlocked13) {
+      setLockedNote(true);
+      return;
+    }
+    setLockedNote(false);
+    // §5.1: the level stays, the handicap goes back to that size's suggestion.
+    setChoice({ level: selected, handicap: null });
+    progressStore.getState().setGameSize(next);
+  };
   // The tip is decided once when the picker opens, then remembered as shown (AC 37: once).
   const [tip] = useState(() => showEasierTip(bots, flags));
   useEffect(() => {
@@ -71,6 +94,63 @@ export function LevelPicker({
       <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
         {t('game9.picker.title')}
       </Text>
+      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
+        {t('game.size.title')}
+      </Text>
+      <View style={styles.segments} accessibilityRole="radiogroup">
+        {GAME_SIZES.map((option) => {
+          const locked = option === 13 && !unlocked13;
+          const label = t(`game.size.${option}`);
+          return (
+            <Pressable
+              key={option}
+              onPress={() => pickSize(option)}
+              accessibilityRole="radio"
+              accessibilityLabel={
+                locked
+                  ? `${label}, ${t('game.size.locked')}`
+                  : option === size
+                    ? t('game.a11y.sizeSelected', { size: option })
+                    : label
+              }
+              accessibilityState={{
+                selected: option === size,
+                checked: option === size,
+                disabled: locked,
+              }}
+              testID={`game-size-${option}`}
+              style={({ pressed }) => [
+                styles.segment,
+                option === size && styles.chipSelected,
+                locked && styles.locked,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text
+                maxFontSizeMultiplier={textScale.page}
+                style={[styles.chipText, option === size && styles.chipTextSelected]}
+              >
+                {label}
+              </Text>
+              {locked ? (
+                <View testID="game-size-13-lock">
+                  <LockIcon color={color.textSecondary} size={16} />
+                </View>
+              ) : null}
+            </Pressable>
+          );
+        })}
+      </View>
+      {lockedNote && !unlocked13 ? (
+        <Text maxFontSizeMultiplier={textScale.page} style={styles.note} testID="game-size-locked">
+          {t('game.size.locked')}
+        </Text>
+      ) : null}
+      {size === 13 ? (
+        <Text maxFontSizeMultiplier={textScale.page} style={styles.note} testID="game-size-time">
+          {t('game.size.time13')}
+        </Text>
+      ) : null}
       {tip ? (
         <Text maxFontSizeMultiplier={textScale.page} style={styles.tip} testID="game9-tip">
           {t('game9.tip.easier')}
@@ -84,7 +164,7 @@ export function LevelPicker({
           <Pressable
             key={level}
             // A tap only selects; the handicap jumps to that level's suggestion (AC 7, 8).
-            onPress={() => setChoice({ level, handicap: suggestedHandicap(bots, level) })}
+            onPress={() => setChoice({ level, handicap: null })}
             accessibilityRole="radio"
             accessibilityLabel={[name, desc, beaten ? t('game9.level.beaten') : '']
               .filter(Boolean)
@@ -183,8 +263,8 @@ export function LevelPicker({
           testID="game9-handicap-explain"
         >
           {handicap === 0
-            ? t('game9.picker.explainEven')
-            : t('game9.picker.explain', { n: handicap })}
+            ? t('game9.picker.explainEven', { komi })
+            : t('game9.picker.explain', { n: handicap, komi })}
         </Text>
         <View
           testID="game9-handicap-preview"
@@ -192,7 +272,12 @@ export function LevelPicker({
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
         >
-          <GoBoard size={9} stones={previewStones(handicap)} width={PREVIEW_SIZE} sound={false} />
+          <GoBoard
+            size={size}
+            stones={previewStones(size, handicap)}
+            width={PREVIEW_SIZE}
+            sound={false}
+          />
         </View>
       </View>
       {/* The whole row is the switch (M6-settings AC 17, 35); the same flag as Settings (AC 18). */}
@@ -204,9 +289,20 @@ export function LevelPicker({
         testID="game9-atari-hints"
         style={styles.hintsRow}
       />
+      {/* Per game, default off, 13×13 only (M6b AC 22, §11 decision 5). */}
+      {size === 13 ? (
+        <SwitchRow
+          title={t('game.confirm.label')}
+          description={t('game.confirm.desc')}
+          value={confirm}
+          onChange={setConfirm}
+          testID="game-confirm-switch"
+          style={styles.hintsRow}
+        />
+      ) : null}
       <Button
         label={t('game9.picker.start')}
-        onPress={() => onPick(selected, handicap)}
+        onPress={() => onPick({ level: selected, handicap, size, confirm: size === 13 && confirm })}
         testID="game9-start"
       />
     </ScrollView>
@@ -250,6 +346,22 @@ const styles = StyleSheet.create({
   },
   badgeText: { ...typography.label, fontSize: 14, color: color.onBadge },
   chips: { flexDirection: 'row', gap: spacing.xs },
+  segments: { flexDirection: 'row', gap: spacing.xs },
+  segment: {
+    flex: 1,
+    minWidth: 44,
+    minHeight: SIZE_SEGMENT_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderColor: color.border,
+    borderRadius: radius.md,
+  },
+  locked: { opacity: 0.55 },
+  note: { fontSize: 14, lineHeight: 20, color: color.textSecondary },
   chip: {
     flex: 1,
     minWidth: 44,
