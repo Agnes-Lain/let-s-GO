@@ -221,3 +221,37 @@ describe('AC 40: new i18n keys', () => {
     }
   });
 });
+
+describe('§13: zh-CN strings added in this branch carry no pinyin', () => {
+  const added = [
+    'game.entry.title13',
+    'game.entry.card13',
+    'game.size.locked',
+    'game.size.time13',
+    'game.confirm.label',
+    'game.confirm.desc',
+    'game.confirm.play',
+    'game.thinking',
+    'game.header.size',
+    'game.header.sizeEven',
+    'game9.picker.explain',
+    'game9.picker.explainEven',
+  ];
+  it.each(added)('%s has no Latin words or tone marks outside {{params}}', (k) => {
+    const text = (zh as Record<string, string>)[k].replace(/{{\w+}}/g, '').replace(/\d+×\d+/g, '');
+    expect(text).not.toMatch(/[A-Za-z]/);
+    expect(text).not.toMatch(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/);
+  });
+  it('the removed size-control keys are gone from all languages', () => {
+    for (const f of [zh, en, fr] as Record<string, string>[]) {
+      for (const k of [
+        'game.size.title',
+        'game.size.9',
+        'game.size.13',
+        'game.a11y.sizeSelected',
+      ]) {
+        expect(f[k]).toBeUndefined();
+      }
+    }
+  });
+});
