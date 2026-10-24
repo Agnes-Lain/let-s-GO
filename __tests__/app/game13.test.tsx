@@ -149,6 +149,17 @@ describe('size control (AC 1–4)', () => {
     expect(state('game9-handicap-5').selected).toBe(true);
   });
 
+  it('the picker title follows the size; the Learn card keeps "Play 9×9" (AC 6)', async () => {
+    await win9();
+    await openAt('/game');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
+    await press('game-size-13');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game.entry.title13']);
+    await press('game-size-9');
+    expect(screen.getByTestId('game9-picker-title')).toHaveTextContent(texts['game9.entry.title']);
+    expect(texts['game.confirm.desc']).toMatch(/Hint is not available/);
+  });
+
   it('AC 1: the chosen size is remembered on the next visit', async () => {
     await win9();
     await act(async () => progressStore.getState().setGameSize(13));

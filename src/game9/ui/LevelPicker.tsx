@@ -89,7 +89,8 @@ export function LevelPicker({
         accessibilityRole="header"
         testID="game9-picker-title"
       >
-        {t('game9.entry.title')}
+        {/* The title follows the chosen size; the Home card keeps "Play 9×9" (M6b AC 6). */}
+        {size === 13 ? t('game.entry.title13') : t('game9.entry.title')}
       </Text>
       <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
         {t('game9.picker.title')}

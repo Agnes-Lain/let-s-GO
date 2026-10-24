@@ -299,8 +299,9 @@ PO approved the spec with all open-decision defaults (komi 6.5 / 0.5 handicap; d
 7. **Confirm each move** (AC 22): the Play button takes the Hint slot as §5.2 says, so Hint is not available in
    that mode. The pending stone is drawn by a new optional `GoBoard` prop `pending`.
 8. **Review 复盘** stays 9×9-only: `ReviewView` / `src/coach/review.ts` still assume 9×9 (hidden on 13×13, M6b-2).
-9. **Picker title** still reads `game9.entry.title` ("Play 9×9") while 13×13 is selected (AC 6 keeps the key);
-   PO may want a neutral title.
+9. **Picker title** follows the size: `game.entry.title13` ("Play 13×13" / 十三路对弈 / "Jouer en 13×13") when 13×13 is
+   selected, `game9.entry.title` otherwise; the Home/Learn card is unchanged (AC 6). `game.confirm.desc` now also says
+   that Hint is not available in "Confirm each move" mode (deviation 7).
 
 Measured desktop (Jest, Apple silicon), ms per move on 13×13 positions from a level-2 self-play (20 samples, plies
 0–160): L1 ≤ 1, L2 ≤ 1, **L3 mean 154 / p95 249 / max 249** (600 playouts); hint ≤ 1; dead-stone judgement at ply
