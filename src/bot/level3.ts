@@ -16,6 +16,32 @@ export const MC_PLAYOUTS_PER_CANDIDATE = 100;
 export const MC_PLAYOUTS = MC_CANDIDATES * MC_PLAYOUTS_PER_CANDIDATE;
 /** Plies per playout after the candidate move. */
 export const MC_MAX_PLIES = 110;
+/** 13×13 (M6b AC 28): half the playouts per candidate, twice the plies. */
+export const MC_PLAYOUTS_PER_CANDIDATE_13 = 50;
+export const MC_PLAYOUTS_13 = MC_CANDIDATES * MC_PLAYOUTS_PER_CANDIDATE_13;
+export const MC_MAX_PLIES_13 = 220;
+
+/** The level-3 budget of one move: a count of playouts, never a time (AC 6). */
+export interface McBudget {
+  candidates: number;
+  perCandidate: number;
+  maxPlies: number;
+}
+
+/** The budget per board size (M6b §8): 9×9 → 1 200 / 110, 13×13 and bigger → 600 / 220. */
+export function mcBudget(size: number): McBudget {
+  return size >= 13
+    ? {
+        candidates: MC_CANDIDATES,
+        perCandidate: MC_PLAYOUTS_PER_CANDIDATE_13,
+        maxPlies: MC_MAX_PLIES_13,
+      }
+    : {
+        candidates: MC_CANDIDATES,
+        perCandidate: MC_PLAYOUTS_PER_CANDIDATE,
+        maxPlies: MC_MAX_PLIES,
+      };
+}
 /** Value per point of mean margin (breaks ties toward bigger wins). */
 export const MC_MARGIN_WEIGHT = 0.002;
 /**
@@ -54,16 +80,20 @@ export interface Level3Search {
  * The candidates: when a safe capture or a save exists, only those (AC 3–4: level 3 always
  * captures and saves, §12b); otherwise the best-scored points, up to MC_CANDIDATES.
  */
-export function candidatesFor(moves: readonly ScoredMove[]): ScoredMove[] {
+export function candidatesFor(
+  moves: readonly ScoredMove[],
+  max: number = MC_CANDIDATES,
+): ScoredMove[] {
   const urgent = moves.filter((m) => m.kind === 'capture' || m.kind === 'save');
-  return (urgent.length > 0 ? urgent : moves).slice(0, MC_CANDIDATES);
+  return (urgent.length > 0 ? urgent : moves).slice(0, max);
 }
 
 /** Runs the Monte-Carlo search for `state.toPlay` with a base seed. Pure and deterministic. */
 export function level3Search(state: GameState, seed: number): Level3Search {
   const bot: Color = state.toPlay;
-  const moves = candidatesFor(playableMoves(state));
   const size = state.board.size;
+  const budget = mcBudget(size);
+  const moves = candidatesFor(playableMoves(state), budget.candidates);
   const base = PlayoutBoard.fromState(state);
   const work = new PlayoutBoard(size);
   const plySeed = deriveSeed(seed, state.moves.length);
@@ -72,28 +102,26 @@ export function level3Search(state: GameState, seed: number): Level3Search {
     const candidateSeed = deriveSeed(plySeed, c);
     let wins = 0;
     let margin = 0;
-    for (let i = 0; i < MC_PLAYOUTS_PER_CANDIDATE; i++) {
+    for (let i = 0; i < budget.perCandidate; i++) {
       work.copyFrom(base);
       work.play(move.point.y * size + move.point.x);
       work.plies = 0;
-      work.playout(createRng(deriveSeed(candidateSeed, i)), MC_MAX_PLIES);
+      work.playout(createRng(deriveSeed(candidateSeed, i)), budget.maxPlies);
       const blackAhead = work.areaDifference(state.komi);
       const ours = bot === 'B' ? blackAhead : -blackAhead;
       if (ours > 0) wins++;
       margin += ours;
       playouts++;
     }
-    const meanMargin = margin / MC_PLAYOUTS_PER_CANDIDATE;
+    const meanMargin = margin / budget.perCandidate;
     return {
       point: move.point,
       prior: move.score,
       wins,
-      playouts: MC_PLAYOUTS_PER_CANDIDATE,
+      playouts: budget.perCandidate,
       meanMargin,
       value:
-        wins / MC_PLAYOUTS_PER_CANDIDATE +
-        MC_MARGIN_WEIGHT * meanMargin +
-        MC_PRIOR_WEIGHT * move.score,
+        wins / budget.perCandidate + MC_MARGIN_WEIGHT * meanMargin + MC_PRIOR_WEIGHT * move.score,
     };
   });
   const best = softmaxPick(candidates, createRng(deriveSeed(plySeed, 0x5eed)));

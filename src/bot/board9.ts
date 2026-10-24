@@ -1,6 +1,7 @@
-// When a 9×9 bot passes (spec docs/specs/M6-bot-levels.md §4.2, §6.5): after the opponent passed,
-// levels 2–3 pass when they are ahead on the count (after their own dead-stone proposal), else
-// play on at most MAX_PLAY_ON times in a row; every level passes from ply MAX_PLIES_9 on.
+// When a whole-board bot passes (spec docs/specs/M6-bot-levels.md §4.2, §6.5; 13×13 in
+// docs/specs/M6b-13x13-game.md AC 26): after the opponent passed, levels 2–3 pass when they are
+// ahead on the count (after their own dead-stone proposal), else play on at most MAX_PLAY_ON times
+// in a row; every level passes from the ply cap of the board size on (`maxPliesFor`).
 import { score, type GameState } from '@/engine';
 
 import { proposeDead } from './deadStones';
@@ -8,6 +9,13 @@ import type { Rng } from './rng';
 
 /** Hard stop (AC 9): from this ply on, the bot passes every turn. */
 export const MAX_PLIES_9 = 200;
+/** The 13×13 cap (M6b AC 26): 200 × 169/81 ≈ 417, rounded to 400. */
+export const MAX_PLIES_13 = 400;
+
+/** The ply cap of a board size: 13×13 and bigger use MAX_PLIES_13, smaller boards MAX_PLIES_9. */
+export function maxPliesFor(size: number): number {
+  return size >= 13 ? MAX_PLIES_13 : MAX_PLIES_9;
+}
 /** "Play on" answers in a row after an opponent pass before the bot passes anyway (AC 10). */
 export const MAX_PLAY_ON = 3;
 

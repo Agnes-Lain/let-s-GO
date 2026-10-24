@@ -1,6 +1,6 @@
 import { type GameState } from '@/engine';
 
-import { MAX_PLIES_9, opponentJustPassed, passAfterOpponentPass } from './board9';
+import { maxPliesFor, opponentJustPassed, passAfterOpponentPass } from './board9';
 import { level1 } from './heuristic';
 import { playableMoves } from './level2';
 import { level3Search } from './level3';
@@ -16,7 +16,7 @@ function passFor(state: GameState): BotChoice {
  * Returns null when the bot should choose a stone.
  */
 function passCheck(state: GameState, opts: BotOptions, hasMoves: boolean): BotChoice | null {
-  if (state.moves.length >= MAX_PLIES_9 || !hasMoves) return passFor(state);
+  if (state.moves.length >= maxPliesFor(state.board.size) || !hasMoves) return passFor(state);
   if (opponentJustPassed(state) && passAfterOpponentPass(state, opts.rng)) return passFor(state);
   return null;
 }
@@ -59,7 +59,7 @@ const strategies: Record<BotLevel, Strategy> = { 1: level1, 2: level2, 3: level3
 
 /**
  * The bot's move for `state.toPlay`: always legal or a pass. Capture Go (level 1 without
- * `board9`) passes only when no legal point exists.
+ * `boardN`) passes only when no legal point exists.
  */
 export function chooseMove(state: GameState, opts: BotOptions): BotChoice {
   return strategies[opts.level](state, opts);

@@ -3,8 +3,10 @@
 export { chooseMove, level2, level3 } from './choose';
 export {
   MAX_PLAY_ON,
+  MAX_PLIES_13,
   MAX_PLIES_9,
   botIsAhead,
+  maxPliesFor,
   opponentJustPassed,
   passAfterOpponentPass,
   playOnStreak,
@@ -13,6 +15,7 @@ export {
   DEAD_PLAYOUTS,
   DEAD_PLAYOUT_PLIES,
   DEAD_RATE,
+  deadPlayoutPlies,
   deadStonesOf,
   judgeDeadMarks,
   judgeGroups,
@@ -23,7 +26,7 @@ export {
   type GroupStatus,
 } from './deadStones';
 export { isOwnEye } from './eyes';
-export { OPENING_EMPTY_POINTS } from './heuristic';
+export { OPENING_EMPTY_POINTS, openingEmptyPoints } from './heuristic';
 export {
   PASS_BELOW,
   playableMoves,
@@ -35,14 +38,19 @@ export {
 export {
   MC_CANDIDATES,
   MC_MAX_PLIES,
+  MC_MAX_PLIES_13,
   MC_PLAYOUTS,
+  MC_PLAYOUTS_13,
   MC_PLAYOUTS_PER_CANDIDATE,
+  MC_PLAYOUTS_PER_CANDIDATE_13,
   MC_PRIOR_WEIGHT,
   MC_TEMPERATURE,
   level3Search,
+  mcBudget,
   softmaxPick,
   type CandidateValue,
   type Level3Search,
+  type McBudget,
 } from './level3';
 export { createRng, deriveSeed, type Rng } from './rng';
 export { winRate } from './playout';

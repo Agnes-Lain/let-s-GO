@@ -1,4 +1,4 @@
-// Dead-stone judgement after a 9×9 game (spec docs/specs/M6-bot-levels.md §6.4, AC 26–29).
+// Dead-stone judgement after a 9×9 or 13×13 game (spec docs/specs/M6-bot-levels.md §6.4, AC 26–29).
 // Per group: a forced-capture proof when it has ≤ 2 liberties, else random playouts from the
 // final position. Every opinion carries engine facts (liberties, eyes), never prose.
 import {
@@ -23,6 +23,11 @@ export const DEAD_PLAYOUTS = 200;
  * so the playouts run to the end of the game (two passes) with this cap (§12b).
  */
 export const DEAD_PLAYOUT_PLIES = 150;
+
+/** Plies per dead-stone playout for a board size (M6b AC 36): twice as many on 13×13. */
+export function deadPlayoutPlies(size: number): number {
+  return size >= 13 ? 2 * DEAD_PLAYOUT_PLIES : DEAD_PLAYOUT_PLIES;
+}
 /** A group is dead (or alive) by playouts when this share of playouts agree. */
 export const DEAD_RATE = 0.8;
 /** Attacker moves allowed in the forced-capture proof of a group with ≤ 2 liberties. */
@@ -94,7 +99,7 @@ function deadRates(state: GameState, groups: Group[], rng: Rng): number[] {
     work.plies = 0;
     // Half the playouts start with each colour, so the side to move does not decide.
     if (i % 2 === 1) work.toPlay = work.toPlay === 1 ? 2 : 1;
-    work.playout(createRng(deriveSeed(seed, i)), DEAD_PLAYOUT_PLIES);
+    work.playout(createRng(deriveSeed(seed, i)), deadPlayoutPlies(size));
     groups.forEach((group, g) => {
       const first = group.stones[0];
       const stone = work.cells[first.y * size + first.x];
