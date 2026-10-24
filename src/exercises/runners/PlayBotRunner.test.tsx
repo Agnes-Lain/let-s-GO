@@ -87,7 +87,7 @@ const onClose = jest.fn();
 
 async function show(exercise: PlayBotExercise, index = 0, total = 2) {
   const lesson = lessonOf(...Array.from({ length: total }, () => exercise));
-  const view = render(
+  const view = await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <PlayBotRunner
         exercise={lesson.exercises[index] as PlayBotExercise}
@@ -193,7 +193,7 @@ describe('turns and the bot delay (AC 43–45)', () => {
     const view = await show(game({ win: { kind: 'captureN', n: 2 } }));
     await tap('a1');
     const clear = jest.spyOn(global, 'clearTimeout');
-    view.unmount();
+    await view.unmount();
     expect(clear).toHaveBeenCalled();
     await advance(BOT_DELAY_MS * 2);
     expect(error).not.toHaveBeenCalled();
@@ -216,7 +216,7 @@ describe('the end of a game (AC 46, 47, 52–54, 56)', () => {
     expect(screen.getByText('You captured 1 first.')).toBeOnTheScreen();
     expect(screen.getByText(texts['lesson.u06-capture-go.e1.explain'])).toBeOnTheScreen();
     expect(stones('black')).toBe(4); // the bot did not move
-    fireEvent.press(screen.getByTestId('game-next'));
+    await fireEvent.press(screen.getByTestId('game-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 
@@ -261,7 +261,7 @@ describe('the end of a game (AC 46, 47, 52–54, 56)', () => {
       expect(screen.getByTestId('game-lose')).toBeTruthy(); // seeds 1–3: the bot captures
       if (loss < 3) {
         expect(screen.queryByTestId('game-skip')).toBeNull();
-        fireEvent.press(screen.getByTestId('game-retry'));
+        await fireEvent.press(screen.getByTestId('game-retry'));
         await settle();
         expect(screen.getByText('Your turn')).toBeOnTheScreen();
         expect(stones('black')).toBe(2);
@@ -269,7 +269,7 @@ describe('the end of a game (AC 46, 47, 52–54, 56)', () => {
       }
     }
     expect(screen.getByTestId('game-skip')).toBeTruthy();
-    fireEvent.press(screen.getByTestId('game-skip'));
+    await fireEvent.press(screen.getByTestId('game-skip'));
     expect(onDone).toHaveBeenCalledWith('revealed');
   });
 
@@ -375,7 +375,7 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
 
   it('AC 51: Hint shows the tip, the engine sentence and pulses the point; it costs clean', async () => {
     await show(game());
-    fireEvent.press(screen.getByTestId('practice-hint'));
+    await fireEvent.press(screen.getByTestId('practice-hint'));
     expect(feedbackText()).toBe(`${texts['lesson.u06-capture-go.e1.hint']} You can capture at c4.`);
     expect(screen.queryAllByTestId(/^board-highlight-hint/, hidden).length).toBeGreaterThan(0);
     expect(screen.getByTestId('practice-hint').props.accessibilityState).toMatchObject({
@@ -384,7 +384,7 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
     });
     await tap('c4');
     await advance(END_BEAT_MS);
-    fireEvent.press(screen.getByTestId('game-next'));
+    await fireEvent.press(screen.getByTestId('game-next'));
     expect(onDone).toHaveBeenCalledWith('solved');
   });
 
@@ -408,7 +408,7 @@ describe('score, notes and hint (AC 48–51, 57, 69)', () => {
     await show(game({ win: { kind: 'captureN', n: 2 } }));
     await tap('a1');
     await advance(BOT_DELAY_MS);
-    fireEvent.press(screen.getByTestId('game-restart'));
+    await fireEvent.press(screen.getByTestId('game-restart'));
     await settle();
     expect(stones('black')).toBe(3);
     expect(stones('white')).toBe(1);

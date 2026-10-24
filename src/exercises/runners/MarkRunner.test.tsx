@@ -42,7 +42,7 @@ const onDone = jest.fn();
 async function show(lessonId: string, exerciseId: string) {
   const l = lesson(lessonId);
   const index = l.exercises.findIndex((e) => e.id === exerciseId);
-  render(
+  await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <ExerciseView lesson={l} index={index} onClose={jest.fn()} onDone={onDone} />
     </SafeAreaProvider>,
@@ -61,15 +61,15 @@ async function tap(vertex: string) {
   const target = screen.getByTestId('board-touch');
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(target, 'responderGrant', event);
+    await fireEvent(target, 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(target, 'responderRelease', event);
+    await fireEvent(target, 'responderRelease', event);
   });
 }
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const disabled = (testID: string) =>
@@ -306,7 +306,7 @@ describe('count with a score answer (AC 39–46)', () => {
 
 describe('explanation squares and dead marker (AC 48–49)', () => {
   it('AC 49: u12 s3 — black squares on a, white squares on e, five circles on c', async () => {
-    render(
+    await render(
       <SafeAreaProvider initialMetrics={METRICS}>
         <ExplainPlayer
           lesson={lesson('u12-territory')}
@@ -329,7 +329,7 @@ describe('explanation squares and dead marker (AC 48–49)', () => {
   });
 
   it('AC 48: u14 s3 — c1 dimmed with a cross, no square under it', async () => {
-    render(
+    await render(
       <SafeAreaProvider initialMetrics={METRICS}>
         <ExplainPlayer
           lesson={lesson('u14-end')}

@@ -1,7 +1,7 @@
 // Shared accessibility audit for screen tests (docs/specs/M6-settings-onboarding-a11y.md AC 35).
 // Every pressable must have a role, a name (label or text) and a tap target of at least 44×44.
 import { StyleSheet } from 'react-native';
-import type { ReactTestInstance } from 'react-test-renderer';
+import type { TestInstance } from 'test-renderer';
 
 export const MIN_TAP = 44;
 
@@ -13,9 +13,9 @@ export interface A11yViolation {
 
 type Insets = { top?: number; bottom?: number; left?: number; right?: number };
 
-function textOf(node: ReactTestInstance): string {
+function textOf(node: TestInstance): string {
   return node
-    .findAll((n) => (n.type as unknown) === 'Text', { deep: true })
+    .queryAll((n) => n.type === 'Text', { includeSelf: true })
     .map((n) =>
       [n.props.children]
         .flat()
@@ -34,7 +34,7 @@ function slop(hitSlop: unknown): Insets {
 }
 
 /** Hidden from screen readers on purpose (e.g. a sheet's tap-outside area). */
-function hidden(node: ReactTestInstance): boolean {
+function hidden(node: TestInstance): boolean {
   const p = node.props;
   return (
     p['aria-hidden'] === true ||
@@ -45,17 +45,16 @@ function hidden(node: ReactTestInstance): boolean {
 
 /**
  * The pressable host views (Pressable / Touchable render a host View with `onClick`), except the
- * ones hidden from screen readers on purpose.
+ * ones hidden from screen readers on purpose. Pass `screen.container` (every rendered host view).
  */
-export function pressables(root: ReactTestInstance): ReactTestInstance[] {
-  return root.findAll(
-    (n) => typeof n.type === 'string' && typeof n.props.onClick === 'function' && !hidden(n),
-    { deep: true },
-  );
+export function pressables(root: TestInstance): TestInstance[] {
+  return root.queryAll((n) => typeof n.props.onClick === 'function' && !hidden(n), {
+    includeSelf: true,
+  });
 }
 
 /** Every violation in the tree (empty when all pressables pass). */
-export function accessibilityViolations(root: ReactTestInstance): A11yViolation[] {
+export function accessibilityViolations(root: TestInstance): A11yViolation[] {
   const out: A11yViolation[] = [];
   for (const node of pressables(root)) {
     const { accessibilityRole, accessibilityLabel, testID, hitSlop, role } = node.props;
@@ -84,7 +83,7 @@ export function accessibilityViolations(root: ReactTestInstance): A11yViolation[
 }
 
 /** Fails the test with the list of violations. */
-export function expectAccessible(root: ReactTestInstance): void {
+export function expectAccessible(root: TestInstance): void {
   expect(pressables(root).length).toBeGreaterThan(0);
   expect(accessibilityViolations(root)).toEqual([]);
 }

@@ -12,7 +12,7 @@ jest.mock('expo-localization', () => ({
 
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 

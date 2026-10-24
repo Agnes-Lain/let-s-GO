@@ -64,7 +64,7 @@ const onClose = jest.fn();
 
 async function show(exercise: SequenceExercise = KILL) {
   const lesson = lessonOf(exercise, { ...exercise, id: 'second' });
-  const view = render(
+  const view = await render(
     <SafeAreaProvider initialMetrics={METRICS}>
       <SequenceRunner
         exercise={exercise}
@@ -82,7 +82,7 @@ async function show(exercise: SequenceExercise = KILL) {
 const progressText = () => String(screen.getByTestId('sequence-progress').props.accessibilityLabel);
 const statusText = () => String(screen.getByTestId('sequence-status').props.children);
 const stoneAt = (v: string) => has(`board-stone-${v}`);
-const later = (ms: number) => advance(ms);
+const later = async (ms: number) => advance(ms);
 
 let announce: jest.SpyInstance;
 beforeEach(async () => {
@@ -137,7 +137,7 @@ describe('flow (AC 14–16, 22, 38)', () => {
     // No stray reply after the last learner move.
     await later(5000);
     expect(stoneAt('a2')).toBe(false);
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 });
@@ -150,7 +150,7 @@ describe('mistakes (AC 17–21, 23)', () => {
     await tap('b1');
     await later(REPLY_MS);
     await tap('c1');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('clean');
   });
 
@@ -163,7 +163,7 @@ describe('mistakes (AC 17–21, 23)', () => {
     expect(stoneAt('b1')).toBe(true); // Black b1 captured a1
     expect(stoneAt('a1')).toBe(false);
     expect(feedbackText()).toBe(texts['lesson.u11-vital.v2.w1']);
-    fireEvent.press(screen.getByTestId('practice-try-again'));
+    await fireEvent.press(screen.getByTestId('practice-try-again'));
     await settle();
     expect(stoneAt('b1')).toBe(false);
     expect(progressText()).toBe('Move 1 of 2');
@@ -188,13 +188,13 @@ describe('mistakes (AC 17–21, 23)', () => {
     await tap('c5');
     expect(feedbackText()).toBe(texts['sequence.wrong.notLine']);
     expect(screen.getByTestId('sequence-undo')).toBeTruthy();
-    fireEvent.press(screen.getByTestId('sequence-undo'));
+    await fireEvent.press(screen.getByTestId('sequence-undo'));
     await settle();
     expect(stoneAt('c5')).toBe(false);
     expect(stoneAt('e5')).toBe(true);
     expect(progressText()).toBe('Move 2 of 2');
     await tap('b5');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('solved');
   });
 
@@ -202,7 +202,7 @@ describe('mistakes (AC 17–21, 23)', () => {
     await show();
     for (let i = 0; i < 2; i++) {
       await tap('a5');
-      fireEvent.press(screen.getByTestId('practice-try-again'));
+      await fireEvent.press(screen.getByTestId('practice-try-again'));
       await settle();
     }
     await tap('a5');
@@ -216,7 +216,7 @@ describe('mistakes (AC 17–21, 23)', () => {
     await later(REVEAL_MS);
     expect(stoneAt('a2')).toBe(false); // captured by c1
     expect(feedbackText()).toContain(texts['lesson.u11-vital.v2.explain']);
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('revealed');
   });
 });
@@ -224,7 +224,7 @@ describe('mistakes (AC 17–21, 23)', () => {
 describe('hints (AC 27–28)', () => {
   it('AC 27: Hint shows the text and the ring on the next expected point; no clean', async () => {
     await show();
-    fireEvent.press(screen.getByTestId('practice-hint'));
+    await fireEvent.press(screen.getByTestId('practice-hint'));
     await settle();
     expect(feedbackText()).toBe(texts['lesson.u11-vital.v1.hint']);
     expect(has('board-highlight-hint-b1')).toBe(true);
@@ -232,14 +232,14 @@ describe('hints (AC 27–28)', () => {
     await later(REPLY_MS);
     expect(has('board-highlight-hint-c1')).toBe(true);
     await tap('c1');
-    fireEvent.press(screen.getByTestId('practice-next'));
+    await fireEvent.press(screen.getByTestId('practice-next'));
     expect(onDone).toHaveBeenCalledWith('solved');
   });
 
   it('AC 28: Hint while the opponent replies shows the ring only once the board unlocks', async () => {
     await show();
     await tap('b1');
-    fireEvent.press(screen.getByTestId('practice-hint'));
+    await fireEvent.press(screen.getByTestId('practice-hint'));
     await settle();
     expect(feedbackText()).toBe(texts['lesson.u11-vital.v1.hint']);
     expect(has('board-highlight-hint-b1')).toBe(false);
@@ -253,7 +253,7 @@ describe('hints (AC 27–28)', () => {
     for (let i = 0; i < 2; i++) {
       await tap('a5');
       if (i === 0) {
-        fireEvent.press(screen.getByTestId('practice-try-again'));
+        await fireEvent.press(screen.getByTestId('practice-try-again'));
         await settle();
       }
     }
@@ -266,7 +266,7 @@ describe('unmount, reduced motion, layout (AC 25, 29–33)', () => {
     const view = await show();
     await tap('b1');
     const errors = jest.spyOn(console, 'error').mockImplementation(() => {});
-    view.unmount();
+    await view.unmount();
     announce.mockClear();
     await later(5000);
     // The reply's timer would announce "Black plays a1": it was cleared with the screen.
@@ -283,7 +283,7 @@ describe('unmount, reduced motion, layout (AC 25, 29–33)', () => {
     for (let i = 0; i < 3; i++) {
       await tap('e5');
       if (i < 2) {
-        fireEvent.press(screen.getByTestId('sequence-undo'));
+        await fireEvent.press(screen.getByTestId('sequence-undo'));
         await settle();
       }
     }

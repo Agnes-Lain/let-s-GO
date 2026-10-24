@@ -133,7 +133,7 @@ describe('/dev/board (AC47, AC48, AC53)', () => {
 });
 
 /** Touch down + up on a vertex of the demo board, using the rendered board size. */
-function tap(vertex: string) {
+async function tap(vertex: string) {
   const style = flat(screen.getByTestId('go-board').props.style);
   const size = screen.queryAllByTestId(/^board-grid-h-/).length as 5 | 7 | 9 | 13 | 19;
   const coordinates = screen.queryAllByTestId(/^board-label-/).length > 0;
@@ -142,8 +142,8 @@ function tap(vertex: string) {
     parseVertex(vertex, size),
   );
   const nativeEvent = { locationX: x, locationY: y };
-  fireEvent(screen.getByTestId('board-touch'), 'responderGrant', { nativeEvent });
-  fireEvent(screen.getByTestId('board-touch'), 'responderRelease', { nativeEvent });
+  await fireEvent(screen.getByTestId('board-touch'), 'responderGrant', { nativeEvent });
+  await fireEvent(screen.getByTestId('board-touch'), 'responderRelease', { nativeEvent });
 }
 const stoneIds = () =>
   screen

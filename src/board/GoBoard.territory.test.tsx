@@ -12,15 +12,15 @@ const stones = stonesFromSetup(5, { B: ['b2'], W: ['d4'] });
 const at = (x: number, y: number) => ({ x, y });
 const payload = (c: string) => ({ type: 0, payload: processColor(c) });
 
-function draw(highlights: Highlight[], markers: Marker[] = []) {
-  render(
+async function draw(highlights: Highlight[], markers: Marker[] = []) {
+  await render(
     <GoBoard size={5} stones={stones} width={328} highlights={highlights} markers={markers} />,
   );
 }
 
 describe('territory squares and scratch dots', () => {
-  it('black squares: 36 % of the cell in stone.black; white: stone.white with the 1.5 px edge', () => {
-    draw([
+  it('black squares: 36 % of the cell in stone.black; white: stone.white with the 1.5 px edge', async () => {
+    await draw([
       { kind: 'territoryB', points: [at(0, 0)] },
       { kind: 'territoryW', points: [at(4, 4)] },
     ]);
@@ -36,8 +36,8 @@ describe('territory squares and scratch dots', () => {
     expect(screen.queryAllByTestId(/^board-highlight-territory/)).toHaveLength(0);
   });
 
-  it('scratch dots: a small textSecondary ring, 40 % of the cell', () => {
-    draw([{ kind: 'scratch', points: [at(2, 2)] }]);
+  it('scratch dots: a small textSecondary ring, 40 % of the cell', async () => {
+    await draw([{ kind: 'scratch', points: [at(2, 2)] }]);
     const g = boardGeometry(5, 328, true);
     const dot = screen.getByTestId('board-scratch-c3');
     expect(dot.props.stroke).toEqual(payload(color.textSecondary));
@@ -47,8 +47,8 @@ describe('territory squares and scratch dots', () => {
 });
 
 describe('dead stones', () => {
-  it('are dimmed to 45 % with a cross in the contrast colour', () => {
-    draw(
+  it('are dimmed to 45 % with a cross in the contrast colour', async () => {
+    await draw(
       [],
       [
         { kind: 'dead', point: at(1, 1) },
@@ -63,8 +63,8 @@ describe('dead stones', () => {
     expect(crossOnWhite.props.children[0].props.stroke).toBe(stone.black);
   });
 
-  it('other stones keep full opacity', () => {
-    draw([], [{ kind: 'dead', point: at(1, 1) }]);
+  it('other stones keep full opacity', async () => {
+    await draw([], [{ kind: 'dead', point: at(1, 1) }]);
     expect(screen.getByTestId('board-stone-d4').props.opacity).toBeUndefined();
   });
 });

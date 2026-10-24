@@ -23,7 +23,7 @@ const cap = (id: number, points: string[]): CaptureEvent => ({
 });
 const ghosts = () => screen.queryAllByTestId(/^board-capture-/);
 
-function setup(props: Partial<GoBoardProps> = {}) {
+async function setup(props: Partial<GoBoardProps> = {}) {
   const base: GoBoardProps = {
     size: 9,
     stones: S(['e5']),
@@ -31,15 +31,15 @@ function setup(props: Partial<GoBoardProps> = {}) {
     lastMove: at('e5'),
     ...props,
   };
-  const view = render(<GoBoard {...base} />);
+  const view = await render(<GoBoard {...base} />);
   return {
     ...view,
-    update: (next: Partial<GoBoardProps>) => view.rerender(<GoBoard {...base} {...next} />),
+    update: async (next: Partial<GoBoardProps>) => view.rerender(<GoBoard {...base} {...next} />),
   };
 }
 const reduceMotion = (v: boolean) =>
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(v);
-const settle = () => act(async () => {});
+const settle = async () => act(async () => {});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -54,9 +54,9 @@ describe('sound triggers (edge)', () => {
   beforeEach(() => reduceMotion(true));
 
   it('a capturing move plays exactly one sound', async () => {
-    const { update } = setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
+    const { update } = await setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
     await settle();
-    update({
+    await update({
       stones: S(['e5', 'c2', 'b3', 'd3', 'c4']),
       lastMove: at('c4'),
       lastCapture: cap(1, ['c3']),
@@ -65,38 +65,38 @@ describe('sound triggers (edge)', () => {
   });
 
   it('rapid consecutive moves each play once, none lost', async () => {
-    const { update } = setup();
+    const { update } = await setup();
     await settle();
-    update({ stones: S(['e5', 'd4']), lastMove: at('d4') });
-    update({ stones: S(['e5', 'd4'], ['c3']), lastMove: at('c3') });
-    update({ stones: S(['e5', 'd4', 'g7'], ['c3']), lastMove: at('g7') });
+    await update({ stones: S(['e5', 'd4']), lastMove: at('d4') });
+    await update({ stones: S(['e5', 'd4'], ['c3']), lastMove: at('c3') });
+    await update({ stones: S(['e5', 'd4', 'g7'], ['c3']), lastMove: at('g7') });
     expect(playStoneSound).toHaveBeenCalledTimes(3);
   });
 
   it('toggling sound off then on does not play; the next stone does', async () => {
-    const { update } = setup();
+    const { update } = await setup();
     await settle();
-    update({ sound: false });
-    update({ sound: true });
+    await update({ sound: false });
+    await update({ sound: true });
     expect(playStoneSound).not.toHaveBeenCalled();
-    update({ stones: S(['e5', 'd4']), lastMove: at('d4') });
+    await update({ stones: S(['e5', 'd4']), lastMove: at('d4') });
     expect(playStoneSound).toHaveBeenCalledTimes(1);
   });
 
   it('a stone arriving while sound is off is not replayed when sound turns on', async () => {
-    const { update } = setup({ sound: false });
+    const { update } = await setup({ sound: false });
     await settle();
-    update({ sound: false, stones: S(['e5', 'd4']), lastMove: at('d4') });
-    update({ sound: true, stones: S(['e5', 'd4']), lastMove: at('d4') });
+    await update({ sound: false, stones: S(['e5', 'd4']), lastMove: at('d4') });
+    await update({ sound: true, stones: S(['e5', 'd4']), lastMove: at('d4') });
     expect(playStoneSound).not.toHaveBeenCalled();
   });
 
   it('switching board size is silent', async () => {
-    const { rerender } = render(
+    const { rerender } = await render(
       <GoBoard size={9} stones={S(['e5'])} width={328} lastMove={at('e5')} />,
     );
     await settle();
-    rerender(
+    await rerender(
       <GoBoard
         size={13}
         stones={stonesFromSetup(13, { B: ['g7'] })}
@@ -109,9 +109,9 @@ describe('sound triggers (edge)', () => {
 
   it('loading a scenario that replaces an empty board with stones + lastMove is the only (known) trigger', async () => {
     // Documents behaviour: a prop swap that looks like "a stone appeared" is a placement.
-    const { update } = setup({ stones: S([]), lastMove: null });
+    const { update } = await setup({ stones: S([]), lastMove: null });
     await settle();
-    update({ stones: S(['e5']), lastMove: at('e5') });
+    await update({ stones: S(['e5']), lastMove: at('e5') });
     expect(playStoneSound).toHaveBeenCalledTimes(1);
   });
 });
@@ -119,9 +119,9 @@ describe('sound triggers (edge)', () => {
 describe('capture fade (edge)', () => {
   it('fades every stone of a multi-stone capture, then removes all', async () => {
     reduceMotion(false);
-    const { update } = setup({ stones: S(['e5'], ['c3', 'c4', 'd3']), lastMove: at('e5') });
+    const { update } = await setup({ stones: S(['e5'], ['c3', 'c4', 'd3']), lastMove: at('e5') });
     await settle();
-    update({
+    await update({
       stones: S(['e5', 'b3']),
       lastMove: at('b3'),
       lastCapture: cap(1, ['c3', 'c4', 'd3']),
@@ -131,7 +131,7 @@ describe('capture fade (edge)', () => {
         .map((g) => g.props.testID)
         .sort(),
     ).toEqual(['board-capture-c3', 'board-capture-c4', 'board-capture-d3']);
-    act(() => jest.advanceTimersByTime(350));
+    await act(() => jest.advanceTimersByTime(350));
     expect(ghosts()).toHaveLength(0);
   });
 
@@ -142,12 +142,12 @@ describe('capture fade (edge)', () => {
       if (n === 'reduceMotionChanged') listener = h;
       return { remove: () => {} };
     }) as never);
-    const { update } = setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
+    const { update } = await setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
     await settle();
-    update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
-    act(() => jest.advanceTimersByTime(100));
-    act(() => listener(true));
-    act(() => jest.advanceTimersByTime(400));
+    await update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    await act(() => jest.advanceTimersByTime(100));
+    await act(() => listener(true));
+    await act(() => jest.advanceTimersByTime(400));
     expect(ghosts()).toHaveLength(0);
   });
 
@@ -155,11 +155,11 @@ describe('capture fade (edge)', () => {
   // drawn over the restored stone. The dev screen passes lastCapture=null after undo.
   it('undo during a fade leaves no ghost captured stones', async () => {
     reduceMotion(false);
-    const { update } = setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
+    const { update } = await setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
     await settle();
-    update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
-    act(() => jest.advanceTimersByTime(100));
-    update({ stones: S(['e5'], ['c3']), lastMove: at('e5'), lastCapture: null });
+    await update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    await act(() => jest.advanceTimersByTime(100));
+    await update({ stones: S(['e5'], ['c3']), lastMove: at('e5'), lastCapture: null });
     expect(ghosts()).toHaveLength(0);
   });
 
@@ -167,14 +167,18 @@ describe('capture fade (edge)', () => {
   // is treated as a new capture and fades ghosts of stones that are not on the board.
   it('undo to an older capture id does not replay a fade', async () => {
     reduceMotion(false);
-    const { update } = setup({
+    const { update } = await setup({
       stones: S(['e5', 'c4'], ['g7']),
       lastMove: at('c4'),
       lastCapture: cap(4, ['c3']),
     });
     await settle();
-    update({ stones: S(['e5', 'c4'], ['g7', 'a1']), lastMove: at('a1'), lastCapture: null });
-    update({ stones: S(['e5', 'c4'], ['g7']), lastMove: at('c4'), lastCapture: cap(4, ['c3']) });
+    await update({ stones: S(['e5', 'c4'], ['g7', 'a1']), lastMove: at('a1'), lastCapture: null });
+    await update({
+      stones: S(['e5', 'c4'], ['g7']),
+      lastMove: at('c4'),
+      lastCapture: cap(4, ['c3']),
+    });
     expect(ghosts()).toHaveLength(0);
   });
 });
@@ -183,12 +187,15 @@ describe('unmount (leaks)', () => {
   it('unmounting mid placement and capture animation leaves no timers and no warnings', async () => {
     reduceMotion(false);
     const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const { update, unmount } = setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
+    const { update, unmount } = await setup({ stones: S(['e5'], ['c3']), lastMove: at('e5') });
     await settle();
-    update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
-    act(() => jest.advanceTimersByTime(50));
-    unmount();
-    act(() => jest.advanceTimersByTime(1000));
+    await update({ stones: S(['e5', 'c4']), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    await act(() => jest.advanceTimersByTime(50));
+    await unmount();
+    await act(() => jest.advanceTimersByTime(1000));
+    // RNTL 14 / React 19 leave one faked queueMicrotask behind after any unmount (even a bare
+    // <View />); run it so only the board's own timers are counted.
+    jest.runAllTicks();
     expect(jest.getTimerCount()).toBe(0);
     expect(error).not.toHaveBeenCalled();
   });
@@ -218,40 +225,40 @@ describe('fade continues across unrelated re-renders; ko undo/retake', () => {
 
   it('highlights change, new-but-equal stones array and coordinates toggle keep the fade', async () => {
     reduceMotion(false);
-    const { update } = setup({ stones: before(), lastMove: at('e5') });
+    const { update } = await setup({ stones: before(), lastMove: at('e5') });
     await settle();
-    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
-    act(() => jest.advanceTimersByTime(100));
-    update({
+    await update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    await act(() => jest.advanceTimersByTime(100));
+    await update({
       stones: after(),
       lastMove: at('c4'),
       lastCapture: cap(1, ['c3']),
       highlights: [{ kind: 'hint', points: [at('g7')] }],
     });
     expect(ghosts()).toHaveLength(1);
-    update({
+    await update({
       stones: after(),
       lastMove: at('c4'),
       lastCapture: cap(1, ['c3']),
       showCoordinates: false,
     });
     expect(ghosts()).toHaveLength(1);
-    act(() => jest.advanceTimersByTime(250));
+    await act(() => jest.advanceTimersByTime(250));
     expect(ghosts()).toHaveLength(0);
   });
 
   it('capture, undo, retake: one fade per real capture, none on undo', async () => {
     reduceMotion(false);
-    const { update } = setup({ stones: before(), lastMove: at('e5') });
+    const { update } = await setup({ stones: before(), lastMove: at('e5') });
     await settle();
-    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
+    await update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) });
     expect(ghosts()).toHaveLength(1);
-    act(() => jest.advanceTimersByTime(400));
-    update({ stones: before(), lastMove: at('e5'), lastCapture: null }); // undo
+    await act(() => jest.advanceTimersByTime(400));
+    await update({ stones: before(), lastMove: at('e5'), lastCapture: null }); // undo
     expect(ghosts()).toHaveLength(0);
-    update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) }); // retake, same id
+    await update({ stones: after(), lastMove: at('c4'), lastCapture: cap(1, ['c3']) }); // retake, same id
     expect(ghosts()).toHaveLength(1);
-    act(() => jest.advanceTimersByTime(400));
+    await act(() => jest.advanceTimersByTime(400));
     expect(ghosts()).toHaveLength(0);
   });
 });

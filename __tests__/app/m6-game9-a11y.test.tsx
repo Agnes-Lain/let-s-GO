@@ -29,11 +29,11 @@ jest.mock('@/bot', () => {
 
 const FILES: Record<Language, Record<string, string>> = { 'zh-CN': zhCN, en, fr };
 const chooseMove = bot.chooseMove as jest.Mock;
-const settle = () => act(async () => {});
-const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+const settle = async () => act(async () => {});
+const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const flat = (style: unknown): Record<string, unknown> =>
@@ -67,10 +67,10 @@ async function tapBoard(vertex: string) {
   const target = screen.getByTestId('board-touch');
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(target, 'responderGrant', event);
+    await fireEvent(target, 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(target, 'responderRelease', event);
+    await fireEvent(target, 'responderRelease', event);
   });
 }
 const moveCount = () => String(screen.getByTestId('game9-move').props.children);
@@ -88,13 +88,13 @@ beforeEach(async () => {
   progressStore.getState().setFlag('onboardingSeen');
   // The first-Pass explainer is not under test here.
   progressStore.getState().setFlag('passExplained');
-  act(() => settingsStore.getState().setReduceMotion(false));
+  await act(() => settingsStore.getState().setReduceMotion(false));
   await act(() => setLanguageChoice('en'));
 });
 afterEach(async () => {
   jest.useRealTimers();
   jest.restoreAllMocks();
-  act(() => settingsStore.getState().setReduceMotion(false));
+  await act(() => settingsStore.getState().setReduceMotion(false));
   await act(() => setLanguageChoice('system'));
 });
 
@@ -178,7 +178,7 @@ describe('AC 38: each move is heard once (the board is silent in the game)', () 
 
 describe('AC 14: the bot delay (closes M6 bot-levels AC 41)', () => {
   it('reduce motion (app switch) → the reply comes at 300 ms, not before', async () => {
-    act(() => settingsStore.getState().setReduceMotion(true));
+    await act(() => settingsStore.getState().setReduceMotion(true));
     await openGame();
     expect(BOT_DELAY_REDUCED_MS).toBe(300);
     await tapBoard('e5');

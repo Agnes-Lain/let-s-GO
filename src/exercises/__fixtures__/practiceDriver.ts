@@ -11,8 +11,8 @@ import { SAMPLE_TEXTS } from '@/lessons/__fixtures__/sampleRegistry';
 
 export const texts = { ...en, ...SAMPLE_TEXTS.en } as Record<string, string>;
 export const hidden = { includeHiddenElements: true };
-export const settle = () => act(async () => {});
-export const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
+export const settle = async () => act(async () => {});
+export const advance = async (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 export function reduceMotion(value: boolean) {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(value);
@@ -40,10 +40,10 @@ export async function tap(vertex: string) {
   const target = screen.getByTestId('board-touch');
   const event = { nativeEvent: { locationX: x, locationY: y } };
   await act(async () => {
-    fireEvent(target, 'responderGrant', event);
+    await fireEvent(target, 'responderGrant', event);
   });
   await act(async () => {
-    fireEvent(target, 'responderRelease', event);
+    await fireEvent(target, 'responderRelease', event);
   });
 }
 
@@ -53,7 +53,7 @@ export function boardSize(): number {
   return lines * lines;
 }
 
-export const press = (testID: string) => fireEvent.press(screen.getByTestId(testID));
+export const press = async (testID: string) => fireEvent.press(screen.getByTestId(testID));
 export const feedbackText = () =>
   String(flat(screen.getByTestId('practice-feedback').props).accessibilityLabel ?? '');
 export const has = (testID: string) => screen.queryAllByTestId(testID, hidden).length > 0;

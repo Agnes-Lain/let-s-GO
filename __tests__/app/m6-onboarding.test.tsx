@@ -25,10 +25,10 @@ jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolv
 const FILES: Record<Language, Record<string, string>> = { 'zh-CN': zhCN, en, fr };
 const texts = en as Record<string, string>;
 const hidden = { includeHiddenElements: true };
-const settle = () => act(async () => {});
+const settle = async () => act(async () => {});
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 const flat = (style: unknown) =>
@@ -62,9 +62,12 @@ function demoEvent(vertex: string) {
   const { x, y } = pointToLocation(g, parseVertex(vertex, 5));
   return { nativeEvent: { locationX: x, locationY: y } };
 }
-const touch = (name: 'responderGrant' | 'responderMove' | 'responderRelease', event: object) =>
+const touch = async (
+  name: 'responderGrant' | 'responderMove' | 'responderRelease',
+  event: object,
+) =>
   act(async () => {
-    fireEvent(screen.getByTestId('board-touch'), name, event);
+    await fireEvent(screen.getByTestId('board-touch'), name, event);
   });
 async function tapDemo(vertex: string) {
   const event = demoEvent(vertex);
@@ -160,7 +163,7 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
   });
 
   it('an existing player (lesson stars) → the learning page, and no flag is written', async () => {
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-board', SIX);
     });
     const router = await openIntro();
@@ -169,7 +172,7 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
   });
 
   it('an existing 9×9 player → the learning page', async () => {
-    act(() => progressStore.getState().recordGame(1, 'loss'));
+    await act(() => progressStore.getState().recordGame(1, 'loss'));
     const router = await openIntro();
     expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags).toEqual({});
@@ -189,11 +192,13 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
 describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
   it('AC 46 / §12c.5: title, concept, what-is-Go, the example board, then Next', async () => {
     await openIntro();
-    const order = screen.UNSAFE_root.findAll(
-      (n) =>
-        ((n.type as unknown) === 'Text' && typeof n.props.children === 'string') ||
-        n.props.testID === 'onboarding-welcome-board',
-    ).map((n) => ((n.type as unknown) === 'Text' ? n.props.children : 'BOARD'));
+    const order = screen.container
+      .queryAll(
+        (n) =>
+          (n.type === 'Text' && typeof n.props.children === 'string') ||
+          n.props.testID === 'onboarding-welcome-board',
+      )
+      .map((n) => (n.type === 'Text' ? n.props.children : 'BOARD'));
     const index = (item: string) => order.indexOf(item);
     const sequence = [
       texts['onboarding.1.title'],
@@ -279,7 +284,7 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
       expect(progressStore.getState().flags.onboardingSeen).toBe(true);
       expect(screen.queryByTestId('onboarding-step-1')).toBeNull();
       // Back from the learning page goes to the landing page, not to the intro.
-      appRouter.back();
+      await act(() => appRouter.back());
       await settle();
       expect(router.getPathname()).toBe('/');
       expect(appRouter.canGoBack()).toBe(false);
@@ -297,14 +302,14 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
     await press('onboarding-finish');
     expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags.onboardingSeen).toBe(true);
-    appRouter.back();
+    await act(() => appRouter.back());
     await settle();
     expect(router.getPathname()).toBe('/');
   });
 
   it('§12c.4 replay from Settings: Done and Skip end on the learning page; no progress changes', async () => {
     progressStore.getState().setFlag('onboardingSeen');
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-board', SIX);
     });
     const before = JSON.stringify(progressStore.getState().lessons);
@@ -318,7 +323,7 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
     await press('onboarding-finish');
     expect(router.getPathname()).toBe('/learn');
     await act(async () => {
-      fireEvent.press(screen.getByRole('button', { name: texts['settings.open'] }));
+      await fireEvent.press(screen.getByRole('button', { name: texts['settings.open'] }));
     });
     expect(router.getPathname()).toBe('/settings');
     await press('settings-intro');

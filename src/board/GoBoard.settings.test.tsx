@@ -21,38 +21,38 @@ const withC3 = stonesFromSetup(9, { B: ['e5'], W: ['c3'] });
 const capturedC3 = stonesFromSetup(9, { B: ['e5', 'c2', 'b3', 'd3', 'c4'] });
 const capture: CaptureEvent = { id: 1, color: 'W', points: [at('c3')] };
 
-function setup(props: Partial<GoBoardProps> = {}) {
+async function setup(props: Partial<GoBoardProps> = {}) {
   const base: GoBoardProps = { size: 9, stones: e5, width: 328, lastMove: at('e5'), ...props };
-  const view = render(<GoBoard {...base} />);
+  const view = await render(<GoBoard {...base} />);
   return {
-    update: (next: Partial<GoBoardProps>) => view.rerender(<GoBoard {...base} {...next} />),
+    update: async (next: Partial<GoBoardProps>) => view.rerender(<GoBoard {...base} {...next} />),
   };
 }
 
 function osReduceMotion(value: boolean) {
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(value);
 }
-const settle = () => act(async () => {});
-const flush = () => act(async () => new Promise((r) => setTimeout(r, 0)));
+const settle = async () => act(async () => {});
+const flush = async () => act(async () => new Promise((r) => setTimeout(r, 0)));
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
   mockPlayer.seekTo.mockImplementation(() => Promise.resolve());
   resetStoneSoundForTests();
-  act(() => settingsStore.getState().setReduceMotion(false));
+  await act(() => settingsStore.getState().setReduceMotion(false));
 });
-afterEach(() => {
+afterEach(async () => {
   jest.restoreAllMocks();
-  act(() => settingsStore.getState().setReduceMotion(false));
+  await act(() => settingsStore.getState().setReduceMotion(false));
 });
 
 describe('AC 9: the Stone sound switch gates the player', () => {
   it('sound off: a placed stone on <GoBoard sound> never calls the player', async () => {
     osReduceMotion(true);
     setSoundEnabled(false);
-    const { update } = setup({ sound: true });
+    const { update } = await setup({ sound: true });
     await settle();
-    update({ stones: e5d4, lastMove: at('d4') });
+    await update({ stones: e5d4, lastMove: at('d4') });
     await flush();
     expect(createAudioPlayer).not.toHaveBeenCalled();
     expect(mockPlayer.play).not.toHaveBeenCalled();
@@ -61,9 +61,9 @@ describe('AC 9: the Stone sound switch gates the player', () => {
   it('sound on: once per placed stone', async () => {
     osReduceMotion(true);
     setSoundEnabled(true);
-    const { update } = setup({ sound: true });
+    const { update } = await setup({ sound: true });
     await settle();
-    update({ stones: e5d4, lastMove: at('d4') });
+    await update({ stones: e5d4, lastMove: at('d4') });
     await flush();
     expect(mockPlayer.play).toHaveBeenCalledTimes(1);
   });
@@ -77,17 +77,17 @@ describe('AC 11: useReduceMotion = OS OR app switch', () => {
     [true, true, true],
   ])('OS %s, app %s → %s', async (os, app, expected) => {
     osReduceMotion(os);
-    act(() => settingsStore.getState().setReduceMotion(app));
-    const { result } = renderHook(() => useReduceMotion());
+    await act(() => settingsStore.getState().setReduceMotion(app));
+    const { result } = await renderHook(() => useReduceMotion());
     await settle();
     expect(result.current).toBe(expected);
   });
 
-  it('true before the OS answers, even with the app switch off', () => {
+  it('true before the OS answers, even with the app switch off', async () => {
     jest
       .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
       .mockReturnValue(new Promise<boolean>(() => {}));
-    const { result } = renderHook(() => useReduceMotion());
+    const { result } = await renderHook(() => useReduceMotion());
     expect(result.current).toBe(true);
   });
 });
@@ -98,30 +98,30 @@ describe('AC 13: the app switch on (OS off) removes the board motion', () => {
 
   it('no 120 ms placement timing', async () => {
     osReduceMotion(false);
-    act(() => settingsStore.getState().setReduceMotion(true));
-    const { update } = setup();
+    await act(() => settingsStore.getState().setReduceMotion(true));
+    const { update } = await setup();
     await settle();
     const timing = jest.spyOn(Animated, 'timing');
-    update({ stones: e5d4, lastMove: at('d4') });
+    await update({ stones: e5d4, lastMove: at('d4') });
     expect(timing).not.toHaveBeenCalled();
     expect(screen.getByTestId('board-stone-d4')).toBeTruthy();
   });
 
   it('no 300 ms capture fade', async () => {
     osReduceMotion(false);
-    act(() => settingsStore.getState().setReduceMotion(true));
-    const { update } = setup({ stones: withC3, lastMove: at('c4') });
+    await act(() => settingsStore.getState().setReduceMotion(true));
+    const { update } = await setup({ stones: withC3, lastMove: at('c4') });
     await settle();
-    update({ stones: capturedC3, lastMove: at('c4'), lastCapture: capture });
+    await update({ stones: capturedC3, lastMove: at('c4'), lastCapture: capture });
     expect(screen.queryAllByTestId(/^board-capture-/)).toHaveLength(0);
   });
 
   it('control: with both off the placement animates', async () => {
     osReduceMotion(false);
-    const { update } = setup();
+    const { update } = await setup();
     await settle();
     const timing = jest.spyOn(Animated, 'timing');
-    update({ stones: e5d4, lastMove: at('d4') });
+    await update({ stones: e5d4, lastMove: at('d4') });
     expect(timing).toHaveBeenCalledTimes(1);
   });
 });

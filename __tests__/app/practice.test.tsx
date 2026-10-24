@@ -25,6 +25,7 @@ import {
 } from '@/exercises/__fixtures__/practiceDriver';
 import { setLanguageChoice } from '@/i18n';
 import { progressStore } from '@/store';
+import { propsOfOnly } from '@/theme/__fixtures__/fibers';
 
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
@@ -158,8 +159,8 @@ describe('shell (AC 59–67)', () => {
     await press('leave-confirm');
     await settle();
     expect(router.getPathname()).toBe('/practice/u00-sample');
-    const modal = screen.UNSAFE_getByType(Modal);
-    await act(async () => modal.props.onDismiss());
+    const modal = propsOfOnly(screen.container, Modal);
+    await act(async () => modal.onDismiss());
     await settle();
     expect(router.getPathname()).toBe('/learn');
   });
@@ -217,7 +218,7 @@ describe('tap-point (AC 68–71)', () => {
     const g = boardGeometry(5, flat(board.props.style).width as number, false);
     const c4 = pointToLocation(g, parseVertex('c4', 5));
     await act(async () => {
-      fireEvent(screen.getByTestId('board-touch'), 'responderGrant', {
+      await fireEvent(screen.getByTestId('board-touch'), 'responderGrant', {
         nativeEvent: { locationX: c4.x, locationY: c4.y },
       });
     });

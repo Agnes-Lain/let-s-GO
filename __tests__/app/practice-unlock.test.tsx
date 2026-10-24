@@ -48,7 +48,7 @@ describe('unit unlocked (AC 92)', () => {
   });
 
   it('a replay that does not unlock anything shows no badge', async () => {
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-test', ['clean']);
     });
     await open('/practice/u01-test');

@@ -12,14 +12,14 @@ jest.mock('expo-localization', () => ({
 }));
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
-const settle = () => act(async () => {});
+const settle = async () => act(async () => {});
 const press = async (testID: string) => {
   await act(async () => {
-    fireEvent.press(screen.getByTestId(testID));
+    await fireEvent.press(screen.getByTestId(testID));
   });
 };
 let backHandler: (() => boolean | null | undefined) | null = null;
-const systemBack = () =>
+const systemBack = async () =>
   act(async () => {
     backHandler?.();
   });
@@ -64,7 +64,7 @@ describe('hardware back in the intro', () => {
 
   it('replay: system Back on step 1 leaves to /learn and changes no progress', async () => {
     progressStore.getState().setFlag('onboardingSeen');
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u01-board', Array(6).fill('clean') as 'clean'[]);
     });
     const before = JSON.stringify(progressStore.getState().lessons);
@@ -89,7 +89,7 @@ describe('hardware back in the intro', () => {
 
 describe('who sees the intro', () => {
   it('progress but onboardingSeen false: straight to /learn, the flag stays unwritten', async () => {
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u02-liberties', Array(6).fill('clean') as 'clean'[]);
     });
     const router = await launch();
@@ -112,8 +112,8 @@ describe('landing page robustness', () => {
   it('pressing Start learning twice quickly does not stack two intros', async () => {
     const router = await launch();
     await act(async () => {
-      fireEvent.press(screen.getByTestId('landing-start'));
-      fireEvent.press(screen.getByTestId('landing-start'));
+      await fireEvent.press(screen.getByTestId('landing-start'));
+      await fireEvent.press(screen.getByTestId('landing-start'));
     });
     expect(router.getPathname()).toBe('/onboarding');
     await press('onboarding-skip');

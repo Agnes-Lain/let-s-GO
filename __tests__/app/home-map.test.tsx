@@ -48,8 +48,8 @@ afterEach(() => {
 });
 
 describe('fixture catalog (AC 100, 103, 104)', () => {
-  beforeEach(() => {
-    act(() => {
+  beforeEach(async () => {
+    await act(() => {
       progressStore.getState().record('u01-board', SIX);
       progressStore.getState().record('u02-liberties', Array(6).fill('revealed'));
     });
@@ -71,7 +71,7 @@ describe('fixture catalog (AC 100, 103, 104)', () => {
   it('AC 103: the checkpoint sits under unit 2 and is locked until its lesson has 1★', async () => {
     await renderHome();
     expect(label('home-node-checkpoint-2')).toMatch(/^Checkpoint, .*, locked$/);
-    act(() => {
+    await act(() => {
       progressStore.getState().record('u02-liberties', SIX);
     });
     expect(label('home-node-checkpoint-2')).toMatch(/^Checkpoint, .*, not started$/);
