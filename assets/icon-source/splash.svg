@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Let's GO splash image (docs/specs/M6-eas-build.md AC 23): the two-stone logo only, no ridges,
+       no text, transparent background (expo-splash-screen paints #F4F1EA = tokens color.background).
+       Same stones as icon.svg: stone.black #22252A, stone.white #F7F5EE, stone.whiteEdge #6B675C.
+       Everything stays within 290 px of the centre, inside the circle Android 12+ keeps. -->
+  <circle cx="422" cy="512" r="200" fill="#22252A"/>
+  <circle cx="602" cy="512" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8"/>
+</svg>
