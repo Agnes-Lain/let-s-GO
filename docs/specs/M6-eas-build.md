@@ -279,3 +279,50 @@ reporting or analytics, accounts/backend, OTA updates (`expo-updates` channels m
 no update is published), iPad layout, dark mode, Android tablet layout, localized store
 screenshots beyond the basics, automated CI builds, deleting old AsyncStorage keys, Apple
 Watch/web publishing, store-name trademark checks.
+
+## 12. Developer notes (2026-10-24)
+
+### 12a. New dependencies (for the PR description, CLAUDE.md rule 8)
+All installed with `npx expo install` (SDK 58 versions).
+| Package | Why |
+|---|---|
+| `expo-dev-client` | Needed by the `development` EAS profile (AC 6). |
+| `expo-splash-screen` | Native splash with the two stones on `#F4F1EA` (AC 23–26). |
+| `react-native-mmkv` (v4) | Fast synchronous on-device storage in the app's own build (AC 13–20). |
+| `react-native-nitro-modules` | Required peer of `react-native-mmkv` v4 (its native bridge). |
+| `expo-system-ui` | Makes `userInterfaceStyle: "light"` (AC 10) apply on Android; without it `expo prebuild` warns and the native root follows the phone's dark mode (risk of a dark flash after the splash, AC 26). |
+No analytics, ads, crash-reporting, update or network SDK was added (AC 32, tested in `__tests__/m6-eas-build.test.ts`).
+
+### 12b. Dev deviations
+1. **`selectStorageAdapter(env)` env shape.** Instead of a boolean `mmkvAvailable`, `env` has
+   `loadMmkv()` (throws when the native module is missing) and `asyncStorage`. Availability can
+   only be known by trying to load MMKV, and the loader is what keeps `require('react-native-mmkv')`
+   from running on web and in Expo Go (AC 13). The selector returns the AsyncStorage adapter
+   itself in the fallback cases.
+2. **Migration timing.** When the flag is already `done`, the stores get the plain synchronous MMKV
+   adapter (hydration on the first frame). On the first MMKV launch the adapter's calls wait for
+   the copy to finish and then go to MMKV (or to AsyncStorage for this launch if it failed), so
+   the stores (which already accept a promise from `getItem`) never read before the copy.
+3. **Rollback on failure (AC 17).** Keys copied before the failing write are removed from MMKV
+   again (they were absent before, so AC 19 still holds). Otherwise a retry next launch would skip
+   them and keep stale values while the failed launch kept saving to AsyncStorage.
+4. **Jest.** `__mocks__/react-native-mmkv.ts` makes `createMMKV` throw, so in Jest the app adapter
+   is AsyncStorage (mocked) and every existing store test runs unchanged (AC 14); the MMKV paths are
+   tested with a fake instance.
+5. **Android permissions.** `permissions: []` does not remove the permissions the Expo template
+   manifest adds, so `blockedPermissions` removes `READ/WRITE_EXTERNAL_STORAGE` and
+   `SYSTEM_ALERT_WINDOW`, and the `expo-audio` plugin gets `recordAudioAndroid: false`,
+   `microphonePermission: false`, `enableBackgroundPlayback: false` (the app only plays a short
+   stone sound). The prebuilt manifest keeps `INTERNET` (needed by the dev client / React Native,
+   not shown as a dangerous permission; the app makes no requests), `MODIFY_AUDIO_SETTINGS` and
+   `VIBRATE` (normal permissions, no user prompt).
+6. **`development` profile** has no channel (the spec names channels only for preview/production).
+7. **Store texts** live in `docs/store/listing.md` (fenced blocks per locale, parsed by
+   `__tests__/m6-eas-build-docs.test.ts`). Topics checked against `docs/CURRICULUM.md`: all
+   four (liberties, capture, ko, counting) and 9×9 games are in the app, text unchanged.
+8. **Screenshots**: 4 en shots (landing, lesson, learning page, 9×9 game) from the web export at
+   360×640 ×3. The 9×9 shot is an empty board and the lesson shot shows no stone preview (a
+   mid-game / touch-down shot would need scripted moves); fine for internal testing, nicer shots
+   are a follow-up.
+9. PNG exports (splash, feature graphic, 512 icon) were made with Chrome through a scratchpad
+   `playwright-core`, as in M6-settings §12c; no project dependency.
