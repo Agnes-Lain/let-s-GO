@@ -38,9 +38,9 @@ describe('Home screen (M0 copy)', () => {
     await act(() => setLanguageChoice('zh-CN'));
     const router = await renderRouter('./app', { initialUrl: '/' });
     await act(async () => {});
-    // The landing page carries the name and the subtitle (§12c.1).
+    // The landing page carries the name and the intro line (§12c.1).
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
-    expect(screen.getByText('从零开始，一步一步学会下围棋')).toBeOnTheScreen();
+    expect(screen.getByText('从零开始，一步一步学会下围棋。')).toBeOnTheScreen();
     await act(async () => {
       fireEvent.press(screen.getByTestId('landing-start'));
     });
@@ -64,7 +64,7 @@ describe('Home screen (M0 copy)', () => {
     await renderRouter('./app', { initialUrl: '/' });
     await act(async () => {});
     expect(
-      screen.getByText('Learn Go (围棋 wéiqí) from zero, one rule at a time'),
+      screen.getByText('Learn GO (围棋 wéiqí) from zero with short lessons.'),
     ).toBeOnTheScreen();
     await act(async () => {
       fireEvent.press(screen.getByTestId('landing-start'));

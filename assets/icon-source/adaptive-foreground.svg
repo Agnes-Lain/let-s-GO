@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Android adaptive foreground (transparent). Canvas 1024 = 108 dp; the visible mask is the inner 66 % (676 px
+       circle, r 338, centred). Farthest stone point from centre is about 309 px, so everything stays inside.
+       Background colour: #DCE6EA (token color.sky). Monochrome layer = same two circles in one colour. -->
+  <circle cx="422" cy="512" r="200" fill="#22252A"/>
+  <circle cx="602" cy="512" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8"/>
+</svg>

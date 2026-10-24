@@ -29,7 +29,7 @@ const settle = () => act(async () => {});
 const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 async function open() {
-  await renderRouter('./app', { initialUrl: '/' });
+  await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   await act(() => appRouter.push('/lesson/u00-sample'));
   await settle();

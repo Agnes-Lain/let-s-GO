@@ -49,6 +49,13 @@ const TABLE: [string, string, string, string][] = [
   ['settings.reset.keep', '保留', 'Keep my progress', 'Garder ma progression'],
   ['settings.reset.confirm', '清除', 'Erase', 'Effacer'],
   ['settings.reset.done', '学习记录已清除。', 'Progress erased.', 'Progression effacée.'],
+  // §12c landing (PO 2026-10-24): one intro line; "GO" in capitals as the PO wrote it.
+  [
+    'home.intro',
+    '从零开始，一步一步学会下围棋。',
+    'Learn GO (围棋 wéiqí) from zero with short lessons.',
+    'Apprenez le GO (围棋 wéiqí) pas à pas, avec des leçons courtes.',
+  ],
   ['onboarding.skip', '跳过', 'Skip', 'Passer'],
   // §12c.5: step 1's button is Next, step 2's is Done (the intro no longer opens lesson 1).
   ['onboarding.next', '下一步', 'Next', 'Suivant'],

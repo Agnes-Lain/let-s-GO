@@ -1,6 +1,6 @@
 {
   "app.name": "Let's GO",
-  "home.subtitle": "Learn Go (围棋 wéiqí) from zero, one rule at a time",
+  "home.intro": "Learn GO (围棋 wéiqí) from zero with short lessons.",
   "home.path.title": "Learning path",
   "home.unit.comingSoon": "Coming soon",
   "home.moreSoon": "More units coming soon",

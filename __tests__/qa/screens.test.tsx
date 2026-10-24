@@ -94,7 +94,7 @@ describe('Settings language round trip (AC23–AC25)', () => {
     expect(router.getPathname()).toBe('/');
     // The landing page (M6-settings §12c.1), then the learning page with the map (§12c.2).
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
-    expect(screen.getByText('从零开始，一步一步学会下围棋')).toBeOnTheScreen();
+    expect(screen.getByText('从零开始，一步一步学会下围棋。')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: '开始学习' })).toBeOnTheScreen();
     await fireEvent.press(screen.getByTestId('landing-start'));
     expect(router.getPathname()).toBe('/learn');
@@ -111,7 +111,7 @@ describe('Settings language round trip (AC23–AC25)', () => {
     await renderRouter('./app', { initialUrl: '/' });
     expect(screen.getByText("Let's GO")).toBeOnTheScreen();
     expect(
-      screen.getByText('Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois'),
+      screen.getByText('Apprenez le GO (围棋 wéiqí) pas à pas, avec des leçons courtes.'),
     ).toBeOnTheScreen();
     await fireEvent.press(screen.getByTestId('landing-start'));
     // M6-settings §4.8: Unit 6 lives in module 2, collapsed for a new learner.

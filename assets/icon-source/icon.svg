@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Let's GO app icon, variant A "mist and ridge". Full-bleed, opaque, square corners (iOS masks them).
+       Colours = src/theme/tokens.ts: sky #DCE6EA, background #F4F1EA, mountainFar #C9D5D6, mountainNear #9DB2AE,
+       stone.black #22252A, stone.white #F7F5EE, stone.whiteEdge #6B675C.
+       Safe zone: stones sit inside the central 640 px (192..832); nothing important in the outer 192 px. -->
+  <defs>
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DCE6EA"/>
+      <stop offset="0.62" stop-color="#F4F1EA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#mist)"/>
+  <path d="M0 700 C110 640 220 610 330 660 C410 700 470 610 570 590 C680 570 760 650 850 640 C930 630 980 660 1024 650 L1024 1024 L0 1024 Z" fill="#C9D5D6"/>
+  <path d="M0 840 C90 790 180 770 280 800 C370 830 430 770 540 775 C650 780 710 840 820 825 C910 812 970 830 1024 820 L1024 1024 L0 1024 Z" fill="#9DB2AE" opacity="0.85"/>
+  <!-- two-stone logo, same overlap as the app (black behind, white in front) -->
+  <circle cx="422" cy="450" r="200" fill="#22252A"/>
+  <circle cx="602" cy="450" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8"/>
+</svg>

@@ -56,9 +56,10 @@ describe('French typography', () => {
 describe('copy table §4 is implemented verbatim', () => {
   // Spot-check the strings that are most likely to drift.
   it.each([
-    ['zh-CN', 'home.subtitle', '从零开始，一步一步学会下围棋'],
-    ['en', 'home.subtitle', 'Learn Go (围棋 wéiqí) from zero, one rule at a time'],
-    ['fr', 'home.subtitle', 'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois'],
+    // M6-settings §12c: the landing intro replaces the old Home subtitle.
+    ['zh-CN', 'home.intro', '从零开始，一步一步学会下围棋。'],
+    ['en', 'home.intro', 'Learn GO (围棋 wéiqí) from zero with short lessons.'],
+    ['fr', 'home.intro', 'Apprenez le GO (围棋 wéiqí) pas à pas, avec des leçons courtes.'],
     ['fr', 'settings.open', 'Ouvrir les réglages'],
     ['fr', 'notFound.title', 'Page introuvable'],
     ['fr', 'notFound.home', "Retour à l'accueil"],

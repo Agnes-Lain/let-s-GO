@@ -1,7 +1,7 @@
 // First-time intro (docs/specs/M6-settings-onboarding-a11y.md §4.4, §4.6, §5.2, as changed by
 // §12c): AC 24–33, 46–48. The landing page `/` opens it from "Start learning"; it ends on /learn.
 import { router as appRouter } from 'expo-router';
-import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
+import { act, fireEvent, renderRouter, screen, within } from 'expo-router/testing-library';
 import { AccessibilityInfo, BackHandler, StyleSheet, processColor } from 'react-native';
 
 import { boardGeometry, pointToLocation } from '@/board';
@@ -71,10 +71,13 @@ async function tapDemo(vertex: string) {
   await touch('responderGrant', event);
   await touch('responderRelease', event);
 }
-/** Stones on the demo board as 'B c3', sorted. */
-function stones(): string[] {
+/**
+ * Stones on one board as 'B c3', sorted. The landing page stays mounted under the intro, so the
+ * query is scoped to the board in question.
+ */
+function stones(board = 'onboarding-demo-board'): string[] {
   const black = JSON.stringify({ type: 0, payload: processColor(stone.black) });
-  return screen
+  return within(screen.getByTestId(board, hidden))
     .queryAllByTestId(/^board-stone-/, hidden)
     .map((n) => {
       const color = JSON.stringify(n.props.fill) === black ? 'B' : 'W';
@@ -112,7 +115,10 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
     await launch();
     expect(screen.getAllByRole('header')).toHaveLength(1);
     expect(screen.getByRole('header')).toHaveTextContent(texts['app.name']);
-    expect(screen.getByText(texts['home.subtitle'])).toBeOnTheScreen();
+    // Exactly one intro line (PO 2026-10-24); the old subtitle is gone.
+    expect(screen.getByTestId('landing-intro')).toHaveTextContent(texts['home.intro']);
+    expect(texts['home.subtitle']).toBeUndefined();
+    expect(texts['home.intro2']).toBeUndefined();
     expect(screen.getAllByRole('button').map((b) => b.props.accessibilityLabel)).toEqual([
       texts['settings.open'],
       texts['home.start'],
@@ -121,6 +127,19 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
       const style = flat(screen.getByTestId(id).props.style);
       expect(Math.max(style.minHeight ?? 0, style.height ?? 0)).toBeGreaterThanOrEqual(44);
     }
+  });
+
+  it('§12c landing design: a decorative 180 px 5×5 board, hidden and not touchable', async () => {
+    await launch();
+    const wrap = screen.getByTestId('landing-board', hidden);
+    expect(wrap.props.pointerEvents).toBe('none');
+    expect(wrap.props['aria-hidden']).toBe(true);
+    expect(wrap.props.importantForAccessibility).toBe('no-hide-descendants');
+    expect(screen.queryByTestId('board-touch', hidden)).toBeNull();
+    const board = screen.getByTestId('landing-go-board', hidden);
+    expect(flat(board.props.style).width).toBe(180);
+    // Black c3, d4; white d3, c2: a quiet, legal position.
+    expect(stones('landing-go-board')).toEqual(['B c3', 'B d4', 'W c2', 'W d3']);
   });
 
   it('first time: Start learning → intro step 1', async () => {
@@ -189,7 +208,7 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     expect(board.props.accessibilityLabel).toBe(texts['onboarding.a11y.board1']);
     expect(flat(board.props.style).width).toBe(200);
     // §5.3: Black b3, c3; White c4, d3.
-    expect(stones()).toEqual(['B b3', 'B c3', 'W c4', 'W d3']);
+    expect(stones('onboarding-welcome-board')).toEqual(['B b3', 'B c3', 'W c4', 'W d3']);
   });
 
   it('AC 48: Skip and Next are the only controls; one header', async () => {
