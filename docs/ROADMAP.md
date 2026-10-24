@@ -48,7 +48,7 @@ One checkbox ≈ one Claude Code session ≈ one PR. Paste the suggested prompt 
 - [x] Game coaching for 9×9: move notes from engine facts, 提示 hint button, post-game review of key moments
 - [x] Beginner-friendly 9×9: handicap 让子, take-back 悔棋, danger rings (atari 叫吃), softer Easy
 - [x] Settings, onboarding, accessibility pass
-- [ ] EAS Build, TestFlight / Play internal testing
+- [ ] EAS Build, Play internal testing (Android first; Apple later — PO 2026-10-24)
 
 ---
 
