@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
-import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
+import { color, radius, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 type Props = {
   index: number;
@@ -62,7 +62,7 @@ export function ExerciseTopBar({ index, total, onClose, hint }: Props) {
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.hintLabel} numberOfLines={1}>
+          <Text maxFontSizeMultiplier={textScale.hud} style={styles.hintLabel} numberOfLines={1}>
             {t('practice.hint')}
           </Text>
         </Pressable>

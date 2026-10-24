@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/theme/Button';
-import { color, radius, spacing } from '@/theme/tokens';
+import { color, radius, spacing, textScale } from '@/theme/tokens';
 
 export type FeedbackTone = 'success' | 'error' | 'hint';
 export interface FeedbackText {
@@ -30,16 +30,22 @@ const DOT: Record<FeedbackTone, string> = {
 export function FeedbackCard({
   lines,
   height,
+  liveRegion = true,
 }: {
   lines: readonly FeedbackText[];
   height?: number;
+  /**
+   * Android live region. Off where the screen announces the feedback itself (ExerciseView,
+   * SequenceRunner), so it is heard once (M6-settings AC 39).
+   */
+  liveRegion?: boolean;
 }) {
   return (
     <View
       style={height === undefined ? styles.feedback : [styles.feedback, { height }]}
       testID="practice-feedback"
       accessible={lines.length > 0}
-      accessibilityLiveRegion="polite"
+      accessibilityLiveRegion={liveRegion ? 'polite' : 'none'}
       accessibilityLabel={lines.map((l) => l.text).join(' ')}
     >
       <ScrollView>
@@ -50,7 +56,12 @@ export function FeedbackCard({
             ) : (
               <View style={styles.dotSpace} />
             )}
-            <Text style={i === 0 ? styles.main : styles.secondary}>{line.text}</Text>
+            <Text
+              maxFontSizeMultiplier={textScale.hud}
+              style={i === 0 ? styles.main : styles.secondary}
+            >
+              {line.text}
+            </Text>
           </View>
         ))}
       </ScrollView>
@@ -74,10 +85,12 @@ export function ExerciseFrame({
   return (
     <View style={styles.frame}>
       {children}
-      <FeedbackCard lines={feedback} />
+      {/* ExerciseView announces the feedback (AC 39): no second Android live-region read. */}
+      <FeedbackCard lines={feedback} liveRegion={false} />
       <View style={styles.spacer} />
       {action ? (
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={action.label}
           onPress={action.onPress}
           disabled={action.disabled}

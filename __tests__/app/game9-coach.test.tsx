@@ -76,6 +76,8 @@ beforeEach(async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0.25);
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(async () => {

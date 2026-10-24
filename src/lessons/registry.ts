@@ -5,7 +5,6 @@ import en from '@/i18n/en.json';
 import fr from '@/i18n/fr.json';
 import zhCN from '@/i18n/zh-CN.json';
 
-import u00Sample from './content/u00-sample.json';
 import u01Board from './content/u01-board.json';
 import u02Liberties from './content/u02-liberties.json';
 import u03Connection from './content/u03-connection.json';
@@ -29,7 +28,6 @@ import u14Review from './content/u14-review.json';
 import type { Language } from './schema';
 
 export const LESSON_FILES: readonly unknown[] = [
-  u00Sample,
   u01Board,
   u02Liberties,
   u03Connection,

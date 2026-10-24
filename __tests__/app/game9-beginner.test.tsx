@@ -74,6 +74,8 @@ beforeEach(async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0.25);
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(async () => {
@@ -231,7 +233,7 @@ describe('the result (AC 11, 12)', () => {
 describe('AC 43: no `accessible={false}` reaches the DOM on web', () => {
   it.each([
     'src/theme/Landscape.tsx',
-    'src/game9/ui/Sheet.tsx',
+    'src/theme/Sheet.tsx', // moved from src/game9/ui by M6-settings
     'src/exercises/LeaveSheet.tsx',
     'src/theme/icons.tsx',
   ])('%s', (file) => {

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Let's GO - app icon mockup</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        font-family: -apple-system, 'Segoe UI', 'PingFang SC', sans-serif;
+        background: #ece8de;
+        color: #26292b;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 28px 0 10px;
+      }
+      p.n {
+        font-size: 14px;
+        color: #5e6a6e;
+        max-width: 900px;
+        line-height: 1.5;
+      }
+      .row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+      .cap {
+        font-size: 13px;
+        color: #5e6a6e;
+        margin-top: 4px;
+        text-align: center;
+      }
+      .ios {
+        border-radius: 22.37%;
+        overflow: hidden;
+        display: block;
+      }
+      .sq {
+        border-radius: 32%;
+        overflow: hidden;
+      }
+      .rd {
+        border-radius: 50%;
+        overflow: hidden;
+      }
+      .box {
+        overflow: hidden;
+        position: relative;
+      }
+      .adapt {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .wall {
+        width: 300px;
+        height: 420px;
+        border-radius: 24px;
+        padding: 28px 22px;
+        position: relative;
+        box-shadow: 0 0 0 6px #2b2f30;
+      }
+      .light {
+        background: linear-gradient(160deg, #cfe0e6, #f1e6cf);
+      }
+      .dark {
+        background: linear-gradient(160deg, #1d2a33, #3a2f2c);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px 6px;
+      }
+      .app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+      }
+      .light .app {
+        color: #26292b;
+      }
+      .dark .app {
+        color: #f2f2f2;
+      }
+      .ph {
+        width: 56px;
+        height: 56px;
+        border-radius: 13px;
+        background: rgba(120, 120, 120, 0.45);
+      }
+      .ph.r {
+        border-radius: 50%;
+      }
+      .ph.s {
+        border-radius: 18px;
+      }
+      .small {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Let's GO - app icon (M6 §12c) - pending PO</h1>
+    <p class="n">
+      Source: <code>assets/icon-source/icon.svg</code> (1024, full-bleed, opaque, square corners)
+      and <code>adaptive-foreground.svg</code>. No text on the icon: the phone prints "Let's GO"
+      under it. Two stones are the only subject, big enough to read at 29-40 px. Round corners below
+      are the phone's masks, simulated.
+    </p>
+
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#DCE6EA" />
+          <stop offset=".62" stop-color="#F4F1EA" />
+        </linearGradient>
+        <symbol id="A" viewBox="0 0 1024 1024">
+          <rect width="1024" height="1024" fill="url(#mist)" />
+          <path
+            d="M0 700 C110 640 220 610 330 660 C410 700 470 610 570 590 C680 570 760 650 850 640 C930 630 980 660 1024 650 L1024 1024 L0 1024Z"
+            fill="#C9D5D6"
+          />
+          <path
+            d="M0 840 C90 790 180 770 280 800 C370 830 430 770 540 775 C650 780 710 840 820 825 C910 812 970 830 1024 820 L1024 1024 L0 1024Z"
+            fill="#9DB2AE"
+            opacity=".85"
+          />
+          <circle cx="422" cy="450" r="200" fill="#22252A" />
+          <circle cx="602" cy="450" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8" />
+        </symbol>
+        <symbol id="B" viewBox="0 0 1024 1024">
+          <rect width="1024" height="1024" fill="#E8D3A0" />
+          <g>
+            <rect x="0" width="128" height="1024" fill="#EBD8A8" />
+            <rect x="256" width="128" height="1024" fill="#EBD8A8" />
+            <rect x="512" width="128" height="1024" fill="#EBD8A8" />
+            <rect x="768" width="128" height="1024" fill="#EBD8A8" />
+            <rect x="128" width="128" height="1024" fill="#E3CD98" />
+            <rect x="384" width="128" height="1024" fill="#E3CD98" />
+            <rect x="640" width="128" height="1024" fill="#E3CD98" />
+            <rect x="896" width="128" height="1024" fill="#E3CD98" />
+          </g>
+          <g stroke="#33281B" stroke-width="10" opacity=".75">
+            <line x1="0" y1="330" x2="1024" y2="330" />
+            <line x1="0" y1="694" x2="1024" y2="694" />
+            <line x1="330" y1="0" x2="330" y2="1024" />
+            <line x1="694" y1="0" x2="694" y2="1024" />
+          </g>
+          <circle cx="330" cy="330" r="150" fill="#22252A" />
+          <circle cx="694" cy="694" r="150" fill="#F7F5EE" stroke="#6B675C" stroke-width="8" />
+        </symbol>
+        <symbol id="C" viewBox="0 0 1024 1024">
+          <rect width="1024" height="1024" fill="#3E6461" />
+          <circle cx="422" cy="512" r="200" fill="#22252A" stroke="#F4F1EA" stroke-width="10" />
+          <circle cx="602" cy="512" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8" />
+        </symbol>
+        <symbol id="AF" viewBox="0 0 1024 1024">
+          <circle cx="422" cy="512" r="200" fill="#22252A" />
+          <circle cx="602" cy="512" r="200" fill="#F7F5EE" stroke="#6B675C" stroke-width="8" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <script>
+      const ic = (id, n) =>
+        `<svg width="${n}" height="${n}" viewBox="0 0 1024 1024"><use href="#${id}"/></svg>`;
+      const ios = (id, n) =>
+        `<div class="ios" style="width:${n}px;height:${n}px">${ic(id, n)}</div>`;
+      // Android adaptive: canvas 108dp, visible mask 72dp (66.7 %) -> canvas = mask * 1.5
+      const adapt = (cls, n) =>
+        `<div class="box ${cls}" style="width:${n}px;height:${n}px"><div class="adapt" style="width:${n * 1.5}px;height:${n * 1.5}px;background:#DCE6EA">${ic('AF', n * 1.5)}</div></div>`;
+      const row = (h, items) => `<h2>${h}</h2><div class="row">${items}</div>`;
+      const cell = (h, c) => `<div><div>${h}</div><div class="cap">${c}</div></div>`;
+      let out = '';
+      const V = {
+        A: 'A - mist and ridge (recommended)',
+        B: 'B - bamboo board',
+        C: 'C - green mountain',
+      };
+      for (const k of ['A', 'B', 'C']) {
+        out += row(
+          'Variant ' + V[k],
+          [1024 / 4, 180, 120, 60, 40]
+            .map((n, i) => cell(ios(k, n), (i ? n : 1024) + ' px' + (i ? '' : ' (shown 256)')))
+            .join(''),
+        );
+      }
+      out += row(
+        'Sizes the learner meets (A, B, C side by side at 40 and 29 px)',
+        ['A', 'B', 'C'].map((k) => `<div class="small">${ios(k, 40)}${ios(k, 29)}</div>`).join(''),
+      );
+      out +=
+        `<h2>Android masks (variant A, adaptive layers: sky background #DCE6EA + stones foreground)</h2><div class="row">` +
+        cell(adapt('rd', 108), 'round') +
+        cell(adapt('sq', 108), 'squircle') +
+        cell(adapt('', 108), 'square') +
+        cell(
+          `<div class="box" style="width:108px;height:108px;background:repeating-conic-gradient(#fff 0 25%,#ddd 0 50%) 0 0/16px 16px"><svg width="108" height="108" viewBox="0 0 1024 1024"><use href="#AF"/><circle cx="512" cy="512" r="338" fill="none" stroke="#A8443F" stroke-width="6" stroke-dasharray="20 12"/></svg></div>`,
+          'foreground + 66 % safe circle',
+        ) +
+        `</div>`;
+      const apps = ['Mail', 'Maps', 'Notes'];
+      const home = (mode, android) =>
+        `<div><div class="wall ${mode}"><div class="grid">` +
+        `<div class="app">${android ? adapt('rd', 56) : ios('A', 56)}<span>Let's GO</span></div>` +
+        apps
+          .map(
+            (a) =>
+              `<div class="app"><div class="ph ${android ? 'r' : ''}"></div><span>${a}</span></div>`,
+          )
+          .join('') +
+        [1, 2, 3, 4, 5, 6, 7, 8]
+          .map(
+            () =>
+              `<div class="app"><div class="ph ${android ? 'r' : ''}"></div><span>App</span></div>`,
+          )
+          .join('') +
+        `</div></div><div class="cap">${android ? 'Android' : 'iPhone'} - ${mode}</div></div>`;
+      out += `<h2>Home screens (variant A)</h2><div class="row">${home('light', 0)}${home('dark', 0)}${home('light', 1)}${home('dark', 1)}</div>`;
+      out +=
+        `<h2>Alternatives on home screens</h2><div class="row">` +
+        ['B', 'C']
+          .map((k) =>
+            ['light', 'dark']
+              .map(
+                (m) =>
+                  `<div><div class="wall ${m}" style="height:150px"><div class="grid"><div class="app">${ios(k, 56)}<span>Let's GO</span></div><div class="app"><div class="ph"></div><span>Mail</span></div><div class="app"><div class="ph"></div><span>Maps</span></div><div class="app"><div class="ph"></div><span>Notes</span></div></div></div><div class="cap">${k} - ${m}</div></div>`,
+              )
+              .join(''),
+          )
+          .join('') +
+        `</div>`;
+      document.body.insertAdjacentHTML('beforeend', out);
+    </script>
+  </body>
+</html>

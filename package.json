@@ -17,7 +17,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:web": "node scripts/verify-web.mjs",
-    "verify:web:m3": "node scripts/verify-web-m3.mjs",
     "verify:web:m4": "node scripts/verify-web-m4.mjs",
     "verify:web:m5": "node scripts/verify-web-m5.mjs",
     "verify:web:m5c": "node scripts/verify-web-m5c.mjs",
@@ -25,6 +24,7 @@
     "verify:web:m5e": "node scripts/verify-web-m5e.mjs",
     "verify:web:m6": "node scripts/verify-web-m6.mjs",
     "verify:web:m6c": "node scripts/verify-web-m6c.mjs",
+    "verify:web:m6s": "node e2e/verify-web-m6-settings.mjs",
     "tune:bot": "jest --config jest.tuning.config.js",
     "import:sgf": "jest --config jest.import-sgf.config.js",
     "tune:bot9": "jest --config jest.tuning9.config.js"

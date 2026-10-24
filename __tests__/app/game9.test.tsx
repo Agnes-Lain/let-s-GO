@@ -45,7 +45,7 @@ const STARRED: LessonProgress = {
 };
 
 async function openAt(url: string) {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   if (url !== '/') {
     await act(() => appRouter.push(url));
@@ -76,6 +76,8 @@ beforeEach(async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0.25);
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(async () => {
@@ -84,13 +86,15 @@ afterEach(async () => {
   await act(() => setLanguageChoice('system'));
 });
 
-describe('Home card (AC 14)', () => {
-  it('is disabled with "Finish Unit 14 first" until Unit 14 has a star; tap shows the snackbar', async () => {
+describe('Home card (AC 14; M6-settings AC 61: open from the start)', () => {
+  it('a new learner can open the picker at once: no lock, no snackbar, no line', async () => {
     const router = await openAt('/');
-    expect(screen.getByTestId('home-game9-line')).toHaveTextContent(texts['game9.entry.locked']);
-    await press('home-game9-locked');
-    expect(screen.getByTestId('home-snackbar')).toBeOnTheScreen();
-    expect(router.getPathname()).toBe('/');
+    expect(screen.queryByTestId('home-game9-locked')).toBeNull();
+    expect(screen.queryByTestId('home-game9-line')).toBeNull();
+    expect(screen.getByTestId('home-game9').props.accessibilityState?.disabled).toBeFalsy();
+    await press('home-game9');
+    expect(screen.queryByTestId('home-snackbar')).toBeNull();
+    expect(router.getPathname()).toBe('/game');
   });
 
   it('opens the level picker once u14-end has a star', async () => {
@@ -313,7 +317,7 @@ describe('Game screen (AC 16–24, 38)', () => {
     await press('game9-close');
     await press('game9-leave-confirm');
     await settle();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().bots).toEqual({});
   });
 

@@ -20,12 +20,17 @@ import { progressStore } from '@/store';
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
+jest.mock('@/lessons/registry', () =>
+  jest.requireActual('@/lessons/__fixtures__/sampleRegistry').registryWithSample(),
+);
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
 beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(true);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(() => {

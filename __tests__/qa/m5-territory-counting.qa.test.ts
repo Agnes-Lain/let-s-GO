@@ -512,7 +512,7 @@ describe('QA: revealed choice keeps its reason, older behaviour intact (§12b it
 });
 
 describe('QA: map and unlocking (AC 50–51)', () => {
-  const units = getUnits({ includeDev: false });
+  const units = getUnits();
   const L = (id: string) => (LESSON_FILES as readonly Lesson[]).find((l) => l.id === id)!;
   const stars = (...ids: string[]) => Object.fromEntries(ids.map((i) => [i, { stars: 1 }]));
 

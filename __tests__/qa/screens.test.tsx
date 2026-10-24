@@ -7,6 +7,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { StyleSheet } from 'react-native';
 
+import { progressStore } from '@/store';
 import i18n, { setLanguageChoice, type Language } from '@/i18n';
 
 // Device locale: Canadian French, so "use device language" is distinguishable from zh-CN and en.
@@ -15,6 +16,8 @@ jest.mock('expo-localization', () => ({
 }));
 
 beforeEach(async () => {
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('system'));
 });
 
@@ -89,14 +92,15 @@ describe('Settings language round trip (AC23–AC25)', () => {
     await fireEvent.press(screen.getByRole('button', { name: '中文（简体）' }));
     await fireEvent.press(screen.getByRole('button', { name: '返回' }));
     expect(router.getPathname()).toBe('/');
-    for (const text of [
-      "Let's GO",
-      '从零开始，一步一步学会下围棋',
-      '学习路线',
-      '棋盘与棋子',
-      '吃子棋',
-      '更多单元即将上线',
-    ]) {
+    // The landing page (M6-settings §12c.1), then the learning page with the map (§12c.2).
+    expect(screen.getByText("Let's GO")).toBeOnTheScreen();
+    expect(screen.getByText('从零开始，一步一步学会下围棋。')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: '开始学习' })).toBeOnTheScreen();
+    await fireEvent.press(screen.getByTestId('landing-start'));
+    expect(router.getPathname()).toBe('/learn');
+    // M6-settings §4.8: Unit 6 lives in module 2, collapsed for a new learner.
+    await fireEvent.press(screen.getByTestId('home-module-2'));
+    for (const text of ['学习路线', '棋盘与棋子', '吃子棋', '更多单元即将上线']) {
       // Several nodes share the badge text, so any match will do.
       expect(screen.getAllByText(text)[0]).toBeOnTheScreen();
     }
@@ -105,9 +109,14 @@ describe('Settings language round trip (AC23–AC25)', () => {
 
   it('Home in French shows every French text', async () => {
     await renderRouter('./app', { initialUrl: '/' });
+    expect(screen.getByText("Let's GO")).toBeOnTheScreen();
+    expect(
+      screen.getByText('Apprenez le GO (围棋 wéiqí) pas à pas, avec des leçons courtes.'),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByTestId('landing-start'));
+    // M6-settings §4.8: Unit 6 lives in module 2, collapsed for a new learner.
+    await fireEvent.press(screen.getByTestId('home-module-2'));
     for (const text of [
-      "Let's GO",
-      'Apprenez le go (围棋 wéiqí) à partir de zéro, une règle à la fois',
       "Parcours d'apprentissage",
       'Plateau et pierres · 棋盘 qípán',
       'Jeu de capture · 吃子棋 chīzǐqí',
@@ -123,8 +132,9 @@ describe('deep links and back (AC20–AC22)', () => {
   it('/settings opened directly: back goes to Home', async () => {
     const router = await renderRouter('./app', { initialUrl: '/settings' });
     await fireEvent.press(screen.getByRole('button', { name: 'Retour' }));
+    // Home is the landing page since M6-settings §12c.1.
     expect(router.getPathname()).toBe('/');
-    expect(screen.getByText("Parcours d'apprentissage")).toBeOnTheScreen();
+    expect(screen.getByTestId('landing')).toBeOnTheScreen();
   });
 
   it('Home → Settings → back returns to Home', async () => {

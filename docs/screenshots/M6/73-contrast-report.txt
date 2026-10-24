@@ -1,0 +1,21 @@
+pair	fg	bg	ratio	target	result
+textPrimary on background	#26292B	#F4F1EA	12.98	>=4.5	pass
+textPrimary on surface	#26292B	#FFFDF8	14.40	>=4.5	pass
+textSecondary on background	#5E6A6E	#F4F1EA	4.95	>=4.5	pass
+textSecondary on surface	#5E6A6E	#FFFDF8	5.49	>=4.5	pass
+hint on background	#9A5F22	#F4F1EA	4.61	>=4.5	pass
+hint on surface	#9A5F22	#FFFDF8	5.12	>=4.5	pass
+error on background	#A8443F	#F4F1EA	5.22	>=4.5	pass
+error on surface	#A8443F	#FFFDF8	5.80	>=4.5	pass
+success on background	#56764A	#F4F1EA	4.56	>=4.5	pass
+success on surface	#56764A	#FFFDF8	5.06	>=4.5	pass
+onAccent on accent	#FFFFFF	#3E6461	6.56	>=4.5	pass
+onBadge on badge	#3F5A35	#E4ECD8	6.34	>=4.5	pass
+accent track vs surface	#3E6461	#FFFDF8	6.45	>=3	pass
+off-track outline (textSecondary) vs surface	#5E6A6E	#FFFDF8	5.49	>=3	pass
+selected border (success) vs surface	#56764A	#FFFDF8	5.06	>=3	pass
+hint diamond on bamboo	#9A5F22	#E8D3A0	3.53	>=3	pass
+error ring on bamboo	#A8443F	#E8D3A0	4.00	>=3	pass
+success ring on bamboo	#56764A	#E8D3A0	3.49	>=3	pass
+black stone on bamboo	#22252A	#E8D3A0	10.44	>=3	pass
+white-stone edge on bamboo	#6B675C	#E8D3A0	3.83	>=3	pass

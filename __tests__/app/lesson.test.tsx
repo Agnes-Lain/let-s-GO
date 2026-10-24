@@ -6,15 +6,19 @@ import { AccessibilityInfo, processColor } from 'react-native';
 import { boardWidthFor } from '@/exercises/layout';
 import { setLanguageChoice } from '@/i18n';
 import en from '@/i18n/en.json';
+import { SAMPLE_TEXTS } from '@/lessons/__fixtures__/sampleRegistry';
 import { progressStore } from '@/store';
 import { stone } from '@/theme/tokens';
 
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
+jest.mock('@/lessons/registry', () =>
+  jest.requireActual('@/lessons/__fixtures__/sampleRegistry').registryWithSample(),
+);
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
-const texts = en as Record<string, string>;
+const texts = { ...en, ...SAMPLE_TEXTS.en } as Record<string, string>;
 const BLACK_FILL = { type: 0, payload: processColor(stone.black) };
 
 function reduceMotion(value: boolean) {
@@ -38,7 +42,7 @@ const settle = () => act(async () => {});
 const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
 
 async function open(url = '/lesson/u00-sample') {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   await act(() => appRouter.push(url));
   await settle();
@@ -49,6 +53,8 @@ beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(false);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(() => {
@@ -146,7 +152,7 @@ describe('explanation player (sample)', () => {
     const router = await open();
     expect(screen.queryByRole('button', { name: 'Skip to practice' })).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: 'Close' }));
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
 
     act(() => {
       progressStore.getState().record('u00-sample', ['clean', 'clean', 'clean', 'revealed']);
@@ -173,7 +179,7 @@ describe('explanation player (sample)', () => {
     expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
     expect(screen.getByText(texts['error.lesson.body'])).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
   });
 
   // Updated by M5 item 3 (M5-life-death AC 40, §12b): the text card is above the board and stays

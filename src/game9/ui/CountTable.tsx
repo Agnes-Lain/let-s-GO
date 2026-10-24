@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Highlight } from '@/board';
 import type { Color, ScoreResult, Vertex } from '@/engine';
-import { color, spacing, stone } from '@/theme/tokens';
+import { color, spacing, stone, textScale } from '@/theme/tokens';
 
 import { territoryPoints } from '../countView';
 
@@ -28,8 +28,10 @@ export function CountTable({ score, n }: { score: ScoreResult; n: (value: number
     <View style={styles.table} testID="game9-count-table">
       <View style={styles.row} testID="game9-count-black">
         <View style={[styles.dot, styles.black]} />
-        <Text style={styles.side}>{t('game9.black')}</Text>
-        <Text style={styles.sum}>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.side}>
+          {t('game9.black')}
+        </Text>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.sum}>
           {t('game9.count.row', {
             stones: n(black.stones),
             territory: n(black.territory),
@@ -39,8 +41,10 @@ export function CountTable({ score, n }: { score: ScoreResult; n: (value: number
       </View>
       <View style={styles.row} testID="game9-count-white">
         <View style={[styles.dot, styles.white]} />
-        <Text style={styles.side}>{t('game9.white')}</Text>
-        <Text style={styles.sum}>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.side}>
+          {t('game9.white')}
+        </Text>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.sum}>
           {t('game9.count.row.komi', {
             stones: n(white.stones),
             territory: n(white.territory),
@@ -49,7 +53,11 @@ export function CountTable({ score, n }: { score: ScoreResult; n: (value: number
           })}
         </Text>
       </View>
-      <Text style={styles.neutral} testID="game9-count-neutral">
+      <Text
+        maxFontSizeMultiplier={textScale.hud}
+        style={styles.neutral}
+        testID="game9-count-neutral"
+      >
         {t('game9.count.neutral', { count: score.dame.length })}
       </Text>
     </View>

@@ -9,8 +9,10 @@ jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
 jest.mock('@/lessons/registry', () => {
-  const actual = jest.requireActual('@/lessons/registry');
-  const [sample] = actual.LESSON_FILES;
+  const { registryWithSample, SAMPLE_LESSON: sample } = jest.requireActual(
+    '@/lessons/__fixtures__/sampleRegistry',
+  );
+  const actual = registryWithSample();
   const checkpoint = { ...sample, id: 'u02-review', unit: 2, kind: 'checkpoint' };
   delete checkpoint.explain;
   return {
@@ -27,7 +29,7 @@ jest.mock('@/lessons/registry', () => {
 const SIX: ('clean' | 'revealed')[] = Array(6).fill('clean');
 
 async function renderHome() {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await act(async () => {});
   return router;
 }
@@ -36,6 +38,8 @@ const label = (testID: string) => screen.getByTestId(testID).props.accessibility
 beforeEach(async () => {
   jest.useFakeTimers();
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(() => {
@@ -80,7 +84,7 @@ describe('fixture catalog (AC 100, 103, 104)', () => {
     announce.mockClear();
     const router = await renderHome();
     await fireEvent.press(screen.getByTestId('home-node-unit-3'));
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(screen.getByText('Finish the previous unit to open this one.')).toBeOnTheScreen();
     expect(announce).toHaveBeenCalledWith('Finish the previous unit to open this one.');
     await act(async () => jest.advanceTimersByTime(2600));

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 
 import { color, radius, spacing, tapTarget, typography } from './tokens';
 
-type Variant = 'primary' | 'secondary' | 'text';
+type Variant = 'primary' | 'secondary' | 'danger' | 'text';
 type ButtonStyle = StyleProp<ViewStyle>;
 
 type ButtonProps = {
@@ -18,9 +18,14 @@ type ButtonProps = {
   testID?: string;
   style?: ButtonStyle;
   accessibilityLabel?: string;
+  /** Text-size cap (M6-settings AC 42): 2 on pages and sheets, 1.3 in game/lesson HUDs. */
+  maxFontSizeMultiplier?: number;
 };
 
-/** Primary (accent), secondary (outlined surface) or text button; 48 px high (text: 44). */
+/**
+ * Primary (accent), secondary (outlined surface), danger (outlined, error colour) or text button;
+ * 48 px high (text: 44).
+ */
 export function Button({
   label,
   onPress,
@@ -31,6 +36,7 @@ export function Button({
   testID,
   style,
   accessibilityLabel,
+  maxFontSizeMultiplier = 2,
 }: ButtonProps) {
   return (
     <Pressable
@@ -51,7 +57,15 @@ export function Button({
       <View style={styles.row}>
         {icon}
         <Text
-          style={[styles.label, variant === 'primary' ? styles.onAccent : styles.onSurface]}
+          style={[
+            styles.label,
+            variant === 'primary'
+              ? styles.onAccent
+              : variant === 'danger'
+                ? styles.onDanger
+                : styles.onSurface,
+          ]}
+          maxFontSizeMultiplier={maxFontSizeMultiplier}
           numberOfLines={2}
         >
           {label}
@@ -95,6 +109,7 @@ const styles = StyleSheet.create({
   },
   primary: { backgroundColor: color.accent },
   secondary: { backgroundColor: color.surface, borderWidth: 1, borderColor: color.border },
+  danger: { backgroundColor: color.surface, borderWidth: 1, borderColor: color.error },
   text: { minHeight: tapTarget.min, paddingHorizontal: spacing.sm },
   disabled: { opacity: 0.4 },
   pressed: { opacity: 0.7 },
@@ -102,6 +117,7 @@ const styles = StyleSheet.create({
   label: { ...typography.label, flexShrink: 1, textAlign: 'center' },
   onAccent: { color: color.onAccent },
   onSurface: { color: color.accent },
+  onDanger: { color: color.error },
   icon: {
     width: tapTarget.min,
     height: tapTarget.min,

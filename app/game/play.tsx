@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { useGoHome } from '@/exercises/navigation';
+import { useGoToLearning } from '@/exercises/navigation';
 import { parseHandicap, parseLevel } from '@/game9/levelParam';
 import { GameScreen } from '@/game9/ui/GameScreen';
 import { Screen } from '@/theme/Screen';
@@ -9,7 +9,7 @@ import { Screen } from '@/theme/Screen';
 export default function GamePlayScreen() {
   const { level, handicap } = useLocalSearchParams<{ level?: string; handicap?: string }>();
   const router = useRouter();
-  const goHome = useGoHome();
+  const goHome = useGoToLearning();
   const botLevel = parseLevel(level);
   const stones = parseHandicap(handicap);
   return (

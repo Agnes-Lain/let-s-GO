@@ -259,8 +259,9 @@ async function homeChecks(browser, base, locale) {
   const L = `[${locale}]`;
   for (const unlocked of [false, true]) {
     const { context, page } = await newPage(browser, locale, unlocked);
-    await page.goto(`${base}/`);
-    const id = unlocked ? 'home-game9' : 'home-game9-locked';
+    await page.goto(`${base}/learn`);
+    // M6-settings AC 61: the card is open from the start, with or without Unit 14.
+    const id = 'home-game9';
     await page.getByTestId(id).waitFor({ timeout: 30000 });
     await page.getByTestId(id).scrollIntoViewIfNeeded();
     await wait(page, 300);
@@ -273,15 +274,9 @@ async function homeChecks(browser, base, locale) {
     const w = await page.evaluate(() => document.scrollingElement.scrollWidth);
     check(`${L} home no horizontal overflow`, w <= 360, `${w}`);
     await shot(page, `01-home-card-${unlocked ? 'unlocked' : 'locked'}-${locale}`);
-    if (!unlocked) {
-      await page.getByTestId(id).click();
-      await wait(page, 400);
-      check(`${L} locked card does not navigate`, !page.url().includes('/game'));
-    } else {
-      await page.getByTestId(id).click();
-      await page.getByTestId('game9-level-1').waitFor({ timeout: 10000 });
-      check(`${L} card opens /game`, page.url().includes('/game'));
-    }
+    await page.getByTestId(id).click();
+    await page.getByTestId('game9-level-1').waitFor({ timeout: 10000 });
+    check(`${L} card opens /game`, page.url().includes('/game'));
     await context.close();
   }
 }
@@ -432,7 +427,9 @@ async function main() {
   const { chromium } = loadPlaywright();
   const browser = await chromium.launch({ executablePath: CHROMIUM });
   fs.mkdirSync(SHOTS, { recursive: true });
-  for (const f of fs.readdirSync(SHOTS)) if (f.endsWith('.png')) fs.rmSync(path.join(SHOTS, f));
+  // Only this script's own shots (01-30); 50+ belong to other scripts.
+  for (const f of fs.readdirSync(SHOTS))
+    if (/^[0-3]\d-.*\.png$/.test(f)) fs.rmSync(path.join(SHOTS, f));
   try {
     for (const locale of LOCALES) {
       await homeChecks(browser, base, locale);

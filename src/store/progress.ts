@@ -60,6 +60,27 @@ export interface ProgressFlags {
   takebackExplained?: boolean;
   /** The learner switched the danger rings and atari line off (setting, can be undone). */
   atariHintsOff?: boolean;
+  /** The first-launch intro was left by Finish, Skip or Back (M6-settings AC 25–28). */
+  onboardingSeen?: boolean;
+}
+
+const FLAG_NAMES: readonly (keyof ProgressFlags)[] = [
+  'passExplained',
+  'easierTipShown',
+  'takebackExplained',
+  'atariHintsOff',
+  'onboardingSeen',
+];
+
+/**
+ * Lessons that no longer ship: their saved records are dropped when the store is read (M6-settings
+ * AC 51, the removed unit-0 developer sample).
+ */
+export const REMOVED_LESSON_IDS: readonly string[] = ['u00-sample'];
+
+export interface ResetOptions {
+  /** Flags that survive the reset (Settings → Erase keeps atariHintsOff and onboardingSeen). */
+  keepFlags?: readonly (keyof ProgressFlags)[];
 }
 
 export type GameOutcome = 'win' | 'loss' | 'resigned';
@@ -94,8 +115,8 @@ export interface ProgressState {
   record(lessonId: string, outcomes: readonly Outcome[]): RecordResult;
   /** Best stars of a lesson, 0 when never played. */
   starsOf(lessonId: string): Stars;
-  /** Forgets everything (and the storage key). */
-  reset(): void;
+  /** Forgets everything (and the storage key), except the `keepFlags` (then the key is rewritten). */
+  reset(options?: ResetOptions): void;
 }
 
 export type ProgressStore = StoreApi<ProgressState>;
@@ -160,7 +181,7 @@ export function parseSaved(raw: string | null): SavedProgress | null {
   if (typeof lessons !== 'object' || lessons === null || Array.isArray(lessons)) return null;
   const out: SavedProgress = { lessons: {}, bots: {}, flags: {} };
   for (const [id, entry] of Object.entries(lessons)) {
-    if (isLessonProgress(entry)) out.lessons[id] = entry;
+    if (isLessonProgress(entry) && !REMOVED_LESSON_IDS.includes(id)) out.lessons[id] = entry;
   }
   // Additive fields (M6 AC 35): a missing or broken part loads as empty.
   if (typeof bots === 'object' && bots !== null) {
@@ -174,10 +195,7 @@ export function parseSaved(raw: string | null): SavedProgress | null {
   }
   if (typeof flags === 'object' && flags !== null) {
     const f = flags as Record<string, unknown>;
-    if (f.passExplained === true) out.flags.passExplained = true;
-    if (f.easierTipShown === true) out.flags.easierTipShown = true;
-    if (f.takebackExplained === true) out.flags.takebackExplained = true;
-    if (f.atariHintsOff === true) out.flags.atariHintsOff = true;
+    for (const name of FLAG_NAMES) if (f[name] === true) out.flags[name] = true;
   }
   return out;
 }
@@ -307,9 +325,12 @@ export function createProgressStore({
       return get().lessons[lessonId]?.stars ?? 0;
     },
 
-    reset() {
-      set({ lessons: {}, bots: {}, flags: {} });
-      ignoreRejection(storage.removeItem(PROGRESS_KEY));
+    reset({ keepFlags = [] } = {}) {
+      const flags: ProgressFlags = {};
+      for (const name of keepFlags) if (get().flags[name]) flags[name] = true;
+      set({ lessons: {}, bots: {}, flags });
+      if (Object.keys(flags).length > 0) save();
+      else ignoreRejection(storage.removeItem(PROGRESS_KEY));
     },
   }));
 

@@ -18,7 +18,7 @@ import { useReduceMotion } from '@/board/useReduceMotion';
 import { toVertex, type Color } from '@/engine';
 import type { Lesson, Outcome, PlayBotExercise } from '@/lessons';
 import { Button } from '@/theme/Button';
-import { color, radius, spacing, stone, typography } from '@/theme/tokens';
+import { color, radius, spacing, stone, textScale, typography } from '@/theme/tokens';
 
 import type { FeedbackLine } from '../attempts';
 import {
@@ -127,14 +127,21 @@ export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Prop
   }, [endedWithCapture, g.attempt]);
   const cardVisible = over && (!endedWithCapture || beatDoneFor === g.attempt);
 
-  // Screen reader: the bot's move and its captures (AC 66).
+  // Screen reader: every stone once, the learner's and the bot's with its captures (AC 66;
+  // M6-settings AC 38: the board is silent here).
   const announced = useRef<string | null>(null);
   useEffect(() => {
     const last = g.last;
-    if (!last || last.color !== g.bot || last.point === null) return;
+    if (!last || last.point === null) return;
     const id = `${g.attempt}-${last.id}`;
     if (announced.current === id) return;
     announced.current = id;
+    if (last.color !== g.bot) {
+      AccessibilityInfo.announceForAccessibility(
+        t(`board.a11y.played.${last.color}`, { vertex: toVertex(last.point, size).toUpperCase() }),
+      );
+      return;
+    }
     const parts = [t('game.a11y.botMoved', { at: toVertex(last.point, size) })];
     if (last.captured.length > 0) parts.push(t('game.a11y.captured', { n: last.captured.length }));
     AccessibilityInfo.announceForAccessibility(parts.join('. '));
@@ -186,7 +193,7 @@ export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Prop
             card replaces it once the game is over, so the board never changes size. */}
         {cardVisible ? null : (
           <View style={styles.goal} testID="game-goal">
-            <Text style={styles.goalText} numberOfLines={2}>
+            <Text maxFontSizeMultiplier={textScale.hud} style={styles.goalText} numberOfLines={2}>
               {t(exercise.promptKey)}
             </Text>
           </View>
@@ -235,6 +242,7 @@ export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Prop
             lastMove={g.last?.point ?? null}
             lastCapture={lastCapture}
             highlights={highlights}
+            announce={false}
             testID="practice-board"
           />
         </View>
@@ -256,6 +264,7 @@ export function PlayBotRunner({ exercise, lesson, index, onClose, onDone }: Prop
             <View style={styles.spacer} />
             {over ? null : (
               <Button
+                maxFontSizeMultiplier={textScale.hud}
                 label={t('game.restart')}
                 variant="text"
                 onPress={() => newGame('restart')}
@@ -311,10 +320,10 @@ function ScoreHalf({
     >
       <StoneDot side={side} size={24} />
       <View style={styles.halfText}>
-        <Text style={styles.halfName} numberOfLines={1}>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.halfName} numberOfLines={1}>
           {name}
         </Text>
-        <Text style={styles.halfColor} numberOfLines={1}>
+        <Text maxFontSizeMultiplier={textScale.hud} style={styles.halfColor} numberOfLines={1}>
           {side === 'B' ? t('game.black') : t('game.white')}
         </Text>
       </View>
@@ -354,7 +363,12 @@ function TurnPill({
       testID={thinking ? 'game-turn-bot' : 'game-turn-you'}
     >
       <StoneDot side={side} size={14} />
-      <Text style={[styles.pillText, thinking && styles.pillTextWaiting]}>{text}</Text>
+      <Text
+        maxFontSizeMultiplier={textScale.hud}
+        style={[styles.pillText, thinking && styles.pillTextWaiting]}
+      >
+        {text}
+      </Text>
       {thinking ? <ThinkingDots animate={!reduceMotion} /> : null}
     </View>
   );
@@ -436,16 +450,27 @@ function EndCard({
           ]}
         />
         <View style={styles.endText}>
-          <Text style={styles.endTitle} accessibilityRole="header">
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={styles.endTitle}
+            accessibilityRole="header"
+          >
             {title}
           </Text>
-          <Text style={styles.endBody}>{body}</Text>
-          {detail ? <Text style={styles.endDetail}>{detail}</Text> : null}
+          <Text maxFontSizeMultiplier={textScale.hud} style={styles.endBody}>
+            {body}
+          </Text>
+          {detail ? (
+            <Text maxFontSizeMultiplier={textScale.hud} style={styles.endDetail}>
+              {detail}
+            </Text>
+          ) : null}
         </View>
       </View>
       <View style={styles.spacer} />
       {won ? (
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={isLast ? t('game.finish') : t('game.next')}
           onPress={onNext}
           testID={isLast ? 'game-finish' : 'game-next'}
@@ -453,9 +478,15 @@ function EndCard({
       ) : (
         // One block without the body gap: with *Skip* the lose card must still fit 740 px (AC 68).
         <View>
-          <Button label={t('game.retry')} onPress={onRetry} testID="game-retry" />
+          <Button
+            maxFontSizeMultiplier={textScale.hud}
+            label={t('game.retry')}
+            onPress={onRetry}
+            testID="game-retry"
+          />
           {canSkip(g) ? (
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game.skip')}
               variant="text"
               onPress={onSkip}

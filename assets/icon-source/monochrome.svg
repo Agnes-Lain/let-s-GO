@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Android monochrome layer (themed icons): the two circles of adaptive-foreground.svg in one colour
+       on transparent. Only the alpha is used, so the black stone is cut back by a 16 px gap around the
+       white one; the two stones stay readable instead of merging into one shape. -->
+  <defs>
+    <mask id="gap">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <circle cx="602" cy="512" r="220" fill="#000"/>
+    </mask>
+  </defs>
+  <circle cx="422" cy="512" r="200" fill="#000" mask="url(#gap)"/>
+  <circle cx="602" cy="512" r="204" fill="#000"/>
+</svg>

@@ -208,3 +208,48 @@ describe('web (react-native-web always reports a screen reader)', () => {
     expect(screen.getByTestId('board-coord-tag')).toBeTruthy();
   });
 });
+
+describe('announce prop (M6-settings AC 38)', () => {
+  const e5 = stonesFromSetup(9, { B: ['e5'] });
+  const e5d4 = stonesFromSetup(9, { B: ['e5'], W: ['d4'] });
+  const at = (x: number, y: number) => ({ x, y });
+
+  it('GoBoard alone (default) still announces once per new stone', async () => {
+    mockScreenReader(true);
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
+    const view = await renderBoard(
+      <GoBoard size={9} stones={e5} width={328} lastMove={at(4, 4)} />,
+    );
+    announce.mockClear();
+    view.rerender(<GoBoard size={9} stones={e5d4} width={328} lastMove={at(3, 3)} />);
+    expect(announce).toHaveBeenCalledTimes(1);
+    expect(announce).toHaveBeenCalledWith('White played D4');
+  });
+
+  it('announce={false}: the board says nothing (the screen announces the move)', async () => {
+    mockScreenReader(true);
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
+    announce.mockClear();
+    const view = await renderBoard(
+      <GoBoard size={9} stones={e5} width={328} lastMove={at(4, 4)} announce={false} />,
+    );
+    view.rerender(
+      <GoBoard size={9} stones={e5d4} width={328} lastMove={at(3, 3)} announce={false} />,
+    );
+    expect(announce).not.toHaveBeenCalled();
+    // The per-point layer for the screen reader stays.
+    expect(screen.getByTestId('board-point-d4').props.accessibilityLabel).toMatch(/white stone/);
+  });
+
+  it('accessibilityLabel overrides the stone-count label', async () => {
+    await renderBoard(
+      <GoBoard
+        size={5}
+        stones={stonesFromSetup(5, {})}
+        width={200}
+        accessibilityLabel="Practice"
+      />,
+    );
+    expect(screen.getByTestId('go-board').props.accessibilityLabel).toBe('Practice');
+  });
+});

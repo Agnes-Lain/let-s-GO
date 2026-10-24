@@ -1,4 +1,5 @@
 // Test driver for the practice screen on the sample lesson (used by __tests__/app/practice*.tsx).
+// Tests that open the sample mock the registry with `registryWithSample()` (sampleRegistry.ts).
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { router as appRouter } from 'expo-router';
 import { AccessibilityInfo } from 'react-native';
@@ -6,8 +7,9 @@ import { AccessibilityInfo } from 'react-native';
 import { boardGeometry, pointToLocation } from '@/board';
 import { parseVertex } from '@/engine';
 import en from '@/i18n/en.json';
+import { SAMPLE_TEXTS } from '@/lessons/__fixtures__/sampleRegistry';
 
-export const texts = en as Record<string, string>;
+export const texts = { ...en, ...SAMPLE_TEXTS.en } as Record<string, string>;
 export const hidden = { includeHiddenElements: true };
 export const settle = () => act(async () => {});
 export const advance = (ms: number) => act(async () => jest.advanceTimersByTime(ms));
@@ -17,7 +19,7 @@ export function reduceMotion(value: boolean) {
 }
 
 export async function open(url = '/practice/u00-sample') {
-  const router = await renderRouter('./app', { initialUrl: '/' });
+  const router = await renderRouter('./app', { initialUrl: '/learn' });
   await settle();
   await act(() => appRouter.push(url));
   await settle();

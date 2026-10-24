@@ -29,8 +29,10 @@ function textKeys(lesson: unknown): string[] {
 }
 
 describe('lesson content (AC 28)', () => {
-  it('has at least the sample', () => {
-    expect(files).toContain('u00-sample.json');
+  it('ships Unit 1 and no unit-0 developer sample (M6-settings AC 50)', () => {
+    expect(files).toContain('u01-board.json');
+    expect(files).not.toContain('u00-sample.json');
+    expect(LESSON_FILES.some((f) => (f as { unit?: unknown }).unit === 0)).toBe(false);
   });
 
   it('registers every content file', () => {

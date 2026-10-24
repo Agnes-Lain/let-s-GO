@@ -12,7 +12,7 @@ import {
   toStepMarkers,
   type CountExercise,
 } from '@/lessons';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import { ExerciseFrame } from '../ExerciseFrame';
 import { highlight, hintHighlight, type RunnerProps } from './types';
@@ -108,7 +108,10 @@ export function CountRunner({
                     pressed && styles.pressed,
                   ]}
                 >
-                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+                  <Text
+                    maxFontSizeMultiplier={textScale.hud}
+                    style={[styles.chipText, selected && styles.chipTextSelected]}
+                  >
                     {String(n)}
                   </Text>
                 </Pressable>

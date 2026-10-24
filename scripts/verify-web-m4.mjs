@@ -158,12 +158,12 @@ function seededProgress() {
 
 async function newPage(browser, locale, progress) {
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2, locale });
-  if (progress) {
-    await context.addInitScript(
-      (value) => window.localStorage.setItem('progress', value),
-      progress,
-    );
-  }
+  // M6-settings: an empty storage opens the first-launch intro, so a fresh learner is seeded as
+  // "intro already seen" (no lessons).
+  await context.addInitScript(
+    (value) => window.localStorage.setItem('progress', value),
+    progress ?? JSON.stringify({ v: 1, lessons: {}, flags: { onboardingSeen: true } }),
+  );
   const page = await context.newPage();
   page.on('console', (m) => m.type() === 'error' && consoleErrors.push(`[${locale}] ${m.text()}`));
   page.on('pageerror', (e) => consoleErrors.push(`[${locale}] pageerror ${e.message}`));
@@ -353,7 +353,7 @@ async function main() {
     for (const locale of LOCALES) {
       const s = strings(locale);
       const { context, page } = await newPage(browser, locale);
-      await page.goto(base);
+      await page.goto(`${base}/learn`);
       await page.getByTestId('home-continue').waitFor({ timeout: 30000 });
       await page.waitForTimeout(400);
       check(
@@ -364,6 +364,9 @@ async function main() {
       await shot(page, `01-home-${locale}`);
 
       // Unit 6 now has content: no "coming soon" badge (M4 item 2 AC 58, 63).
+      // M6-settings: Home groups rows in collapsible modules; open module 2 (it may be locked).
+      if ((await page.getByTestId('home-module-2-rows').count()) === 0)
+        await page.getByTestId('home-module-2').click();
       const node = page.getByTestId('home-node-unit-6');
       await node.scrollIntoViewIfNeeded();
       await page.waitForTimeout(300);

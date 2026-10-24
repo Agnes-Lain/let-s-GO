@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Let's GO - Home landing mockup (M6 §12c)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      /* Tokens copied from src/theme/tokens.ts. The app uses the system font (no fontFamily in typography). */
+      :root {
+        --background: #f4f1ea;
+        --sky: #dce6ea;
+        --surface: #fffdf8;
+        --border: #e3ddd0;
+        --textPrimary: #26292b;
+        --textSecondary: #5e6a6e;
+        --accent: #3e6461;
+        --onAccent: #ffffff;
+        --mountainFar: #c9d5d6;
+        --mountainNear: #9db2ae;
+        --bamboo: #e8d3a0;
+        --stripLight: #ebd8a8;
+        --stripDark: #e3cd98;
+        --node: #ddc690;
+        --line: #33281b;
+        --stoneBlack: #22252a;
+        --stoneWhite: #f7f5ee;
+        --stoneEdge: #6b675c;
+        --xs: 4px;
+        --sm: 8px;
+        --md: 12px;
+        --lg: 16px;
+        --xl: 24px;
+        --xxl: 32px;
+        --rMd: 12px;
+        --tap: 44px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', Roboto,
+          sans-serif;
+        background: #e9e5db;
+        color: var(--textPrimary);
+        padding: 24px;
+      }
+      h1.page {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+      p.note {
+        font-size: 14px;
+        color: var(--textSecondary);
+        max-width: 1200px;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      h2.variant {
+        font-size: 16px;
+        margin: 24px 0 10px;
+      }
+      .row {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .lang {
+        font-size: 13px;
+        color: var(--textSecondary);
+        margin-bottom: 6px;
+      }
+
+      /* Phone frame 360x740 */
+      .phone {
+        width: 360px;
+        height: 740px;
+        position: relative;
+        overflow: hidden;
+        background: var(--background);
+        border-radius: 28px;
+        box-shadow:
+          0 0 0 8px #2b2f30,
+          0 10px 30px rgba(0, 0, 0, 0.25);
+      }
+      .mist {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 160px;
+        background: linear-gradient(var(--sky), var(--background));
+      }
+      .mountains {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 150px;
+      }
+      .topbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        padding: 6px 8px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+      }
+      .gear {
+        width: var(--tap);
+        height: var(--tap);
+        border: 0;
+        background: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--rMd);
+      }
+      .content {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        top: 56px;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .logo {
+        position: relative;
+        width: 56px;
+        height: 44px;
+      }
+      .logo i {
+        position: absolute;
+        top: 5px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+      }
+      .logo .b {
+        left: 3px;
+        background: var(--stoneBlack);
+      }
+      .logo .w {
+        left: 19px;
+        background: var(--stoneWhite);
+        border: 1px solid var(--stoneEdge);
+      }
+      .name {
+        font-size: 28px;
+        line-height: 34px;
+        font-weight: 700;
+        margin-top: var(--sm);
+      }
+      .intro {
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--textSecondary);
+        margin-top: var(--md);
+        max-width: 312px;
+      }
+      .cta {
+        width: 100%;
+        min-height: 52px;
+        border: 0;
+        border-radius: var(--rMd);
+        background: var(--accent);
+        color: var(--onAccent);
+        font: 600 16px/20px inherit;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 0 var(--md);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+      }
+
+      /* Variant A: mountain hero */
+      .A .hero {
+        margin-top: 92px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .A .logo {
+        transform: scale(1.35);
+        margin-bottom: var(--sm);
+      }
+      /* Positions are phone-absolute y minus 56 (content starts below the 56 px top bar). */
+      .A .board {
+        position: absolute;
+        top: 268px;
+        left: 66px;
+        width: 180px;
+        height: 180px;
+        border-radius: 8px;
+        overflow: hidden; /* y 324-504 */
+        background: repeating-linear-gradient(
+          90deg,
+          var(--stripLight) 0 36px,
+          var(--stripDark) 36px 72px
+        );
+        box-shadow:
+          0 1px 0 rgba(0, 0, 0, 0.12),
+          0 6px 14px rgba(60, 50, 30, 0.16);
+      }
+      .A .board svg {
+        position: absolute;
+        inset: 0;
+      }
+      .A .cta-wrap {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 472px;
+      } /* y 528-580 */
+
+      .spec {
+        font-size: 13px;
+        color: var(--textSecondary);
+        max-width: 360px;
+        margin-top: 10px;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="page">
+      Let's GO - Home landing, final design "A + board" (M6 spec §12c) - layout approved, look
+      pending PO
+    </h1>
+    <p class="note">
+      Variant B (board at the top) was rejected. 360x740, en / fr / zh-CN. Tokens from
+      <code>src/theme/tokens.ts</code>; mist and ridges are the exact
+      <code>Landscape variant="home"</code> paths; logo is the existing two-stone mark. Positions
+      (phone y): logo 148-192 (shown 1.35x), name 200-234, one-line intro from 246 (2 lines, at most
+      3 in fr), board 180x180 at y 324-504 (centred), CTA 52 high at y 528-580 (full width, 24 px
+      side margins), gear 44x44 at top right. Text is 16 px or more everywhere. The ridges below y
+      600 are uncovered.
+    </p>
+
+    <div class="row" id="rowA"></div>
+
+    <script>
+      const T = {
+        en: {
+          lang: 'en',
+          gear: 'Open settings',
+          name: "Let's GO",
+          i1: 'Learn GO (围棋 wéiqí) from zero with short lessons.',
+          cta: 'Start learning',
+        },
+        fr: {
+          lang: 'fr',
+          gear: 'Ouvrir les réglages',
+          name: "Let's GO",
+          i1: 'Apprenez le GO (围棋 wéiqí) pas à pas, avec des leçons courtes.',
+          cta: 'Commencer',
+        },
+        zh: {
+          lang: 'zh-CN',
+          gear: '打开设置',
+          name: "Let's GO",
+          i1: '从零开始，一步一步学会下围棋。',
+          cta: '开始学习',
+        },
+      };
+      const gear = (l) =>
+        `<button class="gear" aria-label="${l}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5E6A6E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg></button>`;
+      const logo = `<div class="logo" aria-hidden="true"><i class="b"></i><i class="w"></i></div>`;
+      const mountains = (
+        h,
+      ) => `<svg class="mountains" style="height:${h}px" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 70 C40 40 70 30 110 55 C140 72 160 35 200 25 C240 15 270 50 300 45 C330 40 345 55 360 50 L360 150 L0 150 Z" fill="#C9D5D6"/>
+  <path d="M0 110 C30 90 60 80 95 95 C130 110 150 75 190 78 C230 82 250 105 290 98 C320 92 340 100 360 96 L360 150 L0 150 Z" fill="#9DB2AE" opacity=".85"/></svg>`;
+
+      function A(t) {
+        return `<div><div class="lang">${t.lang}</div>
+<div class="phone A" lang="${t.lang}"><div class="mist"></div>${mountains(150)}
+ <div class="topbar">${gear(t.gear)}</div>
+ <div class="content">
+  <div class="hero">${logo}<div class="name" role="heading">${t.name}</div>
+   <p class="intro">${t.i1}</p></div>
+  <div class="board">${boardSvg()}</div>
+  <div class="cta-wrap"><button class="cta">${t.cta}</button></div>
+ </div></div></div>`;
+      }
+
+      // 5x5 board, 200px, cell 40, margin 20. Stones: black c3,d2; white d3,c4 (a legal, quiet position; no capture shown).
+      function boardSvg() {
+        let g = '';
+        for (let i = 0; i < 5; i++) {
+          const p = 20 + i * 40;
+          g += `<line x1="20" y1="${p}" x2="180" y2="${p}" stroke="#33281B" stroke-width="1"/><line x1="${p}" y1="20" x2="${p}" y2="180" stroke="#33281B" stroke-width="1"/>`;
+        }
+        const st = (c, r, b) =>
+          `<circle cx="${20 + c * 40}" cy="${20 + r * 40}" r="17" fill="${b ? '#22252A' : '#F7F5EE'}" ${b ? '' : 'stroke="#6B675C" stroke-width="1"'}/>`;
+        return `<svg width="180" height="180" viewBox="0 0 200 200" aria-hidden="true">${g}<circle cx="100" cy="100" r="3" fill="#33281B"/>${st(2, 2, 1)}${st(3, 1, 1)}${st(3, 2, 0)}${st(2, 3, 0)}</svg>`;
+      }
+
+      document.getElementById('rowA').innerHTML = [T.en, T.fr, T.zh].map(A).join('');
+    </script>
+  </body>
+</html>

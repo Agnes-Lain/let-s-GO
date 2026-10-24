@@ -29,12 +29,17 @@ import { progressStore } from '@/store';
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
+jest.mock('@/lessons/registry', () =>
+  jest.requireActual('@/lessons/__fixtures__/sampleRegistry').registryWithSample(),
+);
 jest.mock('@/board/sound', () => ({ playStoneSound: jest.fn(() => Promise.resolve()) }));
 
 beforeEach(async () => {
   jest.useFakeTimers();
   reduceMotion(true);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   (playStoneSound as jest.Mock).mockClear();
   await act(() => setLanguageChoice('en'));
 });
@@ -143,7 +148,7 @@ describe('shell (AC 59–67)', () => {
     await settle();
     // Navigation waits for the sheet to finish closing (iOS ignores a pop during a modal dismissal).
     await advance(600);
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().lessons).toEqual({});
   });
 
@@ -156,7 +161,7 @@ describe('shell (AC 59–67)', () => {
     const modal = screen.UNSAFE_getByType(Modal);
     await act(async () => modal.props.onDismiss());
     await settle();
-    expect(router.getPathname()).toBe('/');
+    expect(router.getPathname()).toBe('/learn');
   });
 
   it('AC 65: back while the sheet is open closes the sheet and stays', async () => {

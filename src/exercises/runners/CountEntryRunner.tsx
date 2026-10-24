@@ -15,7 +15,7 @@ import {
   type CountExercise,
   type ScoreAnswer,
 } from '@/lessons';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import { ExerciseFrame } from '../ExerciseFrame';
 import { classifyScoreAnswer } from '../scoreAnswer';
@@ -146,7 +146,10 @@ export function CountEntryRunner({
           }
           style={[styles.display, correct && styles.displayRight, revealed && styles.displayRight]}
         >
-          <Text style={[styles.displayText, shownEntry === '' && styles.placeholder]}>
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={[styles.displayText, shownEntry === '' && styles.placeholder]}
+          >
             {shownEntry === '' ? EMPTY_GLYPH : shownEntry}
           </Text>
         </View>
@@ -164,7 +167,9 @@ export function CountEntryRunner({
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.keyText}>{BACKSPACE_GLYPH}</Text>
+          <Text maxFontSizeMultiplier={textScale.hud} style={styles.keyText}>
+            {BACKSPACE_GLYPH}
+          </Text>
         </Pressable>
         <Pressable
           testID={action.testID}
@@ -179,7 +184,9 @@ export function CountEntryRunner({
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.checkText}>{action.label}</Text>
+          <Text maxFontSizeMultiplier={textScale.hud} style={styles.checkText}>
+            {action.label}
+          </Text>
         </Pressable>
       </View>
       <View style={styles.keys}>
@@ -196,7 +203,9 @@ export function CountEntryRunner({
                 accessibilityState={{ disabled: !active }}
                 style={({ pressed }) => [styles.key, styles.digit, pressed && styles.pressed]}
               >
-                <Text style={styles.keyText}>{String(n)}</Text>
+                <Text maxFontSizeMultiplier={textScale.hud} style={styles.keyText}>
+                  {String(n)}
+                </Text>
               </Pressable>
             ))}
           </View>

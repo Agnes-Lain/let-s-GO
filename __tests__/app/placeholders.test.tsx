@@ -2,12 +2,15 @@ import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-librar
 import { router as appRouter } from 'expo-router';
 
 import { setLanguageChoice } from '@/i18n';
+import { progressStore } from '@/store';
 
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-US', languageCode: 'en' }],
 }));
 
 beforeEach(async () => {
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('system'));
 });
 
@@ -18,13 +21,15 @@ describe('Lesson route without a lesson (M3 AC 55)', () => {
     await act(() => appRouter.push('/lesson/u99-missing'));
     expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
-    expect(router.getPathname()).toBe('/');
+    // The map is the learning page since M6-settings §12c.2.
+    expect(router.getPathname()).toBe('/learn');
   });
 
   it('goes to Home when opened directly (no history)', async () => {
     const router = await renderRouter('./app', { initialUrl: '/lesson/u99-missing' });
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
-    expect(router.getPathname()).toBe('/');
+    // The map is the learning page since M6-settings §12c.2.
+    expect(router.getPathname()).toBe('/learn');
   });
 
   it('is translated (Chinese)', async () => {
@@ -43,7 +48,8 @@ describe('Practice route without a lesson (M3 AC 55, §6.7)', () => {
     expect(router.getPathname()).toBe('/practice/abc');
     expect(screen.getByText("This lesson can't be opened")).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Back to map' }));
-    expect(router.getPathname()).toBe('/');
+    // The map is the learning page since M6-settings §12c.2.
+    expect(router.getPathname()).toBe('/learn');
   });
 });
 
@@ -54,6 +60,7 @@ describe('Not found (AC22)', () => {
 
     await fireEvent.press(screen.getByRole('button', { name: 'Back to home' }));
     expect(router.getPathname()).toBe('/');
-    expect(screen.getByText('Learning path')).toBeOnTheScreen();
+    // Home is the landing page since M6-settings §12c.1.
+    expect(screen.getByTestId('landing')).toBeOnTheScreen();
   });
 });

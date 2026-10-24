@@ -1,9 +1,6 @@
 // Unlock rules (spec §5.3). Derived from stars, never stored, so new content unlocks itself.
 import type { Lesson, MapNode, StarsByLesson, UnitEntry } from './schema';
 
-/** The developer sample unit: always open in dev builds and never gates Unit 1. */
-export const SAMPLE_UNIT = 0;
-
 export function starsOf(progress: StarsByLesson, lessonId: string): number {
   return progress[lessonId]?.stars ?? 0;
 }
@@ -30,8 +27,7 @@ export function isUnlocked(
 ): boolean {
   const entry = units.find((u) => u.unit === unit);
   if (!entry?.lesson) return false;
-  if (unit === SAMPLE_UNIT) return true;
-  const previous = units.filter((u) => u.unit !== SAMPLE_UNIT && u.unit < unit && u.lesson).pop();
+  const previous = units.filter((u) => u.unit < unit && u.lesson).pop();
   const gate = previous ? lastLesson(previous) : null;
   return !gate || starsOf(progress, gate.id) >= 1;
 }
@@ -88,17 +84,14 @@ export function nextNode(units: readonly UnitEntry[], progress: StarsByLesson): 
   );
 }
 
-/** The unit (other than the sample) that a run unlocked: it was locked before and is open now. */
+/** The unit that a run unlocked: it was locked before and is open now. */
 export function newlyUnlockedUnit(
   units: readonly UnitEntry[],
   before: StarsByLesson,
   after: StarsByLesson,
 ): number | null {
   const unit = units.find(
-    (u) =>
-      u.unit !== SAMPLE_UNIT &&
-      !isUnlocked(units, before, u.unit) &&
-      isUnlocked(units, after, u.unit),
+    (u) => !isUnlocked(units, before, u.unit) && isUnlocked(units, after, u.unit),
   );
   return unit?.unit ?? null;
 }

@@ -67,6 +67,8 @@ beforeEach(async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0.25);
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
   progressStore.getState().reset();
+  // M6-settings: a returning learner, past the first-launch intro.
+  progressStore.getState().setFlag('onboardingSeen');
   await act(() => setLanguageChoice('en'));
 });
 afterEach(async () => {
@@ -131,9 +133,15 @@ describe('QA: the one feedback slot and take-back on the game screen', () => {
 describe('Atari hints switch (PO 2026-10-23)', () => {
   it('is on by default; switched off on the picker, the game shows no rings and no atari line', async () => {
     await openAt('/game');
-    expect(screen.getByTestId('game9-atari-hints').props.value).toBe(true);
+    // M6-settings AC 17, 35: the whole row is the switch (role switch, checked state, press).
+    expect(screen.getByTestId('game9-atari-hints').props.accessibilityState).toMatchObject({
+      checked: true,
+    });
     await act(async () => {
-      fireEvent(screen.getByTestId('game9-atari-hints'), 'valueChange', false);
+      fireEvent.press(screen.getByTestId('game9-atari-hints'));
+    });
+    expect(screen.getByTestId('game9-atari-hints').props.accessibilityState).toMatchObject({
+      checked: false,
     });
     expect(progressStore.getState().flags.atariHintsOff).toBe(true);
     await act(() => appRouter.push('/game/play?level=1'));

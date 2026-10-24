@@ -28,7 +28,7 @@ import { FeedbackCard, type FeedbackText } from '@/exercises/ExerciseFrame';
 import { boardWidthFor } from '@/exercises/layout';
 import { Button, IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
-import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
+import { color, radius, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 import { formatParams } from '../format';
 import type { GameSession, Note } from '../session';
@@ -143,16 +143,30 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
           <CloseIcon color={color.accent} size={22} />
         </IconButton>
         <View style={styles.titleBox}>
-          <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={styles.title}
+            numberOfLines={1}
+            accessibilityRole="header"
+          >
             {t('coach.review.button')}
           </Text>
           {s.result?.kind === 'resigned' ? (
-            <Text style={styles.caption} testID="review-resigned">
+            <Text
+              maxFontSizeMultiplier={textScale.hud}
+              style={styles.caption}
+              testID="review-resigned"
+            >
               {t('coach.review.resigned')}
             </Text>
           ) : null}
         </View>
-        <Text style={styles.caption} numberOfLines={1} testID="review-hints">
+        <Text
+          maxFontSizeMultiplier={textScale.hud}
+          style={styles.caption}
+          numberOfLines={1}
+          testID="review-hints"
+        >
           {t('coach.review.hintsUsed', { n: s.coach.hintsUsed })}
         </Text>
       </View>
@@ -160,10 +174,15 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
       <View style={styles.chips}>
         {moments === null ? (
           <>
-            <Text style={styles.preparing} testID="review-preparing">
+            <Text
+              maxFontSizeMultiplier={textScale.hud}
+              style={styles.preparing}
+              testID="review-preparing"
+            >
               {t('coach.review.preparing')}
             </Text>
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('coach.review.skip')}
               variant="text"
               onPress={skip}
@@ -171,7 +190,11 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
             />
           </>
         ) : moments.length === 0 ? (
-          <Text style={styles.preparing} testID="review-quiet">
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={styles.preparing}
+            testID="review-quiet"
+          >
             {t('coach.review.quiet')}
           </Text>
         ) : (
@@ -188,7 +211,10 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
                 }}
                 style={[styles.chip, chosen === i && styles.chipOn]}
               >
-                <Text style={[styles.chipText, chosen === i && styles.chipTextOn]}>
+                <Text
+                  maxFontSizeMultiplier={textScale.hud}
+                  style={[styles.chipText, chosen === i && styles.chipTextOn]}
+                >
                   {t(`coach.review.chip.${m.kind}`, { i: i + 1 })}
                 </Text>
               </Pressable>
@@ -206,17 +232,20 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
           lastMove={lastMove?.type === 'play' ? lastMove.point : null}
           markers={markers}
           sound={false}
+          // The step line below announces "Move n of N"; the board stays quiet (AC 38).
+          announce={false}
           testID="review-board"
         />
       </View>
 
-      <Text style={styles.step} testID="review-step">
+      <Text maxFontSizeMultiplier={textScale.hud} style={styles.step} testID="review-step">
         {step === 0 ? t('coach.review.start') : t('coach.review.step', { n: step, total })}
       </Text>
       <FeedbackCard lines={lines} height={96} />
       <View style={styles.spacer} />
       <View style={styles.row}>
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('coach.review.prev')}
           variant="secondary"
           onPress={() => setStep((k) => Math.max(0, k - 1))}
@@ -225,6 +254,7 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
           style={styles.flex}
         />
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('coach.review.next')}
           variant="secondary"
           onPress={() => setStep((k) => Math.min(total, k + 1))}

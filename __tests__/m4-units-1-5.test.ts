@@ -51,11 +51,11 @@ const stars = (entries: Record<string, number>): StarsByLesson =>
   ) as unknown as StarsByLesson;
 
 describe('A. files (AC 1, 3)', () => {
-  it('AC 1: content has the sample plus the six M4 files (and Units 6–14 since), all registered', () => {
+  it('AC 1: content has the six M4 files (and Units 6–14 since), all registered; no sample (M6-settings AC 50)', () => {
     const all = [...M4, ...UNIT_6, ...UNITS_7_9, ...UNITS_10_11, ...UNITS_12_14];
     const files = readdirSync(join(__dirname, '../src/lessons/content')).sort();
-    expect(files).toEqual(['u00-sample.json', ...all.map((id) => `${id}.json`)].sort());
-    expect(lessons.map((l) => l.id).sort()).toEqual(['u00-sample', ...all].sort());
+    expect(files).toEqual(all.map((id) => `${id}.json`).sort());
+    expect(lessons.map((l) => l.id).sort()).toEqual([...all].sort());
   });
 
   const counts: [string, number, string[]][] = [
@@ -298,7 +298,7 @@ describe('B. text rules (AC 7–9)', () => {
 });
 
 describe('C. stars and unlocks (AC 10, 11)', () => {
-  const units = getUnits({ includeDev: false });
+  const units = getUnits();
 
   it('AC 10: 3★ on each lesson unlocks the next unit; u05-atari opens the review', () => {
     const order = ['u01-board', 'u02-liberties', 'u03-connection', 'u04-capture', 'u05-atari'];
@@ -381,7 +381,7 @@ describe('C. stars and unlocks (AC 10, 11)', () => {
 });
 
 describe('D. unit map (AC 13–18)', () => {
-  const units = getUnits({ includeDev: false });
+  const units = getUnits();
   const state = (progress: Record<string, number>) =>
     mapRows(units, stars(progress)).map((r) => `${r.key}:${r.state}`);
 
@@ -447,12 +447,11 @@ describe('D. unit map (AC 13–18)', () => {
     ]);
   });
 
-  it('AC 16: production hides the sample; dev shows it first without gating Unit 1', () => {
+  it('AC 16 (M6-settings AC 50): no sample in any build; Unit 1 is first and open', () => {
     expect(units.some((u) => u.unit === 0)).toBe(false);
-    expect(loadLesson('u00-sample', { includeDev: false }).ok).toBe(false);
-    const dev = getUnits({ includeDev: true });
-    expect(dev[0].lesson?.id).toBe('u00-sample');
-    expect(isUnlocked(dev, stars({}), 1)).toBe(true);
+    expect(loadLesson('u00-sample').ok).toBe(false);
+    expect(units[0].lesson?.id).toBe('u01-board');
+    expect(isUnlocked(units, stars({}), 1)).toBe(true);
   });
 
   it('AC 17: everything with ≥ 1★ → nothing left to continue', () => {

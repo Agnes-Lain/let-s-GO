@@ -84,6 +84,16 @@ export const radius = {
   pill: 999,
 } as const;
 
+/**
+ * Text-size caps (maxFontSizeMultiplier, M6-settings AC 42): pages that scroll (Settings, intro,
+ * Home, picker, sheets) follow the phone up to 200 %; game and lesson HUDs up to 130 %, so the
+ * board and its buttons stay on screen.
+ */
+export const textScale = {
+  page: 2,
+  hud: 1.3,
+} as const;
+
 export const tapTarget = {
   /** Minimum width/height of every pressable (px). */
   min: 44,
@@ -117,6 +127,7 @@ export const tokens = {
   spacing,
   radius,
   tapTarget,
+  textScale,
   motion,
   opacity,
 } as const;

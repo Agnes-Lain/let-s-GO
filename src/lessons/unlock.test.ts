@@ -55,11 +55,12 @@ describe('isUnlocked (AC 39–42)', () => {
     expect(isLessonUnlocked(withCheckpoint, p, lesson(2, 'checkpoint'))).toBe(true);
   });
 
-  it('AC 42: the sample is always open and never locks unit 1', () => {
-    const withSample = [{ ...entry(0), lesson: base }, entry(1), entry(2)];
-    expect(isUnlocked(withSample, {}, 0)).toBe(true);
-    expect(isUnlocked(withSample, stars({ 'u00-sample': 0 }), 1)).toBe(true);
-    expect(isUnlocked(withSample, stars({ 'u00-sample': 3 }), 2)).toBe(false);
+  it('AC 42 (M6-settings AC 50): the first unit with a lesson is always open', () => {
+    // The unit-0 sample is gone; whatever unit comes first opens without stars.
+    expect(isUnlocked(units, {}, 1)).toBe(true);
+    const fromTwo = [entry(2), entry(3)];
+    expect(isUnlocked(fromTwo, {}, 2)).toBe(true);
+    expect(isUnlocked(fromTwo, {}, 3)).toBe(false);
   });
 });
 

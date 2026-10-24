@@ -73,3 +73,47 @@ describe('AC 48: rings keep ≥ 3:1 against the board base', () => {
     expect(contrast(ring, board.bamboo)).toBeGreaterThanOrEqual(3);
   });
 });
+
+// docs/specs/M6-settings-onboarding-a11y.md AC 41: normal text ≥ 4.5:1; large text and UI parts
+// (switch tracks, selected borders, check marks, icons) ≥ 3:1. Measured values are in the names.
+describe('M6-settings AC 41: text and UI contrast', () => {
+  const text = ['textPrimary', 'textSecondary', 'hint', 'error', 'success'] as const;
+  it.each(text.flatMap((t) => (['background', 'surface'] as const).map((bg) => [t, bg] as const)))(
+    '%s on %s ≥ 4.5:1',
+    (fg, bg) => {
+      expect(contrast(color[fg], color[bg])).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
+  it.each([
+    ['onAccent on accent', color.onAccent, color.accent],
+    ['onBadge on badge', color.onBadge, color.badge],
+  ])('%s ≥ 4.5:1', (_name, fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each([
+    ['accent switch track vs surface', color.accent, color.surface],
+    // The off track's outline (SwitchRow): the border fill alone is only 1.3:1.
+    ['off-track outline (textSecondary) vs surface', color.textSecondary, color.surface],
+    ['selected border (success) vs surface', color.success, color.surface],
+    ['check mark (accent) vs surface', color.accent, color.surface],
+    ['accent (Skip, links) vs background', color.accent, color.background],
+  ])('%s ≥ 3:1', (_name, fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(3);
+  });
+
+  it.each([
+    ['hint diamond', color.hint],
+    ['danger diamond / ring', color.error],
+    ['chance diamond / ring', color.success],
+    ['black stone', stone.black],
+    ['white-stone edge', stone.whiteEdge],
+  ])('%s on bamboo ≥ 3:1', (_name, fg) => {
+    expect(contrast(fg, board.bamboo)).toBeGreaterThanOrEqual(3);
+  });
+
+  it('the border token alone is too faint for a UI part (why the off track has an outline)', () => {
+    expect(contrast(color.border, color.surface)).toBeLessThan(3);
+  });
+});

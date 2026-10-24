@@ -3,7 +3,7 @@
 // Nothing is locked; the selected row has a tea-green border.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { GoBoard } from '@/board';
 import type { BotLevel } from '@/bot';
@@ -12,7 +12,8 @@ import { progressStore, useProgress } from '@/store';
 import { Button } from '@/theme/Button';
 import { CheckIcon } from '@/theme/icons';
 import { TopBar } from '@/theme/Screen';
-import { color, radius, spacing, stone, typography } from '@/theme/tokens';
+import { SwitchRow } from '@/theme/SwitchRow';
+import { color, radius, spacing, stone, textScale, typography } from '@/theme/tokens';
 
 import { BOT_LEVELS } from '../config';
 import { HANDICAP_CHOICES, handicapStones, suggestedHandicap, type Handicap } from '../handicap';
@@ -32,7 +33,14 @@ function previewStones(n: Handicap): ('B' | null)[] {
   return cells;
 }
 
-export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Handicap) => void }) {
+export function LevelPicker({
+  onPick,
+  onBack,
+}: {
+  onPick: (level: BotLevel, handicap: Handicap) => void;
+  /** Back button; default: the previous screen. */
+  onBack?: () => void;
+}) {
   const { t } = useTranslation();
   const bots = useProgress((p) => p.bots);
   const flags = useProgress((p) => p.flags);
@@ -51,13 +59,20 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
     <ScrollView style={styles.scroll} contentContainerStyle={styles.root}>
       {/* The title carries the term + pinyin (fr/en are long), so it gets its own wrapping line
           under the back button instead of the one-line top-bar slot. */}
-      <TopBar showBack />
-      <Text style={styles.title} accessibilityRole="header" testID="game9-picker-title">
+      <TopBar showBack onBack={onBack} />
+      <Text
+        maxFontSizeMultiplier={textScale.page}
+        style={styles.title}
+        accessibilityRole="header"
+        testID="game9-picker-title"
+      >
         {t('game9.entry.title')}
       </Text>
-      <Text style={styles.prompt}>{t('game9.picker.title')}</Text>
+      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
+        {t('game9.picker.title')}
+      </Text>
       {tip ? (
-        <Text style={styles.tip} testID="game9-tip">
+        <Text maxFontSizeMultiplier={textScale.page} style={styles.tip} testID="game9-tip">
           {t('game9.tip.easier')}
         </Text>
       ) : null}
@@ -88,17 +103,23 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
               ))}
             </View>
             <View style={styles.text}>
-              <Text style={styles.name} numberOfLines={1}>
+              <Text maxFontSizeMultiplier={textScale.page} style={styles.name} numberOfLines={1}>
                 {name}
               </Text>
-              <Text style={styles.desc} testID={`game9-level-${level}-desc`}>
+              <Text
+                maxFontSizeMultiplier={textScale.page}
+                style={styles.desc}
+                testID={`game9-level-${level}-desc`}
+              >
                 {desc}
               </Text>
             </View>
             {beaten ? (
               <View style={styles.beaten} testID={`game9-level-${level}-beaten`}>
                 <CheckIcon color={color.success} size={18} />
-                <Text style={styles.beatenText}>{t('game9.level.beaten')}</Text>
+                <Text maxFontSizeMultiplier={textScale.page} style={styles.beatenText}>
+                  {t('game9.level.beaten')}
+                </Text>
               </View>
             ) : null}
           </Pressable>
@@ -106,10 +127,13 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
       })}
       {isBeaten(bots, 3) ? (
         <View style={styles.badge} testID="game9-challenge-beaten">
-          <Text style={styles.badgeText}>{t('game9.picker.challengeBeaten')}</Text>
+          <Text maxFontSizeMultiplier={textScale.page} style={styles.badgeText}>
+            {t('game9.picker.challengeBeaten')}
+          </Text>
         </View>
       ) : null}
-      <Text style={styles.prompt} accessibilityRole="header">
+      {/* One header per screen (M6-settings AC 36): the title above. */}
+      <Text maxFontSizeMultiplier={textScale.page} style={styles.prompt}>
         {t('game9.picker.handicap')}
       </Text>
       <View style={styles.chips} accessibilityRole="radiogroup">
@@ -132,12 +156,16 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
               pressed && styles.pressed,
             ]}
           >
-            <Text style={[styles.chipText, n === handicap && styles.chipTextSelected]}>
+            <Text
+              maxFontSizeMultiplier={textScale.page}
+              style={[styles.chipText, n === handicap && styles.chipTextSelected]}
+            >
               {n === 0 ? t('game9.picker.even') : t('game9.picker.stones', { n })}
             </Text>
             {/* The suggestion is named in text, not only by colour (§5.1). */}
             {n === suggested ? (
               <Text
+                maxFontSizeMultiplier={textScale.page}
                 style={[styles.chipTag, n === handicap && styles.chipTextSelected]}
                 numberOfLines={1}
                 testID={`game9-handicap-${n}-suggested`}
@@ -149,7 +177,11 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
         ))}
       </View>
       <View style={styles.explainRow}>
-        <Text style={styles.explain} testID="game9-handicap-explain">
+        <Text
+          maxFontSizeMultiplier={textScale.page}
+          style={styles.explain}
+          testID="game9-handicap-explain"
+        >
           {handicap === 0
             ? t('game9.picker.explainEven')
             : t('game9.picker.explain', { n: handicap })}
@@ -163,21 +195,15 @@ export function LevelPicker({ onPick }: { onPick: (level: BotLevel, handicap: Ha
           <GoBoard size={9} stones={previewStones(handicap)} width={PREVIEW_SIZE} sound={false} />
         </View>
       </View>
-      <View style={styles.hintsRow}>
-        <View style={styles.text}>
-          <Text style={styles.name} nativeID="game9-atari-hints-label">
-            {t('game9.picker.atariHints')}
-          </Text>
-          <Text style={styles.desc}>{t('game9.picker.atariHintsDesc')}</Text>
-        </View>
-        <Switch
-          value={!flags.atariHintsOff}
-          onValueChange={(on) => progressStore.getState().setFlag('atariHintsOff', !on)}
-          trackColor={{ false: color.border, true: color.accent }}
-          accessibilityLabel={t('game9.picker.atariHints')}
-          testID="game9-atari-hints"
-        />
-      </View>
+      {/* The whole row is the switch (M6-settings AC 17, 35); the same flag as Settings (AC 18). */}
+      <SwitchRow
+        title={t('game9.picker.atariHints')}
+        description={t('game9.picker.atariHintsDesc')}
+        value={!flags.atariHintsOff}
+        onChange={(on) => progressStore.getState().setFlag('atariHintsOff', !on)}
+        testID="game9-atari-hints"
+        style={styles.hintsRow}
+      />
       <Button
         label={t('game9.picker.start')}
         onPress={() => onPick(selected, handicap)}
@@ -239,13 +265,9 @@ const styles = StyleSheet.create({
   chipSelected: { backgroundColor: color.accent, borderColor: color.accent },
   chipText: { ...typography.label, fontSize: 15, color: color.textPrimary },
   chipTextSelected: { color: color.onAccent },
-  chipTag: { fontSize: 10, lineHeight: 12, color: color.textSecondary },
-  hintsRow: {
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
+  // 12 px: no text under 12 px on the picker (M6-settings AC 40).
+  chipTag: { fontSize: 12, lineHeight: 14, color: color.textSecondary },
+  hintsRow: { paddingHorizontal: 0 },
   explainRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   explain: { flex: 1, fontSize: 14, lineHeight: 20, color: color.textPrimary },
 });

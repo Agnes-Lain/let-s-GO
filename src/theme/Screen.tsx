@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ChevronIcon } from './icons';
 import { Landscape } from './Landscape';
-import { color, spacing, tapTarget, typography } from './tokens';
+import { color, spacing, tapTarget, textScale, typography } from './tokens';
 
 type ScreenProps = {
   /** `home` draws mist + mountains; every other screen gets the thin mist only. */
@@ -48,29 +48,40 @@ type TopBarProps = {
   title?: string;
   /** Show the "‹ Back" button on the left. */
   showBack?: boolean;
+  /** Where Back goes; default: the previous screen, or the landing page without history. */
+  onBack?: () => void;
+  backTestID?: string;
   /** Optional element on the right (e.g. the settings button). */
   right?: ReactNode;
 };
 
-export function TopBar({ title, showBack = false, right }: TopBarProps) {
+export function TopBar({ title, showBack = false, onBack, backTestID, right }: TopBarProps) {
   const { t } = useTranslation();
   const goBack = useGoBack();
   return (
     <View style={styles.topBar}>
       {title ? (
-        <Text style={styles.topBarTitle} accessibilityRole="header" numberOfLines={1}>
+        <Text
+          style={styles.topBarTitle}
+          accessibilityRole="header"
+          numberOfLines={1}
+          maxFontSizeMultiplier={textScale.page}
+        >
           {title}
         </Text>
       ) : null}
       {showBack ? (
         <Pressable
-          onPress={goBack}
+          onPress={onBack ?? goBack}
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
+          testID={backTestID}
           style={({ pressed }) => [styles.back, pressed && styles.pressed]}
         >
           <ChevronIcon direction="left" color={color.accent} size={20} />
-          <Text style={styles.backLabel}>{t('common.back')}</Text>
+          <Text style={styles.backLabel} maxFontSizeMultiplier={textScale.page}>
+            {t('common.back')}
+          </Text>
         </Pressable>
       ) : (
         <View style={styles.spacer} />

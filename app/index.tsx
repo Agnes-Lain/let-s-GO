@@ -1,138 +1,19 @@
 import { useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import {
-  ContinueCard,
-  LockedSnackbar,
-  UnitPath,
-  useHomeMap,
-  useLockedSnackbar,
-} from '@/exercises/UnitMap';
-import { Game9Card } from '@/game9/ui/Game9Card';
-import { GearIcon } from '@/theme/icons';
-import { Screen, TopBar } from '@/theme/Screen';
-import { color, radius, spacing, stone, tapTarget, typography } from '@/theme/tokens';
+import { LEARN_ROUTE } from '@/exercises/navigation';
+import { Landing } from '@/home/Landing';
+import { progressStore, shouldShowOnboarding } from '@/store';
 
-/** Home = the learning-path map (spec §6.1). The map rows come from src/lessons. */
-export default function HomeScreen() {
-  const { t } = useTranslation();
+/**
+ * Landing page `/` (M6-settings §12c.1, 3, 4): shown on every launch, never redirected. "Start
+ * learning" opens the intro the first time (no intro seen, no progress), else the learning page.
+ */
+export default function LandingScreen() {
   const router = useRouter();
-  const map = useHomeMap();
-  const snackbar = useLockedSnackbar();
-  const open = (lessonId: string) => router.push(`/lesson/${lessonId}`);
-
-  return (
-    <Screen backdrop="home">
-      <TopBar
-        right={
-          <Pressable
-            onPress={() => router.push('/settings')}
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.open')}
-            style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
-          >
-            <GearIcon color={color.textSecondary} size={24} />
-          </Pressable>
-        }
-      />
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View style={styles.logo} accessible={false}>
-          <View style={[styles.stone, styles.blackStone]} />
-          <View style={[styles.stone, styles.whiteStone]} />
-        </View>
-        <Text style={styles.display} accessibilityRole="header">
-          {t('app.name')}
-        </Text>
-        <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
-
-        <View style={styles.continueSlot}>
-          {!map.hydrated && map.hasContent ? (
-            <View style={styles.continueSkeleton} testID="home-continue-skeleton" />
-          ) : map.next ? (
-            <ContinueCard
-              node={map.next}
-              titleKey={map.nextTitleKey}
-              started={map.started}
-              onPress={() => map.next && open(map.next.lesson.id)}
-            />
-          ) : null}
-        </View>
-
-        <Text style={styles.sectionTitle} accessibilityRole="header">
-          {t('home.path.title')}
-        </Text>
-        <UnitPath rows={map.rows} hydrated={map.hydrated} onOpen={open} onLocked={snackbar.show} />
-        {map.hydrated && map.hasContent ? (
-          <View style={styles.game9}>
-            <Game9Card onOpen={() => router.push('/game')} onLocked={snackbar.show} />
-          </View>
-        ) : null}
-        {map.hydrated && map.hasContent && !map.next ? (
-          <Text style={styles.caption} testID="home-all-done">
-            {t('home.allDone')}
-          </Text>
-        ) : null}
-        <Text style={styles.caption}>{t('home.moreSoon')}</Text>
-      </ScrollView>
-      <LockedSnackbar visible={snackbar.visible} />
-    </Screen>
-  );
+  const start = () => {
+    // The start-up cover keeps touches away until progress is read (or the 1 s cap has passed).
+    const firstTime = shouldShowOnboarding({ ...progressStore.getState(), hydrated: true });
+    router.push(firstTime ? '/onboarding' : LEARN_ROUTE);
+  };
+  return <Landing onStart={start} onOpenSettings={() => router.push('/settings')} />;
 }
-
-const STONE_SIZE = 34;
-
-const styles = StyleSheet.create({
-  scroll: { paddingBottom: spacing.xxl + 44 },
-  iconButton: {
-    width: tapTarget.min,
-    height: tapTarget.min,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressed: { opacity: 0.6 },
-  logo: { width: 56, height: 44, alignSelf: 'center', marginBottom: spacing.sm },
-  stone: {
-    position: 'absolute',
-    top: 5,
-    width: STONE_SIZE,
-    height: STONE_SIZE,
-    borderRadius: STONE_SIZE / 2,
-  },
-  blackStone: { left: 3, backgroundColor: stone.black },
-  whiteStone: {
-    left: 19,
-    backgroundColor: stone.white,
-    borderWidth: 1,
-    borderColor: stone.whiteEdge,
-  },
-  display: { ...typography.display, color: color.textPrimary, textAlign: 'center' },
-  subtitle: {
-    ...typography.body,
-    color: color.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.xs,
-  },
-  continueSlot: { marginTop: spacing.lg },
-  continueSkeleton: {
-    height: 56,
-    borderRadius: radius.md,
-    backgroundColor: color.border,
-    opacity: 0.35,
-  },
-  sectionTitle: {
-    ...typography.title,
-    fontSize: 18,
-    color: color.textPrimary,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  game9: { marginTop: spacing.lg },
-  caption: {
-    ...typography.caption,
-    color: color.textSecondary,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-});

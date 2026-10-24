@@ -573,7 +573,7 @@ describe('C. ladder search (AC 25, test-only, 12 plies)', () => {
 });
 
 describe('E. stars, unlocks and flow (AC 31–35)', () => {
-  const units = getUnits({ includeDev: false });
+  const units = getUnits();
   const toSix = {
     'u01-board': 1,
     'u02-liberties': 1,

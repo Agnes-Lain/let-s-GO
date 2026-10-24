@@ -17,7 +17,7 @@ import { boardWidthFor } from '@/exercises/layout';
 import { progressStore, useProgress } from '@/store';
 import { Button, IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
-import { color, radius, spacing, typography } from '@/theme/tokens';
+import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
 
 import { atariLine, dangerOf, type DangerGroup } from '../danger';
 import { checkGameMove } from '../engineView';
@@ -42,7 +42,7 @@ import {
 import { countStones } from '../countView';
 import { CountTable, countHighlights } from './CountTable';
 import { ReviewView } from './ReviewView';
-import { Sheet } from './Sheet';
+import { Sheet } from '@/theme/Sheet';
 
 /**
  * Fixed heights at 360×740 (§5.2, AC 38): top bar 52, status 48 + 8, gap 8 under the board,
@@ -212,7 +212,12 @@ export function GameScreen({
         >
           <CloseIcon color={color.accent} size={22} />
         </IconButton>
-        <Text style={styles.header} numberOfLines={1} testID="game9-header">
+        <Text
+          maxFontSizeMultiplier={textScale.hud}
+          style={styles.header}
+          numberOfLines={1}
+          testID="game9-header"
+        >
           {s.phase === 'count'
             ? t('game9.count.title')
             : s.handicap > 0
@@ -223,16 +228,23 @@ export function GameScreen({
                 })
               : t('game9.header', { level: levelName, komi: n(s.game.komi) })}
         </Text>
-        <Text style={styles.move} numberOfLines={1} testID="game9-move">
+        <Text
+          maxFontSizeMultiplier={textScale.hud}
+          style={styles.move}
+          numberOfLines={1}
+          testID="game9-move"
+        >
           {t('game9.move', { n: s.game.moves.length })}
         </Text>
       </View>
 
       <View style={styles.status} testID="game9-status">
         <Text
+          maxFontSizeMultiplier={textScale.hud}
           style={styles.statusText}
           numberOfLines={2}
-          accessibilityLiveRegion="polite"
+          // The count and the result are announced by the screen (AC 37): no second Android read.
+          accessibilityLiveRegion={s.phase === 'count' || s.phase === 'result' ? 'none' : 'polite'}
           testID="game9-status-text"
         >
           {say(status)}
@@ -388,11 +400,16 @@ function MarkCount({ count, onClear }: { count: number; onClear: (() => void) | 
   const { t } = useTranslation();
   return (
     <View style={styles.markRow}>
-      <Text style={styles.markCount} testID="game9-mark-count">
+      <Text
+        maxFontSizeMultiplier={textScale.hud}
+        style={styles.markCount}
+        testID="game9-mark-count"
+      >
         {t('practice.mark.count', { count })}
       </Text>
       {onClear ? (
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('practice.mark.clear')}
           variant="text"
           onPress={onClear}
@@ -425,6 +442,7 @@ function GameBoard({
         showCoordinates
         highlights={countHighlights(s.count.score, s.game.board.cells, s.count.dead)}
         sound={false}
+        announce={false}
         testID="game9-board"
       />
     );
@@ -455,6 +473,7 @@ function GameBoard({
         markers={markers}
         highlights={highlights}
         sound={false}
+        announce={false}
         testID="game9-board"
       />
     );
@@ -498,6 +517,7 @@ function GameBoard({
       lastCapture={lastCapture}
       markers={markers.length > 0 ? markers : undefined}
       highlights={highlights.length > 0 ? highlights : undefined}
+      announce={false}
       testID="game9-board"
     />
   );
@@ -576,6 +596,7 @@ function Bottom({
         {/* Hint ("before I move") left, Take back 悔棋 ("after I moved") right (§5.2). */}
         <View style={styles.row}>
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={
               hintsLeft === null
                 ? t('coach.hint.buttonFree')
@@ -589,6 +610,7 @@ function Bottom({
             style={styles.flex}
           />
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={left === null ? t('game9.btn.takeback') : t('game9.btn.takebackN', { n: left })}
             variant="secondary"
             onPress={onTakeBack}
@@ -599,6 +621,7 @@ function Bottom({
         </View>
         <View style={styles.row}>
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={t('game9.btn.pass')}
             variant="secondary"
             onPress={onPass}
@@ -608,6 +631,7 @@ function Bottom({
           />
           {s.game.moves.length >= 6 ? (
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.count')}
               variant="secondary"
               onPress={onCountNow}
@@ -617,6 +641,7 @@ function Bottom({
             />
           ) : null}
           <Button
+            maxFontSizeMultiplier={textScale.hud}
             label={t('game9.btn.resign')}
             variant="secondary"
             onPress={onResign}
@@ -635,6 +660,7 @@ function Bottom({
         <FeedbackCard lines={s.dispute ? [] : feedback} />
         <View style={styles.spacer} />
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('game9.mark.done')}
           onPress={() => send({ type: 'markDone' })}
           disabled={s.dispute !== null}
@@ -648,13 +674,18 @@ function Bottom({
     return (
       <>
         {s.count.hypothetical ? (
-          <Text style={styles.caption} testID="game9-hypothetical">
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={styles.caption}
+            testID="game9-hypothetical"
+          >
             {t('game9.result.hypothetical')}
           </Text>
         ) : null}
         <CountTable score={s.count.score} n={n} />
         <View style={styles.spacer} />
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('game9.mark.done')}
           onPress={() => send({ type: 'countDone' })}
           testID="game9-count-done"
@@ -682,20 +713,38 @@ function Bottom({
           ]}
         />
         <View style={styles.resultText}>
-          <Text style={styles.resultTitle} accessibilityRole="header">
+          <Text
+            maxFontSizeMultiplier={textScale.hud}
+            style={styles.resultTitle}
+            accessibilityRole="header"
+          >
             {say(title)}
           </Text>
-          {margin ? <Text style={styles.resultBody}>{`${margin} · ${level}`}</Text> : null}
-          {fact ? <Text style={styles.resultDetail}>{say(fact)}</Text> : null}
+          {margin ? (
+            <Text
+              maxFontSizeMultiplier={textScale.hud}
+              style={styles.resultBody}
+            >{`${margin} · ${level}`}</Text>
+          ) : null}
+          {fact ? (
+            <Text maxFontSizeMultiplier={textScale.hud} style={styles.resultDetail}>
+              {say(fact)}
+            </Text>
+          ) : null}
         </View>
       </View>
       {/* The next game's handicap 让子 (M6-beginner-friendly AC 12, §5.4). */}
-      <Text style={styles.caption} testID="game9-next-handicap">
+      <Text
+        maxFontSizeMultiplier={textScale.hud}
+        style={styles.caption}
+        testID="game9-next-handicap"
+      >
         {next > 0 ? t('game9.result.next', { n: next }) : t('game9.result.nextEven')}
       </Text>
       <View style={styles.spacer} />
       {outcome === 'resigned' ? (
         <Button
+          maxFontSizeMultiplier={textScale.hud}
           label={t('game9.result.showCount')}
           variant="secondary"
           onPress={() => send({ type: 'showCount' })}
@@ -707,12 +756,14 @@ function Bottom({
         <>
           <View style={styles.row}>
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('coach.review.button')}
               onPress={onReview}
               testID="game9-review"
               style={styles.flex}
             />
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.again')}
               variant="secondary"
               onPress={onAgain}
@@ -722,6 +773,7 @@ function Bottom({
           </View>
           <View style={styles.row}>
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.level')}
               variant="text"
               onPress={onChangeLevel}
@@ -729,6 +781,7 @@ function Bottom({
               style={styles.flex}
             />
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.home')}
               variant="text"
               onPress={onHome}
@@ -741,12 +794,14 @@ function Bottom({
         <>
           <View style={styles.row}>
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.again')}
               onPress={onAgain}
               testID="game9-again"
               style={styles.flex}
             />
             <Button
+              maxFontSizeMultiplier={textScale.hud}
               label={t('game9.btn.level')}
               variant="secondary"
               onPress={onChangeLevel}
@@ -754,7 +809,13 @@ function Bottom({
               style={styles.flex}
             />
           </View>
-          <Button label={t('game9.btn.home')} variant="text" onPress={onHome} testID="game9-home" />
+          <Button
+            maxFontSizeMultiplier={textScale.hud}
+            label={t('game9.btn.home')}
+            variant="text"
+            onPress={onHome}
+            testID="game9-home"
+          />
         </>
       )}
     </>

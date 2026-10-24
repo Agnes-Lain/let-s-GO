@@ -1,0 +1,304 @@
+screen	control	WxH (px)
+[zh-CN] settings top	返回	62x44
+[zh-CN] settings top	跟随系统	326x52
+[zh-CN] settings top	中文（简体）	326x52
+[zh-CN] settings top	English	326x52
+[zh-CN] settings top	Français	326x52
+[zh-CN] settings top	settings-sound	326x56
+[zh-CN] settings top	settings-motion	326x57
+[zh-CN] settings top	settings-atari	326x56
+[zh-CN] settings top	settings-intro	326x52
+[zh-CN] settings top	settings-reset	326x52
+[zh-CN] settings top	棋盘演示（开发用）	326x52
+[zh-CN] settings bottom	返回	62x44
+[zh-CN] settings bottom	跟随系统	326x52
+[zh-CN] settings bottom	中文（简体）	326x52
+[zh-CN] settings bottom	English	326x52
+[zh-CN] settings bottom	Français	326x52
+[zh-CN] settings bottom	settings-sound	326x56
+[zh-CN] settings bottom	settings-motion	326x57
+[zh-CN] settings bottom	settings-atari	326x56
+[zh-CN] settings bottom	settings-intro	326x52
+[zh-CN] settings bottom	settings-reset	326x52
+[zh-CN] settings bottom	棋盘演示（开发用）	326x52
+[zh-CN] reset sheet	返回	62x44
+[zh-CN] reset sheet	跟随系统	326x52
+[zh-CN] reset sheet	中文（简体）	326x52
+[zh-CN] reset sheet	English	326x52
+[zh-CN] reset sheet	Français	326x52
+[zh-CN] reset sheet	settings-sound	326x56
+[zh-CN] reset sheet	settings-motion	326x57
+[zh-CN] reset sheet	settings-atari	326x56
+[zh-CN] reset sheet	settings-intro	326x52
+[zh-CN] reset sheet	settings-reset	326x52
+[zh-CN] reset sheet	棋盘演示（开发用）	326x52
+[zh-CN] reset sheet	settings-reset-keep	328x48
+[zh-CN] reset sheet	settings-reset-confirm	328x48
+[en] settings top	Back	69x44
+[en] settings top	Use device language	326x52
+[en] settings top	中文（简体）	326x52
+[en] settings top	English	326x52
+[en] settings top	Français	326x52
+[en] settings top	settings-sound	326x56
+[en] settings top	settings-motion	326x57
+[en] settings top	settings-atari	326x74
+[en] settings top	settings-intro	326x52
+[en] settings top	settings-reset	326x52
+[en] settings top	Board demo (dev)	326x52
+[en] settings bottom	Back	69x44
+[en] settings bottom	Use device language	326x52
+[en] settings bottom	中文（简体）	326x52
+[en] settings bottom	English	326x52
+[en] settings bottom	Français	326x52
+[en] settings bottom	settings-sound	326x56
+[en] settings bottom	settings-motion	326x57
+[en] settings bottom	settings-atari	326x74
+[en] settings bottom	settings-intro	326x52
+[en] settings bottom	settings-reset	326x52
+[en] settings bottom	Board demo (dev)	326x52
+[en] reset sheet	Back	69x44
+[en] reset sheet	Use device language	326x52
+[en] reset sheet	中文（简体）	326x52
+[en] reset sheet	English	326x52
+[en] reset sheet	Français	326x52
+[en] reset sheet	settings-sound	326x56
+[en] reset sheet	settings-motion	326x57
+[en] reset sheet	settings-atari	326x74
+[en] reset sheet	settings-intro	326x52
+[en] reset sheet	settings-reset	326x52
+[en] reset sheet	Board demo (dev)	326x52
+[en] reset sheet	settings-reset-keep	328x48
+[en] reset sheet	settings-reset-confirm	328x48
+[fr] settings top	Retour	83x44
+[fr] settings top	Langue de l'appareil	326x52
+[fr] settings top	中文（简体）	326x52
+[fr] settings top	English	326x52
+[fr] settings top	Français	326x52
+[fr] settings top	settings-sound	326x74
+[fr] settings top	settings-motion	326x57
+[fr] settings top	settings-atari	326x74
+[fr] settings top	settings-intro	326x52
+[fr] settings top	settings-reset	326x52
+[fr] settings top	Démo du goban (dév.)	326x52
+[fr] settings bottom	Retour	83x44
+[fr] settings bottom	Langue de l'appareil	326x52
+[fr] settings bottom	中文（简体）	326x52
+[fr] settings bottom	English	326x52
+[fr] settings bottom	Français	326x52
+[fr] settings bottom	settings-sound	326x74
+[fr] settings bottom	settings-motion	326x57
+[fr] settings bottom	settings-atari	326x74
+[fr] settings bottom	settings-intro	326x52
+[fr] settings bottom	settings-reset	326x52
+[fr] settings bottom	Démo du goban (dév.)	326x52
+[fr] reset sheet	Retour	83x44
+[fr] reset sheet	Langue de l'appareil	326x52
+[fr] reset sheet	中文（简体）	326x52
+[fr] reset sheet	English	326x52
+[fr] reset sheet	Français	326x52
+[fr] reset sheet	settings-sound	326x74
+[fr] reset sheet	settings-motion	326x57
+[fr] reset sheet	settings-atari	326x74
+[fr] reset sheet	settings-intro	326x52
+[fr] reset sheet	settings-reset	326x52
+[fr] reset sheet	Démo du goban (dév.)	326x52
+[fr] reset sheet	settings-reset-keep	328x48
+[fr] reset sheet	settings-reset-confirm	328x48
+[zh-CN] landing	landing-settings	44x44
+[zh-CN] landing	landing-start	312x52
+[zh-CN] onboarding 1	onboarding-skip	45x44
+[zh-CN] onboarding 1	onboarding-next	328x52
+[zh-CN] onboarding 2	onboarding-skip	45x44
+[zh-CN] onboarding 2	onboarding-finish	328x52
+[zh-CN] onboarding 2 after a stone	onboarding-skip	45x44
+[zh-CN] onboarding 2 after a stone	onboarding-finish	328x52
+[en] landing	landing-settings	44x44
+[en] landing	landing-start	312x52
+[en] onboarding 1	onboarding-skip	49x44
+[en] onboarding 1	onboarding-next	328x52
+[en] onboarding 2	onboarding-skip	49x44
+[en] onboarding 2	onboarding-finish	328x52
+[en] onboarding 2 after a stone	onboarding-skip	49x44
+[en] onboarding 2 after a stone	onboarding-finish	328x52
+[fr] landing	landing-settings	44x44
+[fr] landing	landing-start	312x52
+[fr] onboarding 1	onboarding-skip	67x44
+[fr] onboarding 1	onboarding-next	328x52
+[fr] onboarding 2	onboarding-skip	67x44
+[fr] onboarding 2	onboarding-finish	328x52
+[fr] onboarding 2 after a stone	onboarding-skip	67x44
+[fr] onboarding 2 after a stone	onboarding-finish	328x52
+[zh-CN] home new learner	learn-back	62x44
+[zh-CN] home new learner	打开设置	44x44
+[zh-CN] home new learner	home-continue	328x56
+[zh-CN] home new learner	home-module-1	326x86
+[zh-CN] home new learner	home-node-unit-1	254x72
+[zh-CN] home new learner	home-node-unit-2	254x72
+[zh-CN] home new learner	home-node-unit-3	254x72
+[zh-CN] home new learner	home-node-unit-4	254x72
+[zh-CN] home new learner	home-node-unit-5	254x72
+[zh-CN] home new learner	home-node-checkpoint-5	238x72
+[zh-CN] home new learner	home-module-2	326x86
+[zh-CN] home new learner	home-module-3	326x86
+[zh-CN] home new learner	home-game9	328x56
+[zh-CN] home module 2 open	learn-back	62x44
+[zh-CN] home module 2 open	打开设置	44x44
+[zh-CN] home module 2 open	home-continue	328x56
+[zh-CN] home module 2 open	home-module-1	326x86
+[zh-CN] home module 2 open	home-module-2	326x86
+[zh-CN] home module 2 open	home-node-unit-6	254x72
+[zh-CN] home module 2 open	home-node-checkpoint-6	238x72
+[zh-CN] home module 2 open	home-node-unit-7	254x72
+[zh-CN] home module 2 open	home-node-unit-8	254x72
+[zh-CN] home module 2 open	home-node-unit-9	254x72
+[zh-CN] home module 2 open	home-node-checkpoint-9	238x72
+[zh-CN] home module 2 open	home-module-3	326x86
+[zh-CN] home module 2 open	home-game9	328x56
+[zh-CN] home module 3 open	learn-back	62x44
+[zh-CN] home module 3 open	打开设置	44x44
+[zh-CN] home module 3 open	home-continue	328x56
+[zh-CN] home module 3 open	home-module-1	326x86
+[zh-CN] home module 3 open	home-module-2	326x86
+[zh-CN] home module 3 open	home-module-3	326x86
+[zh-CN] home module 3 open	home-node-unit-10	254x72
+[zh-CN] home module 3 open	home-node-unit-11	254x72
+[zh-CN] home module 3 open	home-node-lesson-u11-vital	254x72
+[zh-CN] home module 3 open	home-node-checkpoint-11	238x72
+[zh-CN] home module 3 open	home-node-unit-12	254x72
+[zh-CN] home module 3 open	home-node-unit-13	254x72
+[zh-CN] home module 3 open	home-node-unit-14	254x72
+[zh-CN] home module 3 open	home-node-checkpoint-14	238x72
+[zh-CN] home module 3 open	home-game9	328x56
+[zh-CN] home finished	learn-back	62x44
+[zh-CN] home finished	打开设置	44x44
+[zh-CN] home finished	home-module-1	326x86
+[zh-CN] home finished	home-module-2	326x86
+[zh-CN] home finished	home-module-3	326x86
+[zh-CN] home finished	home-game9	328x56
+[zh-CN] picker	返回	62x44
+[zh-CN] picker	game9-level-1	328x72
+[zh-CN] picker	game9-level-2	328x72
+[zh-CN] picker	game9-level-3	328x72
+[zh-CN] picker	game9-handicap-0	62x48
+[zh-CN] picker	game9-handicap-2	62x48
+[zh-CN] picker	game9-handicap-3	62x48
+[zh-CN] picker	game9-handicap-4	62x48
+[zh-CN] picker	game9-handicap-5	62x48
+[zh-CN] picker	game9-atari-hints	328x56
+[zh-CN] picker	game9-start	328x48
+[en] home new learner	learn-back	69x44
+[en] home new learner	Open settings	44x44
+[en] home new learner	home-continue	328x56
+[en] home new learner	home-module-1	326x86
+[en] home new learner	home-node-unit-1	254x76
+[en] home new learner	home-node-unit-2	254x72
+[en] home new learner	home-node-unit-3	254x72
+[en] home new learner	home-node-unit-4	254x72
+[en] home new learner	home-node-unit-5	254x76
+[en] home new learner	home-node-checkpoint-5	238x72
+[en] home new learner	home-module-2	326x86
+[en] home new learner	home-module-3	326x86
+[en] home new learner	home-game9	328x56
+[en] home module 2 open	learn-back	69x44
+[en] home module 2 open	Open settings	44x44
+[en] home module 2 open	home-continue	328x56
+[en] home module 2 open	home-module-1	326x86
+[en] home module 2 open	home-module-2	326x86
+[en] home module 2 open	home-node-unit-6	254x76
+[en] home module 2 open	home-node-checkpoint-6	238x72
+[en] home module 2 open	home-node-unit-7	254x76
+[en] home module 2 open	home-node-unit-8	254x72
+[en] home module 2 open	home-node-unit-9	254x72
+[en] home module 2 open	home-node-checkpoint-9	238x72
+[en] home module 2 open	home-module-3	326x86
+[en] home module 2 open	home-game9	328x56
+[en] home module 3 open	learn-back	69x44
+[en] home module 3 open	Open settings	44x44
+[en] home module 3 open	home-continue	328x56
+[en] home module 3 open	home-module-1	326x86
+[en] home module 3 open	home-module-2	326x86
+[en] home module 3 open	home-module-3	326x86
+[en] home module 3 open	home-node-unit-10	254x72
+[en] home module 3 open	home-node-unit-11	254x76
+[en] home module 3 open	home-node-lesson-u11-vital	254x72
+[en] home module 3 open	home-node-checkpoint-11	238x72
+[en] home module 3 open	home-node-unit-12	254x72
+[en] home module 3 open	home-node-unit-13	254x72
+[en] home module 3 open	home-node-unit-14	254x76
+[en] home module 3 open	home-node-checkpoint-14	238x72
+[en] home module 3 open	home-game9	328x56
+[en] home finished	learn-back	69x44
+[en] home finished	Open settings	44x44
+[en] home finished	home-module-1	326x86
+[en] home finished	home-module-2	326x86
+[en] home finished	home-module-3	326x86
+[en] home finished	home-game9	328x56
+[en] picker	Back	69x44
+[en] picker	game9-level-1	328x72
+[en] picker	game9-level-2	328x72
+[en] picker	game9-level-3	328x72
+[en] picker	game9-handicap-0	62x48
+[en] picker	game9-handicap-2	62x48
+[en] picker	game9-handicap-3	62x48
+[en] picker	game9-handicap-4	62x48
+[en] picker	game9-handicap-5	62x48
+[en] picker	game9-atari-hints	328x74
+[en] picker	game9-start	328x48
+[fr] home new learner	learn-back	83x44
+[fr] home new learner	Ouvrir les réglages	44x44
+[fr] home new learner	home-continue	328x56
+[fr] home new learner	home-module-1	326x86
+[fr] home new learner	home-node-unit-1	254x76
+[fr] home new learner	home-node-unit-2	254x72
+[fr] home new learner	home-node-unit-3	254x72
+[fr] home new learner	home-node-unit-4	254x72
+[fr] home new learner	home-node-unit-5	254x72
+[fr] home new learner	home-node-checkpoint-5	238x72
+[fr] home new learner	home-module-2	326x86
+[fr] home new learner	home-module-3	326x86
+[fr] home new learner	home-game9	328x56
+[fr] home module 2 open	learn-back	83x44
+[fr] home module 2 open	Ouvrir les réglages	44x44
+[fr] home module 2 open	home-continue	328x56
+[fr] home module 2 open	home-module-1	326x86
+[fr] home module 2 open	home-module-2	326x86
+[fr] home module 2 open	home-node-unit-6	254x76
+[fr] home module 2 open	home-node-checkpoint-6	238x72
+[fr] home module 2 open	home-node-unit-7	254x76
+[fr] home module 2 open	home-node-unit-8	254x72
+[fr] home module 2 open	home-node-unit-9	254x72
+[fr] home module 2 open	home-node-checkpoint-9	238x72
+[fr] home module 2 open	home-module-3	326x86
+[fr] home module 2 open	home-game9	328x56
+[fr] home module 3 open	learn-back	83x44
+[fr] home module 3 open	Ouvrir les réglages	44x44
+[fr] home module 3 open	home-continue	328x56
+[fr] home module 3 open	home-module-1	326x86
+[fr] home module 3 open	home-module-2	326x86
+[fr] home module 3 open	home-module-3	326x86
+[fr] home module 3 open	home-node-unit-10	254x72
+[fr] home module 3 open	home-node-unit-11	254x72
+[fr] home module 3 open	home-node-lesson-u11-vital	254x72
+[fr] home module 3 open	home-node-checkpoint-11	238x72
+[fr] home module 3 open	home-node-unit-12	254x72
+[fr] home module 3 open	home-node-unit-13	254x72
+[fr] home module 3 open	home-node-unit-14	254x76
+[fr] home module 3 open	home-node-checkpoint-14	238x72
+[fr] home module 3 open	home-game9	328x56
+[fr] home finished	learn-back	83x44
+[fr] home finished	Ouvrir les réglages	44x44
+[fr] home finished	home-module-1	326x86
+[fr] home finished	home-module-2	326x86
+[fr] home finished	home-module-3	326x86
+[fr] home finished	home-game9	328x56
+[fr] picker	Retour	83x44
+[fr] picker	game9-level-1	328x78
+[fr] picker	game9-level-2	328x72
+[fr] picker	game9-level-3	328x72
+[fr] picker	game9-handicap-0	62x48
+[fr] picker	game9-handicap-2	62x48
+[fr] picker	game9-handicap-3	62x48
+[fr] picker	game9-handicap-4	62x48
+[fr] picker	game9-handicap-5	62x48
+[fr] picker	game9-atari-hints	328x74
+[fr] picker	game9-start	328x48
