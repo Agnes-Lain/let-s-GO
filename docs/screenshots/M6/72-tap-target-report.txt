@@ -104,24 +104,31 @@ screen	control	WxH (px)
 [fr] reset sheet	Démo du goban (dév.)	326x52
 [fr] reset sheet	settings-reset-keep	328x48
 [fr] reset sheet	settings-reset-confirm	328x48
+[zh-CN] landing	landing-settings	44x44
+[zh-CN] landing	landing-start	312x52
 [zh-CN] onboarding 1	onboarding-skip	45x44
 [zh-CN] onboarding 1	onboarding-next	328x52
 [zh-CN] onboarding 2	onboarding-skip	45x44
 [zh-CN] onboarding 2	onboarding-finish	328x52
 [zh-CN] onboarding 2 after a stone	onboarding-skip	45x44
 [zh-CN] onboarding 2 after a stone	onboarding-finish	328x52
+[en] landing	landing-settings	44x44
+[en] landing	landing-start	312x52
 [en] onboarding 1	onboarding-skip	49x44
 [en] onboarding 1	onboarding-next	328x52
 [en] onboarding 2	onboarding-skip	49x44
 [en] onboarding 2	onboarding-finish	328x52
 [en] onboarding 2 after a stone	onboarding-skip	49x44
 [en] onboarding 2 after a stone	onboarding-finish	328x52
+[fr] landing	landing-settings	44x44
+[fr] landing	landing-start	312x52
 [fr] onboarding 1	onboarding-skip	67x44
 [fr] onboarding 1	onboarding-next	328x52
 [fr] onboarding 2	onboarding-skip	67x44
 [fr] onboarding 2	onboarding-finish	328x52
 [fr] onboarding 2 after a stone	onboarding-skip	67x44
 [fr] onboarding 2 after a stone	onboarding-finish	328x52
+[zh-CN] home new learner	learn-back	62x44
 [zh-CN] home new learner	打开设置	44x44
 [zh-CN] home new learner	home-continue	328x56
 [zh-CN] home new learner	home-module-1	326x86
@@ -134,6 +141,7 @@ screen	control	WxH (px)
 [zh-CN] home new learner	home-module-2	326x86
 [zh-CN] home new learner	home-module-3	326x86
 [zh-CN] home new learner	home-game9	328x56
+[zh-CN] home module 2 open	learn-back	62x44
 [zh-CN] home module 2 open	打开设置	44x44
 [zh-CN] home module 2 open	home-continue	328x56
 [zh-CN] home module 2 open	home-module-1	326x86
@@ -146,6 +154,7 @@ screen	control	WxH (px)
 [zh-CN] home module 2 open	home-node-checkpoint-9	238x72
 [zh-CN] home module 2 open	home-module-3	326x86
 [zh-CN] home module 2 open	home-game9	328x56
+[zh-CN] home module 3 open	learn-back	62x44
 [zh-CN] home module 3 open	打开设置	44x44
 [zh-CN] home module 3 open	home-continue	328x56
 [zh-CN] home module 3 open	home-module-1	326x86
@@ -160,6 +169,7 @@ screen	control	WxH (px)
 [zh-CN] home module 3 open	home-node-unit-14	254x72
 [zh-CN] home module 3 open	home-node-checkpoint-14	238x72
 [zh-CN] home module 3 open	home-game9	328x56
+[zh-CN] home finished	learn-back	62x44
 [zh-CN] home finished	打开设置	44x44
 [zh-CN] home finished	home-module-1	326x86
 [zh-CN] home finished	home-module-2	326x86
@@ -176,6 +186,7 @@ screen	control	WxH (px)
 [zh-CN] picker	game9-handicap-5	62x48
 [zh-CN] picker	game9-atari-hints	328x56
 [zh-CN] picker	game9-start	328x48
+[en] home new learner	learn-back	69x44
 [en] home new learner	Open settings	44x44
 [en] home new learner	home-continue	328x56
 [en] home new learner	home-module-1	326x86
@@ -188,6 +199,7 @@ screen	control	WxH (px)
 [en] home new learner	home-module-2	326x86
 [en] home new learner	home-module-3	326x86
 [en] home new learner	home-game9	328x56
+[en] home module 2 open	learn-back	69x44
 [en] home module 2 open	Open settings	44x44
 [en] home module 2 open	home-continue	328x56
 [en] home module 2 open	home-module-1	326x86
@@ -200,6 +212,7 @@ screen	control	WxH (px)
 [en] home module 2 open	home-node-checkpoint-9	238x72
 [en] home module 2 open	home-module-3	326x86
 [en] home module 2 open	home-game9	328x56
+[en] home module 3 open	learn-back	69x44
 [en] home module 3 open	Open settings	44x44
 [en] home module 3 open	home-continue	328x56
 [en] home module 3 open	home-module-1	326x86
@@ -214,6 +227,7 @@ screen	control	WxH (px)
 [en] home module 3 open	home-node-unit-14	254x76
 [en] home module 3 open	home-node-checkpoint-14	238x72
 [en] home module 3 open	home-game9	328x56
+[en] home finished	learn-back	69x44
 [en] home finished	Open settings	44x44
 [en] home finished	home-module-1	326x86
 [en] home finished	home-module-2	326x86
@@ -230,6 +244,7 @@ screen	control	WxH (px)
 [en] picker	game9-handicap-5	62x48
 [en] picker	game9-atari-hints	328x74
 [en] picker	game9-start	328x48
+[fr] home new learner	learn-back	83x44
 [fr] home new learner	Ouvrir les réglages	44x44
 [fr] home new learner	home-continue	328x56
 [fr] home new learner	home-module-1	326x86
@@ -242,6 +257,7 @@ screen	control	WxH (px)
 [fr] home new learner	home-module-2	326x86
 [fr] home new learner	home-module-3	326x86
 [fr] home new learner	home-game9	328x56
+[fr] home module 2 open	learn-back	83x44
 [fr] home module 2 open	Ouvrir les réglages	44x44
 [fr] home module 2 open	home-continue	328x56
 [fr] home module 2 open	home-module-1	326x86
@@ -254,6 +270,7 @@ screen	control	WxH (px)
 [fr] home module 2 open	home-node-checkpoint-9	238x72
 [fr] home module 2 open	home-module-3	326x86
 [fr] home module 2 open	home-game9	328x56
+[fr] home module 3 open	learn-back	83x44
 [fr] home module 3 open	Ouvrir les réglages	44x44
 [fr] home module 3 open	home-continue	328x56
 [fr] home module 3 open	home-module-1	326x86
@@ -268,6 +285,7 @@ screen	control	WxH (px)
 [fr] home module 3 open	home-node-unit-14	254x76
 [fr] home module 3 open	home-node-checkpoint-14	238x72
 [fr] home module 3 open	home-game9	328x56
+[fr] home finished	learn-back	83x44
 [fr] home finished	Ouvrir les réglages	44x44
 [fr] home finished	home-module-1	326x86
 [fr] home finished	home-module-2	326x86

@@ -36,6 +36,9 @@ const shot = (page, name) => page.screenshot({ path: path.join(SHOTS, `${name}.p
 const wait = (page, ms) => page.waitForTimeout(ms);
 const tid = (page, id) => page.getByTestId(id).first();
 const has = async (page, id) => (await page.getByTestId(id).count()) > 0;
+// The landing page stays mounted under the intro and has its own board, so scope to the demo.
+const demoHas = async (page, id) =>
+  (await page.getByTestId('onboarding-demo-board').getByTestId(id).count()) > 0;
 const click = async (page, id) => {
   await tid(page, id).click();
   await wait(page, 300);
@@ -268,7 +271,9 @@ async function settingsChecks(browser) {
     await page.evaluate(() => {
       window.__stone = null;
       new MutationObserver(() => {
-        const el = document.querySelector('[data-testid="board-stone-c3"]');
+        const el = document.querySelector(
+          '[data-testid="onboarding-demo-board"] [data-testid="board-stone-c3"]',
+        );
         if (el && !window.__stone) {
           const walk = (n) => {
             let o = 1;
@@ -416,8 +421,66 @@ async function onboardingChecks(browser) {
       page.url(),
     );
     await wait(page, 300);
-    await shot(page, `64-landing-${locale}`);
-    await audit(page, `[${locale}] landing`);
+    await shot(page, `59-landing-${locale}`);
+    const landing = await audit(page, `[${locale}] landing`, { scrollY: false });
+    check(
+      `[${locale}] landing: no page scroll`,
+      landing.scrollHeight <= 740,
+      `${landing.scrollHeight}`,
+    );
+    // §12c final positions (360x740): intro from y 246 (<= 318), board y 324-504, CTA y 528-580.
+    const box = async (id) => tid(page, id).boundingBox();
+    const [intro, brd, cta, gear] = await Promise.all(
+      ['landing-intro', 'landing-board', 'landing-start', 'landing-settings'].map(box),
+    );
+    check(
+      `[${locale}] landing: intro starts at y 246 and ends by 318`,
+      Math.abs(intro.y - 246) <= 2 && intro.y + intro.height <= 319,
+      `${intro.y}-${intro.y + intro.height}`,
+    );
+    check(
+      `[${locale}] landing: board 180 px at y 324-504, centred`,
+      Math.abs(brd.y - 324) <= 2 &&
+        Math.abs(brd.height - 180) <= 2 &&
+        Math.abs(brd.x + brd.width / 2 - 180) <= 2,
+      `${brd.x},${brd.y} ${brd.width}x${brd.height}`,
+    );
+    check(
+      `[${locale}] landing: CTA 52 px at y 528-580, 24 px margins`,
+      Math.abs(cta.y - 528) <= 2 &&
+        Math.abs(cta.height - 52) <= 2 &&
+        Math.abs(cta.x - 24) <= 1 &&
+        Math.abs(cta.width - 312) <= 2,
+      `${cta.x},${cta.y} ${cta.width}x${cta.height}`,
+    );
+    check(
+      `[${locale}] landing: gear >= 44`,
+      gear.width >= 43.5 && gear.height >= 43.5,
+      `${gear.width}x${gear.height}`,
+    );
+    check(
+      `[${locale}] landing: ridges below y 600 are clear (nothing interactive or textual)`,
+      cta.y + cta.height <= 600,
+    );
+    // Pixel check: below y 600 the screenshot holds only the mist/ridge colours (no dark ink).
+    const dark = await page.evaluate(() => {
+      const t = [...document.querySelectorAll('body *')].filter(
+        (e) =>
+          [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) &&
+          e.getBoundingClientRect().bottom > 600,
+      );
+      return t.map((e) => e.textContent.trim().slice(0, 20));
+    });
+    check(`[${locale}] landing: no text below y 600`, dark.length === 0, dark.join('|'));
+    const body = await page.locator('body').innerText();
+    check(
+      `[${locale}] landing shows name, intro and CTA`,
+      body.includes(texts[locale]['home.intro']) && body.includes(texts[locale]['home.start']),
+    );
+    check(
+      `[${locale}] landing has no lesson list`,
+      !(await has(page, 'home-continue')) && !(await has(page, 'home-module-1')),
+    );
     await click(page, 'landing-start');
     await tid(page, 'onboarding-step-1').waitFor({ timeout: 30000 });
     check(
@@ -475,14 +538,14 @@ async function onboardingChecks(browser) {
     await wait(page, 150);
     check(
       `[${locale}] mouse-down: ghost, no stone`,
-      (await has(page, 'board-ghost')) && !(await has(page, 'board-stone-c3')),
+      (await demoHas(page, 'board-ghost')) && !(await demoHas(page, 'board-stone-c3')),
     );
     if (locale !== 'zh-CN' || true) await shot(page, `67-onboarding-2-ghost-${locale}`);
     await page.mouse.up();
     await wait(page, 500);
     check(
       `[${locale}] mouse-up: Black stone on c3 + done line`,
-      (await has(page, 'board-stone-c3')) && (await has(page, 'onboarding-demo-done')),
+      (await demoHas(page, 'board-stone-c3')) && (await has(page, 'onboarding-demo-done')),
     );
     await shot(page, `68-onboarding-2-placed-${locale}`);
     await audit(page, `[${locale}] onboarding 2 after a stone`, { scrollY: false });
@@ -494,7 +557,7 @@ async function onboardingChecks(browser) {
     await wait(page, 300);
     check(
       `[${locale}] slide off the board places nothing`,
-      !(await has(page, 'board-stone-d2')) && !(await has(page, 'board-stone-e3')),
+      !(await demoHas(page, 'board-stone-d2')) && !(await demoHas(page, 'board-stone-e3')),
     );
     // Occupied point -> engine message.
     await demoTap(page, 'c3');
