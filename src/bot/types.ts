@@ -31,6 +31,12 @@ export interface BotOptions {
    * no capture or save exists. Default 0.
    */
   slip?: number;
+  /**
+   * Level 3 only, for the tuning script (M6b-2 AC 10): playouts per candidate and softmax
+   * temperature. Default: the board size's constants (`mcBudget`, `mcTemperature`).
+   */
+  playoutsPerCandidate?: number;
+  temperature?: number;
 }
 
 export interface BotChoice {

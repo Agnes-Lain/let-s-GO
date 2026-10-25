@@ -30,7 +30,7 @@ export const HANDICAP_KOMI = 0.5;
  */
 export const STARTING_HANDICAP: Readonly<Record<BotLevel, Handicap>> = { 1: 2, 2: 5, 3: 5 };
 /** 13×13 (M6b AC 13, §11 decision 3): provisional, tuned in M6b-2. */
-export const STARTING_HANDICAP_13: Readonly<Record<BotLevel, Handicap>> = { 1: 2, 2: 4, 3: 5 };
+export const STARTING_HANDICAP_13: Readonly<Record<BotLevel, Handicap>> = { 1: 2, 2: 5, 3: 5 };
 
 /** The starting table of a board size. */
 export function startingHandicap(size: GameSize): Readonly<Record<BotLevel, Handicap>> {

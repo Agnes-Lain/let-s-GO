@@ -1,6 +1,6 @@
 // 13×13 games (spec docs/specs/M6b-13x13-game.md §4.1, 4.4–4.6): the size control and its lock,
 // the 13×13 picker numbers, the play route, the 360×740 layout, touch preview / confirm, the
-// "Thinking…" notice, Resign while thinking, the hidden review and the stored result.
+// "Thinking…" notice, Resign while thinking, the review (M6b-2 AC 24, 28–29) and the stored result.
 import { router as appRouter } from 'expo-router';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { AccessibilityInfo } from 'react-native';
@@ -164,12 +164,13 @@ describe('picker by route (§13 PO change, AC 4, 9, 13)', () => {
     expect(screen.getByTestId('game-size-time')).toHaveTextContent(texts['game.size.time13']);
     expect(screen.getByTestId('game-confirm-switch')).toBeTruthy();
     expect(texts['game.confirm.desc']).toMatch(/Hint is not available/);
-    // Chips Even, 2–5 (no 1, no 6–9); after any win Normal is preselected: 13×13 suggests 4.
+    // Chips Even, 2–5 (no 1, no 6–9); after any win Normal is preselected: 13×13 suggests 5
+    // (M6b-2 AC 7: the tuned table, was 4).
     for (const n of [0, 2, 3, 4, 5]) expect(screen.getByTestId(`game9-handicap-${n}`)).toBeTruthy();
     expect(screen.queryByTestId('game9-handicap-1')).toBeNull();
     expect(screen.queryByTestId('game9-handicap-6')).toBeNull();
-    expect(screen.getByTestId('game9-handicap-4-suggested')).toBeTruthy();
-    expect(state('game9-handicap-4').selected).toBe(true);
+    expect(screen.getByTestId('game9-handicap-5-suggested')).toBeTruthy();
+    expect(state('game9-handicap-5').selected).toBe(true);
     await press('game9-handicap-0');
     expect(screen.getByTestId('game9-handicap-explain')).toHaveTextContent(
       'You play Black and move first. Komi 6.5.',
@@ -185,11 +186,12 @@ describe('Start and the play route (AC 5, 7, 8)', () => {
     const router = await openAt('/game?size=13');
     await press('game9-start');
     expect(router.getPathname()).toBe('/game/play');
-    expect(router.getSearchParams()).toMatchObject({ size: '13', level: '2', handicap: '4' });
+    // M6b-2 AC 7, 9: Normal starts at the tuned 5 stones.
+    expect(router.getSearchParams()).toMatchObject({ size: '13', level: '2', handicap: '5' });
     expect(screen.getByTestId('game9-header')).toHaveTextContent(
-      '13×13 · Normal · 4 stones · Komi 0.5',
+      '13×13 · Normal · 5 stones · Komi 0.5',
     );
-    expect(screen.getAllByTestId(/^board-stone-/)).toHaveLength(4);
+    expect(screen.getAllByTestId(/^board-stone-/)).toHaveLength(5);
   });
 
   it('AC 7: an even 13×13 game: Black first, empty board, Komi 6.5', async () => {
@@ -331,22 +333,64 @@ describe('features on 13×13 (AC 37, 41)', () => {
     expect(announce).toHaveBeenCalledWith('Black plays k10.');
   });
 
-  it('AC 37: no Review button after a 13×13 game of 10+ moves', async () => {
-    await openAt('/game/play?level=1&size=13');
-    // Five learner moves on points the bot has not taken, each with the bot's reply.
+  /** Learner moves on points the bot has not taken, each with the bot's reply. */
+  async function playLearnerMoves(n: number) {
     const candidates = ['c3', 'd11', 'k3', 'l11', 'g7', 'c11', 'l3', 'g3', 'g11', 'c7'];
     let played = 0;
     for (const v of candidates) {
-      if (played === 5) break;
+      if (played === n) break;
       if (screen.queryByTestId(`board-stone-${v}`)) continue;
       await tapBoard(v);
       await advance(BOT_DELAY_MS + 50);
       played++;
     }
+  }
+
+  // M6b-2 AC 24 replaces M6b AC 37 (the review was hidden on 13×13 until M6b-2).
+  it('M6b-2 AC 24: the Review button shows after a 13×13 game of 10+ moves', async () => {
+    await openAt('/game/play?level=1&size=13');
+    await playLearnerMoves(5);
     expect(screen.getByTestId('game9-move')).toHaveTextContent('Move 10');
     await press('game9-resign');
     await press('game9-resign-confirm');
     expect(screen.getByTestId('game9-again')).toBeTruthy();
+    expect(screen.getByTestId('game9-review')).toBeTruthy();
+  });
+
+  it('M6b-2 AC 24: no Review button under 10 moves', async () => {
+    await openAt('/game/play?level=1&size=13');
+    await playLearnerMoves(4);
+    expect(screen.getByTestId('game9-move')).toHaveTextContent('Move 8');
+    await press('game9-resign');
+    await press('game9-resign-confirm');
+    expect(screen.getByTestId('game9-again')).toBeTruthy();
     expect(screen.queryByTestId('game9-review')).toBeNull();
+  });
+
+  it('M6b-2 AC 28–29: the review draws a read-only 13×13 board and names 13×13 points', async () => {
+    jest.spyOn(AccessibilityInfo, 'isScreenReaderEnabled').mockResolvedValue(true);
+    await openAt('/game/play?level=1&size=13');
+    await playLearnerMoves(5);
+    await press('game9-resign');
+    await press('game9-resign-confirm');
+    await press('game9-review');
+    for (let i = 0; i < 10; i++) await advance(10);
+    const board = screen.getByTestId('review-board');
+    // 13×13 board, 328 px wide at 360 (cell ≈ 22.8 px as in the game screen).
+    expect(flat(board.props.style).width).toBe(328);
+    expect(screen.getAllByTestId(/^board-stone-/).length).toBeGreaterThan(0);
+    // The last move of a 10-move game is on the 13×13 board (row numbers up to 13, no "i").
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation();
+    announce.mockClear();
+    await press('review-prev');
+    await press('review-next');
+    expect(announce.mock.calls.map((c) => c[0])).toEqual([
+      expect.stringMatching(/^Move 9 of 10, Black at [A-HJ-N]\d{1,2}$/),
+      expect.stringMatching(/^Move 10 of 10, White at [A-HJ-N]\d{1,2}$/),
+    ]);
+    // Taps on the review board are ignored (read-only): no new stone appears.
+    const stones = screen.getAllByTestId(/^board-stone-/).length;
+    expect(screen.queryByTestId('board-touch')).toBeNull();
+    expect(screen.getAllByTestId(/^board-stone-/).length).toBe(stones);
   });
 });

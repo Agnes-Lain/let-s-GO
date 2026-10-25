@@ -32,6 +32,16 @@ export function deadPlayoutPlies(size: number): number {
 export const DEAD_RATE = 0.8;
 /** Attacker moves allowed in the forced-capture proof of a group with ≤ 2 liberties. */
 const PROOF_MOVES = 4;
+/**
+ * 13×13 invaders (M6b-2 AC 17, 19, 22): random playouts let a lone stone live in about half of the
+ * games inside a 60-point area, so on 13×13 and bigger a small group is also dead when it sits in
+ * an area the opponent encloses (see `enclosedInvaders`). At most this many own stones in the area…
+ */
+export const INVADER_MAX_STONES = 6;
+/** …and the area (empty points and own stones) is at most half the board. */
+export function invaderAreaMax(size: number): number {
+  return Math.floor((size * size) / 2);
+}
 
 export type GroupStatus = 'proved-dead' | 'dead' | 'alive' | 'undecided';
 
@@ -124,16 +134,72 @@ function provedDead(state: GameState, group: Group): boolean {
   }).forced;
 }
 
+/**
+ * 13×13 and bigger (M6b-2 §4.5): the groups that are small invaders in an enclosed area. From the
+ * group, flood over empty points and own stones: the area is enclosed when it touches only
+ * opponent stones, every opponent group on its border is alive by playouts (so a seki, whose
+ * opponent group is undecided, never counts), it holds at most INVADER_MAX_STONES own stones and
+ * no own eye, and it is at most half the board (else it is the group's own area, not the
+ * opponent's). Two passes ended the game, so the opponent answers every move there.
+ */
+function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): boolean[] {
+  const { board } = state;
+  const { size, cells } = board;
+  const groupOf = new Int32Array(cells.length).fill(-1);
+  groups.forEach((group, g) => {
+    for (const p of group.stones) groupOf[p.y * size + p.x] = g;
+  });
+  const result = groups.map(() => false);
+  if (size < 13) return result;
+  const done = new Uint8Array(cells.length);
+  groups.forEach((group, g) => {
+    const first = group.stones[0];
+    if (result[g] || done[first.y * size + first.x]) return;
+    const color = group.color;
+    const area = [first.y * size + first.x];
+    const inArea = new Uint8Array(cells.length);
+    inArea[area[0]] = 1;
+    const ownGroups = new Set<number>();
+    let ownStones = 0;
+    let enclosed = true;
+    for (let i = 0; i < area.length; i++) {
+      const c = area[i];
+      if (cells[c] === color) {
+        ownStones++;
+        ownGroups.add(groupOf[c]);
+        done[c] = 1;
+      } else if (isOwnEye(board, { x: c % size, y: Math.floor(c / size) }, color)) {
+        enclosed = false;
+      }
+      const x = c % size;
+      for (const n of [x > 0 ? c - 1 : -1, x < size - 1 ? c + 1 : -1, c - size, c + size]) {
+        if (n < 0 || n >= cells.length || inArea[n]) continue;
+        const stone = cells[n];
+        if (stone === null || stone === color) {
+          inArea[n] = 1;
+          area.push(n);
+        } else if (rates[groupOf[n]] > 1 - DEAD_RATE) {
+          enclosed = false;
+        }
+      }
+    }
+    if (!enclosed || ownStones > INVADER_MAX_STONES || area.length > invaderAreaMax(size)) return;
+    for (const own of ownGroups) result[own] = true;
+  });
+  return result;
+}
+
 /** The bot's opinion on every group of the final position (deterministic for one rng). */
 export function judgeGroups(state: GameState, rng: Rng): GroupJudgement[] {
   const size = state.board.size as BoardSize;
   const groups = groupsOf(state);
   const rates = deadRates(state, groups, rng);
+  const invaders = enclosedInvaders(state, groups, rates);
   return groups.map((group, g) => {
     const deadRate = rates[g];
     const status: GroupStatus = provedDead(state, group)
       ? 'proved-dead'
-      : deadRate >= DEAD_RATE
+      : deadRate >= DEAD_RATE || invaders[g]
         ? 'dead'
         : deadRate <= 1 - DEAD_RATE
           ? 'alive'

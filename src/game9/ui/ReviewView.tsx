@@ -31,6 +31,7 @@ import { CloseIcon } from '@/theme/icons';
 import { color, radius, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 import { formatParams } from '../format';
+import { handicapStones } from '../handicap';
 import type { GameSession, Note } from '../session';
 
 /**
@@ -86,8 +87,16 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
     t(note.key, { ...formatParams(note, language), ...extra });
 
   const plan = useMemo(
-    () => planReview(s.game.moves, s.game.komi, s.seed, s.learner),
-    [s.game.moves, s.game.komi, s.seed, s.learner],
+    () =>
+      planReview(
+        s.game.moves,
+        s.game.komi,
+        s.seed,
+        s.learner,
+        s.size,
+        handicapStones(s.size, s.handicap),
+      ),
+    [s.game.moves, s.game.komi, s.seed, s.learner, s.size, s.handicap],
   );
   const { moments, skip } = useMoments(plan);
   const total = plan.moves.length;
@@ -104,11 +113,11 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
       ? t(`coach.review.a11y.${move.type === 'play' ? 'played' : 'passed'}.${move.color}`, {
           n: step,
           total,
-          point: move.type === 'play' ? toVertex(move.point, 9).toUpperCase() : '',
+          point: move.type === 'play' ? toVertex(move.point, s.size).toUpperCase() : '',
         })
       : t('coach.review.start');
     AccessibilityInfo.announceForAccessibility(text);
-  }, [step, plan, total, t]);
+  }, [step, plan, total, t, s.size]);
 
   const boardWidth = Math.max(
     0,
@@ -225,7 +234,7 @@ export function ReviewView({ s, onClose }: { s: GameSession; onClose: () => void
 
       <View style={styles.boardWrap}>
         <GoBoard
-          size={9}
+          size={s.size}
           stones={plan.states[step].board.cells}
           width={boardWidth}
           showCoordinates

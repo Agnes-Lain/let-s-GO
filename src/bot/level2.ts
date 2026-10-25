@@ -12,6 +12,19 @@ import type { BotReason } from './types';
 export const OPENING_MOVES = 30;
 /** An empty region bordered by one colour and at most this big counts as settled territory. */
 export const SETTLED_REGION_MAX = 12;
+/** 13×13 (M6b-2 AC 11): a longer opening and bigger settled areas on the wider board. */
+export const OPENING_MOVES_13 = 50;
+export const SETTLED_REGION_MAX_13 = 25;
+
+/** The opening length of a board size: 13×13 and bigger use OPENING_MOVES_13. */
+export function openingMoves(size: number): number {
+  return size >= 13 ? OPENING_MOVES_13 : OPENING_MOVES;
+}
+
+/** The biggest settled region of a board size: 13×13 and bigger use SETTLED_REGION_MAX_13. */
+export function settledRegionMax(size: number): number {
+  return size >= 13 ? SETTLED_REGION_MAX_13 : SETTLED_REGION_MAX;
+}
 /** A best score below this means only self-atari moves are left: the bot passes (AC 12). */
 export const PASS_BELOW = -6;
 /** Node cap of the ladder check before calling a group "saved" (§6.2 rule 2). */
@@ -36,9 +49,12 @@ export function lineOf(p: Point, size: number): number {
 
 /**
  * Owner of each empty point that lies in a settled region: an empty region bordered by stones of
- * one colour only and at most SETTLED_REGION_MAX points big. Other points are null.
+ * one colour only and at most `max` points big (SETTLED_REGION_MAX on 9×9). Other points are null.
  */
-export function settledOwners(board: Board): (Color | null)[] {
+export function settledOwners(
+  board: Board,
+  max: number = settledRegionMax(board.size),
+): (Color | null)[] {
   const { size, cells } = board;
   const owners: (Color | null)[] = Array<Color | null>(cells.length).fill(null);
   const seen = new Uint8Array(cells.length);
@@ -61,7 +77,7 @@ export function settledOwners(board: Board): (Color | null)[] {
         }
       }
     }
-    if (borders.size === 1 && region.length <= SETTLED_REGION_MAX) {
+    if (borders.size === 1 && region.length <= max) {
       const owner = [...borders][0];
       for (const c of region) owners[c] = owner;
     }
@@ -134,7 +150,7 @@ export function scoreMoves(state: GameState): ScoredMove[] {
   const analyses = analyzeMoves(board, color, points);
   const exposedBefore = exposedStones(board, color);
   const settled = settledOwners(board);
-  const opening = state.moves.length < OPENING_MOVES;
+  const opening = state.moves.length < openingMoves(size);
   const scored: ScoredMove[] = [];
 
   for (const a of analyses) {

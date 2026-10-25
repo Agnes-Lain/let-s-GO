@@ -838,8 +838,8 @@ function Bottom({
           testID="game9-show-count"
         />
       ) : null}
-      {/* Review 复盘 is 9×9 only until M6b-2 (M6b AC 37). */}
-      {s.size === 9 && s.game.moves.length >= REVIEW_MIN_MOVES ? (
+      {/* Review 复盘 on 9×9 and 13×13 (M6b-2 AC 24). */}
+      {s.game.moves.length >= REVIEW_MIN_MOVES ? (
         // Review 复盘 is the primary action; Change level and Home share the text row (§5.3).
         <>
           <View style={styles.row}>

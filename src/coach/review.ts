@@ -9,11 +9,13 @@ import {
   pass,
   play,
   toVertex,
+  type BoardSize,
   type Color,
   type GameState,
   type Move,
   type MoveFacts,
   type Point,
+  type Vertex,
 } from '@/engine';
 
 import { factParams, moveNote, pickFact, type CoachFact, type CoachNote } from './facts';
@@ -24,6 +26,13 @@ export const REVIEW_MIN_MOVES = 10;
 export const SWING_POSITIONS = 24;
 export const SWING_PLAYOUTS = 40;
 export const SWING_MAX_PLIES = 80;
+/** 13×13 (M6b-2 AC 26): twice the plies per playout, same positions and playouts. */
+export const SWING_MAX_PLIES_13 = 160;
+
+/** Plies per swing playout of a board size. */
+export function swingMaxPlies(size: number): number {
+  return size >= 13 ? SWING_MAX_PLIES_13 : SWING_MAX_PLIES;
+}
 /** Learner moves up to this ply are the opening and not evaluated. */
 export const SWING_FROM_PLY = 6;
 /** A swing is a drop of at least this much win chance (AC 28). */
@@ -52,6 +61,8 @@ export interface ReviewPlan {
   moves: readonly Move[];
   learner: Color;
   seed: number;
+  /** Board size (9 or 13, M6b-2 AC 25). */
+  size: number;
   /** states[k] = the position after the first k moves (AC 33). */
   states: GameState[];
   /** facts[k] = the engine facts of move k (index 0 and passes: null). */
@@ -81,14 +92,27 @@ function swingPositions(moves: readonly Move[], learner: Color): number[] {
   return [sampled[0] - 1, ...sampled];
 }
 
-/** Replays `moves` on a 9×9 board with the engine (throws on an illegal move). */
+/** The start of a replay: handicap stones (Black) mean White moves first (M6-beginner-friendly). */
+function startOf(size: number, komi: number, handicap: readonly Vertex[]): GameState {
+  const boardSize = size as BoardSize;
+  return handicap.length > 0
+    ? createGame(boardSize, { komi, setup: { B: [...handicap] }, toPlay: 'W' })
+    : createGame(boardSize, { komi });
+}
+
+/**
+ * Replays `moves` on a `size` board (default 9) with the engine, from the handicap stones when
+ * given (throws on an illegal move).
+ */
 export function planReview(
   moves: readonly Move[],
   komi: number,
   seed: number,
   learner: Color = 'B',
+  size = 9,
+  handicap: readonly Vertex[] = [],
 ): ReviewPlan {
-  let state = createGame(9, { komi });
+  let state = startOf(size, komi, handicap);
   const states = [state];
   const facts: (MoveFacts | null)[] = [null];
   for (const move of moves) {
@@ -105,7 +129,15 @@ export function planReview(
     }
     states.push(state);
   }
-  return { moves, learner, seed, states, facts, positions: swingPositions(moves, learner) };
+  return {
+    moves,
+    learner,
+    seed,
+    size,
+    states,
+    facts,
+    positions: swingPositions(moves, learner),
+  };
 }
 
 /** Win chance of the learner at `plan.positions[index]` (AC 28): seeded random playouts. */
@@ -115,7 +147,7 @@ export function evaluatePosition(plan: ReviewPlan, index: number): number {
     plan.states[at],
     plan.learner,
     SWING_PLAYOUTS,
-    SWING_MAX_PLIES,
+    swingMaxPlies(plan.size),
     deriveSeed(plan.seed, at),
   );
 }
@@ -141,8 +173,8 @@ function firstPoint(points: readonly Point[]): Point {
   return [...points].sort((a, b) => a.x - b.x || a.y - b.y)[0];
 }
 
-function bigParams(ply: number, k: number, point: Point) {
-  return { n: ply, k, point: toVertex(point, 9).toUpperCase() };
+function bigParams(ply: number, k: number, point: Point, size: number) {
+  return { n: ply, k, point: toVertex(point, size as BoardSize).toUpperCase() };
 }
 
 /** True when `stones` are exactly one group with one liberty in `state`. */
@@ -190,8 +222,14 @@ function captureMoments(plan: ReviewPlan): ReviewMoment[] {
         point,
         note:
           mover === 'B'
-            ? { key: 'coach.review.bigCapture.B', params: bigParams(ply, stones.length, point) }
-            : { key: 'coach.review.bigCapture.W', params: bigParams(ply, stones.length, point) },
+            ? {
+                key: 'coach.review.bigCapture.B',
+                params: bigParams(ply, stones.length, point, plan.size),
+              }
+            : {
+                key: 'coach.review.bigCapture.W',
+                params: bigParams(ply, stones.length, point, plan.size),
+              },
       };
     }
     if (mover === learner) continue;
@@ -252,7 +290,7 @@ function swingMoment(plan: ReviewPlan, chances: readonly number[]): ReviewMoment
     point: move.point,
     note: {
       key: 'coach.review.swing',
-      params: { n: ply, point: toVertex(move.point, 9).toUpperCase() },
+      params: { n: ply, point: toVertex(move.point, plan.size as BoardSize).toUpperCase() },
     },
     reply: replyOf(plan, ply),
   };
@@ -277,8 +315,10 @@ export function buildReview(
   komi: number,
   seed: number,
   learner: Color = 'B',
+  size = 9,
+  handicap: readonly Vertex[] = [],
 ): ReviewMoment[] {
-  const plan = planReview(moves, komi, seed, learner);
+  const plan = planReview(moves, komi, seed, learner, size, handicap);
   const chances = plan.positions.map((_, i) => evaluatePosition(plan, i));
   return reviewMoments(plan, chances);
 }

@@ -28,8 +28,14 @@ export {
 export { isOwnEye } from './eyes';
 export { OPENING_EMPTY_POINTS, openingEmptyPoints } from './heuristic';
 export {
+  OPENING_MOVES,
+  OPENING_MOVES_13,
   PASS_BELOW,
+  SETTLED_REGION_MAX,
+  SETTLED_REGION_MAX_13,
+  openingMoves,
   playableMoves,
+  settledRegionMax,
   scoreMoves,
   settledOwners,
   type MoveKind,
@@ -45,12 +51,15 @@ export {
   MC_PLAYOUTS_PER_CANDIDATE_13,
   MC_PRIOR_WEIGHT,
   MC_TEMPERATURE,
+  MC_TEMPERATURE_13,
   level3Search,
   mcBudget,
+  mcTemperature,
   softmaxPick,
   type CandidateValue,
   type Level3Search,
   type McBudget,
+  type McTuning,
 } from './level3';
 export { createRng, deriveSeed, type Rng } from './rng';
 export { winRate } from './playout';

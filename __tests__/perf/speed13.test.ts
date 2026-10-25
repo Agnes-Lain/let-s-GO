@@ -1,0 +1,95 @@
+// Spec docs/specs/M6b-13x13-bot-tuning.md §4.4 (AC 13): desktop time per move on 13×13, the proxy
+// for a mid-range phone (× 6). Positions come from a seeded level-2 self-play (13×13 slip): 20
+// evenly spaced plies of the game (at most plies 0–200). Timing lives only here and in the tuning
+// script: src/bot itself has no clock (AC 12).
+import { createGame, pass, play, type GameState, type Move } from '@/engine';
+import { botRng, chooseMove, proposeDead, type BotLevel } from '@/bot';
+import { hintFor } from '@/coach';
+import { levelKnobs } from '@/game9/config';
+
+function apply(state: GameState, move: Move): GameState {
+  const result = move.type === 'pass' ? pass(state) : play(state, move.point);
+  if (!result.ok) throw new Error(`illegal: ${result.reason}`);
+  return result.state;
+}
+
+/** Every position of a 13×13 level-2 self-play, up to ply 200. */
+function selfPlay(seed: number): GameState[] {
+  let state = createGame(13, { komi: 6.5 });
+  const states = [state];
+  while (!state.isOver && state.moves.length < 200) {
+    const { move } = chooseMove(state, {
+      level: 2,
+      rng: botRng(seed, state.moves.length),
+      boardN: true,
+      ...levelKnobs(2, 13),
+    });
+    state = apply(state, move);
+    states.push(state);
+  }
+  return states;
+}
+
+const GAME = selfPlay(3);
+const last = GAME.length - 1;
+/** 20 evenly spaced positions, from the empty board to the end of the game. */
+const POSITIONS = Array.from({ length: 20 }, (_, i) => GAME[Math.round((i * last) / 19)]);
+/** Late positions for the dead-stone proposal: every 2nd ply from 120 on, at most 10. */
+const LATE = GAME.filter((s) => s.moves.length >= 120 && s.moves.length % 2 === 0).slice(0, 10);
+
+/** Index ⌈0.95 n⌉ − 1 of the sorted times (the 19th of 20). */
+function p95(times: number[]): number {
+  const sorted = [...times].sort((a, b) => a - b);
+  return sorted[Math.max(0, Math.ceil(0.95 * sorted.length) - 1)];
+}
+
+const mean = (times: number[]) => times.reduce((n, t) => n + t, 0) / times.length;
+
+function timeEach(positions: GameState[], run: (state: GameState, i: number) => void): number[] {
+  run(positions[Math.min(5, positions.length - 1)], 0); // warm-up (JIT)
+  return positions.map((state, i) => {
+    const start = performance.now();
+    run(state, i);
+    return performance.now() - start;
+  });
+}
+
+describe('AC 13: 13×13 speed on desktop (phone ≈ × 6)', () => {
+  it('has 20 positions from the empty board to a game of at least 130 plies', () => {
+    expect(POSITIONS).toHaveLength(20);
+    expect(POSITIONS[0].moves).toHaveLength(0);
+    expect(POSITIONS[19].moves.length).toBeGreaterThanOrEqual(130);
+  });
+
+  const choose = (level: BotLevel) => (state: GameState, i: number) =>
+    chooseMove(state, {
+      level,
+      rng: botRng(i, state.moves.length),
+      boardN: true,
+      ...levelKnobs(level, 13),
+    });
+
+  it('level 3: mean ≤ 250 ms, p95 ≤ 330 ms, max ≤ 500 ms', () => {
+    const times = timeEach(POSITIONS, choose(3));
+    expect(mean(times)).toBeLessThanOrEqual(250);
+    expect(p95(times)).toBeLessThanOrEqual(330);
+    expect(Math.max(...times)).toBeLessThanOrEqual(500);
+  });
+
+  it.each([1, 2] as BotLevel[])('level %i: mean ≤ 5 ms, p95 ≤ 20 ms', (level) => {
+    const times = timeEach(POSITIONS, choose(level));
+    expect(mean(times)).toBeLessThanOrEqual(5);
+    expect(p95(times)).toBeLessThanOrEqual(20);
+  });
+
+  it('hint: p95 ≤ 50 ms', () => {
+    const times = timeEach(POSITIONS, (state) => hintFor(state));
+    expect(p95(times)).toBeLessThanOrEqual(50);
+  });
+
+  it('dead-stone proposal (ply ≥ 120): p95 ≤ 250 ms', () => {
+    expect(LATE.length).toBeGreaterThanOrEqual(5);
+    const times = timeEach(LATE, (state, i) => proposeDead(state, botRng(i, 0xdead)));
+    expect(p95(times)).toBeLessThanOrEqual(250);
+  });
+});
