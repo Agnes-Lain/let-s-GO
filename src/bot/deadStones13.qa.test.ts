@@ -126,7 +126,7 @@ describe('13×13 two white groups sharing two eyes (found by QA in L2-L2 seed 2)
     expect(groupAt(SHARED_EYES.board, 'l5')?.liberties).toHaveLength(2);
   });
 
-  it.failing('does not propose the living white stones dead (seeds 1–5)', () => {
+  it('does not propose the living white stones dead (seeds 1–5)', () => {
     for (const seed of SEEDS) {
       const dead = proposeDead(SHARED_EYES, createRng(seed));
       expect(

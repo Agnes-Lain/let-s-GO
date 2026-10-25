@@ -250,15 +250,16 @@ colours; L3 rows were split over processes with `TUNE_FIRST` (same games as one 
 ### 12.2 Win rates (AC 1–4)
 | Row | Games | Sensible wins | Band | < 9×9 | OK |
 |---|---|---|---|---|---|
-| Easy, even | 200 (seeds 1–100 × 2) | 81.0 % | 70–88 | < 92.5 | yes |
+| Easy, even | 200 (seeds 1–100 × 2) | 83.0 % | 70–88 | < 92.5 | yes |
 | Normal, even | 200 | 47.5 % | 30–50 | < 57 | yes |
-| Challenge, even | 200 | 17.0 % | 5–20 | < 24 | yes |
-| Easy, handicap 2 | 100 | 88.0 % | 75–92 | < 97 | yes |
+| Challenge, even | 200 | 16.5 % | 5–20 | < 24 | yes |
+| Easy, handicap 2 | 100 | 89.0 % | 75–92 | < 97 | yes |
 | Normal, handicap 5 | 100 | 60.0 % | 50–78 | < 90 (9×9 at 5) | yes |
 | Challenge, handicap 5 | 100 | 31.0 % | 20–48 | < 56 | yes |
 
-AC 2: 81.0 > 47.5 > 17.0 (steps 33.5 and 30.5). AC 4 (200 games each): L2 beats L1 86.0 %, L3 beats L2 96.0 %, L3 beats
-L1 95.5 %. Before tuning (13×13 with the 9×9 values): Sensible won 97 % / 69 % / 57 % even.
+AC 2: 83.0 > 47.5 > 16.5 (steps 35.5 and 31). AC 4 (200 games each): L2 beats L1 87.0 %, L3 beats L2 96.0 %, L3 beats
+L1 95.5 % (the L3 pairs and the 12.3 table were measured before the QA fix of 12.7; not rerun).
+The table rows above are after that fix. Before tuning (13×13 with the 9×9 values): Sensible won 97 % / 69 % / 57 % even.
 
 ### 12.3 Handicap table (AC 3, 6, 7): Sensible / Noob wins, learner Black, komi 0.5
 | n | Easy (100 seeds) | Normal (100 seeds) | Challenge (25 seeds) |
@@ -291,11 +292,11 @@ In the tuning runs (8–10 processes in parallel) level 3 measured mean 156–21
 - AC 22 (seeds 1–30 per pairing): planted stone proposed dead 4/4 (L2–L2) and 4/4 (Sensible–L2). Only 4 of 30 final
   positions per pairing have a single-colour region ≥ 15 points (the bots fill most areas); the plant point is the one
   farthest from every stone by Manhattan distance (≥ 2, touching no stone) — the spec's "two points" read this way.
-  Unplanted positions: 6.9 (L2–L2) and 3.4 (Sensible–L2) stones proposed dead per game; area score changed by ≤ 2 in 50 %
-  and 80 % of games. **These miss the AC 22 numbers, but the AC assumes clean final positions:** the bots pass when ahead,
+  Unplanted positions: 5.9 (L2–L2) and 3.2 (Sensible–L2) stones proposed dead per game; area score changed by ≤ 2 in 57 %
+  and 83 % of games. **These miss the AC 22 numbers, but the AC assumes clean final positions:** the bots pass when ahead,
   so real dead groups stay on the board. A spot check of 4 L2–L2 finals by hand found every proposed group really dead
   (e.g. a 12-stone Black group in White's area, proved dead) and no false kill; the misses were undecided stones (left to the
-  learner). Suggest the PO rephrase AC 22 as "no false kills" rather than "≤ 1 dead stone per game".
+  learner). (QA later found one false kill in L2–L2 seed 2, fixed in 12.7.) Suggest the PO rephrase AC 22 as "no false kills" rather than "≤ 1 dead stone per game".
 - `DEAD_PLAYOUT_PLIES` for 13×13 unchanged (300).
 
 ### 12.6 Other deviations
@@ -316,3 +317,16 @@ In the tuning runs (8–10 processes in parallel) level 3 measured mean 156–21
 
 ## PO approval (2026-10-25)
 PO approved the spec with all open-decision defaults.
+
+### 12.7 QA round 1 fixes
+- **AC 21 false kill (L2–L2 seed 2):** two White groups on the right edge sharing the liberties m7 and n6 (both suicide for
+  Black) were proposed dead, because random playouts fill such shared eyes. New sure-alive check on 13×13 (Benson-style with
+  one-point eyes): an eye is an empty point whose neighbours are all stones of the remaining own groups; groups touching fewer
+  than two eyes are dropped until nothing changes; the rest are always "alive" and never proposed. QA's `it.failing` is now a
+  passing test. **9×9 kept identical** by gating it to 13×13: without the gate, `tune:bot9` changed (8 seeds: Noob–L1 75 → 69 %,
+  Sensible–L2 50 → 56 %), i.e. the same false kill happens on 9×9 too; enabling it there is a PO decision (fewer false kills,
+  new recorded 9×9 numbers).
+- **fr count line cut** ("…des deux …" next to "Effacer"): same on 9×9 (shared component). While marking, the count and
+  Clear now sit on their own row under the prompt (row height reserved, so the board does not move at the first mark); the
+  prompt uses the full card width and fits in two lines (fr checked on 9×9 and 13×13 at 360×740, no page scroll,
+  `docs/screenshots/M6b/26-count-marked-13-fr-fixed.jpg`).

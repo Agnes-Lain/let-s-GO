@@ -189,21 +189,66 @@ function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): b
   return result;
 }
 
+/**
+ * Groups that are alive for sure (M6b-2 AC 21, a Benson-style check with one-point eyes): an
+ * "eye" is an empty point whose neighbours are all stones of the remaining own groups. Groups
+ * touching fewer than two eyes are dropped until nothing changes. Every remaining group has two
+ * or more eye liberties, so the opponent can never play on an eye (suicide, no capture): they
+ * cannot be captured, even when two groups share their eyes (random playouts may fill them).
+ * 13×13 and bigger only, so recorded 9×9 counts stay the same (spec M6b-2 AC 5, §12.5).
+ */
+function sureAlive(state: GameState, groups: Group[]): boolean[] {
+  const { size, cells } = state.board;
+  const groupOf = new Int32Array(cells.length).fill(-1);
+  groups.forEach((group, g) => {
+    for (const p of group.stones) groupOf[p.y * size + p.x] = g;
+  });
+  const neighbours = (c: number) => {
+    const x = c % size;
+    return [x > 0 ? c - 1 : -1, x < size - 1 ? c + 1 : -1, c - size, c + size].filter(
+      (n) => n >= 0 && n < cells.length,
+    );
+  };
+  const alive = groups.map(() => size >= 13);
+  for (let changed = size >= 13; changed;) {
+    changed = false;
+    const eyes = groups.map(() => 0);
+    for (let c = 0; c < cells.length; c++) {
+      if (cells[c] !== null) continue;
+      const around = neighbours(c);
+      const color = cells[around[0]];
+      if (color === null) continue;
+      if (!around.every((n) => cells[n] === color && alive[groupOf[n]])) continue;
+      for (const g of new Set(around.map((n) => groupOf[n]))) eyes[g]++;
+    }
+    groups.forEach((_, g) => {
+      if (alive[g] && eyes[g] < 2) {
+        alive[g] = false;
+        changed = true;
+      }
+    });
+  }
+  return alive;
+}
+
 /** The bot's opinion on every group of the final position (deterministic for one rng). */
 export function judgeGroups(state: GameState, rng: Rng): GroupJudgement[] {
   const size = state.board.size as BoardSize;
   const groups = groupsOf(state);
   const rates = deadRates(state, groups, rng);
   const invaders = enclosedInvaders(state, groups, rates);
+  const safe = sureAlive(state, groups);
   return groups.map((group, g) => {
     const deadRate = rates[g];
-    const status: GroupStatus = provedDead(state, group)
-      ? 'proved-dead'
-      : deadRate >= DEAD_RATE || invaders[g]
-        ? 'dead'
-        : deadRate <= 1 - DEAD_RATE
-          ? 'alive'
-          : 'undecided';
+    const status: GroupStatus = safe[g]
+      ? 'alive'
+      : provedDead(state, group)
+        ? 'proved-dead'
+        : deadRate >= DEAD_RATE || invaders[g]
+          ? 'dead'
+          : deadRate <= 1 - DEAD_RATE
+            ? 'alive'
+            : 'undecided';
     const stones = group.stones.map((p) => toVertex(p, size));
     return {
       color: group.color,
