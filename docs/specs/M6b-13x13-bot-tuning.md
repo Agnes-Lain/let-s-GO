@@ -234,7 +234,85 @@ liberties as listed.
 7. **Game-length cap.** Keep 400 moves unless the tuning games come near 320; then raise the cap rather than change the bots.
 
 ## 12. Dev deviations and measurements (developer fills)
-(empty)
+Measured 2026-10-25 with `npm run tune:bot13` (desktop M3 Pro, Node 22). Seeds are honest counts: even rows = seeds × both
+colours; L3 rows were split over processes with `TUNE_FIRST` (same games as one run).
+
+### 12.1 Tuned constants (13×13 only; 9×9 unchanged, `tune:bot9` output identical on spot checks)
+| Knob | 9×9 | 13×13 |
+|---|---|---|
+| `L1_BLUNDER_13` / `L1_SKIP_SAVE_13` / `L1_SKIP_ATARI_13` | 0.6 / 0.5 / 0.5 | 0.3 / 0.3 / 0.3 |
+| `L2_SLIP_13` | 0.7 | 0.5 |
+| `OPENING_MOVES_13` / `SETTLED_REGION_MAX_13` | 30 / 12 | 50 / 25 |
+| `MC_TEMPERATURE_13` | 0.21 | 0.06 |
+| `MC_PLAYOUTS_PER_CANDIDATE_13` / `MC_MAX_PLIES_13` / `MC_CANDIDATES` | 100 / 110 / 12 | 50 / 220 / 12 (unchanged) |
+| `STARTING_HANDICAP_13` | 2 / 5 / 5 | **2 / 5 / 5** (was provisional 2 / 4 / 5) |
+
+### 12.2 Win rates (AC 1–4)
+| Row | Games | Sensible wins | Band | < 9×9 | OK |
+|---|---|---|---|---|---|
+| Easy, even | 200 (seeds 1–100 × 2) | 81.0 % | 70–88 | < 92.5 | yes |
+| Normal, even | 200 | 47.5 % | 30–50 | < 57 | yes |
+| Challenge, even | 200 | 17.0 % | 5–20 | < 24 | yes |
+| Easy, handicap 2 | 100 | 88.0 % | 75–92 | < 97 | yes |
+| Normal, handicap 5 | 100 | 60.0 % | 50–78 | < 90 (9×9 at 5) | yes |
+| Challenge, handicap 5 | 100 | 31.0 % | 20–48 | < 56 | yes |
+
+AC 2: 81.0 > 47.5 > 17.0 (steps 33.5 and 30.5). AC 4 (200 games each): L2 beats L1 86.0 %, L3 beats L2 96.0 %, L3 beats
+L1 95.5 %. Before tuning (13×13 with the 9×9 values): Sensible won 97 % / 69 % / 57 % even.
+
+### 12.3 Handicap table (AC 3, 6, 7): Sensible / Noob wins, learner Black, komi 0.5
+| n | Easy (100 seeds) | Normal (100 seeds) | Challenge (25 seeds) |
+|---|---|---|---|
+| 2 | 88 % / **66 %** | 48 % / 23 % | 16 % / 0 % |
+| 3 | 92 % / 68 % | 50 % / 36 % | 12 % / 4 % |
+| 4 | 96 % / 75 % | 54 % / 32 % | 12 % / 8 % |
+| 5 | 94 % / 78 % | 60 % / 33 % | 32 % / 4 % |
+
+Table by the 9×9 rule: Easy 2 (Noob 66 % ≥ 60), Normal 5 and Challenge 5 (Noob never reaches 60 %). AC 3: no fall over 8 points
+(largest: Challenge 16 → 12, 4 points; 25 seeds, noisy). Note for the PO: handicap stones help the reference players much less
+on 13×13 than on 9×9 (Normal 48 → 60 % from 2 to 5 stones), because Sensible / Noob scatter their moves; Noob loses to Normal
+and Challenge even at 5 stones, so 5 is the honest start and auto-adjust cannot go further.
+
+### 12.4 Speed (AC 13, 27) and game length (AC 32)
+`npm run test:speed` (Jest alone on the machine; time per position = fastest of 3 runs of the same seeded work):
+Level 3 mean 146 ms, p95 243 ms, max 246 ms (phone ≈ 1.5 s at 6×); levels 1–2 and hint < 1 ms (Jest's clock is whole ms);
+dead-stone proposal (ply ≥ 120) p95 43 ms; review of a 100-move game 297 ms in all, largest chunk 53 ms.
+In the tuning runs (8–10 processes in parallel) level 3 measured mean 156–211 ms, p95 255–351 ms; dead-stone proposal p95
+40–53 ms; hint p95 1–2 ms. Plies: mean 155–198 per pairing, longest game 274 (cap 400, 80 % = 320): the cap stays.
+
+### 12.5 Dead stones (AC 16–23)
+- All six fixtures (W, W+g3+g11, W+a3, W+g3h3, E, a 13×13 seki) were checked with the engine (liberties, groups, eyes); the
+  spec diagrams are correct, none was changed.
+- **Behaviour added (deviation):** random playouts alone do not meet AC 17 / 19: a lone invader in W's 65-point area was
+  captured in only ~50 % of playouts (`DEAD_RATE` needs 80 %), with any playout length. On 13×13 and bigger, `judgeGroups`
+  now also calls a group dead when it is a small invader in an enclosed area: flood from it over empty points and own stones;
+  the area touches only opponent stones, every opponent group on its border is alive by playouts (so a seki, whose other
+  group is undecided, never counts), it holds ≤ 6 own stones and no own eye, and is at most half the board. 9×9 is untouched.
+- AC 22 (seeds 1–30 per pairing): planted stone proposed dead 4/4 (L2–L2) and 4/4 (Sensible–L2). Only 4 of 30 final
+  positions per pairing have a single-colour region ≥ 15 points (the bots fill most areas); the plant point is the one
+  farthest from every stone by Manhattan distance (≥ 2, touching no stone) — the spec's "two points" read this way.
+  Unplanted positions: 6.9 (L2–L2) and 3.4 (Sensible–L2) stones proposed dead per game; area score changed by ≤ 2 in 50 %
+  and 80 % of games. **These miss the AC 22 numbers, but the AC assumes clean final positions:** the bots pass when ahead,
+  so real dead groups stay on the board. A spot check of 4 L2–L2 finals by hand found every proposed group really dead
+  (e.g. a 12-stone Black group in White's area, proved dead) and no false kill; the misses were undecided stones (left to the
+  learner). Suggest the PO rephrase AC 22 as "no false kills" rather than "≤ 1 dead stone per game".
+- `DEAD_PLAYOUT_PLIES` for 13×13 unchanged (300).
+
+### 12.6 Other deviations
+- Review on 13×13: `planReview` / `buildReview` take `size` (default 9) **and the handicap stones** (default none). The
+  review used to replay every game from an empty board with Black first, so a **9×9 handicap game's review was wrong**
+  (handicap stones missing, colours swapped). `ReviewView` now passes `handicapStones(size, handicap)`; even 9×9 games are
+  unchanged. Point names keep the 9×9 style, upper case ("K10").
+- The M6b AC 37 test "no Review button on 13×13" is replaced by the M6b-2 AC 24 tests (shown at ≥ 10 moves, hidden below).
+  The M6b test of the provisional table (Normal 4) now checks the tuned 5.
+- `BotOptions.playoutsPerCandidate` / `temperature` (level 3) and `level3Search(state, seed, tuning)` exist only so the script
+  can try `TUNE_PLAYOUTS` / `TUNE_TEMP`; the app never sets them. `TUNE_FIRST` was added to split long runs.
+- Speed tests: inside the full `npm test` about ten Jest workers share the CPU and level 3's p95 reached 344–425 ms, so the
+  bounds get 1.5× slack there; `npm run test:speed` checks the spec's exact numbers.
+- AC 34: take-back only restores an earlier, shorter position. A learner can still play on after ply 400 (the bot answers
+  each move with a pass), as on 9×9 after 200; the game ends when the learner passes too.
+- AC 15 (phone check): manual PO step — one Challenge game on a mid-range Android, no move felt longer than 2.5 s.
+- Web check at 360×740: the 13×13 review fits without scrolling (`docs/screenshots/M6b/20-review-13-en.jpg`).
 
 ## PO approval (2026-10-25)
 PO approved the spec with all open-decision defaults.
