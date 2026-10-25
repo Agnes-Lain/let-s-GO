@@ -119,6 +119,15 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   `docs/specs/M6b-13x13-game.md` (§12 dev deviations). Web check `npm run verify:web:m6b` (dev server :8099); screenshots
   `docs/screenshots/M6b/`. **Pending PO:** AC 29 (L3 ≤ 2 s/move) and touch feel on a real phone. Next: M6b-2 (bot strength,
   dead-stone count, review on 13×13), M6b-3 (coaching/danger rings on the bigger board).
+- **M6b item 2** 13×13 bot tuning, dead stones, review (branch `claude/m6b-2-bot13-tuning-ba8fc0`, PO-approved spec, QA READY, 4469 tests):
+  PO: 13×13 bots stronger than the same 9×9 level. 13×13-only constants (Easy 0.3/0.3/0.3, Normal slip 0.5, L2 opening 50 /
+  settled 25, L3 temperature 0.06; playouts unchanged). Sensible wins Easy 83 / Normal 47.5 / Challenge 16.5 % even (200 games),
+  89 / 60 / 31 % at start handicap; start table Easy 2 / Normal 5 / Challenge 5. `npm run tune:bot13`, `npm run test:speed`
+  (L3 p95 243 ms desktop). Dead stones 13×13: eyeless small invader (≤ 6) in a closed area is dead; groups touching ≥ 2 one-point
+  eyes are sure-alive (13×13 only). Review 复盘 on for 13×13 (size + handicap aware; fixed 9×9 handicap review replay). Count
+  line: mark count + Clear on own row (fr no longer cut). Spec `docs/specs/M6b-13x13-bot-tuning.md` (§12 dev). Web check
+  `e2e/verify-web-m6b2.mjs`. **Pending PO:** AC 22 wording ("0 false kills" instead of ≤ 1 dead stone/score ±2), sure-alive rule
+  on 9×9 too (changes 9×9 numbers), L3 ≤ 2 s on a phone (AC 15).
 
 ## Next
 - M6 done (items 1, 1b, 1c, 2, 3). Next: the PO's first Android build per the checklist; then backlog. Later: nets 枷 and multi-answer tsumego on the
