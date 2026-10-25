@@ -81,6 +81,7 @@ Sensible plays Black (even game: both colours, komi 6.5; handicap: Black, komi 0
     `MC_PLAYOUTS_PER_CANDIDATE_13` by steps of 10 and retune the temperature.
 15. Given the UI, Then "Thinking…" appears after 0.5 s, Resign stays responsive, the UI yields between candidates (outside the bot).
     The phone check (PO, mid-range Android, one L3 game, no move longer than 2.5 s felt) is a manual step listed in the PR.
+    **Done 2026-10-25: the PO checked L3 on their phone — OK.**
 
 ### 4.5 Dead-stone proposal on 13×13 (`proposeDead`, coordinates a–n without i, row 13 on top)
 Fixtures are hand-checked: every stone has ≥ 1 liberty; no group is already capturable by rule; the expected dead set follows
@@ -122,11 +123,11 @@ Base position **W** (two walls; both sides alive with huge territory; 13 stones 
     suicide. White = a3 b3 c3 d3 (libs a4 b4 c4 d4 e3) and e1 e2 (libs f1 f2 e3). Everything not shown is empty.
 21. Given any group with two or more real eyes, or a group the learner could not capture by rule, Then it is never proposed dead
     (0 false kills in the fixtures above and in 22).
-22. **Accuracy over tuning endgames.** Given 30 final positions of L2-vs-L2 and 30 of Sensible-vs-L2 games on 13×13 (seeds 1–30,
-    both ended by two passes), When the script plants one lone opposite stone in the biggest single-colour empty region (≥ 15
-    points, at least two points from every stone), Then: planted stone proposed dead ≥ 90 % of the cases; stones proposed dead
-    in the unplanted positions ≤ 1 per game on average; and the area score changes by ≤ 2 points in ≥ 90 % of the games when the
-    proposal is applied. Seeds make this repeatable.
+22. **Accuracy over tuning endgames** (wording approved by the PO 2026-10-25). Given 30 final positions of L2-vs-L2 and 30
+    of Sensible-vs-L2 games on 13×13 (seeds 1–30, both ended by two passes), Then no living stones are proposed dead (0 false
+    kills) in the final positions; and when the script plants one lone opposite stone in the biggest single-colour empty
+    region (≥ 15 points, at least two points from every stone), the planted stone is proposed dead in ≥ 90 % of the cases.
+    Seeds make this repeatable.
 23. Given the count screen (existing), Then the learner can still add or remove marks; the proposal never blocks scoring; a seki
     fixture stays "undecided" (the learner's marks stand), as on 9×9. `DEAD_PLAYOUT_PLIES` for 13×13 (300) may be changed only
     inside AC 13's time limit.
@@ -237,7 +238,7 @@ liberties as listed.
 Measured 2026-10-25 with `npm run tune:bot13` (desktop M3 Pro, Node 22). Seeds are honest counts: even rows = seeds × both
 colours; L3 rows were split over processes with `TUNE_FIRST` (same games as one run).
 
-### 12.1 Tuned constants (13×13 only; 9×9 unchanged, `tune:bot9` output identical on spot checks)
+### 12.1 Tuned constants (13×13 only; 9×9 dead stones changed in 12.8)
 | Knob | 9×9 | 13×13 |
 |---|---|---|
 | `L1_BLUNDER_13` / `L1_SKIP_SAVE_13` / `L1_SKIP_ATARI_13` | 0.6 / 0.5 / 0.5 | 0.3 / 0.3 / 0.3 |
@@ -252,14 +253,14 @@ colours; L3 rows were split over processes with `TUNE_FIRST` (same games as one 
 |---|---|---|---|---|---|
 | Easy, even | 200 (seeds 1–100 × 2) | 83.0 % | 70–88 | < 92.5 | yes |
 | Normal, even | 200 | 47.5 % | 30–50 | < 57 | yes |
-| Challenge, even | 200 | 16.5 % | 5–20 | < 24 | yes |
+| Challenge, even | 200 | 17.0 % | 5–20 | < 24 | yes |
 | Easy, handicap 2 | 100 | 89.0 % | 75–92 | < 97 | yes |
 | Normal, handicap 5 | 100 | 60.0 % | 50–78 | < 90 (9×9 at 5) | yes |
 | Challenge, handicap 5 | 100 | 31.0 % | 20–48 | < 56 | yes |
 
-AC 2: 83.0 > 47.5 > 16.5 (steps 35.5 and 31). AC 4 (200 games each): L2 beats L1 87.0 %, L3 beats L2 96.0 %, L3 beats
+AC 2: 83.0 > 47.5 > 17.0 (steps 35.5 and 30.5). AC 4 (200 games each): L2 beats L1 87.0 %, L3 beats L2 96.0 %, L3 beats
 L1 95.5 % (the L3 pairs and the 12.3 table were measured before the QA fix of 12.7; not rerun).
-The table rows above are after that fix. Before tuning (13×13 with the 9×9 values): Sensible won 97 % / 69 % / 57 % even.
+The table rows above are after the fixes of 12.7 and 12.8. Before tuning (13×13 with the 9×9 values): Sensible won 97 % / 69 % / 57 % even.
 
 ### 12.3 Handicap table (AC 3, 6, 7): Sensible / Noob wins, learner Black, komi 0.5
 | n | Easy (100 seeds) | Normal (100 seeds) | Challenge (25 seeds) |
@@ -293,10 +294,8 @@ In the tuning runs (8–10 processes in parallel) level 3 measured mean 156–21
   positions per pairing have a single-colour region ≥ 15 points (the bots fill most areas); the plant point is the one
   farthest from every stone by Manhattan distance (≥ 2, touching no stone) — the spec's "two points" read this way.
   Unplanted positions: 5.9 (L2–L2) and 3.2 (Sensible–L2) stones proposed dead per game; area score changed by ≤ 2 in 57 %
-  and 83 % of games. **These miss the AC 22 numbers, but the AC assumes clean final positions:** the bots pass when ahead,
-  so real dead groups stay on the board. A spot check of 4 L2–L2 finals by hand found every proposed group really dead
-  (e.g. a 12-stone Black group in White's area, proved dead) and no false kill; the misses were undecided stones (left to the
-  learner). (QA later found one false kill in L2–L2 seed 2, fixed in 12.7.) Suggest the PO rephrase AC 22 as "no false kills" rather than "≤ 1 dead stone per game".
+  and 83 % of games. These missed the first AC 22 numbers because the bots pass when ahead and real dead groups stay on
+  the board; the PO reworded AC 22 to "0 false kills; planted ≥ 90 %" (2026-10-25). Current numbers: §12.8.
 - `DEAD_PLAYOUT_PLIES` for 13×13 unchanged (300).
 
 ### 12.6 Other deviations
@@ -312,11 +311,8 @@ In the tuning runs (8–10 processes in parallel) level 3 measured mean 156–21
   bounds get 1.5× slack there; `npm run test:speed` checks the spec's exact numbers.
 - AC 34: take-back only restores an earlier, shorter position. A learner can still play on after ply 400 (the bot answers
   each move with a pass), as on 9×9 after 200; the game ends when the learner passes too.
-- AC 15 (phone check): manual PO step — one Challenge game on a mid-range Android, no move felt longer than 2.5 s.
+- AC 15 (phone check): done by the PO on their phone 2026-10-25 — Challenge OK (≤ 2 s per move felt).
 - Web check at 360×740: the 13×13 review fits without scrolling (`docs/screenshots/M6b/20-review-13-en.jpg`).
-
-## PO approval (2026-10-25)
-PO approved the spec with all open-decision defaults.
 
 ### 12.7 QA round 1 fixes
 - **AC 21 false kill (L2–L2 seed 2):** two White groups on the right edge sharing the liberties m7 and n6 (both suicide for
@@ -330,3 +326,37 @@ PO approved the spec with all open-decision defaults.
   Clear now sit on their own row under the prompt (row height reserved, so the board does not move at the first mark); the
   prompt uses the full card width and fits in two lines (fr checked on 9×9 and 13×13 at 360×740, no page scroll,
   `docs/screenshots/M6b/26-count-marked-13-fr-fixed.jpg`).
+
+### 12.8 PO decisions 2026-10-25
+- **AC 22 reworded** (see §4.5): 0 false kills, planted ≥ 90 %. `tune:bot13` now checks every proposed-dead group: proved
+  dead by `proposeDead`, or captured by force with a bigger reading budget (opponent first, 6 moves, 20 000 nodes); the
+  rest are listed for a check by hand. Seeds 1–30: L2–L2 177 stones proposed dead, 0 unproved; Sensible–L2 89 stones,
+  0 unproved; planted 4/4 and 4/4 → OK. The first version of this check found one more false kill (Sensible–L2 seed 1):
+  six Black stones around a **straight four** n1–n4 in the corner (alive), called dead by the small-invader rule. Fix: the
+  invader rule also needs ≥ 3 empty points per own stone + 6 in the area (`INVADER_SPACE_PER_STONE`, `INVADER_SPACE_EXTRA`),
+  so a group sitting in its own eye space is left to the playouts; fixture test added (`deadStones13.test.ts`). 13×13 rows
+  re-measured after it: unchanged except Challenge even 16.5 → 17.0 %.
+- **Sure-alive rule on 9×9 too** (gate removed). No 9×9 unit test changed (none had a group with two one-point eyes proposed
+  dead). `tune:bot9` with the same seeds as the recorded numbers (L1/L2 rows 1–100, L3 rows 1–25), old (M6-beginner-friendly
+  §6) → new; all targets still met, start table unchanged (Easy 2 / Normal 5 / Challenge 5):
+
+| 9×9 row | old | new |
+|---|---|---|
+| Sensible vs Easy, even | 92.5 % | 92.5 % |
+| Noob vs Easy, even | 80 % | 80.5 % |
+| Sensible vs Normal, even | 57 % | 58 % |
+| Noob vs Normal, even | 28 % | 28.5 % |
+| Sensible vs Challenge, even (25 seeds) | 26 % | 28 % |
+| Noob vs Challenge, even (25 seeds) | 4 % | 6 % |
+| Easy handicap 2/3/4/5: Sensible / Noob | 97/95/99/97 / 87/92/93/96 % | 97/97/99/97 / 87/92/93/96 % |
+| Normal handicap 2/3/4/5: Sensible / Noob | 71/81/83/90 / 38/47/51/64 % | 73/82/84/90 / 42/47/54/65 % |
+| Challenge handicap 2/3/4/5 (25 seeds): Sensible / Noob | 40/64/32/56 / 16/28/24/48 % | 40/64/40/64 / 16/32/24/48 % |
+| L2 vs L1 / L3 vs L2 / L3 vs L1 | 90 / 82 / 98 % | 90 / 82 / 98 % |
+
+  The changes are games where a bot's count (pass decision or final count) no longer removes a two-eyed group; by the
+  rule's construction only false kills disappear. (M6-bot-levels §12b numbers predate the beginner-friendly constants and
+  were superseded by M6-beginner-friendly §6, so the comparison uses §6.)
+- **AC 15:** the PO checked Challenge on their phone — OK.
+
+## PO approval (2026-10-25)
+PO approved the spec with all open-decision defaults. Follow-up decisions on PR #29: §12.8.

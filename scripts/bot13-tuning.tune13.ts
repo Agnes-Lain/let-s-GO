@@ -26,8 +26,18 @@ import {
   type GameState,
   type Vertex,
 } from '@/engine';
-import { MAX_PLIES_13, botRng, chooseMove, mcBudget, mcTemperature, proposeDead } from '@/bot';
-import type { BotLevel } from '@/bot';
+import {
+  MAX_PLIES_13,
+  botRng,
+  chooseMove,
+  forcedCapture,
+  judgeGroups,
+  mcBudget,
+  mcTemperature,
+  proposeDead,
+  type BotLevel,
+  type GroupJudgement,
+} from '@/bot';
 import { hintFor } from '@/coach';
 import {
   GAME_KOMI_13,
@@ -368,10 +378,29 @@ function withStone(state: GameState, at: number, stone: Color): GameState {
   return { ...state, board: { ...state.board, cells } };
 }
 
+/**
+ * AC 22 check of one proposed-dead group: proved dead by `proposeDead` itself, or captured by force
+ * here with a bigger reading budget (the group's opponent moves first). A group that neither proof
+ * reaches is listed for a check by hand (a lone stone in a wide area needs more moves to read).
+ */
+function verifiedDead(final: GameState, group: GroupJudgement): boolean {
+  if (group.status === 'proved-dead') return true;
+  return forcedCapture(
+    { ...final, isOver: false, consecutivePasses: 0, koPoint: null },
+    {
+      attacker: group.color === 'B' ? 'W' : 'B',
+      target: group.at,
+      maxMoves: 6,
+      maxNodes: 20000,
+    },
+  ).forced;
+}
+
+/** AC 22 (PO 2026-10-25): 0 false kills in the final positions; planted lone stones ≥ 90 %. */
 function deadReport(): string[] {
   const lines = [
     `13×13 dead-stone accuracy (AC 22) — seeds 1–${DEAD_GAMES} per pairing; ${constants()}`,
-    '| Pairing | Games | Planted | Planted proposed dead | Unplanted dead stones / game | |Δ score| ≤ 2 |',
+    '| Pairing | Games | Stones proposed dead | Groups not proved dead (check by hand) | Planted caught ≥ 90 % | OK |',
     '|---|---|---|---|---|---|',
   ];
   for (const [black, white] of [
@@ -381,14 +410,17 @@ function deadReport(): string[] {
     let planted = 0;
     let caught = 0;
     let deadStones = 0;
-    let small = 0;
+    const unverified: string[] = [];
     for (let seed = 1; seed <= DEAD_GAMES; seed++) {
       const game = playGame(black, white, seed);
-      const proposal = proposeDead(game.final, botRng(seed, 0xdead));
-      deadStones += proposal.length;
-      const raw = score(game.final.board, { komi: game.komi }).margin;
-      const applied = score(game.final.board, { komi: game.komi, deadStones: proposal }).margin;
-      if (Math.abs(raw - applied) <= 2) small++;
+      const judgements = judgeGroups(game.final, botRng(seed, 0xdead));
+      for (const group of judgements) {
+        if (group.status !== 'dead' && group.status !== 'proved-dead') continue;
+        deadStones += group.stones.length;
+        if (!verifiedDead(game.final, group)) {
+          unverified.push(`s${seed}:${group.at}(${group.stones.length})`);
+        }
+      }
       const plant = plantPoint(game.final);
       if (!plant) continue;
       planted++;
@@ -397,9 +429,11 @@ function deadReport(): string[] {
       const withInvader = withStone(game.final, plant.at, invader);
       if (proposeDead(withInvader, botRng(seed, 0xdead)).includes(vertex)) caught++;
     }
+    const ok = planted === 0 || caught / planted >= 0.9;
     lines.push(
-      `| ${black} vs ${white} | ${DEAD_GAMES} | ${planted} | ${caught}/${planted} (${pct(caught, Math.max(1, planted))}) | ` +
-        `${(deadStones / DEAD_GAMES).toFixed(2)} | ${small}/${DEAD_GAMES} (${pct(small, DEAD_GAMES)}) |`,
+      `| ${black} vs ${white} | ${DEAD_GAMES} | ${deadStones} | ${unverified.length}` +
+        `${unverified.length ? ` (${unverified.join(' ')})` : ''} | ` +
+        `${caught}/${planted} (${pct(caught, Math.max(1, planted))}) | ${ok ? 'OK' : 'OUT'} |`,
     );
   }
   return lines;

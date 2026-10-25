@@ -38,10 +38,17 @@ const PROOF_MOVES = 4;
  * an area the opponent encloses (see `enclosedInvaders`). At most this many own stones in the area…
  */
 export const INVADER_MAX_STONES = 6;
-/** …and the area (empty points and own stones) is at most half the board. */
+/** …and the area (empty points and own stones) is at most half the board… */
 export function invaderAreaMax(size: number): number {
   return Math.floor((size * size) / 2);
 }
+/**
+ * …and it is mostly the opponent's empty space: at least this many empty points per own stone,
+ * plus INVADER_SPACE_EXTRA. A group whose area is only its own eye space (e.g. six stones around a
+ * straight four on the edge, QA AC 22 run, Sensible–L2 seed 1) is left to the playouts.
+ */
+export const INVADER_SPACE_PER_STONE = 3;
+export const INVADER_SPACE_EXTRA = 6;
 
 export type GroupStatus = 'proved-dead' | 'dead' | 'alive' | 'undecided';
 
@@ -139,8 +146,9 @@ function provedDead(state: GameState, group: Group): boolean {
  * group, flood over empty points and own stones: the area is enclosed when it touches only
  * opponent stones, every opponent group on its border is alive by playouts (so a seki, whose
  * opponent group is undecided, never counts), it holds at most INVADER_MAX_STONES own stones and
- * no own eye, and it is at most half the board (else it is the group's own area, not the
- * opponent's). Two passes ended the game, so the opponent answers every move there.
+ * no own eye, it is at most half the board (else it is the group's own area, not the
+ * opponent's) and it has at least 3 empty points per own stone + 6 (else it is the group's own eye
+ * space). Two passes ended the game, so the opponent answers every move there.
  */
 function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): boolean[] {
   const { board } = state;
@@ -183,7 +191,9 @@ function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): b
         }
       }
     }
+    const empty = area.length - ownStones;
     if (!enclosed || ownStones > INVADER_MAX_STONES || area.length > invaderAreaMax(size)) return;
+    if (empty < INVADER_SPACE_PER_STONE * ownStones + INVADER_SPACE_EXTRA) return;
     for (const own of ownGroups) result[own] = true;
   });
   return result;
@@ -195,7 +205,7 @@ function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): b
  * touching fewer than two eyes are dropped until nothing changes. Every remaining group has two
  * or more eye liberties, so the opponent can never play on an eye (suicide, no capture): they
  * cannot be captured, even when two groups share their eyes (random playouts may fill them).
- * 13×13 and bigger only, so recorded 9×9 counts stay the same (spec M6b-2 AC 5, §12.5).
+ * All board sizes (PO 2026-10-25, spec M6b-2 §12.8).
  */
 function sureAlive(state: GameState, groups: Group[]): boolean[] {
   const { size, cells } = state.board;
@@ -209,8 +219,8 @@ function sureAlive(state: GameState, groups: Group[]): boolean[] {
       (n) => n >= 0 && n < cells.length,
     );
   };
-  const alive = groups.map(() => size >= 13);
-  for (let changed = size >= 13; changed;) {
+  const alive = groups.map(() => true);
+  for (let changed = true; changed;) {
     changed = false;
     const eyes = groups.map(() => 0);
     for (let c = 0; c < cells.length; c++) {

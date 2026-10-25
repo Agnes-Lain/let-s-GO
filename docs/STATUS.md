@@ -124,10 +124,11 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   settled 25, L3 temperature 0.06; playouts unchanged). Sensible wins Easy 83 / Normal 47.5 / Challenge 16.5 % even (200 games),
   89 / 60 / 31 % at start handicap; start table Easy 2 / Normal 5 / Challenge 5. `npm run tune:bot13`, `npm run test:speed`
   (L3 p95 243 ms desktop). Dead stones 13×13: eyeless small invader (≤ 6) in a closed area is dead; groups touching ≥ 2 one-point
-  eyes are sure-alive (13×13 only). Review 复盘 on for 13×13 (size + handicap aware; fixed 9×9 handicap review replay). Count
+  eyes are sure-alive (all sizes, PO 2026-10-25). Review 复盘 on for 13×13 (size + handicap aware; fixed 9×9 handicap review replay). Count
   line: mark count + Clear on own row (fr no longer cut). Spec `docs/specs/M6b-13x13-bot-tuning.md` (§12 dev). Web check
-  `e2e/verify-web-m6b2.mjs`. **Pending PO:** AC 22 wording ("0 false kills" instead of ≤ 1 dead stone/score ±2), sure-alive rule
-  on 9×9 too (changes 9×9 numbers), L3 ≤ 2 s on a phone (AC 15).
+  `e2e/verify-web-m6b2.mjs`. PO 2026-10-25: AC 22 = 0 false kills + planted ≥ 90 % (met); AC 15 phone check OK.
+  9×9 note: the sure-alive rule now also runs on 9×9; re-measured `tune:bot9` moved by ≤ 8 points (Normal handicap Noob
+  38/47/51/64 → 42/47/54/65 %, Sensible vs Normal 57 → 58 %), all 9×9 targets and the start table unchanged (spec §12.8).
 
 ## Next
 - M6 done (items 1, 1b, 1c, 2, 3). Next: the PO's first Android build per the checklist; then backlog. Later: nets 枷 and multi-answer tsumego on the

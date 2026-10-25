@@ -195,3 +195,38 @@ describe('AC 23: a 13×13 seki stays undecided', () => {
     }
   });
 });
+
+describe('AC 21: a group living in its own eye space is not an invader (QA AC 22 run)', () => {
+  // Sensible–L2 seed 1, lower-right corner: Black m1–m5 + n5 (6 stones) around the straight four
+  // n1–n4 on the edge, enclosed by White. A straight four lives (Black answers inside), so it
+  // must not be proposed dead; its area is only its own eye space (4 empty points).
+  const CORNER = finished(`
+    13 . . . . . . . . . . . . .
+    12 . . . . . . . . . . . . .
+    11 . . . . . . . . . . . . .
+    10 . . . . . . . . . . . . .
+     9 . . . . . . . . . . . . .
+     8 . . . . . . . . . . . . .
+     7 . . . . . . . . . . O O O
+     6 . . . . . . . . . . O O O
+     5 . . . . . . . . . . O X X
+     4 . . . . . . . . . . O X .
+     3 . . . . . . . . . . O X .
+     2 . . . . . . . . . . O X .
+     1 . . . . . . . . . . O X .
+  `);
+
+  it('engine check: the Black group has 6 stones and the liberties n1–n4', () => {
+    const black = groupAt(CORNER.board, 'm1');
+    expect(black?.stones).toHaveLength(6);
+    expect(black?.liberties).toHaveLength(4);
+  });
+
+  it('the straight-four group is not proposed dead (seeds 1–5)', () => {
+    for (const seed of SEEDS) {
+      expect(
+        proposeDead(CORNER, createRng(seed)).filter((v) => v.startsWith('m') || v === 'n5'),
+      ).toEqual([]);
+    }
+  });
+});
