@@ -1,7 +1,7 @@
 // QA M6b-2 (AC 21, 23): the 13×13 small-invader rule must not kill living or seki groups.
 import { groupAt, pass, type GameState } from '@/engine';
 
-import { createRng, judgeGroups, proposeDead } from './index';
+import { createRng, judgeGroups, proposeDead, type GroupJudgement } from './index';
 import { position } from './__fixtures__/board';
 
 function finished(ascii: string): GameState {
@@ -134,6 +134,71 @@ describe('13×13 two white groups sharing two eyes (found by QA in L2-L2 seed 2)
           ['l9', 'l8', 'm8', 'n8', 'l7', 'n7', 'l5', 'm5', 'n5', 'm6'].includes(v),
         ),
       ).toEqual([]);
+    }
+  });
+});
+
+describe('13×13 sure-alive rule (QA re-check of 616e1d4)', () => {
+  const pick = (state: GameState, vertex: string, seed = 1) =>
+    judgeGroups(state, createRng(seed)).find((j) => j.stones.includes(vertex)) as GroupJudgement;
+
+  // A white group in Black's half with a false eye at b2 (Black a1... diagonal) and one real eye
+  // at e... built from the corner: White a2 b3 c2 c1 b1? Kept simple: one real eye a1-style plus a
+  // second "eye" b... The fixtures below were checked with the engine (liberties printed in tests).
+  it('a big group with two shared eyes stays alive (and so do both halves)', () => {
+    // two white groups share the eyes m7 / n6 pattern already: covered by SHARED_EYES above.
+    const ALIVE = finished(
+      rows({
+        7: 'O O O O O O O O O O O O O',
+        6: 'X X X X X X X X X X X X X',
+        3: '. . . . . . . . . . . . .',
+        2: 'O O O O O O . O O O O O O',
+        1: 'O . O O O O O O O . O O O',
+      }),
+    );
+    for (const seed of SEEDS) {
+      const white = pick(ALIVE, 'a2', seed);
+      expect(white.status).toBe('alive');
+    }
+  });
+
+  // White f3 g2 h3 g4 around the empty g3, Black on the diagonals f4 h4 (and f2 h2): g3 is a false
+  // eye. The four white stones are four groups; each touches one "eye" only.
+  const RING = {
+    7: 'O O O O O O O O O O O O O',
+    6: 'X X X X X X X X X X X X X',
+    4: '. . . . . X . X . . . . .',
+    3: '. . . . . O . O . . . . .',
+    2: '. . . . . X O X . . . . .',
+    1: '. . . . . . . . . . . . .',
+  };
+
+  it('a ring around a false eye is never sure-alive; the stones are not alive', () => {
+    // g4 is part of the ring: put it on row 4 as well.
+    const FALSE_EYE = finished(rows({ ...RING, 4: '. . . . . X O X . . . . .' }));
+    for (const seed of SEEDS) {
+      for (const v of ['f3', 'h3', 'g2', 'g4'])
+        expect(pick(FALSE_EYE, v, seed).status).not.toBe('alive');
+    }
+  });
+
+  it('a one-real-eye plus one-false-eye white group still dies', () => {
+    // White a2 b2? corner eye a1 (real: a2 b1 mine, diagonal b2 white) and the false eye g3 above
+    // are on different groups; the corner group has one eye only, so it is never sure-alive.
+    const ONE = finished(
+      rows({
+        7: 'O O O O O O O O O O O O O',
+        6: 'X X X X X X X X X X X X X',
+        3: 'X X X . . . . . . . . . .',
+        2: 'O O X . . . . . . . . . .',
+        1: '. O X . . . . . . . . . .',
+      }),
+    );
+    for (const seed of SEEDS) {
+      const white = pick(ONE, 'a2', seed);
+      expect(white.eyes).toBe(1);
+      expect(white.status).not.toBe('alive');
+      expect(proposeDead(ONE, createRng(seed))).toEqual(expect.arrayContaining(['a2', 'b2', 'b1']));
     }
   });
 });
