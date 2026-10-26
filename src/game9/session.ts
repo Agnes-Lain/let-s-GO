@@ -29,15 +29,7 @@ import {
   type Vertex,
 } from '@/engine';
 
-import {
-  L1_BLUNDER_9,
-  L1_SKIP_ATARI_9,
-  L1_SKIP_SAVE_9,
-  L2_SLIP_9,
-  TAKEBACKS_PER_GAME,
-  gameKomi,
-  type GameSize,
-} from './config';
+import { TAKEBACKS_PER_GAME, gameKomi, levelKnobs, type GameSize } from './config';
 import { dangerOf, withoutDangerFacts } from './danger';
 import { HANDICAP_KOMI, handicapStones, type Handicap } from './handicap';
 
@@ -301,10 +293,7 @@ function botMove(s: GameSession): Move {
       level,
       rng,
       boardN: true,
-      blunder: level === 1 ? L1_BLUNDER_9 : 0,
-      skipSave: level === 1 ? L1_SKIP_SAVE_9 : 0,
-      skipAtari: level === 1 ? L1_SKIP_ATARI_9 : 0,
-      slip: level === 2 ? L2_SLIP_9 : 0,
+      ...levelKnobs(level, s.size),
     }).move;
   } catch {
     const points = legalMoves(game);

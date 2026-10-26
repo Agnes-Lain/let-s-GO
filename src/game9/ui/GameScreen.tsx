@@ -18,7 +18,7 @@ import { boardWidthFor } from '@/exercises/layout';
 import { progressStore, useProgress } from '@/store';
 import { Button, IconButton } from '@/theme/Button';
 import { CloseIcon } from '@/theme/icons';
-import { color, radius, spacing, textScale, typography } from '@/theme/tokens';
+import { color, radius, spacing, tapTarget, textScale, typography } from '@/theme/tokens';
 
 import type { GameSize } from '../config';
 import { atariLine, dangerOf, type DangerGroup } from '../danger';
@@ -289,7 +289,8 @@ export function GameScreen({
         </Text>
       </View>
 
-      <View style={styles.status} testID="game9-status">
+      {/* Marking: the count and Clear go under the prompt, so a long prompt (fr) is never cut. */}
+      <View style={[styles.status, s.phase === 'mark' && styles.statusMark]} testID="game9-status">
         <Text
           maxFontSizeMultiplier={textScale.hud}
           style={styles.statusText}
@@ -838,8 +839,8 @@ function Bottom({
           testID="game9-show-count"
         />
       ) : null}
-      {/* Review 复盘 is 9×9 only until M6b-2 (M6b AC 37). */}
-      {s.size === 9 && s.game.moves.length >= REVIEW_MIN_MOVES ? (
+      {/* Review 复盘 on 9×9 and 13×13 (M6b-2 AC 24). */}
+      {s.game.moves.length >= REVIEW_MIN_MOVES ? (
         // Review 复盘 is the primary action; Change level and Home share the text row (§5.3).
         <>
           <View style={styles.row}>
@@ -926,8 +927,22 @@ const styles = StyleSheet.create({
     borderColor: color.border,
     borderRadius: radius.md,
   },
-  statusText: { flex: 1, fontSize: 15, lineHeight: 20, color: color.textPrimary },
-  markRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  statusText: {
+    flexGrow: 1,
+    flexShrink: 1,
+    fontSize: 15,
+    lineHeight: 20,
+    color: color.textPrimary,
+  },
+  statusMark: { flexDirection: 'column', alignItems: 'stretch', gap: 0, paddingTop: spacing.sm },
+  markRow: {
+    // Room for Clear from the start, so the board does not move when the first mark appears.
+    minHeight: tapTarget.min,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: spacing.xs,
+  },
   markCount: { ...typography.caption, color: color.textSecondary },
   boardWrap: { alignItems: 'center' },
   spacer: { flex: 1 },

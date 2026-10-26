@@ -49,7 +49,10 @@ export function level3(state: GameState, opts: BotOptions): BotChoice {
   const seed = Math.floor(opts.rng() * 0x100000000);
   const passed = passCheck(state, opts, playableMoves(state).length > 0);
   if (passed) return passed;
-  const { best } = level3Search(state, seed);
+  const { best } = level3Search(state, seed, {
+    perCandidate: opts.playoutsPerCandidate,
+    temperature: opts.temperature,
+  });
   if (!best) return passFor(state);
   return { move: { type: 'play', color: state.toPlay, point: best.point }, reason: best.kind };
 }

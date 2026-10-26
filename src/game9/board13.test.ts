@@ -123,18 +123,19 @@ describe('AC 8, 10: 13×13 handicap stones', () => {
 });
 
 describe('AC 13–16: the 13×13 suggestion is its own table', () => {
-  it('starts at Easy 2, Normal 4, Challenge 5; 9×9 keeps 2 / 5 / 5', () => {
-    expect(STARTING_HANDICAP_13).toEqual({ 1: 2, 2: 4, 3: 5 });
+  // M6b-2 AC 7: the tuned table replaces the provisional Easy 2 / Normal 4 / Challenge 5.
+  it('starts at Easy 2, Normal 5, Challenge 5; 9×9 keeps 2 / 5 / 5', () => {
+    expect(STARTING_HANDICAP_13).toEqual({ 1: 2, 2: 5, 3: 5 });
     expect(STARTING_HANDICAP).toEqual({ 1: 2, 2: 5, 3: 5 });
     expect(suggestedHandicap({}, 1, 13)).toBe(2);
-    expect(suggestedHandicap({}, 2, 13)).toBe(4);
+    expect(suggestedHandicap({}, 2, 13)).toBe(5);
     expect(suggestedHandicap({}, 3, 13)).toBe(5);
     expect(suggestedHandicap({}, 2)).toBe(5);
   });
 
   it('a stored 13×13 suggestion wins over the table', () => {
     expect(suggestedHandicap({ '2': rec(1, 3) }, 2, 13)).toBe(3);
-    expect(suggestedHandicap({ '2': rec(1, 7) }, 2, 13)).toBe(4);
+    expect(suggestedHandicap({ '2': rec(1, 7) }, 2, 13)).toBe(5);
   });
 });
 

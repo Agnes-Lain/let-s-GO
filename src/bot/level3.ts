@@ -56,6 +56,13 @@ export const MC_PRIOR_WEIGHT = 0.01;
  * is beatable. 0 = always the best value.
  */
 export const MC_TEMPERATURE = 0.21;
+/** 13×13 (M6b-2 AC 11, 14): strength comes from a lower temperature, not more playouts. */
+export const MC_TEMPERATURE_13 = 0.06;
+
+/** The softmax temperature of a board size: 13×13 and bigger use MC_TEMPERATURE_13. */
+export function mcTemperature(size: number): number {
+  return size >= 13 ? MC_TEMPERATURE_13 : MC_TEMPERATURE;
+}
 
 export interface CandidateValue {
   point: Point;
@@ -88,11 +95,20 @@ export function candidatesFor(
   return (urgent.length > 0 ? urgent : moves).slice(0, max);
 }
 
+/** Tuning overrides of one search (M6b-2 AC 10, `npm run tune:bot13`); default: the size's constants. */
+export interface McTuning {
+  perCandidate?: number;
+  temperature?: number;
+}
+
 /** Runs the Monte-Carlo search for `state.toPlay` with a base seed. Pure and deterministic. */
-export function level3Search(state: GameState, seed: number): Level3Search {
+export function level3Search(state: GameState, seed: number, tuning: McTuning = {}): Level3Search {
   const bot: Color = state.toPlay;
   const size = state.board.size;
-  const budget = mcBudget(size);
+  const budget = {
+    ...mcBudget(size),
+    ...(tuning.perCandidate !== undefined ? { perCandidate: tuning.perCandidate } : {}),
+  };
   const moves = candidatesFor(playableMoves(state), budget.candidates);
   const base = PlayoutBoard.fromState(state);
   const work = new PlayoutBoard(size);
@@ -124,7 +140,11 @@ export function level3Search(state: GameState, seed: number): Level3Search {
         wins / budget.perCandidate + MC_MARGIN_WEIGHT * meanMargin + MC_PRIOR_WEIGHT * move.score,
     };
   });
-  const best = softmaxPick(candidates, createRng(deriveSeed(plySeed, 0x5eed)));
+  const best = softmaxPick(
+    candidates,
+    createRng(deriveSeed(plySeed, 0x5eed)),
+    tuning.temperature ?? mcTemperature(size),
+  );
   return {
     candidates,
     playouts,
@@ -133,11 +153,15 @@ export function level3Search(state: GameState, seed: number): Level3Search {
 }
 
 /** Index of the chosen candidate (−1 when none): a seeded softmax over the values (§12b). */
-export function softmaxPick(candidates: readonly CandidateValue[], rng: Rng): number {
+export function softmaxPick(
+  candidates: readonly CandidateValue[],
+  rng: Rng,
+  temperature: number = MC_TEMPERATURE,
+): number {
   if (candidates.length === 0) return -1;
   const top = Math.max(...candidates.map((c) => c.value));
-  if (MC_TEMPERATURE <= 0) return candidates.findIndex((c) => c.value === top);
-  const weights = candidates.map((c) => Math.exp((c.value - top) / MC_TEMPERATURE));
+  if (temperature <= 0) return candidates.findIndex((c) => c.value === top);
+  const weights = candidates.map((c) => Math.exp((c.value - top) / temperature));
   let r = rng() * weights.reduce((n, w) => n + w, 0);
   for (let i = 0; i < weights.length; i++) {
     r -= weights[i];

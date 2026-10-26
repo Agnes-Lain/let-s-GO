@@ -32,6 +32,23 @@ export function deadPlayoutPlies(size: number): number {
 export const DEAD_RATE = 0.8;
 /** Attacker moves allowed in the forced-capture proof of a group with ≤ 2 liberties. */
 const PROOF_MOVES = 4;
+/**
+ * 13×13 invaders (M6b-2 AC 17, 19, 22): random playouts let a lone stone live in about half of the
+ * games inside a 60-point area, so on 13×13 and bigger a small group is also dead when it sits in
+ * an area the opponent encloses (see `enclosedInvaders`). At most this many own stones in the area…
+ */
+export const INVADER_MAX_STONES = 6;
+/** …and the area (empty points and own stones) is at most half the board… */
+export function invaderAreaMax(size: number): number {
+  return Math.floor((size * size) / 2);
+}
+/**
+ * …and it is mostly the opponent's empty space: at least this many empty points per own stone,
+ * plus INVADER_SPACE_EXTRA. A group whose area is only its own eye space (e.g. six stones around a
+ * straight four on the edge, QA AC 22 run, Sensible–L2 seed 1) is left to the playouts.
+ */
+export const INVADER_SPACE_PER_STONE = 3;
+export const INVADER_SPACE_EXTRA = 6;
 
 export type GroupStatus = 'proved-dead' | 'dead' | 'alive' | 'undecided';
 
@@ -124,20 +141,124 @@ function provedDead(state: GameState, group: Group): boolean {
   }).forced;
 }
 
+/**
+ * 13×13 and bigger (M6b-2 §4.5): the groups that are small invaders in an enclosed area. From the
+ * group, flood over empty points and own stones: the area is enclosed when it touches only
+ * opponent stones, every opponent group on its border is alive by playouts (so a seki, whose
+ * opponent group is undecided, never counts), it holds at most INVADER_MAX_STONES own stones and
+ * no own eye, it is at most half the board (else it is the group's own area, not the
+ * opponent's) and it has at least 3 empty points per own stone + 6 (else it is the group's own eye
+ * space). Two passes ended the game, so the opponent answers every move there.
+ */
+function enclosedInvaders(state: GameState, groups: Group[], rates: number[]): boolean[] {
+  const { board } = state;
+  const { size, cells } = board;
+  const groupOf = new Int32Array(cells.length).fill(-1);
+  groups.forEach((group, g) => {
+    for (const p of group.stones) groupOf[p.y * size + p.x] = g;
+  });
+  const result = groups.map(() => false);
+  if (size < 13) return result;
+  const done = new Uint8Array(cells.length);
+  groups.forEach((group, g) => {
+    const first = group.stones[0];
+    if (result[g] || done[first.y * size + first.x]) return;
+    const color = group.color;
+    const area = [first.y * size + first.x];
+    const inArea = new Uint8Array(cells.length);
+    inArea[area[0]] = 1;
+    const ownGroups = new Set<number>();
+    let ownStones = 0;
+    let enclosed = true;
+    for (let i = 0; i < area.length; i++) {
+      const c = area[i];
+      if (cells[c] === color) {
+        ownStones++;
+        ownGroups.add(groupOf[c]);
+        done[c] = 1;
+      } else if (isOwnEye(board, { x: c % size, y: Math.floor(c / size) }, color)) {
+        enclosed = false;
+      }
+      const x = c % size;
+      for (const n of [x > 0 ? c - 1 : -1, x < size - 1 ? c + 1 : -1, c - size, c + size]) {
+        if (n < 0 || n >= cells.length || inArea[n]) continue;
+        const stone = cells[n];
+        if (stone === null || stone === color) {
+          inArea[n] = 1;
+          area.push(n);
+        } else if (rates[groupOf[n]] > 1 - DEAD_RATE) {
+          enclosed = false;
+        }
+      }
+    }
+    const empty = area.length - ownStones;
+    if (!enclosed || ownStones > INVADER_MAX_STONES || area.length > invaderAreaMax(size)) return;
+    if (empty < INVADER_SPACE_PER_STONE * ownStones + INVADER_SPACE_EXTRA) return;
+    for (const own of ownGroups) result[own] = true;
+  });
+  return result;
+}
+
+/**
+ * Groups that are alive for sure (M6b-2 AC 21, a Benson-style check with one-point eyes): an
+ * "eye" is an empty point whose neighbours are all stones of the remaining own groups. Groups
+ * touching fewer than two eyes are dropped until nothing changes. Every remaining group has two
+ * or more eye liberties, so the opponent can never play on an eye (suicide, no capture): they
+ * cannot be captured, even when two groups share their eyes (random playouts may fill them).
+ * All board sizes (PO 2026-10-25, spec M6b-2 §12.8).
+ */
+function sureAlive(state: GameState, groups: Group[]): boolean[] {
+  const { size, cells } = state.board;
+  const groupOf = new Int32Array(cells.length).fill(-1);
+  groups.forEach((group, g) => {
+    for (const p of group.stones) groupOf[p.y * size + p.x] = g;
+  });
+  const neighbours = (c: number) => {
+    const x = c % size;
+    return [x > 0 ? c - 1 : -1, x < size - 1 ? c + 1 : -1, c - size, c + size].filter(
+      (n) => n >= 0 && n < cells.length,
+    );
+  };
+  const alive = groups.map(() => true);
+  for (let changed = true; changed;) {
+    changed = false;
+    const eyes = groups.map(() => 0);
+    for (let c = 0; c < cells.length; c++) {
+      if (cells[c] !== null) continue;
+      const around = neighbours(c);
+      const color = cells[around[0]];
+      if (color === null) continue;
+      if (!around.every((n) => cells[n] === color && alive[groupOf[n]])) continue;
+      for (const g of new Set(around.map((n) => groupOf[n]))) eyes[g]++;
+    }
+    groups.forEach((_, g) => {
+      if (alive[g] && eyes[g] < 2) {
+        alive[g] = false;
+        changed = true;
+      }
+    });
+  }
+  return alive;
+}
+
 /** The bot's opinion on every group of the final position (deterministic for one rng). */
 export function judgeGroups(state: GameState, rng: Rng): GroupJudgement[] {
   const size = state.board.size as BoardSize;
   const groups = groupsOf(state);
   const rates = deadRates(state, groups, rng);
+  const invaders = enclosedInvaders(state, groups, rates);
+  const safe = sureAlive(state, groups);
   return groups.map((group, g) => {
     const deadRate = rates[g];
-    const status: GroupStatus = provedDead(state, group)
-      ? 'proved-dead'
-      : deadRate >= DEAD_RATE
-        ? 'dead'
-        : deadRate <= 1 - DEAD_RATE
-          ? 'alive'
-          : 'undecided';
+    const status: GroupStatus = safe[g]
+      ? 'alive'
+      : provedDead(state, group)
+        ? 'proved-dead'
+        : deadRate >= DEAD_RATE || invaders[g]
+          ? 'dead'
+          : deadRate <= 1 - DEAD_RATE
+            ? 'alive'
+            : 'undecided';
     const stones = group.stones.map((p) => toVertex(p, size));
     return {
       color: group.color,
