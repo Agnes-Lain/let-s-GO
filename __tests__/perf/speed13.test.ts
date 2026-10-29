@@ -34,9 +34,12 @@ function selfPlay(seed: number): GameState[] {
  * `npm run test:speed` (SPEED_STRICT=1) checks the spec's numbers with Jest alone on the machine.
  * Inside the full `npm test` about ten Jest workers share the CPU (some on efficiency cores), so
  * the same bounds get 1.5× slack there; a real regression still fails both.
+ * GitHub's shared CI runners are slower and noisier still (2 vCPUs, other tenants), so on CI the
+ * bounds get 2.5× — enough to absorb runner jitter while an algorithmic regression (several ×)
+ * still fails. The spec budgets themselves are checked by `npm run test:speed`.
  */
 const STRICT = process.env.SPEED_STRICT === '1';
-const SLACK = STRICT ? 1 : 1.5;
+const SLACK = STRICT ? 1 : process.env.CI ? 2.5 : 1.5;
 const report = (name: string, times: number[]) => {
   if (STRICT) {
     console.log(
