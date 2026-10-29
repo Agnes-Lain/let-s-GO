@@ -26,8 +26,11 @@ import {
 } from './review';
 
 const KOMI = 6.5;
-/** As in __tests__/perf/speed13.test.ts: strict bounds with `npm run test:speed`, 1.5× in `npm test`. */
-const SLACK = process.env.SPEED_STRICT === '1' ? 1 : 1.5;
+/**
+ * As in __tests__/perf/speed13.test.ts: strict bounds with `npm run test:speed`, 1.5× in `npm test`,
+ * 2.5× on GitHub CI's slower shared runners.
+ */
+const SLACK = process.env.SPEED_STRICT === '1' ? 1 : process.env.CI ? 2.5 : 1.5;
 
 /** Moves from vertices played alternately from the start position ('pass' passes). */
 function movesOf(vertices: string[], start: GameState = createGame(13, { komi: KOMI })): Move[] {
