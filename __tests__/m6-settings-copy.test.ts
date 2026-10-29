@@ -74,9 +74,9 @@ const TABLE: [string, string, string, string][] = [
   ],
   [
     'onboarding.1.concept',
-    '一步一步来：每一课只学一个规则，再做几道小练习，拿星星。学完之后，在 9×9 的小棋盘上和友好的电脑对弈。',
-    'Step by step: each lesson teaches one rule, then a few short exercises and stars. At the end you play games on a small 9×9 board against a friendly bot.',
-    'Pas à pas : chaque leçon enseigne une règle, puis quelques exercices courts et des étoiles. À la fin, vous jouez sur un petit plateau 9×9 contre un robot sympathique.',
+    '一步一步来：每一课只学一个规则，再做几道小练习，拿星星。学完之后，在 9×9 或 13×13 的棋盘上和友好的电脑对弈。',
+    'Step by step: each lesson teaches one rule, then a few short exercises and stars. At the end you play games on a 9×9 or 13×13 board against a friendly bot.',
+    'Pas à pas : chaque leçon enseigne une règle, puis quelques exercices courts et des étoiles. À la fin, vous jouez sur un plateau 9×9 ou 13×13 contre un robot sympathique.',
   ],
   [
     'onboarding.1.body',
@@ -161,9 +161,7 @@ describe('§6 copy keys', () => {
       expect(
         keys.filter((k) => k === 'home.sample.label' || k.startsWith('lesson.u00-sample.')),
       ).toEqual([]);
-      expect(keys.filter((k) => k === 'onboarding.start' || k.startsWith('onboarding.3.'))).toEqual(
-        [],
-      );
+      expect(keys).not.toContain('onboarding.start');
       expect(keys).not.toContain('game9.entry.locked');
     }
   });

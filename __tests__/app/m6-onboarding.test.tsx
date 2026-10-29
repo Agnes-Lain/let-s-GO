@@ -190,7 +190,7 @@ describe('landing page and when the intro shows (AC 25, §12c.1, 3, 4)', () => {
 });
 
 describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
-  it('AC 46 / §12c.5: title, concept, what-is-Go, the example board, then Next', async () => {
+  it('AC 46 / §12c.5: title, what-is-Go, concept, rules, the example board, then Next', async () => {
     await openIntro();
     const order = screen.container
       .queryAll(
@@ -202,8 +202,9 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     const index = (item: string) => order.indexOf(item);
     const sequence = [
       texts['onboarding.1.title'],
-      texts['onboarding.1.concept'],
       texts['onboarding.1.body'],
+      texts['onboarding.1.concept'],
+      texts['onboarding.1.rules'],
       'BOARD',
       texts['onboarding.next'],
     ].map(index);
@@ -226,14 +227,18 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
     expect(screen.getByRole('header')).toHaveTextContent(texts['onboarding.1.title']);
   });
 
-  it('AC 32: each step announces its title and "Step n of 2"; the dots say it too', async () => {
+  it('AC 32: each step announces its title and "Step n of 3"; the dots say it too', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
     await openIntro();
-    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.1.title']}. Step 1 of 2`);
-    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 1 of 2');
+    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.1.title']}. Step 1 of 3`);
+    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 1 of 3');
     await press('onboarding-next');
-    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.2.title']}. Step 2 of 2`);
-    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 2 of 2');
+    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.2.title']}. Step 2 of 3`);
+    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 2 of 3');
+    expect(screen.getAllByRole('header')).toHaveLength(1);
+    await press('onboarding-next');
+    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.3.title']}. Step 3 of 3`);
+    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 3 of 3');
     expect(screen.getAllByRole('header')).toHaveLength(1);
   });
 
@@ -245,9 +250,12 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
       const t = FILES[lang];
       expect(screen.getByText(t['onboarding.1.title'])).toBeOnTheScreen();
       expect(screen.getByText(t['onboarding.1.concept'])).toBeOnTheScreen();
+      expect(screen.getByText(t['onboarding.1.rules'])).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: t['onboarding.next'] })).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: t['onboarding.skip'] })).toBeOnTheScreen();
       await press('onboarding-next');
+      await press('onboarding-next');
+      expect(screen.getByText(t['onboarding.3.title'])).toBeOnTheScreen();
       expect(screen.getByRole('button', { name: t['onboarding.done'] })).toBeOnTheScreen();
       if (lang === 'zh-CN') {
         for (const key of ['onboarding.skip', 'onboarding.next', 'onboarding.done', 'home.start']) {
@@ -259,9 +267,13 @@ describe('step 1 Welcome (AC 46, 48, 32, 36)', () => {
 });
 
 describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
-  it('AC 26: Next → step 2; system Back → step 1; Back on step 1 = Skip (→ learning page)', async () => {
+  it('AC 26: Next → step 2 → step 3; system Back steps back; Back on step 1 = Skip', async () => {
     const router = await openIntro();
     await press('onboarding-next');
+    expect(screen.getByTestId('onboarding-step-2')).toBeOnTheScreen();
+    await press('onboarding-next');
+    expect(screen.getByTestId('onboarding-step-3')).toBeOnTheScreen();
+    await systemBack();
     expect(screen.getByTestId('onboarding-step-2')).toBeOnTheScreen();
     await systemBack();
     expect(screen.getByTestId('onboarding-step-1')).toBeOnTheScreen();
@@ -271,11 +283,11 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
     expect(progressStore.getState().flags.onboardingSeen).toBe(true);
   });
 
-  it.each([1, 2])(
+  it.each([1, 2, 3])(
     'AC 27: Skip on step %i sets onboardingSeen and replaces the intro with the learning page',
     async (step) => {
       const router = await openIntro();
-      if (step === 2) await press('onboarding-next');
+      for (let i = 1; i < step; i++) await press('onboarding-next');
       const skip = screen.getByTestId('onboarding-skip');
       expect(flat(skip.props.style).minHeight).toBeGreaterThanOrEqual(44);
       expect(flat(skip.props.style).minWidth).toBeGreaterThanOrEqual(44);
@@ -294,11 +306,14 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
   it('AC 28, 31: Done (always enabled) opens the learning page, never lesson 1', async () => {
     const router = await openIntro();
     await press('onboarding-next');
+    const next = screen.getByTestId('onboarding-next');
+    expect(next.props.accessibilityState?.disabled).toBe(false);
+    await tapDemo('c3');
+    expect(screen.getByTestId('onboarding-next').props.accessibilityState?.disabled).toBe(false);
+    await press('onboarding-next');
     const finish = screen.getByTestId('onboarding-finish');
     expect(finish.props.accessibilityLabel).toBe(texts['onboarding.done']);
     expect(finish.props.accessibilityState?.disabled).toBe(false);
-    await tapDemo('c3');
-    expect(screen.getByTestId('onboarding-finish').props.accessibilityState?.disabled).toBe(false);
     await press('onboarding-finish');
     expect(router.getPathname()).toBe('/learn');
     expect(progressStore.getState().flags.onboardingSeen).toBe(true);
@@ -316,6 +331,7 @@ describe('steps and leaving (AC 26–28, 31; §12c.3–4)', () => {
     const router = await launch('/settings');
     await press('settings-intro');
     expect(router.getPathname()).toBe('/onboarding');
+    await press('onboarding-next');
     await press('onboarding-next');
     expect(screen.getByTestId('onboarding-finish').props.accessibilityLabel).toBe(
       texts['onboarding.done'],
@@ -384,8 +400,27 @@ describe('step 2 demo (AC 29, 30, 32, 33)', () => {
     expect(screen.getByTestId('onboarding-demo-done')).toBeOnTheScreen();
   });
 
-  it('AC 33 (J): Skip and the button ≥ 44 px; the final button 52 px', async () => {
+  it('AC 33 (J): Skip and the button ≥ 44 px; the button 52 px', async () => {
     await openDemo();
+    expect(flat(screen.getByTestId('onboarding-next').props.style).minHeight).toBe(52);
+  });
+});
+
+describe('step 3 settings', () => {
+  it('points to the gear and lists what Settings holds, in its order; Done is 52 px', async () => {
+    await openIntro();
+    await press('onboarding-next');
+    await press('onboarding-next');
+    expect(screen.getByRole('header')).toHaveTextContent(texts['onboarding.3.title']);
+    expect(screen.getByText(texts['onboarding.3.body'])).toBeOnTheScreen();
+    const items = ['language', 'sound', 'games', 'intro', 'reset'].map(
+      (k) => texts[`onboarding.3.${k}`],
+    );
+    const list = screen.getByTestId('onboarding-settings-list');
+    const shown = within(list)
+      .queryAllByText(/./)
+      .map((n) => n.props.children);
+    expect(shown).toEqual(items);
     expect(flat(screen.getByTestId('onboarding-finish').props.style).minHeight).toBe(52);
   });
 });
@@ -400,5 +435,59 @@ describe('the learning page has no welcome banner (AC 47)', () => {
     expect(card.props.accessibilityLabel).toMatch(/^Start learning, Unit 1/);
     await press('home-continue');
     expect(router.getPathname()).toBe('/lesson/u01-board');
+  });
+});
+
+describe('swiping between steps', () => {
+  const WIDTH = 360;
+  async function swipeTo(pageIndex: number) {
+    const pager = screen.getByTestId('onboarding-pager');
+    await act(async () => {
+      fireEvent(pager, 'layout', { nativeEvent: { layout: { width: WIDTH, height: 600 } } });
+    });
+    await act(async () => {
+      fireEvent.scroll(pager, { nativeEvent: { contentOffset: { x: pageIndex * WIDTH, y: 0 } } });
+    });
+  }
+
+  it('a swipe left or right changes the step, its dots and its button', async () => {
+    const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+    await openIntro();
+    expect(screen.getByTestId('onboarding-pager').props.pagingEnabled).toBe(true);
+    await swipeTo(1);
+    expect(screen.getByTestId('onboarding-step-2')).toBeOnTheScreen();
+    expect(screen.queryByTestId('onboarding-step-1')).toBeNull();
+    expect(announce).toHaveBeenCalledWith(`${texts['onboarding.2.title']}. Step 2 of 3`);
+    await swipeTo(2);
+    expect(screen.getByTestId('onboarding-dots').props.accessibilityLabel).toBe('Step 3 of 3');
+    expect(screen.getByTestId('onboarding-finish')).toBeOnTheScreen();
+    await swipeTo(1);
+    expect(screen.getByTestId('onboarding-step-2')).toBeOnTheScreen();
+    expect(screen.getByTestId('onboarding-next')).toBeOnTheScreen();
+  });
+
+  it('only the current page is visible to screen readers: one header', async () => {
+    await openIntro();
+    await swipeTo(1);
+    expect(screen.getAllByRole('header')).toHaveLength(1);
+    expect(screen.getByRole('header')).toHaveTextContent(texts['onboarding.2.title']);
+  });
+
+  it('a finger on the step 2 board locks the pager and the page until it lifts', async () => {
+    await openIntro();
+    await press('onboarding-next');
+    const area = screen.getByTestId('onboarding-demo-area');
+    const locked = () => [
+      screen.getByTestId('onboarding-pager').props.scrollEnabled,
+      screen.getByTestId('onboarding-step-2').props.scrollEnabled,
+    ];
+    expect(locked()).toEqual([true, true]);
+    await act(async () => fireEvent(area, 'touchStart'));
+    expect(locked()).toEqual([false, false]);
+    await act(async () => fireEvent(area, 'touchEnd'));
+    expect(locked()).toEqual([true, true]);
+    await act(async () => fireEvent(area, 'touchStart'));
+    await act(async () => fireEvent(area, 'touchCancel'));
+    expect(locked()).toEqual([true, true]);
   });
 });

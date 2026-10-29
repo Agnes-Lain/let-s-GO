@@ -191,6 +191,10 @@ describe('every screen passes the audit (AC 35, 36, 40, 42)', () => {
     expectAccessible(root());
     expect(headers()).toHaveLength(1);
     expect(smallTexts(root())).toEqual([]);
+    await press('onboarding-next');
+    expectAccessible(root());
+    expect(headers()).toHaveLength(1);
+    expect(smallTexts(root())).toEqual([]);
   });
 
   it('9×9 picker: the chips, the atari row (now ≥ 52 px) and the 12 px "suggested" tag', async () => {

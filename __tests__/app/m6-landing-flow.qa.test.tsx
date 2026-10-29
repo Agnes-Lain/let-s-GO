@@ -79,6 +79,7 @@ describe('hardware back in the intro', () => {
     const router = await launch();
     await press('landing-start');
     await press('onboarding-next');
+    await press('onboarding-next');
     await press('onboarding-finish');
     await press('learn-back');
     expect(router.getPathname()).toBe('/');
