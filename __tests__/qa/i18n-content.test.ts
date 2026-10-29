@@ -80,7 +80,7 @@ describe('copy table §4 is implemented verbatim', () => {
     // M6 settings/onboarding/modules keys (docs/specs/M6-settings-onboarding-a11y.md §6) are
     // checked by __tests__/m6-settings-copy.test.ts.
     const m6Settings =
-      /^(onboarding\..+|home\.module\..+|settings\.(section\..+|sound.*|motion.*|intro|reset.*))$/;
+      /^(onboarding\..+|home\.module\..+|settings\.(section\..+|sound.*|motion.*|intro|reset.*|legal.*))$/;
     const m0Keys = Object.keys(zhCN).filter(
       (key) =>
         !m6Settings.test(key) &&

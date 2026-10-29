@@ -1,7 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import appConfig from '../app.json';
 import { useOsReduceMotion } from '@/board/useReduceMotion';
@@ -26,9 +34,11 @@ export const RESET_DONE_MS = 4000;
 const KEPT_FLAGS = ['atariHintsOff', 'onboardingSeen'] as const;
 /** Pages allow text up to 200 % and scroll (AC 42). */
 const TEXT_SCALE = 2;
+/** The legal notice and privacy page (site/legal/, GitHub Pages); `#<language>` opens its section. */
+export const LEGAL_URL = 'https://agnes-lain.github.io/let-s-GO/legal/';
 
 export default function SettingsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentChoice = useLanguageChoice();
   const router = useRouter();
   const sound = useSettings((s) => s.sound);
@@ -165,6 +175,23 @@ export default function SettingsScreen() {
             {t('settings.reset.done')}
           </Text>
         )}
+
+        {caption(t('settings.section.legal'))}
+        <View style={styles.list}>
+          <Pressable
+            onPress={() => Linking.openURL(`${LEGAL_URL}#${i18n.language}`)}
+            accessibilityRole="link"
+            accessibilityLabel={t('settings.legal')}
+            accessibilityHint={t('settings.legal.hint')}
+            testID="settings-legal"
+            style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+          >
+            <Text style={styles.rowLabel} maxFontSizeMultiplier={TEXT_SCALE}>
+              {t('settings.legal')}
+            </Text>
+            <ChevronIcon direction="right" color={color.textSecondary} size={20} />
+          </Pressable>
+        </View>
 
         {__DEV__ ? (
           <View style={[styles.list, styles.devList]}>

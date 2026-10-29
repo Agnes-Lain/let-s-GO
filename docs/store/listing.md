@@ -12,8 +12,8 @@ Chinese translations with **Manage translations → Add your own translations**)
 |---|---|
 | Category | Education (教育 / Éducation) |
 | Tags (up to 5) | Board, Educational, Strategy |
-| Contact email | `<support email>` |
-| Privacy policy | `https://agnes-lain.github.io/lets-go-privacy/` |
+| Contact email | `gameonelewagon@gmail.com` |
+| Privacy policy | `https://agnes-lain.github.io/let-s-GO/legal/` |
 
 Graphics in this folder: `icon-512.png` (512×512, app icon), `feature-graphic.png` (1024×500),
 phone screenshots `screenshot-*.png` (1080×1920).

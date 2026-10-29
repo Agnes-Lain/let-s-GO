@@ -77,9 +77,9 @@ describe('privacy policy (AC 31)', () => {
       .map((s) => [s.split('\n')[0].trim(), s]),
   );
 
-  it('has a 中文, English and Français section, each with the contact placeholder', () => {
+  it('has a 中文, English and Français section, each with the contact email', () => {
     expect(Object.keys(sections).sort()).toEqual(['English', 'Français', '中文'].sort());
-    for (const text of Object.values(sections)) expect(text).toContain('<support email>');
+    for (const text of Object.values(sections)) expect(text).toContain('gameonelewagon@gmail.com');
   });
 
   it.each([
@@ -114,5 +114,31 @@ describe('PO checklist (AC 30, spec §6)', () => {
     'Generate a new Android Keystore',
   ])('mentions %s', (text) => {
     expect(checklist).toContain(text);
+  });
+});
+
+describe('public legal page (site/legal/index.html)', () => {
+  const html = read('site/legal/index.html');
+
+  it.each(['zh-CN', 'en', 'fr'])(
+    'has a section with id "%s" (the anchor Settings links to)',
+    (id) => {
+      expect(html).toMatch(new RegExp(`<section id="${id}" lang="${id}">`));
+    },
+  );
+
+  it('names the publisher, the contact, the host and the privacy terms in every language', () => {
+    const sections = html.split('<section ').slice(1);
+    expect(sections).toHaveLength(3);
+    for (const section of sections) {
+      expect(section).toContain('Agnes-Lain');
+      expect(section).toContain('mailto:gameonelewagon@gmail.com');
+      expect(section).toContain('GitHub, Inc.');
+    }
+    expect(html).not.toContain('<support email>');
+  });
+
+  it('is deployed by the Pages workflow from site/', () => {
+    expect(read('.github/workflows/pages.yml')).toMatch(/path: site\b/);
   });
 });

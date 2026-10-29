@@ -2,8 +2,8 @@
 
 Last updated / 更新日期 / Mis à jour : 2026-10-24
 
-<!-- Source of the public page https://agnes-lain.github.io/lets-go-privacy/ (docs/specs/M6-eas-build.md §7).
-     Before publishing, replace every <support email> with the real support address. -->
+<!-- Published as part of https://agnes-lain.github.io/let-s-GO/legal/ (site/legal/index.html,
+     deployed by .github/workflows/pages.yml). Keep both in sync. -->
 
 ## 中文
 
@@ -17,7 +17,7 @@ Let's GO 不收集任何个人信息。
 - **卸载即删除**：卸载应用时，这些数据会一并删除。
 - 我们不与任何人分享数据，因为我们没有任何数据。
 
-联系方式：<support email>
+联系方式：gameonelewagon@gmail.com
 
 ## English
 
@@ -33,7 +33,7 @@ Let's GO collects no personal data.
 - **Deleting the app deletes the data**: when you uninstall the app, this data is removed too.
 - We share no data with anyone, because we have none.
 
-Questions: <support email>
+Questions: gameonelewagon@gmail.com
 
 ## Français
 
@@ -49,4 +49,4 @@ Let's GO ne collecte aucune donnée personnelle.
 - **Supprimer l'app supprime les données** : en désinstallant l'app, ces données sont effacées.
 - Nous ne partageons aucune donnée, puisque nous n'en avons aucune.
 
-Contact : <support email>
+Contact : gameonelewagon@gmail.com
