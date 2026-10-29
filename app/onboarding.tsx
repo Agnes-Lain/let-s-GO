@@ -1,8 +1,10 @@
 // The first-time intro (docs/specs/M6-settings-onboarding-a11y.md §5.2, AC 24–34, 46–49, §12c):
-// step 1 Welcome (Next), step 2 "Try placing a stone" (Done). Opened from the landing page's
-// "Start learning"; Done and Skip end on the learning page. Replayable from Settings (`?replay=1`).
+// step 1 Welcome (Next), step 2 "Try placing a stone" (Next), step 3 "Your settings" (Done). The
+// steps are pages of a horizontal pager: a swipe or Next moves between them. Opened from the
+// landing page's "Start learning"; Done and Skip end on the learning page. Replayable from
+// Settings (`?replay=1`).
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AccessibilityInfo,
@@ -13,17 +15,21 @@ import {
   Text,
   View,
   useWindowDimensions,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
 } from 'react-native';
 
 import { GoBoard, stonesFromSetup } from '@/board';
+import { useReduceMotion } from '@/board/useReduceMotion';
 import { TouchDemo } from '@/exercises/TouchDemo';
 import { LEARN_ROUTE } from '@/exercises/navigation';
 import { progressStore } from '@/store';
 import { Button } from '@/theme/Button';
 import { Screen } from '@/theme/Screen';
+import { GearIcon } from '@/theme/icons';
 import { color, radius, spacing, tapTarget, typography } from '@/theme/tokens';
 
-export const ONBOARDING_STEPS = 2;
+export const ONBOARDING_STEPS = 3;
 /** Step 1's static example (§5.3): Black b3, c3; White c4, d3. Nothing in atari. */
 const WELCOME_STONES = stonesFromSetup(5, { B: ['b3', 'c3'], W: ['c4', 'd3'] });
 const WELCOME_BOARD = 200;
@@ -31,7 +37,9 @@ const DEMO_BOARD_MAX = 300;
 /** Pages allow text up to 200 % and scroll (AC 42). */
 const TEXT_SCALE = 2;
 
-type Step = 1 | 2;
+type Step = 1 | 2 | 3;
+/** Step 3 lists what the Settings page holds, in its order. */
+const SETTINGS_ITEMS = ['language', 'sound', 'games', 'intro', 'reset'] as const;
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
@@ -39,12 +47,24 @@ export default function OnboardingScreen() {
   const { replay } = useLocalSearchParams<{ replay?: string }>();
   const replaying = replay === '1';
   const { width: windowWidth } = useWindowDimensions();
+  const reduceMotion = useReduceMotion();
   const [step, setStep] = useState<Step>(1);
+  const pager = useRef<ComponentRef<typeof ScrollView>>(null);
+  /** Pages fill the pager; before its first layout, the window width stands in. */
+  const [pagerWidth, setPagerWidth] = useState(0);
+  const pageWidth = pagerWidth || windowWidth;
+  /** The page a Next/Back scroll is heading to; scroll events on the way there are ignored. */
+  const scrollingTo = useRef<Step | null>(null);
+  /**
+   * While a finger is on the step 2 board, neither the pager nor the page scrolls: the board stays
+   * still, so sliding to another crossing or off the board works.
+   */
+  const [boardTouched, setBoardTouched] = useState(false);
 
   const title = t(`onboarding.${step}.title`);
   const stepLabel = t('onboarding.step', { n: step, total: ONBOARDING_STEPS });
 
-  // Every step says its title and "Step n of 2" (AC 32).
+  // Every step says its title and "Step n of 3" (AC 32).
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility(`${title}. ${stepLabel}`);
   }, [title, stepLabel]);
@@ -59,10 +79,27 @@ export default function OnboardingScreen() {
     else router.replace(LEARN_ROUTE);
   };
 
-  // System back (AC 26): step 2 → step 1; on step 1 it is Skip.
+  const goTo = (next: Step) => {
+    scrollingTo.current = next;
+    setStep(next);
+    pager.current?.scrollTo({ x: (next - 1) * pageWidth, animated: !reduceMotion });
+  };
+
+  // A swipe that lands on another page makes it the step.
+  const onPagerScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const page = Math.round(e.nativeEvent.contentOffset.x / pageWidth) + 1;
+    const landed = Math.min(Math.max(page, 1), ONBOARDING_STEPS) as Step;
+    if (scrollingTo.current !== null) {
+      if (landed === scrollingTo.current) scrollingTo.current = null;
+      return;
+    }
+    if (landed !== step) setStep(landed);
+  };
+
+  // System back (AC 26): goes one step back; on step 1 it is Skip.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (step === 2) setStep(1);
+      if (step > 1) goTo((step - 1) as Step);
       else leave();
       return true;
     });
@@ -70,6 +107,36 @@ export default function OnboardingScreen() {
   });
 
   const demoWidth = Math.min(DEMO_BOARD_MAX, windowWidth - 2 * spacing.lg);
+  const releaseBoard = () => setBoardTouched(false);
+
+  /** One page of the pager; only the current one reaches screen readers. */
+  const page = (n: Step, children: ReactNode) => {
+    const current = n === step;
+    return (
+      <View
+        style={[styles.page, { width: pageWidth }]}
+        aria-hidden={!current}
+        accessibilityElementsHidden={!current}
+        importantForAccessibility={current ? 'auto' : 'no-hide-descendants'}
+      >
+        <ScrollView
+          style={styles.scroll}
+          scrollEnabled={!boardTouched}
+          contentContainerStyle={[styles.content, n === 2 && styles.contentDemo]}
+          testID={`onboarding-step-${n}`}
+        >
+          <Text
+            style={n === 1 ? styles.display : styles.title}
+            accessibilityRole="header"
+            maxFontSizeMultiplier={TEXT_SCALE}
+          >
+            {t(`onboarding.${n}.title`)}
+          </Text>
+          {children}
+        </ScrollView>
+      </View>
+    );
+  };
 
   return (
     <Screen backdrop="home">
@@ -88,24 +155,30 @@ export default function OnboardingScreen() {
       </View>
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, step === 2 && styles.contentDemo]}
-        testID={`onboarding-step-${step}`}
+        ref={pager}
+        horizontal
+        pagingEnabled
+        scrollEnabled={!boardTouched}
+        showsHorizontalScrollIndicator={false}
+        onLayout={(e) => setPagerWidth(e.nativeEvent.layout.width)}
+        onScroll={onPagerScroll}
+        // A finger on the pager ends any Next/Back scroll: from then on, its swipe counts.
+        onTouchStart={() => (scrollingTo.current = null)}
+        scrollEventThrottle={16}
+        style={styles.pager}
+        testID="onboarding-pager"
       >
-        <Text
-          style={step === 1 ? styles.display : styles.title}
-          accessibilityRole="header"
-          maxFontSizeMultiplier={TEXT_SCALE}
-        >
-          {title}
-        </Text>
-        {step === 1 ? (
+        {page(
+          1,
           <>
+            <Text style={styles.body} maxFontSizeMultiplier={TEXT_SCALE}>
+              {t('onboarding.1.body')}
+            </Text>
             <Text style={styles.body} maxFontSizeMultiplier={TEXT_SCALE}>
               {t('onboarding.1.concept')}
             </Text>
             <Text style={styles.body} maxFontSizeMultiplier={TEXT_SCALE}>
-              {t('onboarding.1.body')}
+              {t('onboarding.1.rules')}
             </Text>
             <View style={styles.board}>
               <GoBoard
@@ -117,8 +190,10 @@ export default function OnboardingScreen() {
                 testID="onboarding-welcome-board"
               />
             </View>
-          </>
-        ) : (
+          </>,
+        )}
+        {page(
+          2,
           <>
             <Text style={styles.body} maxFontSizeMultiplier={TEXT_SCALE}>
               {t('onboarding.2.body')}
@@ -126,8 +201,38 @@ export default function OnboardingScreen() {
             <Text style={styles.hint} maxFontSizeMultiplier={TEXT_SCALE}>
               {t('onboarding.2.hint')}
             </Text>
-            <TouchDemo width={demoWidth} label={t('onboarding.a11y.demo')} />
-          </>
+            <View
+              onTouchStart={() => setBoardTouched(true)}
+              onTouchEnd={releaseBoard}
+              onTouchCancel={releaseBoard}
+              testID="onboarding-demo-area"
+            >
+              <TouchDemo width={demoWidth} label={t('onboarding.a11y.demo')} />
+            </View>
+          </>,
+        )}
+        {page(
+          3,
+          <>
+            <View style={styles.gearRow}>
+              <View style={styles.gear}>
+                <GearIcon color={color.accent} size={32} />
+              </View>
+              <Text style={[styles.body, styles.gearText]} maxFontSizeMultiplier={TEXT_SCALE}>
+                {t('onboarding.3.body')}
+              </Text>
+            </View>
+            <View style={styles.list} testID="onboarding-settings-list">
+              {SETTINGS_ITEMS.map((item) => (
+                <View key={item} style={styles.listItem}>
+                  <View style={styles.bullet} aria-hidden />
+                  <Text style={[styles.body, styles.gearText]} maxFontSizeMultiplier={TEXT_SCALE}>
+                    {t(`onboarding.3.${item}`)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </>,
         )}
       </ScrollView>
 
@@ -142,10 +247,10 @@ export default function OnboardingScreen() {
             <View key={i} style={[styles.dot, i + 1 === step && styles.dotCurrent]} />
           ))}
         </View>
-        {step === 1 ? (
+        {step < ONBOARDING_STEPS ? (
           <Button
             label={t('onboarding.next')}
-            onPress={() => setStep(2)}
+            onPress={() => goTo((step + 1) as Step)}
             testID="onboarding-next"
             style={styles.button}
           />
@@ -177,6 +282,9 @@ const styles = StyleSheet.create({
   },
   skipLabel: { ...typography.label, color: color.accent },
   pressed: { opacity: 0.6 },
+  // Full-bleed, so a page slides out past the screen's side padding; each page keeps it inside.
+  pager: { flex: 1, marginHorizontal: -spacing.lg },
+  page: { paddingHorizontal: spacing.lg },
   scroll: { flex: 1 },
   content: { gap: spacing.md, paddingBottom: spacing.lg },
   // Step 2 fits a 360×740 screen without scrolling (AC 33): tighter gaps, a smaller title.
@@ -186,6 +294,27 @@ const styles = StyleSheet.create({
   body: { ...typography.body, color: color.textPrimary },
   hint: { ...typography.body, color: color.textSecondary },
   board: { alignItems: 'center', marginTop: spacing.sm },
+  gearRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  gear: {
+    width: tapTarget.min,
+    height: tapTarget.min,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gearText: { flex: 1 },
+  list: { gap: spacing.xs },
+  listItem: { flexDirection: 'row', gap: spacing.sm },
+  // Centred on the first line of body text.
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: (typography.body.lineHeight - 6) / 2,
+    backgroundColor: color.accent,
+  },
   footer: { gap: spacing.md, paddingTop: spacing.sm },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: spacing.sm },
   dot: {
