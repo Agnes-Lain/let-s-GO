@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "expo-web",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-lc", "source ~/.nvm/nvm.sh && nvm use 22 >/dev/null && npx expo start --web --port 8082"],
+      "port": 8082
+    }
+  ]
+}
