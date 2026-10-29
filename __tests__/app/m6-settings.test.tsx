@@ -2,11 +2,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router as appRouter } from 'expo-router';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
-import { AccessibilityInfo, Modal, StyleSheet } from 'react-native';
+import { AccessibilityInfo, Linking, Modal, StyleSheet } from 'react-native';
 
 import { isSoundEnabled } from '@/board/soundSetting';
 import { setLanguageChoice } from '@/i18n';
 import en from '@/i18n/en.json';
+import { LEGAL_URL } from '../../app/settings';
 import { PROGRESS_KEY, SETTINGS_KEY, progressStore, settingsStore } from '@/store';
 import { propsOfOnly } from '@/theme/__fixtures__/fibers';
 
@@ -65,7 +66,7 @@ afterEach(async () => {
 });
 
 describe('layout (AC 16, 19)', () => {
-  it('AC 16: Language, Sound and motion, Games, Help, Progress, dev row, then Version', async () => {
+  it('AC 16: Language, Sound and motion, Games, Help, Progress, Legal, dev row, then Version', async () => {
     await openSettings();
     const order = textsInOrder();
     const at = (text: string) => {
@@ -85,6 +86,8 @@ describe('layout (AC 16, 19)', () => {
       texts['settings.intro'],
       texts['settings.section.progress'],
       texts['settings.reset'],
+      texts['settings.section.legal'],
+      texts['settings.legal'],
       texts['dev.board.open'], // __DEV__ is true in Jest: the dev row stays after Progress
       texts['settings.version'],
     ].map(at);
@@ -281,5 +284,22 @@ describe('Help (§5.4)', () => {
     await press('settings-intro');
     expect(router.getPathname()).toBe('/onboarding');
     expect(router.getSearchParams()).toMatchObject({ replay: '1' });
+  });
+});
+
+describe('Legal', () => {
+  it.each([
+    ['en', 'en'],
+    ['zh-CN', 'zh-CN'],
+    ['fr', 'fr'],
+  ] as const)('in %s, the link opens the legal page at its section', async (lang, anchor) => {
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+    await act(() => setLanguageChoice(lang));
+    await openSettings();
+    const row = screen.getByTestId('settings-legal');
+    expect(row.props.accessibilityRole).toBe('link');
+    await press('settings-legal');
+    expect(open).toHaveBeenCalledWith(`${LEGAL_URL}#${anchor}`);
+    expect(LEGAL_URL).toBe('https://agnes-lain.github.io/let-s-GO/legal/');
   });
 });

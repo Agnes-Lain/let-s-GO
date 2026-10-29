@@ -106,7 +106,7 @@ Read this + `CLAUDE.md`, then continue. Keep it short; update it at the end of e
   expo-splash-screen, react-native-mmkv 4 + react-native-nitro-modules, expo-system-ui. Store: `docs/privacy-policy.md`,
   `docs/store/` (listing zh-CN/en/fr, icon 512, feature graphic, 4 en screenshots). Spec `docs/specs/M6-eas-build.md` (§12a–b).
   **Pending PO:** `docs/specs/M6-eas-build-po-checklist.md` (Expo account, `eas init`, Play Console 25 USD + ID check, first manual
-  AAB upload, testers; support email placeholder `<support email>`; public `lets-go-privacy` repo for the privacy URL); ACs 22, 26 on a
+  AAB upload, testers; support email `gameonelewagon@gmail.com`; legal + privacy page `site/legal/` on this repo's GitHub Pages, https://agnes-lain.github.io/let-s-GO/legal/, linked from Settings → Legal); ACs 22, 26 on a
   real Android build. Claude runs `eas build`/`submit` only on the PO's explicit "go".
 
 - **M6b item 1** 13×13 game vs the bot (branch `claude/m6b-13x13-6d7869`, PO-approved spec, QA READY, 4419 tests):
