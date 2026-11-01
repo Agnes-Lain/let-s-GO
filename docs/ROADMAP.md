@@ -77,3 +77,14 @@ Optional button on exercises and finished games that explains *why* a move was g
 - [ ] Supabase auth; sync progress across devices
 - [ ] Post-game review: engine finds the biggest mistakes, AI tutor explains them
 - [ ] Play online vs friends (9×9)
+
+## M9 — Monetisation: free download + one-time unlock (PO 2026-11-01, not started)
+The app is published as **Free** on Play (Free → Paid can't be changed later, and Free apps can sell in-app products).
+- [ ] Spec (product-designer): what stays free vs. what the unlock opens, soft paywall screen, i18n zh-CN/en/fr.
+- [ ] Google Play Billing via `expo-iap` / `react-native-iap` (or RevenueCat if the PO accepts a third-party service);
+      one non-consumable product (e.g. `full_unlock`), acknowledged on the device within 3 days, entitlement cached in MMKV.
+      No server receipt check in v1 (CLAUDE.md rule 9).
+- [ ] "Restore purchase" in Settings; offline, refund/revoked and existing-progress behaviour.
+- [ ] Web / Expo Go fallback (no paywall or dev unlock) so web checks and tests keep working.
+- [ ] PO Play Console steps: payments profile, upload a build with the billing permission, create the product and price,
+      licence testers; testable only from a Play testing track. Update privacy page / App content if needed.
