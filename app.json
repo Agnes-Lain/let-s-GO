@@ -58,6 +58,12 @@
     ],
     "experiments": {
       "typedRoutes": false
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5bfc1efd-1213-4230-8ef6-82282a4d61a7"
+      }
+    },
+    "owner": "zuzu_lain"
   }
 }
