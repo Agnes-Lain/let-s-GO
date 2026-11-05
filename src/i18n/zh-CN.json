@@ -276,6 +276,7 @@
   "fb.tapOne.wrong": "不是这个点，再看一看。",
   "fb.tapAll.partial": "找到了 {{found}} 个，共 {{total}} 个。再找找看。",
   "fb.tapAll.extra": "红圈里的点不对，已为你取消。",
+  "fb.tapAll.allFoundExtra": "都找到了！但红圈里的点不对，已为你取消。再点一次“确认”。",
   "fb.pm.noCapture": "没有提到子。对方的棋子被填满最后一口气才会被提走。",
   "fb.pm.captureTooFew": "只提到了 {{n}} 子，这一题要提更多。",
   "fb.pm.noAtari": "还没有让白棋只剩一口气。",
