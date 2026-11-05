@@ -165,4 +165,11 @@ describe('tap-all (AC 69–70)', () => {
     ]);
     expect(tapAllFeedback(2, 3, 0)).toHaveLength(1);
   });
+
+  it('does not say "keep looking" when every point was found but extras were tapped', () => {
+    const answer = ['a1', 'b1', 'c1'];
+    const judgement = judgeTapAll(['a1', 'b1', 'c1', 'c3'], answer);
+    expect(judgement).toEqual({ correct: false, found: ['a1', 'b1', 'c1'], extra: ['c3'] });
+    expect(tapAllFeedback(3, 3, 1)).toEqual([{ key: 'fb.tapAll.allFoundExtra' }]);
+  });
 });
