@@ -64,4 +64,18 @@ describe('lesson content (AC 28)', () => {
       }
     }
   });
+
+  // A lesson whose text names a point ("c1") must label its boards, or learners cannot find it.
+  const POINT = /(?<![A-Za-z0-9])[a-hj-t](?:1[0-9]|[1-9])(?![0-9])/i;
+  it.each(lessons)('$file shows coordinates if its text names a point', ({ json }) => {
+    const cited = textKeys(json).filter((key) =>
+      (['zh-CN', 'en', 'fr'] as const).some((lang) => POINT.test(LESSON_TEXTS[lang][key] ?? '')),
+    );
+    expect({ cited: cited.length > 0, coordinates: (json as Lesson).coordinates ?? false }).toEqual(
+      {
+        cited: cited.length > 0,
+        coordinates: cited.length > 0,
+      },
+    );
+  });
 });

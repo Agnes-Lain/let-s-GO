@@ -4,6 +4,7 @@
   "unit": 5,
   "kind": "lesson",
   "titleKey": "lesson.u05-atari.title",
+  "coordinates": true,
   "explain": [
     {
       "board": {

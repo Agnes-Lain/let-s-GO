@@ -4,6 +4,7 @@
   "unit": 4,
   "kind": "lesson",
   "titleKey": "lesson.u04-capture.title",
+  "coordinates": true,
   "explain": [
     {
       "board": {

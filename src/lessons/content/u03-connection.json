@@ -4,6 +4,7 @@
   "unit": 3,
   "kind": "lesson",
   "titleKey": "lesson.u03-connection.title",
+  "coordinates": true,
   "explain": [
     {
       "board": {

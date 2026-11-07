@@ -79,7 +79,7 @@ the existing `src/lessons/content.test.ts` (validator with the real texts + leng
 **B. Text rules**
 7. Then no zh-CN lesson text contains pinyin (no letters with tone marks), and en and fr texts introduce each new term
    with its pinyin on first use in the lesson, as listed in §8.
-8. Then `u01-board` has `coordinates: true`, and the other five lessons have no `coordinates` (or false).
+8. Then all six lessons have `coordinates: true` (amended after internal testing: the texts cite points such as `c1`, so the boards must show letters and numbers).
 9. Then every `tap-point`, `play-move` and `count` exercise has a `hintKey`, and every exercise has either a
    `hintKey` or an `explainKey` (the 9 choice exercises without a hint have an `explainKey` and a `whyKey` on each
    wrong option). `hintPoints`, where present, are among the solution points.

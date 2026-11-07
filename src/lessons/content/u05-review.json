@@ -4,6 +4,7 @@
   "unit": 5,
   "kind": "checkpoint",
   "titleKey": "lesson.u05-review.title",
+  "coordinates": true,
   "exercises": [
     {
       "id": "r-liberties",
