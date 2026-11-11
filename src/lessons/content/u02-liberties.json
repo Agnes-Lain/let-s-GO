@@ -4,6 +4,7 @@
   "unit": 2,
   "kind": "lesson",
   "titleKey": "lesson.u02-liberties.title",
+  "coordinates": true,
   "explain": [
     {
       "board": {

@@ -4,6 +4,7 @@
   "unit": 6,
   "kind": "lesson",
   "titleKey": "lesson.u06-capture-go.title",
+  "coordinates": true,
   "explain": [
     {
       "board": { "size": 5, "setup": { "B": ["c4", "b3", "d3"], "W": ["c3"] } },

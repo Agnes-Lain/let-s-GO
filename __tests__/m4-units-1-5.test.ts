@@ -258,9 +258,11 @@ describe('B. text rules (AC 7–9)', () => {
     }
   });
 
-  it('AC 8: only u01-board shows coordinates', () => {
+  // AC 8 amended (internal test feedback): lesson texts cite points like "c1", so every M4 lesson
+  // labels its boards.
+  it('AC 8: every M4 lesson shows coordinates', () => {
     for (const id of M4) {
-      expect(Boolean((byId(id) as { coordinates?: boolean }).coordinates)).toBe(id === 'u01-board');
+      expect((byId(id) as { coordinates?: boolean }).coordinates).toBe(true);
     }
   });
 
