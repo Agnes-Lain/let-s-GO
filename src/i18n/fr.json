@@ -276,6 +276,7 @@
   "fb.tapOne.wrong": "Pas ce point. Regardez encore.",
   "fb.tapAll.partial": "{{found}} trouvé(s) sur {{total}}. Cherchez encore.",
   "fb.tapAll.extra": "Les points en rouge ne conviennent pas : ils ont été retirés.",
+  "fb.tapAll.allFoundExtra": "Vous les avez toutes trouvées, mais les points en rouge ne conviennent pas : ils ont été retirés. Appuyez à nouveau sur Vérifier.",
   "fb.pm.noCapture": "Rien n'a été capturé. Un groupe n'est capturé que lorsque sa dernière liberté est remplie.",
   "fb.pm.captureTooFew": "Seulement {{n}} capturé(s) : il en faut davantage ici.",
   "fb.pm.noAtari": "Aucun groupe adverse n'est réduit à une seule liberté.",

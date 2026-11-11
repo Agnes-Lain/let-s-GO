@@ -50,6 +50,8 @@ export function illegalFeedback(reason: IllegalReason): FeedbackLine[] {
 
 /** Tap-all check: how many were found, and whether wrong points were removed. */
 export function tapAllFeedback(found: number, total: number, extra: number): FeedbackLine[] {
+  // All found: the only mistake was extra points, so "keep looking" would contradict the count.
+  if (found === total && extra > 0) return [{ key: 'fb.tapAll.allFoundExtra' }];
   const lines: FeedbackLine[] = [{ key: 'fb.tapAll.partial', params: { found, total } }];
   if (extra > 0) lines.push({ key: 'fb.tapAll.extra' });
   return lines;

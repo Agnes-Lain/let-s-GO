@@ -34,6 +34,14 @@ module.exports = defineConfig([
   prettierConfig,
   pureModuleRestrictions,
   {
-    ignores: ['dist/*', 'web-build/*', '.expo/*', 'node_modules/*', 'coverage/*', 'expo-env.d.ts'],
+    ignores: [
+      'dist/*',
+      'web-build/*',
+      '.expo/*',
+      'node_modules/*',
+      'coverage/*',
+      'expo-env.d.ts',
+      '.claude/*',
+    ],
   },
 ]);

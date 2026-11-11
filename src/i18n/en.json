@@ -276,6 +276,7 @@
   "fb.tapOne.wrong": "Not that point. Look again.",
   "fb.tapAll.partial": "{{found}} of {{total}} found. Keep looking.",
   "fb.tapAll.extra": "The points in red are not right — they were removed.",
+  "fb.tapAll.allFoundExtra": "You found them all — but the points in red are not right, so they were removed. Press Check again.",
   "fb.pm.noCapture": "Nothing was captured. A group is captured only when its last liberty is filled.",
   "fb.pm.captureTooFew": "Only {{n}} captured — this exercise needs more.",
   "fb.pm.noAtari": "No enemy group is down to one liberty yet.",

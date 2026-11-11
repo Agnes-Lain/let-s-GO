@@ -15,6 +15,8 @@ module.exports = {
     '^expo-modules-core$': expoModulesCoreDir,
     '^expo-modules-core/(.*)$': `${expoModulesCoreDir}/$1`,
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.expo/', '/dist/'],
+  testPathIgnorePatterns: ['/node_modules/', '/.expo/', '/dist/', '<rootDir>/.claude/'],
+  // Session worktrees under .claude/ are full repo copies; scanning them multiplies runtime and RAM.
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
